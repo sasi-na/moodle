@@ -1,0 +1,168 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template core_question/tag_condition
+
+    An auto-complete select box containing a list of available tags to
+    filter the quesiton bank questions by.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * tagoptions A list of available tags
+
+    Example context (json):
+    {
+        "tagoptions": [
+            {
+                "id": 1,
+                "name": "foo",
+                "selected": true
+            },
+            {
+                "id": 2,
+                "name": "bar",
+                "selected": false
+            }
+        ]
+    }
+}}
+
+<button type="button" class="btn btn-primary" id="downloadrequest">
+   
+    Excel
+</button>
+
+<table id="example" class="display" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th>Sl No</th>
+            <th>Course Name</th>
+            <th>Course Code</th>
+            <th>Email</th>
+            <th>USN</th>
+            <th>Enrollment Number</th>
+            <th>Fullname</th>
+            <th>Student Batch</th>
+            <th>Module Title</th>
+            <th>Time Spent</th>
+            
+        </tr>
+    </thead>
+</table>
+<input type="hidden" id="contextid" value="">
+<script>
+    $(document).ready(function () {
+    let exportFormatter = {
+        format: {
+            body: function (data, row, column, node) {
+                // Strip $ from salary column to make it numeric
+                return column === 5 ? data.replace(/[$,]/g, '') : data;
+            }
+        }
+    };
+        gettabledata();
+        function gettabledata() {
+            var table = $('#example').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "searching": false,
+               // "paging": false,
+                "pageLength": 20, 
+                "ajax": {
+                    "url": "datatableajax.php", // Replace with your server URL
+                    "type": "GET",
+                    "data": function (d) {
+                        // Add custom search parameters to the request
+                        d.type = 'time_spent_report';
+                        d.courseid = $('#id_courseid').val(); // Get the value of a custom search field
+                        d.catid = $('#id_categoryid').val(); // Get the value of a custom search field
+                        d.email = $('#id_email').val(); // Get the value of a custom search field
+                        d.fromdate = $('#fromdate').val(); // Get the value of a custom search field
+                        d.todate = $('#todate').val(); // Get the value of a custom search field
+                       
+                    }
+                },
+                "columns": [
+                    {"data": "count"},
+                    {"data": "coursename"},
+                    {"data": "shortname"},
+                    {"data": "email"},
+                    {"data": "usn"},
+                    {"data": "enrollment"},
+                    {"data": "fullname"},
+                    {"data": "usergroups"},
+                    {"data": "module"},
+                    {"data": "timespent"}
+                ],
+                layout: {
+                        topStart: {
+                            buttons: [
+                               // { extend: 'copyHtml5', exportOptions: exportFormatter },
+                              //  { extend: 'excelHtml5', exportOptions: exportFormatter },
+                                //{ extend: 'pdfHtml5', exportOptions: exportFormatter }
+                            ]
+                        }
+                    },
+              
+            });
+            // Optional: Trigger search based on a custom input field
+           // $('#searchInput').on('input', function () {
+           //     table.ajax.reload();  // Reload the table with new search parameters
+           // });
+
+            $('#id_submitbutton').click(function (e) {
+                e.preventDefault();
+                table.ajax.reload(); // Reload the table with new search parameters
+            });
+        }
+
+
+ //DOWNLOAD
+    $('#downloadrequest').click(function(){
+        var typen = 'default';
+            $.ajax({
+                url: "datatableajax.php",
+                data: {
+                    action:'csvdownload',
+                    type : 'time_spent_report',
+                    courseid : $('#id_courseid').val(),
+                    catid : $('#id_categoryid').val(),
+                    fromdate : $('#fromdate').val(),
+                    todate : $('#todate').val(),
+                    start :0,
+                    length : 0,
+                    draw: 1
+                },
+                
+                success: function(response){
+                     var blob = new Blob([response], { type: 'text/csv' });
+                    var link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'time_spent_report.csv'; // Specify the file name
+                    link.click();
+                   
+                }
+                });
+    });
+
+    });
+</script>

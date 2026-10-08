@@ -1,0 +1,206 @@
+{{!
+    @template theme_baz/student-gradereport
+
+    Bespoke per-course grade report (gradebook table) for student-only users.
+    Reuses the theme head / session chrome; the body is a custom app shell
+    matching the dashboard, courses, calendar, grades and course pages.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="sgr-root" class="sgr-app">
+
+            <div class="sgr-backdrop" id="sgr-backdrop"></div>
+            <aside class="sgr-side" id="sgr-side">
+                <a class="sgr-brand" href="{{dashboardurl}}">
+                    {{! The sidebar is always navy, unlike the classic topbar that customlogo
+                        also feeds, so prefer the sidebar logo where a site supplies one. }}
+                    {{#customsidebarlogo}}<img src="{{customsidebarlogo}}" alt="{{sitename}}">{{/customsidebarlogo}}
+                    {{^customsidebarlogo}}
+                        {{#customlogo}}<img src="{{customlogo}}" alt="{{sitename}}">{{/customlogo}}
+                        {{^customlogo}}<span class="sgr-brand-txt">{{{ sitename }}}</span>{{/customlogo}}
+                    {{/customsidebarlogo}}
+                </a>
+                <nav class="sgr-nav">
+                    <a href="{{dashboardurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg> {{#str}}sd_nav_dashboard, theme_baz{{/str}}</a>
+                    <a href="{{coursesurl}}"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M9 11h6M9 15h4"/></svg> {{#str}}sd_nav_courses, theme_baz{{/str}}</a>
+                    <a href="{{calendarurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg> {{#str}}sd_nav_calendar, theme_baz{{/str}}</a>
+                    <a href="{{mygradesurl}}" class="on"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg> {{#str}}sd_nav_grades, theme_baz{{/str}}</a>
+                    {{#hasinterestzone}}
+                    <a href="{{interestzoneurl}}"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.25"/><circle cx="12" cy="9" r="1" fill="currentColor" stroke="none"/><path d="M12 13V15"/></svg> {{interestzonelabel}}</a>
+                    {{/hasinterestzone}}
+                    <div class="sgr-navlbl">{{#str}}sd_nav_resources, theme_baz{{/str}}</div>
+                    {{#showeidcard}}<a href="{{eidcardurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M13 10h5M13.5 14h3M5 16c.4-1.4 1.5-2 3-2s2.6.6 3 2"/></svg> {{#str}}pluginname, local_studentid{{/str}}</a>{{/showeidcard}}
+                    <a href="{{filesurl}}"><svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h6l2 2h6a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> {{#str}}sd_nav_files, theme_baz{{/str}}</a>
+                </nav>
+            {{> theme_baz/sidebar-support }}
+            </aside>
+
+            <div class="sgr-main-col">
+                <header class="sgr-topbar">
+                    <div class="sgr-topbar-inner">
+                        <div class="sgr-tb-left">
+                            <button type="button" class="sgr-burger" id="sgr-burger" aria-label="{{#str}}sd_menu, theme_baz{{/str}}"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                            <nav class="sgr-crumb"><a href="{{courseurl}}">{{coursename}}</a><span class="sep">/</span><span class="cur">{{#str}}sd_nav_grades, theme_baz{{/str}}</span></nav>
+                        </div>
+                        <div class="sgr-search-wrap">
+                            <form class="sgr-search" action="{{{ config.wwwroot }}}/course/search.php" method="get" role="search">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                                <input type="text" name="search" autocomplete="off" placeholder="{{#str}}cp_searchph, theme_baz{{/str}}" aria-label="{{#str}}search, core{{/str}}">
+                            </form>
+                        </div>
+                        <div class="sgr-top-actions">
+                            {{#hasaskjo}}<button type="button" class="sgr-askjo" id="sgr-askjo-btn"><svg viewBox="0 0 24 24" fill="var(--bz-accent)"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg> {{#str}}sd_askjo, theme_baz{{/str}}</button>{{/hasaskjo}}
+                            <button type="button" class="sgr-iconbtn" id="sgr-themebtn" title="{{#str}}sd_toggletheme, theme_baz{{/str}}"><svg id="sgr-themeicon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+                            <div class="sgr-navbar-plugin">{{{ output.navbar_plugin_output }}}</div>
+                            <div class="sgr-usermenu">{{{ output.user_menu }}}</div>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="sgr-content">
+                    <section class="sgr-hero">
+                        <div class="sgr-hero-l">
+                            <div class="sgr-eyebrow">{{#str}}gr_eyebrow, theme_baz{{/str}} &middot; {{eyebrow}}</div>
+                            <h1>{{coursename}}</h1>
+                            <div class="sgr-herostats"><span class="sgr-hchip">{{#str}}gr_gradedn, theme_baz, {{graded}}{{/str}}</span><span class="sgr-hchip">{{#str}}gr_pendingn, theme_baz, {{pending}}{{/str}}</span></div>
+                        </div>
+                        <div class="sgr-total">
+                            <span>{{#str}}gr_coursetotal, theme_baz{{/str}}</span>
+                            <b>{{total.grade}}<small>/{{total.max}}</small></b>
+                            <span class="sgr-totpct">{{total.pct}}%</span>
+                        </div>
+                    </section>
+
+                    <nav class="sgr-tabs">
+                        <a href="{{courseurl}}">{{#str}}cp_tab_course, theme_baz{{/str}}</a>
+                        <a class="on" href="#">{{#str}}cp_tab_grades, theme_baz{{/str}}</a>
+                    </nav>
+
+                    {{#hasreports}}
+                    <div class="sgr-segment" role="tablist">
+                        {{#reports}}<a class="sgr-seg{{#active}} on{{/active}}" href="{{url}}"{{#active}} aria-current="page"{{/active}}>{{label}}</a>{{/reports}}
+                    </div>
+                    {{/hasreports}}
+
+                    {{#hasitems}}
+                    <div class="sgr-wrap">
+                        <table class="sgr-table">
+                            <thead>
+                                <tr>
+                                    <th>{{#str}}gr_col_assessment, theme_baz{{/str}}</th>
+                                    <th>{{#str}}gr_col_type, theme_baz{{/str}}</th>
+                                    <th class="num">{{#str}}gr_col_weight, theme_baz{{/str}}</th>
+                                    <th class="num">{{#str}}gr_col_grade, theme_baz{{/str}}</th>
+                                    <th class="num">{{#str}}gr_col_range, theme_baz{{/str}}</th>
+                                    <th class="num">{{#str}}gr_col_performance, theme_baz{{/str}}</th>
+                                    <th class="num">{{#str}}gr_col_status, theme_baz{{/str}}</th>
+                                    <th class="sgr-actcol"><span class="sr-only">{{#str}}actions, core{{/str}}</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#groups}}
+                                <tr class="sgr-cat"><td colspan="8"><span>{{name}}</span>{{#haswt}}<em>{{wtlabel}}</em>{{/haswt}}</td></tr>
+                                {{#items}}
+                                <tr class="{{#isgraded}}graded{{/isgraded}}{{^isgraded}}pending{{/isgraded}}">
+                                    <td class="sgr-item"><span class="sgr-ic t-{{type}}"><svg viewBox="0 0 24 24">{{{iconsvg}}}</svg></span>{{#hasurl}}<a href="{{url}}" class="sgr-link">{{name}}</a>{{/hasurl}}{{^hasurl}}<span>{{name}}</span>{{/hasurl}}</td>
+                                    <td class="sgr-type">{{typelabel}}</td>
+                                    <td class="num">{{weight}}</td>
+                                    <td class="num sgr-grade">{{#isgraded}}<b>{{grade}}</b><span>/{{max}}</span>{{/isgraded}}{{^isgraded}}<span class="muted">&mdash;</span><span>/{{max}}</span>{{/isgraded}}</td>
+                                    <td class="num sgr-range">{{range}}</td>
+                                    <td class="num sgr-pct">{{#haspct}}<span class="sgr-mini"><i style="width:{{pct}}%"></i></span><b>{{pct}}%</b>{{/haspct}}{{^haspct}}<span class="sgr-dot"></span>{{/haspct}}</td>
+                                    <td class="num sgr-status">{{#isgraded}}<span class="sgr-tag on">{{#str}}gr_graded, theme_baz{{/str}}</span>{{/isgraded}}{{^isgraded}}<span class="sgr-tag">{{#str}}gr_pending, theme_baz{{/str}}</span>{{/isgraded}}</td>
+                                    <td class="sgr-actcol">
+                                        {{#hasanalysis}}
+                                        <div class="sgr-menu">
+                                            <button type="button" class="sgr-dots" aria-haspopup="true" aria-expanded="false" aria-label="{{#str}}gr_actions, theme_baz{{/str}}"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg></button>
+                                            <div class="sgr-menu-pop" hidden>
+                                                <a href="{{analysisurl}}"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 16v-4M12 16V8M16 16v-7"/></svg> {{#str}}gr_analysis, theme_baz{{/str}}</a>
+                                                {{#hasurl}}<a href="{{url}}"><svg viewBox="0 0 24 24"><path d="M14 3h7v7M21 3l-9 9M10 5H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/></svg> {{#str}}gr_openactivity, theme_baz{{/str}}</a>{{/hasurl}}
+                                            </div>
+                                        </div>
+                                        {{/hasanalysis}}
+                                    </td>
+                                </tr>
+                                {{#hasfeedback}}
+                                <tr class="sgr-fbrow {{#isgraded}}graded{{/isgraded}}{{^isgraded}}pending{{/isgraded}}">
+                                    <td colspan="8"><div class="sgr-fb"><span class="sgr-fb-lbl">{{#str}}gr_feedback, theme_baz{{/str}}</span><div class="sgr-fb-txt">{{{feedback}}}</div></div></td>
+                                </tr>
+                                {{/hasfeedback}}
+                                {{/items}}
+                                {{#hassubtotal}}
+                                <tr class="sgr-sub">
+                                    <td class="sgr-item"><b>{{subtotallabel}}</b></td>
+                                    <td></td>
+                                    <td class="num"></td>
+                                    <td class="num sgr-grade">{{#subtotal.hasgrade}}<b>{{subtotal.grade}}</b><span>/{{subtotal.max}}</span>{{/subtotal.hasgrade}}{{^subtotal.hasgrade}}<span class="muted">&mdash;</span><span>/{{subtotal.max}}</span>{{/subtotal.hasgrade}}</td>
+                                    <td class="num"></td>
+                                    <td class="num sgr-pct">{{#subtotal.haspct}}<span class="sgr-mini"><i style="width:{{subtotal.pct}}%"></i></span><b>{{subtotal.pct}}%</b>{{/subtotal.haspct}}{{^subtotal.haspct}}<span class="sgr-dot"></span>{{/subtotal.haspct}}</td>
+                                    <td class="num"></td>
+                                    <td class="sgr-actcol"></td>
+                                </tr>
+                                {{/hassubtotal}}
+                                {{/groups}}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td class="sgr-item"><b>{{#str}}gr_coursetotal, theme_baz{{/str}}</b></td>
+                                    <td></td>
+                                    <td class="num"></td>
+                                    <td class="num sgr-grade"><b>{{total.grade}}</b><span>/{{total.max}}</span></td>
+                                    <td class="num"></td>
+                                    <td class="num sgr-pct"><span class="sgr-mini"><i style="width:{{total.pct}}%"></i></span><b>{{total.pct}}%</b></td>
+                                    <td class="num"></td>
+                                    <td class="sgr-actcol"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    {{/hasitems}}
+                    {{^hasitems}}<div class="sgr-empty">{{#str}}gr_empty, theme_baz{{/str}}</div>{{/hasitems}}
+
+                    <div id="region-main-box" class="sgr-region-main"><section id="region-main" aria-label="{{#str}}content{{/str}}">{{{ output.main_content }}}</section></div>
+                </main>
+            </div>
+
+            {{#hassupport}}
+            <div class="sgr-help">
+                <div class="sgr-help-panel" id="sgr-help-panel" hidden>
+                    <div class="sgr-help-head"><span class="sgr-help-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg></span><div class="sgr-help-t"><b>{{#str}}sd_help, theme_baz{{/str}}</b><small>{{#str}}sd_help_sub, theme_baz{{/str}}</small></div><button type="button" class="sgr-help-close" id="sgr-help-close" aria-label="Close">&times;</button></div>
+                    <div class="sd-blockcontent sd-support">{{{ support_html }}}</div>
+                </div>
+                <button type="button" class="sgr-help-fab" id="sgr-help-fab" aria-expanded="false">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg>
+                    <span>{{#str}}sd_help, theme_baz{{/str}}</span>
+                </button>
+            </div>
+            {{/hassupport}}
+
+            {{#hasaskjo}}
+            <div class="sgr-askjo-panel" id="sgr-askjo-panel" hidden>
+                <div class="sgr-askjo-head"><span>{{#str}}sd_askjo, theme_baz{{/str}}</span><button type="button" class="sgr-askjo-close" id="sgr-askjo-close" aria-label="Close">&times;</button></div>
+                <div class="block_openai_chat" data-instance-id="{{askjo.blockid}}">
+                    <div class="sgr-askjo-body">{{{ askjo.log }}}</div>
+                    <div class="sgr-askjo-control">{{{ askjo.control }}}</div>
+                </div>
+            </div>
+            {{/hasaskjo}}
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+</body>
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/studentgradereport'], function(Loader, StudentGradereport) {
+        StudentGradereport.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

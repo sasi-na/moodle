@@ -1,0 +1,25 @@
+<?php
+defined('MOODLE_INTERNAL') || die();
+$string['pluginname'] = 'AI Dock';
+$string['privacy:metadata'] = 'The AI Dock plugin does not store any personal data.';
+$string['enabled'] = 'Show the AI Dock';
+$string['enabled_desc'] = 'Shows four round AI shortcuts (GeniAI, Tutor AI, EduGears, Raison) at the bottom-left of every page for signed-in users.';
+$string['geniai'] = 'GeniAI';
+$string['tutorai'] = 'Tutor AI';
+$string['edugears'] = 'EduGears AI';
+$string['raison'] = 'Raison AI Tutor';
+$string['statuson'] = 'Ready';
+$string['statusoff'] = 'Not set up yet';
+$string['opencourse'] = 'Open any of your courses to chat with {$a}.';
+$string['notready'] = '{$a} is not switched on yet. Please contact your site administrator.';
+$string['adminsetup'] = 'Set it up';
+$string['back'] = 'Back';
+$string['tool_geniai'] = 'GeniAI is a chat assistant ("{$a}") that answers questions about the course you are viewing. When it is switched on, a chat bubble opens from this button on course pages.';
+$string['tool_tutorai'] = 'Tutor AI is a course tutor. Inside any course, this button opens the Tutor AI chat drawer, which answers using the course content.';
+$string['tool_edugears'] = 'EduGears AI gives teachers AI tools (lesson builder, question and slide generators, worksheets, AI grading) and gives students shared quizzes, study guides and a 24/7 tutor. It runs as an External tool activity inside courses.';
+$string['tool_raison'] = 'Raison AI Tutors are built by teachers from their course material. Students chat with them in a side panel inside the course; teachers create and manage them in Raison.';
+$string['youractivities'] = 'EduGears activities in your courses';
+$string['noactivities'] = 'No EduGears activities yet. Teachers add one with Edit mode → Add an activity or resource → EduGears AI.';
+$string['openraison'] = 'Open Raison (create and manage AI tutors)';
+$string['raisonstudent'] = 'Open a course that has a Raison tutor; the AI Tutor side panel appears on the right of the course page.';
+$string['coursetutor'] = 'AI Course Tutor';

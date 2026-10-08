@@ -1,0 +1,48 @@
+# Tenant environment for learn.usdcglobal.com.
+#
+# Same list and same order as jain-prod and nitk-prod; only the tenant values
+# differ. Every value here was read back from the live Deployment, so adopting
+# this overlay changes nothing about how the app reaches its database.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  template:
+    spec:
+      containers:
+      - name: php-fpm
+        env:
+        - name: MOODLE_SITE_URL
+          # Must match $CFG->wwwroot in config/moodle_config.php.
+          value: "https://learn.usdcglobal.com"
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        - name: MOODLE_DATABASE_TYPE
+          value: "mysqli"
+        # usdc has its OWN PXC cluster in this namespace, like every other
+        # tenant, so this is the short in-namespace service name.
+        - name: MOODLE_DATABASE_HOST
+          value: "mysql-db-pxc-db-haproxy"
+        - name: MOODLE_DATABASE_PORT_NUMBER
+          value: "3306"
+        - name: MOODLE_DATABASE_NAME
+          value: "learn_usdc"
+        - name: MOODLE_DATABASE_USER
+          value: "learnusdc"
+        - name: MOODLE_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: database-password
+        - name: MOODLE_USERNAME
+          value: "admin"
+        - name: MOODLE_EMAIL
+          value: "admin@example.com"
+        - name: MOODLE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: admin-password
+        - name: PHP_MEMORY_LIMIT
+          value: "4G"

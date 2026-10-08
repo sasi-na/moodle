@@ -1,0 +1,177 @@
+.rui-breadcrumbs {
+  background-color: $container-bg;
+
+  @include media-breakpoint-between(xs, sm) {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  // @if variable-exists(stickybreadcrumbs) {
+  //   @if $stickybreadcrumbs == 'yes' {
+  //     @include media-breakpoint-up(md) {
+  //       position: sticky;
+  //       top: 60px;
+  //       z-index: $zindex-sticky - 6;
+  //     }
+  //   }
+  // }
+
+  .theme-dark & {
+    background-color: $dm-container-bg;
+  }
+}
+
+.breadcrumb,
+.coursefilesbreadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 10px 0;
+
+  z-index: 0;
+
+  &:empty {
+    padding: 0;
+    display: none;
+  }
+
+  @include font-size($breadcrumb-font-size);
+  list-style: none;
+
+  @include media-breakpoint-between(xs, sm) {
+    margin: 0 10px;
+    width: max-content;
+  }
+}
+
+.breadcrumbs-container {
+  width: 100%;
+}
+
+.breadcrumb--in-content {
+  margin: 0;
+}
+
+.breadcrumb-item {
+  display: flex;
+  color: $breadcrumb-color;
+
+  .theme-dark & {
+    color: $dm-breadcrumb-color;
+  }
+  
+  .text-truncate {
+    max-width: 300px;
+  }
+
+  // The separator between breadcrumbs (by default, a forward-slash: "/")
+  +.breadcrumb-item {
+    padding-left: $breadcrumb-item-padding;
+
+    &::before {
+      display: inline-flex; // Suppress underlining of the separator in modern browsers
+      align-items: center;
+      padding-right: $breadcrumb-item-padding;
+      color: $breadcrumb-divider-color;
+      content: escape-svg($breadcrumb-divider);
+
+      transition: $transition-base;
+
+      .theme-dark & {
+        color: $dm-breadcrumb-divider-color;
+      }
+    }
+  }
+
+
+  .breadcrumb--in-content & {
+    max-width: 300px;
+
+    a {
+      &:before {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='#{url-friendly-colour($breadcrumb-color)}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6.75 15.25V6.75H15.25'%3E%3C/path%3E%3Cpath stroke='#{url-friendly-colour($breadcrumb-color)}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 7L17.25 17.25'%3E%3C/path%3E%3C/svg%3E%0A");
+        background-repeat: no-repeat;
+        background-position: 0;
+        background-size: 18px;
+        width: 17px;
+        height: 17px;
+
+        transition: $transition-base;
+
+        .theme-dark & {
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='#{url-friendly-colour($dm-breadcrumb-color)}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M6.75 15.25V6.75H15.25'%3E%3C/path%3E%3Cpath stroke='#{url-friendly-colour($dm-breadcrumb-color)}' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M7 7L17.25 17.25'%3E%3C/path%3E%3C/svg%3E%0A");
+        }
+      }
+    }
+  }
+
+  // IE9-11 hack to properly handle hyperlink underlines for breadcrumbs built
+  // without `<ul>`s. The `::before` pseudo-element generates an element
+  // *within* the .breadcrumb-item and thereby inherits the `text-decoration`.
+  //
+  // To trick IE into suppressing the underline, we give the pseudo-element an
+  // underline and then immediately remove it.
+  +.breadcrumb-item:hover::before {
+    text-decoration: underline;
+  }
+
+  // stylelint-disable-next-line no-duplicate-selectors
+  +.breadcrumb-item:hover::before {
+    text-decoration: none;
+  }
+
+  &.active {
+    color: $breadcrumb-active-color;
+
+    .theme-dark & {
+      color: $dm-breadcrumb-active-color;
+    }
+  }
+
+  .breadcrumbs-textonly {
+    margin: 0.25rem 0;
+    display: grid;
+  }
+
+  a {
+    position: relative;
+    display: inline-flex;
+    z-index: 1;
+
+    margin: 0.25rem 0;
+
+    color: $breadcrumb-color;
+    font-weight: $font-weight-medium;
+
+    .theme-dark & {
+      color: $dm-breadcrumb-color;
+    }
+
+    .text-truncate {
+      display: inline-block;
+      max-width: 200px;
+    }
+
+    &:hover {
+      text-decoration: none;
+
+      &:after {
+        content: '';
+        background-color: $gray-200;
+
+        border-radius: $border-radius;
+
+        position: absolute;
+        left: -6px;
+        top: -4px;
+        width: calc(100% + 12px);
+        height: calc(100% + 8px);
+        z-index: -1;
+
+        .theme-dark & {
+          background-color: $black;
+        }
+      }
+    }
+  }
+}

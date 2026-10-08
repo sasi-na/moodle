@@ -1,0 +1,96 @@
+# moodledata backup: tar the NFS volume, upload to GCS.
+#
+# Overlay-scoped rather than in base, because the GCS destination and the NFS
+# claim name are tenant-specific. A new tenant needs its own bucket path, not a
+# share of jain's.
+#
+# Migrated here verbatim from the live cluster when Deployment-files/ was deleted;
+# verified with `kubectl diff`. Not to be confused with moodle-db-backup, which
+# was deleted as obsolete -- see deploy/README.md.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: moodle-nfs-backup
+spec:
+  schedule: "30 9,17 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  suspend: false
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 3600
+      template:
+        spec:
+          restartPolicy: OnFailure
+          serviceAccountName: usdc-prod-service-account
+          containers:
+          - name: backup
+            image: google/cloud-sdk:slim
+            command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              BACKUP_FILE="$(date +%Y-%m-%d-%H-%M-%S).tar.gz"
+              DEST="${GCS_BUCKET}/${BACKUP_FILE}"
+
+              log() { echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"; }
+
+              log "Starting streaming backup of NFS volume..."
+              log "GCS destination: ${DEST}"
+              log "Streaming directly to GCS - no local staging on the shared Filestore."
+
+              cd /var/moodledata
+
+              # tar writes to stdout and gsutil consumes it, so the archive never lands on
+              # the NFS share. That removes the old failure mode where a ~357 GiB staged
+              # tarball pushed the Filestore - shared by every tenant - towards full.
+              #
+              # The risk this trades into: if tar dies mid-stream, gsutil sees a clean EOF
+              # and happily reports success, leaving a TRUNCATED archive that looks valid.
+              # So both exit codes are captured and a real tar failure deletes the object.
+              set +e
+              tar czf - --exclude='.backups' \
+                  --warning=no-file-changed --warning=no-file-removed . \
+                | gsutil -o GSUtil:parallel_composite_upload_threshold=0 cp - "${DEST}"
+              RCS=("${PIPESTATUS[@]}")
+              set -e
+              TAR_RC=${RCS[0]}
+              GS_RC=${RCS[1]}
+
+              if [ "${GS_RC}" -ne 0 ]; then
+                log "ERROR: gsutil upload failed with exit code ${GS_RC}"
+                gsutil -q rm "${DEST}" 2>/dev/null || true
+                exit "${GS_RC}"
+              fi
+
+              # tar exits 1 for "file changed/removed as we read it". Expected on a live
+              # moodledata and the archive is still valid. 2+ means the stream was cut short.
+              if [ "${TAR_RC}" -eq 1 ]; then
+                log "NOTICE: files changed or vanished during archiving (tar rc=1); archive is valid, continuing."
+              elif [ "${TAR_RC}" -ne 0 ]; then
+                log "ERROR: tar failed with exit code ${TAR_RC} - the uploaded object is truncated, removing it"
+                gsutil -q rm "${DEST}" 2>/dev/null || true
+                exit "${TAR_RC}"
+              fi
+
+              # Independent confirmation the object is really there and not a stub.
+              UPLOADED_BYTES=$(gsutil du -s "${DEST}" 2>/dev/null | awk '{print $1}')
+              if [ -z "${UPLOADED_BYTES}" ] || [ "${UPLOADED_BYTES}" -lt 1048576 ]; then
+                log "ERROR: uploaded object missing or smaller than 1 MB (${UPLOADED_BYTES:-0} bytes) - removing it"
+                gsutil -q rm "${DEST}" 2>/dev/null || true
+                exit 1
+              fi
+
+              log "Backup uploaded successfully to GCS. Size: $(( UPLOADED_BYTES / 1073741824 )) GiB (${UPLOADED_BYTES} bytes)"
+            env:
+            - name: GCS_BUCKET
+              value: gs://usdc-prod-database-backup-aps1/moodle-backups/jain/nfs
+            volumeMounts:
+            - name: nfs-data
+              mountPath: /var/moodledata
+          volumes:
+          - name: nfs-data
+            persistentVolumeClaim:
+              claimName: moodle-nfs-pvc

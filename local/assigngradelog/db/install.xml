@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/assigngradelog/db" VERSION="20260529"
+    COMMENT="XMLDB file for local/assigngradelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+  <TABLES>
+    <TABLE NAME="local_assigngradelog_upload" COMMENT="Audit log of CSV grade uploads via the offline grading worksheet">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="assignmentid" TYPE="int"  LENGTH="10" NOTNULL="true" COMMENT="assign.id"/>
+        <FIELD NAME="cmid"         TYPE="int"  LENGTH="10" NOTNULL="true" COMMENT="course_modules.id"/>
+        <FIELD NAME="courseid"     TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="uploaderid"   TYPE="int"  LENGTH="10" NOTNULL="true" COMMENT="user.id of the teacher who uploaded"/>
+        <FIELD NAME="timeuploaded" TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="filename"     TYPE="char" LENGTH="255" NOTNULL="false"/>
+        <FIELD NAME="totalrows"    TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="updated"      TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Rows where grade was changed"/>
+        <FIELD NAME="feedbackupdated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Rows where feedback/comments changed"/>
+        <FIELD NAME="skipped"      TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Rows not updated (unchanged, locked, invalid)"/>
+        <FIELD NAME="errordetail"  TYPE="text" NOTNULL="false" COMMENT="JSON array of skipped rows with reasons"/>
+        <FIELD NAME="status"       TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="complete"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary"      TYPE="primary" FIELDS="id"/>
+        <KEY NAME="fk_assign"    TYPE="foreign" FIELDS="assignmentid" REFTABLE="assign"  REFFIELDS="id"/>
+        <KEY NAME="fk_uploader"  TYPE="foreign" FIELDS="uploaderid"   REFTABLE="user"    REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="assignmentid_time" UNIQUE="false" FIELDS="assignmentid, timeuploaded"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

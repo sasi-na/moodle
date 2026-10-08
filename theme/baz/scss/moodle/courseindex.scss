@@ -1,0 +1,391 @@
+$courseindex-item-padding-y: .5rem;
+$courseindex-item-padding-x: .75rem;
+
+$courseindex-item-padding-y-sm: 4px;
+$courseindex-item-padding-x-sm: 7px;
+
+$courseindex-item-dragging-bg: theme-color-level('info', -11) !default;
+$courseindex-item-dragging-border: theme-color-level('info', -9) !default;
+
+// Dark mode.
+$dm-courseindex-item-dragging-bg: theme-color-level('info', -11) !default;
+$dm-courseindex-item-dragging-border: theme-color-level('info', -9) !default;
+
+@mixin courseindex-item-hover() {
+    @include hover-focus() {
+
+        span,
+        .courseindex-link,
+        .courseindex-chevron {
+            align-self: center;
+            color: $drawer-link;
+            cursor: pointer;
+
+            .theme-dark & {
+                color: $dm-drawer-link;
+            }
+        }
+
+        &.dimmed {
+            opacity: .6;
+            color: $drawer-link;
+
+            .theme-dark & {
+                color: $dm-drawer-link;
+            }
+
+            .courseindex-link,
+            .courseindex-chevron {
+                color: $drawer-link;
+
+                .theme-dark & {
+                    color: $dm-drawer-link;
+                }
+            }
+        }
+
+        &.draggable {
+            cursor: pointer;
+        }
+    }
+}
+
+.courseindex .delegated-section {
+    margin: 7px 0;
+    &.courseindex-section {
+        background-color: transparent;
+
+        .theme-dark & {
+            background-color: transparent;
+        }
+    }
+
+    .courseindex-item.courseindex-section-title a {
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
+    
+        .icon {
+            font-size: 12px;
+        }    
+    }
+}
+
+@mixin courseindex-item-dragging() {
+    &.dragging {
+        border: $border-width solid $courseindex-item-dragging-border;
+        background-color: $courseindex-item-dragging-bg;
+
+        .theme-dark & {
+            border: $border-width solid $dm-courseindex-item-dragging-border;
+            background-color: $dm-courseindex-item-dragging-bg;
+        }
+    }
+}
+
+.courseindex {
+
+    .expanded-icon,
+    .collapsed-icon {
+        background-color: $gray-100;
+        color: $gray-800;
+
+        align-items: center;
+        justify-content: center;
+
+        width: 30px;
+        height: 30px;
+        border-radius: 30px;
+
+        &:hover {
+            background-color: $primary-color-300;
+        }
+
+        .theme-dark & {
+            background-color: transparent;
+            color: $dm-gray-800;
+        }
+
+        .icon {
+            font-size: 12px;
+            line-height: 20px;
+        }
+    }
+
+    // Both activity and section items.
+    .courseindex-item {
+        padding: $courseindex-item-padding-y-sm 0;
+        border: $border-width solid transparent;
+        @include border-radius($border-radius);
+        position: relative;
+
+        align-items: center;
+
+        &.courseindex-section-title {
+            padding: 0;
+        }
+
+        &.courseindex-section-title a {
+            font-weight: $font-weight-medium;
+            font-size: 14px;
+            color: $drawer-nav-btn-text;
+
+            .theme-dark & {
+                color: $dm-headings-color;
+            }
+        }
+
+        .icons-collapse-expand {
+            line-height: 1;
+        }
+
+        .courseindex-name,
+        .courseindex-link {
+            align-self: center;
+            color: $drawer-nav-btn-text;
+            font-size: .8rem;
+            line-height: 1.3;
+            display: inline-block;
+            //width: calc(100% - 60px);
+
+            .theme-dark & {
+                color: $dm-body-color-secondary;
+            }
+        }
+
+        @include courseindex-item-hover();
+        @include courseindex-item-dragging();
+
+        &.active {
+            background-color: $drawer-nav-btn-bg-hover;
+            color: $drawer-nav-btn-text-hover;
+        }
+
+        // Hidden elements.
+        &.dimmed {
+            opacity: .6;
+
+            .courseindex-link,
+            .courseindex-chevron {
+                opacity: .6;
+            }
+        }
+
+        // Restrictions icon.
+        .courseindex-locked {
+            display: none;
+        }
+
+        &.restrictions {
+            .courseindex-locked {
+                display: inline-flex;
+
+                .rui-icon {
+                    background-color: $yellow-200;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: 24px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+
+                .icon {
+                    padding: 4px;
+                    width: 16px;
+                    height: 16px;
+                }
+            }
+        }
+
+        // Current page item.
+        &.pageitem {
+            &:before {
+                content: '';
+                position: absolute;
+                top: calc(50% - 4px);
+                right: 0;
+                z-index: 1;
+                background-color: $primary-color-400;
+                width: 8px;
+                height: 8px;
+                border-radius: 8px;
+            }
+
+            scroll-margin: 80px;
+
+            a {
+                align-self: center;
+                font-weight: $font-weight-bold;
+                color: $drawer-nav-btn-text;
+
+                .theme-dark & {
+                    color: $dm-dropdown-link-color;
+                }
+            }
+
+            @include hover-focus() {
+                color: $drawer-nav-btn-text;
+
+                .theme-dark & {
+                    color: $dm-drawer-link;
+                }
+
+                .courseindex-link,
+                .courseindex-chevron {
+                    color: $drawer-nav-btn-text;
+                }
+            }
+        }
+
+        // Completion.
+        .completioninfo {
+            line-height: 1;
+            margin-left: 0;
+            margin-right: 4px;
+            min-width: 20px;
+
+            color: $body-color-light;
+
+            .theme-dark & {
+                color: $dm-body-color-light;
+            }
+
+            &:empty {
+                display: none;
+            }
+
+            &.completion_complete {
+                color: #00665f;
+
+                .theme-dark & {
+                    color: #45ca7d;
+                }
+            }
+
+            &.completion_fail {
+                color: $danger;
+            }
+        }
+
+        .completion_complete~.courseindex-link {
+            color: #00665f;
+
+            .theme-dark & {
+                color: $dm-body-color-light;
+            }
+        }
+
+        &.indented {
+            padding: 4px 2px !important;
+            margin-left: 14px;
+
+            .courseindex-link {
+                font-size: 12px;
+                opacity: .8;
+            }
+        }
+    }
+
+    // The full section collapsable.
+    .courseindex-section {
+        border-radius: $btn-border-radius;
+        margin-left: 0;
+        margin-right: 12px;
+        margin-bottom: 5px;
+
+        @include courseindex-item-dragging();
+
+        .current-badge {
+            font-size: 11px;
+            font-weight: $font-weight-medium;
+            line-height: 1.2;
+            border-radius: 3px;
+            display: none;
+            position: absolute;
+            top: -20px;
+            left: 26px;
+        }
+
+        &.current {
+            position: relative;
+            color: $drawer-nav-btn-text-hover;
+
+            background-color: $gray-100;
+
+            .theme-dark & {
+                background-color: $dm-gray-200;
+            }
+
+            .current-badge {
+                display: inline-block;
+            }
+        }
+
+        &.dropready .courseindex-item-content {
+            /* Extra dropzone space */
+            padding-bottom: 1em;
+        }
+
+        .courseindex-sectioncontent {
+            .courseindex-item {
+                padding-left: 0;
+            }
+        }
+    }
+
+    .courseindex-sectioncontent {
+        padding: 3px 3px 20px 34px;
+    }
+
+    // Element visible only on editing mode.
+    .d-flex-noedit {
+        display: none;
+    }
+
+    &.editing {
+        .d-flex-noedit {
+            display: flex;
+        }
+    }
+
+    // Placeholders.
+    .media-list {
+        .placeholder-circle {
+            height: 20px;
+            width: 20px;
+            border-radius: $btn-border-radius;
+        }
+
+        .placeholder-rec {
+            width: 50%;
+            height: 20px;
+            border-radius: $btn-border-radius;
+            margin: 0.5rem 0;
+        }
+    }
+}
+
+.drawerheadercontent {
+    position: absolute;
+
+    @include media-breakpoint-up(lmd) {
+        right: 15px;
+        top: 15px;
+    }
+
+    @include media-breakpoint-between(xs, md) {
+        right: 10px;
+        top: 10px;
+    }
+}
+
+#courseindex-content {    
+    .courseindex {
+        max-height: calc(100vh - 300px);
+        overflow: auto;
+    }
+}
+
+.drawer-course-index .drawercontent {
+    height: auto;
+}

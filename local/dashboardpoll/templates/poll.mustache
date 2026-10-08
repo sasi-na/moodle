@@ -1,0 +1,54 @@
+{{!
+    @template local_dashboardpoll/poll
+
+    The voting state of the dashboard poll popup.
+
+    Context variables required for this template:
+    * question - The poll question text
+    * multiselect - Whether several options may be chosen
+    * inputtype - "radio" (single) or "checkbox" (multi)
+    * hint - Optional helper line shown under the question (e.g. "Select 3 options")
+    * options - Array of { id, text, checked }
+
+    Example context (json):
+    {
+        "question": "How are you finding the new dashboard?",
+        "multiselect": true,
+        "inputtype": "checkbox",
+        "hint": "Select 2 options",
+        "options": [
+            { "id": 1, "text": "Love it", "checked": true },
+            { "id": 2, "text": "It's fine", "checked": false },
+            { "id": 3, "text": "Needs work", "checked": false }
+        ]
+    }
+}}
+<div class="ldp-card" role="dialog" aria-modal="true" aria-labelledby="ldp-question" tabindex="-1">
+    <button type="button" class="ldp-close" data-action="dismiss" aria-label="{{#str}} closebtn, local_dashboardpoll {{/str}}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </button>
+    <p class="ldp-eyebrow">{{#str}} popuptitle, local_dashboardpoll {{/str}}</p>
+    <h2 class="ldp-question" id="ldp-question">{{question}}</h2>
+    {{#hint}}<p class="ldp-hint">{{hint}}</p>{{/hint}}
+    <form class="ldp-options" data-region="options">
+        {{#options}}
+            <label class="ldp-option">
+                <input type="{{inputtype}}" name="ldp-option" class="ldp-radio" value="{{id}}" {{#checked}}checked{{/checked}}>
+                <span class="ldp-dot {{#multiselect}}ldp-dot--check{{/multiselect}}" aria-hidden="true"></span>
+                <span class="ldp-option-text">{{text}}</span>
+            </label>
+        {{/options}}
+    </form>
+    <p class="ldp-error" data-region="error" role="alert" hidden
+       data-failed="{{#str}} submitfailed, local_dashboardpoll {{/str}}">{{#str}} pickone, local_dashboardpoll {{/str}}</p>
+    <div class="ldp-actions">
+        <button type="button" class="ldp-btn ldp-btn-ghost" data-action="later">
+            {{#str}} maybelater, local_dashboardpoll {{/str}}
+        </button>
+        <button type="button" class="ldp-btn ldp-btn-primary" data-action="submit" disabled>
+            {{#str}} submit, local_dashboardpoll {{/str}}
+        </button>
+    </div>
+</div>

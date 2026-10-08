@@ -1,0 +1,86 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_myoverview/view-accordion
+
+    Renders the My Courses course list grouped into collapsible semester
+    accordions. Each group's courses are rendered with the same per-course view
+    (cards/list/summary) as the ungrouped block, chosen via the iscards/islist/
+    issummary flags. The highest-numbered semester is expanded by default; the
+    others are collapsed and can be toggled independently.
+
+    Styling lives in theme/baz/scss/moodle/mycourses.scss (light and dark
+    mode), compiled with the theme.
+
+    Example context (json):
+    {
+        "iscards": true,
+        "islist": false,
+        "issummary": false,
+        "groups": [
+            {
+                "name": "Semester 3",
+                "uniqid": "sem-0-a1b2c3",
+                "count": 4,
+                "expanded": true,
+                "courses": [
+                    {
+                        "fullname": "course 3",
+                        "viewurl": "https://moodlesite/course/view.php?id=2",
+                        "courseimage": "https://moodlesite/pluginfile/123/course/overviewfiles/123.jpg",
+                        "hasprogress": true,
+                        "progress": 10,
+                        "coursecategory": "Semester 3",
+                        "visible": true
+                    }
+                ]
+            }
+        ]
+    }
+}}
+<div class="rui-mycourses-accordion" data-region="mycourses-accordion" role="region" aria-label="{{#str}}mycourses, core{{/str}}">
+    {{#groups}}
+    <div class="card rui-mycourses-semester">
+        <div class="card-header bg-transparent border-0 rui-mycourses-semester-header" id="heading-{{uniqid}}">
+            <button class="rui-mycourses-semester-toggle{{^expanded}} collapsed{{/expanded}}"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#{{uniqid}}"
+                    aria-expanded="{{#expanded}}true{{/expanded}}{{^expanded}}false{{/expanded}}"
+                    aria-controls="{{uniqid}}">
+                <svg class="rui-mycourses-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                     aria-hidden="true" focusable="false">
+                    <polyline points="9 6 15 12 9 18"></polyline>
+                </svg>
+                <span class="rui-mycourses-semester-name">{{name}}</span>
+                <span class="badge badge-primary badge-pill rui-mycourses-semester-count">
+                    {{count}}
+                    <span class="sr-only">{{#str}}courses, core{{/str}}</span>
+                </span>
+            </button>
+        </div>
+        <div id="{{uniqid}}" class="collapse{{#expanded}} show{{/expanded}}" aria-labelledby="heading-{{uniqid}}">
+            <div class="rui-mycourses-semester-body">
+                {{#iscards}}{{> block_myoverview/view-cards }}{{/iscards}}
+                {{#islist}}{{> block_myoverview/view-list }}{{/islist}}
+                {{#issummary}}{{> block_myoverview/view-summary }}{{/issummary}}
+            </div>
+        </div>
+    </div>
+    {{/groups}}
+</div>

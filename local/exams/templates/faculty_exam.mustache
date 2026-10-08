@@ -1,0 +1,76 @@
+{{!
+    @template local_exams/faculty_exam
+
+    Per-exam faculty analysis: cohort stats, score distribution, item analysis
+    (facility per question), and the topper leaderboard.
+}}
+<div class="exui exui-light" id="local-exams-faculty">
+  <div class="exui-root">
+    <div class="exui-header">
+      <div>
+        <h1>{{quizname}}</h1>
+        <div class="exui-sub">{{attemptcount}} graded attempt(s)</div>
+      </div>
+      <a class="exui-btn" href="{{backurl}}">← All exams</a>
+    </div>
+
+    <div class="exui-grid">
+      <div class="exui-col-3"><div class="exui-card exui-tile">
+        <div class="exui-tile-value">{{#mean}}{{mean}}{{/mean}}{{^mean}}—{{/mean}}</div><div class="exui-tile-label">Mean</div>
+      </div></div>
+      <div class="exui-col-3"><div class="exui-card exui-tile">
+        <div class="exui-tile-value">{{#median}}{{median}}{{/median}}{{^median}}—{{/median}}</div><div class="exui-tile-label">Median</div>
+      </div></div>
+      <div class="exui-col-3"><div class="exui-card exui-tile">
+        <div class="exui-tile-value">{{#sd}}{{sd}}{{/sd}}{{^sd}}—{{/sd}}</div><div class="exui-tile-label">Std deviation</div>
+      </div></div>
+      <div class="exui-col-3"><div class="exui-card exui-tile">
+        <div class="exui-tile-value">{{#max}}{{max}}{{/max}}{{^max}}—{{/max}}</div><div class="exui-tile-label">Top score</div>
+      </div></div>
+
+      <div class="exui-col-6"><div class="exui-card">
+        <p class="exui-card-title">Score distribution</p>
+        <div class="exui-chart"><canvas id="exui-distribution"></canvas></div>
+      </div></div>
+      <div class="exui-col-6"><div class="exui-card">
+        <p class="exui-card-title">Item facility (% by question)</p>
+        <div class="exui-chart"><canvas id="exui-items"></canvas></div>
+      </div></div>
+
+      <div class="exui-col-7"><div class="exui-card">
+        <p class="exui-card-title">Item analysis</p>
+        <table class="exui-table">
+          <thead><tr><th>#</th><th>Question</th><th class="num">Facility</th><th class="num">% correct</th><th>Difficulty</th></tr></thead>
+          <tbody>
+            {{#items}}
+              <tr>
+                <td>{{slot}}</td>
+                <td>{{name}}</td>
+                <td class="num">{{facility}}%</td>
+                <td class="num">{{correctrate}}%</td>
+                <td><span class="exui-badge exui-badge-{{difficulty}}">{{difficulty}}</span></td>
+              </tr>
+            {{/items}}
+          </tbody>
+        </table>
+      </div></div>
+
+      <div class="exui-col-5"><div class="exui-card">
+        <p class="exui-card-title">Toppers</p>
+        {{^hastoppers}}<div class="exui-empty">No grades yet.</div>{{/hastoppers}}
+        {{#hastoppers}}
+        <table class="exui-table">
+          <thead><tr><th>#</th><th>Student</th><th class="num">Grade</th><th class="num">%</th></tr></thead>
+          <tbody>
+            {{#toppers}}
+              <tr><td>{{rank}}</td><td>{{name}}</td><td class="num">{{grade}}</td><td class="num">{{pct}}</td></tr>
+            {{/toppers}}
+          </tbody>
+        </table>
+        {{/hastoppers}}
+      </div></div>
+    </div>
+
+    <script type="application/json" id="local-exams-data">{{{datajson}}}</script>
+  </div>
+</div>

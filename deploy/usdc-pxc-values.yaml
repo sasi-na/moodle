@@ -1,0 +1,349 @@
+# Percona XtraDB Cluster for learn-usdc-prod.
+#
+# THIS FILE IS THE COMPLETE USER-SUPPLIED VALUE SET FOR THE RELEASE, not a patch.
+# It was generated from `helm -n learn-usdc-prod get values mysql-db` and then
+# edited in exactly the nine lines listed below. Everything else is byte-for-byte
+# what the live release already carries.
+#
+# It has to be complete, because `helm upgrade -f <file>` REPLACES the release's
+# user-supplied values rather than merging into them. An earlier draft of this
+# file restated only the fields being changed, and applying it would have:
+#
+#   * dropped pxc.clusterSecretName, so the operator would look for a
+#     chart-default secret and the database credentials would break
+#   * dropped the managed `users:` entry for learnusdc
+#   * wiped 29 of the 37 mysqld directives (slow query log, io_capacity, redo log
+#     capacity, table caches, timeouts, performance_schema=OFF, ...)
+#   * reset upgradeOptions.apply from `disabled`, re-enabling version-service
+#     driven upgrades
+#
+# When changing anything here, regenerate from `helm get values` again rather
+# than editing from memory -- the live release is the source of truth.
+#
+#   helm upgrade mysql-db percona/pxc-db \
+#     -n learn-usdc-prod --version 1.20.0 \
+#     -f deploy/usdc-pxc-values.yaml
+#
+# WHY: the cluster was installed with jain-scale resources and never revisited.
+# It RESERVED 30Gi and 2 CPU (limits 40Gi / 8 CPU) with a 20G buffer pool to
+# serve three accounts, four courses and eight enrolments; measured use was 19m
+# CPU and 2851Mi. Requests are real reserved capacity on a node pool shared with
+# ~20 namespaces. 8Gi / 1 CPU matches nitk, the other small tenant, and is still
+# ~3x measured use.
+#
+# PLANNED-OUTAGE OPERATION. updateStrategy is SmartUpdate and both resources and
+# configuration live in the pxc pod template, so the operator deletes and
+# recreates the database pod on reconcile. With size 1 there is no second node:
+# expect ~3 minutes with the site down. Do it in a window.
+#
+# The container size and the buffer pool MUST move together -- an 8Gi container
+# with a 20G buffer pool does not start.
+#
+# THE EDITS (nine lines, seven concerns):
+#   pxc.resources.requests  memory 30Gi -> 8Gi,  cpu 2000m -> 1
+#   pxc.resources.limits    memory 40Gi -> 12Gi, cpu 8 -> 4
+#   innodb_buffer_pool_size       20G  -> 5G     (follows the container)
+#   innodb_buffer_pool_instances  8    -> 4      (keeps >=1G per instance)
+#   max_connections               3000 -> 500    (2 pods x 16 fpm workers + cron
+#                                                 is well under 50; each
+#                                                 connection carries per-thread
+#                                                 buffers, so a limit far above
+#                                                 real demand is a memory risk)
+#   thread_cache_size             250  -> 64
+#   pxc.tolerations         [] -> tolerate node.kubernetes.io/memory-pressure,
+#                                as jain and nitk do. With size 1 exactly one
+#                                node can host this pod, so a NoSchedule taint
+#                                landing on it is an outage that does not
+#                                self-resolve.
+#
+# SIDE EFFECT OF THE FIRST UPGRADE, now deliberate: pxc_strict_mode.
+#
+# The live CR carried `pxc_strict_mode=PERMISSIVE`, but `helm get values` did NOT
+# -- it had been patched into the CR out of band, so it was never part of the
+# release. Regenerating this file from the stored values therefore dropped it, and
+# the upgrade on 2026-09-01 moved the server PERMISSIVE -> ENFORCING.
+#
+# That was unintended, and it is being kept, because ENFORCING is what the fleet
+# already runs: jain and nitk both report ENFORCING and neither sets the variable
+# at all. usdc was the outlier, almost certainly patched to work around GET_LOCK
+# before a lock factory was configured. Verified safe here before deciding to
+# leave it: 0 tables without a primary key, all 600 tables InnoDB, and
+# $CFG->lock_factory is \core\lock\db_record_lock_factory, which acquires
+# without GET_LOCK.
+#
+# Deliberately NOT pinned below, matching jain and nitk -- the operator default is
+# what all three should track. If a future plugin ever needs PERMISSIVE, that is a
+# fleet-wide decision, not a per-tenant patch to one CR.
+#
+# The general lesson: `helm get values` shows only what Helm knows. Direct kubectl
+# patches to a CR are invisible to it and a helm upgrade silently reverts them.
+# Diff the rendered CR against the LIVE CR, not just against the stored values.
+
+# innodb_redo_log_capacity is deliberately left at 2G: changing it forces a redo
+# log resize on the next start, which is extra risk for no gain here.
+
+annotations: {}
+backup:
+  enabled: true
+  image:
+    repository: percona/percona-xtrabackup
+    tag: 8.4.0-5.1
+  imagePullSecrets: []
+  pitr:
+    enabled: true
+    resources:
+      limits: {}
+      requests: {}
+    storageName: s3-primary
+    timeBetweenUploads: 60
+    timeoutSeconds: 60
+  schedule:
+  - keep: 14
+    name: daily-backup
+    schedule: 0 1 * * *
+    storageName: s3-primary
+  storages:
+    s3-primary:
+      s3:
+        bucket: usdc-prod-backup-vault/mysql-backups/learn-usdc-prod
+        credentialsSecret: learn-usdc-moodle-s3-credentials
+        region: ap-south-1
+      type: s3
+      verifyTLS: true
+crVersion: 1.20.0
+enableCRValidationWebhook: false
+enableVolumeExpansion: false
+finalizers:
+- percona.com/delete-pxc-pods-in-order
+fullnameOverride: ""
+haproxy:
+  affinity:
+    antiAffinityTopologyKey: kubernetes.io/hostname
+  annotations: {}
+  enabled: true
+  gracePeriod: 30
+  image: percona/haproxy:2.8.18-1
+  imagePullSecrets: []
+  labels: {}
+  livenessDelaySec: 300
+  livenessProbes:
+    failureThreshold: 4
+    initialDelaySeconds: 60
+    periodSeconds: 30
+    successThreshold: 1
+    timeoutSeconds: 5
+  nodeSelector: {}
+  podDisruptionBudget:
+    maxUnavailable: 1
+  readinessDelaySec: 15
+  readinessProbes:
+    failureThreshold: 3
+    initialDelaySeconds: 15
+    periodSeconds: 5
+    successThreshold: 1
+    timeoutSeconds: 1
+  resources:
+    limits:
+      cpu: "1"
+      memory: 1Gi
+    requests:
+      cpu: 200m
+      memory: 256Mi
+  sidecarPVCs: []
+  sidecarResources:
+    limits: {}
+    requests: {}
+  sidecarVolumes: []
+  sidecars: []
+  size: 1
+  tolerations: []
+  # Pin to on-demand. IIITD's haproxy was preempted on a spot node on 2026-09-08
+  # and the site returned 500 until it rescheduled; at the time IIITD's DATABASE
+  # pod was on spot too. With pxc.size=1 there is no second node to fail over to,
+  # so a preemption is an outage, not a blip.
+  #
+  # ⚠️ This is a POD-TEMPLATE change. updateStrategy is SmartUpdate, so the
+  # operator deletes and recreates the pod on reconcile -- measured at ~2 minutes
+  # with ~80s of 500s on IIITD. Applying this file is a PLANNED-OUTAGE operation,
+  # same caveat as the tolerations block above.
+  nodeSelector:
+    pool-type: ondemand
+ignoreAnnotations: []
+ignoreLabels: []
+logcollector:
+  enabled: false
+  image: percona/fluentbit:5.0.6-1
+  imagePullSecrets: []
+  resources:
+    limits: {}
+    requests:
+      cpu: 200m
+      memory: 100M
+nameOverride: ""
+namespace: learn-usdc-prod
+operatorImageRepository: percona/percona-xtradb-cluster-operator
+pause: false
+pmm:
+  enabled: false
+  image:
+    repository: percona/pmm-client
+    tag: 3.8.0
+  imagePullSecrets: []
+  resources:
+    limits: {}
+    requests:
+      cpu: 300m
+      memory: 150M
+  serverHost: monitoring-service
+  serverUser: admin
+proxysql:
+  affinity:
+    antiAffinityTopologyKey: kubernetes.io/hostname
+  annotations: {}
+  enabled: false
+  gracePeriod: 30
+  image: percona/proxysql2:2.7.3-1.3
+  imagePullSecrets: []
+  labels: {}
+  nodeSelector: {}
+  persistence:
+    accessMode: ReadWriteOnce
+    enabled: true
+    size: 8Gi
+  podDisruptionBudget:
+    maxUnavailable: 1
+  resources:
+    limits: {}
+    requests:
+      cpu: 600m
+      memory: 1G
+  sidecarPVCs: []
+  sidecarResources:
+    limits: {}
+    requests: {}
+  sidecarVolumes: []
+  sidecars: []
+  size: 3
+  tolerations: []
+pxc:
+  affinity:
+    antiAffinityTopologyKey: kubernetes.io/hostname
+  annotations: {}
+  autoRecovery: true
+  certManager: false
+  clusterSecretName: learn-usdc-moodle-pxc-db-secrets
+  configuration: |
+    [mysqld]
+    character-set-server=utf8mb4
+    collation-server=utf8mb4_unicode_ci
+    innodb_buffer_pool_size=5G
+    innodb_buffer_pool_instances=4
+    innodb_redo_log_capacity=2G
+    innodb_log_buffer_size=128M
+    innodb_page_cleaners=4
+    tmp_table_size=256M
+    max_heap_table_size=256M
+    max_connections=500
+    max_allowed_packet=256M
+    table_open_cache=4000
+    table_definition_cache=4000
+    thread_cache_size=64
+    connect_timeout=10
+    wait_timeout=3600
+    interactive_timeout=3600
+    net_read_timeout=600
+    net_write_timeout=600
+    open_files_limit=100000
+    innodb_flush_method=O_DIRECT
+    innodb_flush_log_at_trx_commit=1
+    innodb_read_io_threads=8
+    innodb_write_io_threads=8
+    innodb_io_capacity=4000
+    innodb_io_capacity_max=8000
+    innodb_thread_concurrency=0
+    innodb_buffer_pool_dump_at_shutdown=ON
+    innodb_buffer_pool_load_at_startup=ON
+    innodb_stats_on_metadata=OFF
+    innodb_stats_persistent=ON
+    innodb_stats_persistent_sample_pages=100
+    innodb_adaptive_hash_index=ON
+    performance_schema=OFF
+    slow_query_log=1
+    slow_query_log_file=/var/log/mysql/slow.log
+    long_query_time=2
+    log_queries_not_using_indexes=1
+    log_throttle_queries_not_using_indexes=10
+    [client]
+    default-character-set=utf8mb4
+    [mysql]
+    default-character-set=utf8mb4
+  gracePeriod: 600
+  image:
+    repository: percona/percona-xtradb-cluster
+    tag: 8.4.8-8.1
+  imagePullSecrets: []
+  labels: {}
+  livenessDelaySec: 300
+  livenessProbes:
+    failureThreshold: 3
+    initialDelaySeconds: 300
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 5
+  nodeSelector: {}
+  persistence:
+    accessMode: ReadWriteOnce
+    enabled: true
+    size: 50Gi
+    storageClass: pd-ssd-retain-v1
+  podDisruptionBudget:
+    maxUnavailable: 1
+  readinessDelaySec: 15
+  readinessProbes:
+    failureThreshold: 5
+    initialDelaySeconds: 15
+    periodSeconds: 30
+    successThreshold: 1
+    timeoutSeconds: 15
+  resources:
+    limits:
+      cpu: "4"
+      memory: "12Gi"
+    requests:
+      cpu: "1"
+      memory: "8Gi"
+  sidecarPVCs: []
+  sidecarResources:
+    limits: {}
+    requests: {}
+  sidecarVolumes: []
+  sidecars: []
+  size: 1
+  tolerations:
+    - key: node.kubernetes.io/memory-pressure
+      operator: Exists
+      effect: NoSchedule
+secrets:
+  tls: {}
+tls:
+  enabled: true
+unsafeFlags:
+  backupIfUnhealthy: true
+  proxySize: true
+  pxcSize: true
+updateStrategy: SmartUpdate
+upgradeOptions:
+  apply: disabled
+  schedule: 0 4 * * *
+  versionServiceEndpoint: https://check.percona.com
+users:
+- dbs:
+  - learn_usdc
+  grants:
+  - ALL PRIVILEGES
+  hosts:
+  - '%'
+  name: learnusdc
+  passwordSecretRef:
+    key: MYSQL_LEARNUSDC_PASSWORD
+    name: learn-usdc-moodle-app-credentials

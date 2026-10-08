@@ -1,0 +1,228 @@
+/* ── Live Recording Stats block — student cards ─────────────────── */
+
+.liverecordingstats-wrapper {
+    font-size: .875rem;
+}
+
+.liverecordingstats-cards {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.liverecordingstats-card {
+    flex: 1;
+    text-align: center;
+    padding: 10px 4px 8px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    border-top: 3px solid #dee2e6;
+    min-width: 0;
+}
+
+.liverecordingstats-card:nth-child(1) { border-top-color: #6c757d; }
+.liverecordingstats-card:nth-child(2) { border-top-color: #0d6efd; background: #eff6ff; }
+.liverecordingstats-card:nth-child(3) { border-top-color: #198754; background: #f0fdf4; }
+
+.liverecordingstats-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+    margin-bottom: 3px;
+    color: inherit;
+}
+
+.liverecordingstats-number {
+    font-size: 1.55rem;
+    font-weight: 700;
+    line-height: 1.15;
+    color: #212529;
+}
+
+.liverecordingstats-card:nth-child(2) .liverecordingstats-number { color: #0d6efd; }
+.liverecordingstats-card:nth-child(3) .liverecordingstats-number { color: #198754; }
+
+.liverecordingstats-label {
+    font-size: .68rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Recordings completion progress bar ─────────────────────────── */
+.lrs-progress-wrap {
+    margin-bottom: 10px;
+}
+
+.lrs-progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: .8rem;
+    margin-bottom: 5px;
+    color: #495057;
+    font-weight: 500;
+}
+
+.lrs-pct {
+    font-weight: 700;
+    color: #0d6efd;
+}
+
+.lrs-bar {
+    height: 7px;
+    background: #e9ecef;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.lrs-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: #0d6efd;
+    transition: width .9s cubic-bezier(.4, 0, .2, 1);
+}
+
+/* ── VideoTracker page styles (unchanged below) ─────────────────── */
+
+.videotracker-page-title {
+    margin-bottom: 24px;
+}
+
+.videotracker-table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    border: 1px solid #e5e7eb;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.04);
+
+    padding: 0;
+}
+
+.videotracker-table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background: #ffffff;
+}
+
+.videotracker-table thead {
+
+    background: #f8fafc;
+}
+
+.videotracker-table th {
+
+    text-align: left;
+
+    padding: 18px 20px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #111827;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    white-space: nowrap;
+}
+
+.videotracker-table td {
+
+    padding: 18px 20px;
+
+    font-size: 14px;
+
+    color: #374151;
+
+    border-bottom: 1px solid #f1f5f9;
+
+    vertical-align: middle;
+}
+
+.videotracker-table tbody tr:hover {
+
+    background: #f9fafb;
+}
+
+.videotracker-table tbody tr:last-child td {
+
+    border-bottom: none;
+}
+
+.videotracker-session-title {
+
+    font-weight: 600;
+
+    color: #111827;
+}
+
+.videotracker-summary-count {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 40px;
+
+    height: 32px;
+
+    padding: 0 12px;
+
+    border-radius: 999px;
+
+    background: #eff6ff;
+
+    color: #1d4ed8;
+
+    font-weight: 700;
+
+    font-size: 13px;
+}
+
+.videotracker-download-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 10px 18px !important;
+
+    border-radius: 8px !important;
+
+    font-size: 13px !important;
+
+    font-weight: 600 !important;
+
+    text-decoration: none !important;
+
+    white-space: nowrap;
+}
+
+.videotracker-empty {
+
+    text-align: center;
+
+    padding: 40px 20px !important;
+
+    color: #6b7280;
+
+    font-size: 15px;
+}

@@ -1,0 +1,393 @@
+{{!
+  @template local_studentid/review_request
+  Detailed review interface for a single ID card request.
+}}
+<div class="local-studentid-review container-fluid py-4">
+
+  {{! Breadcrumb / back }}
+  <div class="mb-3">
+    <a href="{{back_url}}" class="btn btn-sm btn-outline-secondary">
+      <span class="fa fa-arrow-left mr-1"></span>{{#str}}back_to_dashboard, local_studentid{{/str}}
+    </a>
+  </div>
+
+  <div class="d-flex align-items-center mb-4">
+    <span class="fa fa-user-circle fa-2x text-primary mr-3"></span>
+    <div>
+      <h2 class="mb-0">{{#str}}reviewrequest, local_studentid{{/str}}</h2>
+      <small class="text-muted">{{fullname}} &bull; <code>{{usn}}</code></small>
+    </div>
+    <span class="ml-3 {{statusclass}} px-3 py-1" style="font-size:1rem">{{statuslabel}}</span>
+  </div>
+
+  <div class="row">
+
+    {{! Left column: Photo + Aadhaar (identity documents for verification) }}
+    <div class="col-md-4 mb-4">
+
+      {{! Passport photo }}
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-light">
+          <strong><span class="fa fa-camera mr-1"></span>{{#str}}photo, local_studentid{{/str}}</strong>
+        </div>
+        <div class="card-body text-center">
+          {{#has_photo}}
+          <img id="sid-review-photo" src="{{photo_url}}" alt="{{#str}}photo, local_studentid{{/str}}"
+               class="img-fluid border rounded sid-zoomable"
+               style="max-height:260px; cursor:zoom-in; object-fit:cover;"
+               data-fullsrc="{{photo_url}}">
+          {{/has_photo}}
+          {{^has_photo}}
+          <div class="text-muted py-4">
+            <span class="fa fa-image fa-3x d-block mb-2"></span>
+            {{#str}}no_photo_uploaded, local_studentid{{/str}}
+          </div>
+          {{/has_photo}}
+        </div>
+        {{#has_photo}}
+        <div class="card-footer bg-light">
+          <small class="font-weight-bold d-block mb-2">{{#str}}photo_checklist_title, local_studentid{{/str}}</small>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="chk1">
+            <label class="form-check-label small" for="chk1">{{#str}}checklist_professional, local_studentid{{/str}}</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="chk2">
+            <label class="form-check-label small" for="chk2">{{#str}}checklist_clear_face, local_studentid{{/str}}</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="chk3">
+            <label class="form-check-label small" for="chk3">{{#str}}checklist_background, local_studentid{{/str}}</label>
+          </div>
+          <div class="form-check">
+            <input type="checkbox" class="form-check-input" id="chk4">
+            <label class="form-check-label small" for="chk4">{{#str}}checklist_dimensions, local_studentid{{/str}}</label>
+          </div>
+        </div>
+        {{/has_photo}}
+      </div>
+
+      {{! Identity documents (Aadhaar for India, Passport otherwise) }}
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-light">
+          <strong><span class="fa fa-id-card mr-1"></span>{{document_label}}</strong>
+        </div>
+        <div class="card-body">
+          <small class="text-muted d-block mb-1 fw-bold">Front Side</small>
+          {{#has_aadhaar_front}}
+            {{#aadhaar_front_ispdf}}
+            <a href="{{aadhaar_front_url}}" target="_blank" class="btn btn-sm btn-outline-secondary w-100 mb-3">
+              <span class="fa fa-file-pdf-o mr-1"></span>{{aadhaar_front_name}}
+            </a>
+            {{/aadhaar_front_ispdf}}
+            {{^aadhaar_front_ispdf}}
+            <img src="{{aadhaar_front_url}}" class="img-fluid rounded border w-100 sid-zoomable mb-3"
+                 style="max-height:140px;object-fit:cover;cursor:zoom-in;"
+                 data-fullsrc="{{aadhaar_front_url}}" alt="Aadhaar front">
+            {{/aadhaar_front_ispdf}}
+          {{/has_aadhaar_front}}
+          {{^has_aadhaar_front}}
+          <p class="text-muted small mb-3"><span class="fa fa-times-circle mr-1"></span>Not uploaded</p>
+          {{/has_aadhaar_front}}
+
+          <small class="text-muted d-block mb-1 fw-bold">Back Side</small>
+          {{#has_aadhaar_back}}
+            {{#aadhaar_back_ispdf}}
+            <a href="{{aadhaar_back_url}}" target="_blank" class="btn btn-sm btn-outline-secondary w-100">
+              <span class="fa fa-file-pdf-o mr-1"></span>{{aadhaar_back_name}}
+            </a>
+            {{/aadhaar_back_ispdf}}
+            {{^aadhaar_back_ispdf}}
+            <img src="{{aadhaar_back_url}}" class="img-fluid rounded border w-100 sid-zoomable"
+                 style="max-height:140px;object-fit:cover;cursor:zoom-in;"
+                 data-fullsrc="{{aadhaar_back_url}}" alt="Aadhaar back">
+            {{/aadhaar_back_ispdf}}
+          {{/has_aadhaar_back}}
+          {{^has_aadhaar_back}}
+          <p class="text-muted small mb-0"><span class="fa fa-times-circle mr-1"></span>Not uploaded</p>
+          {{/has_aadhaar_back}}
+        </div>
+      </div>
+
+      {{! ABC ID document (India only) }}
+      {{#show_abc}}
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-light">
+          <strong><span class="fa fa-university mr-1"></span>ABC ID</strong>
+        </div>
+        <div class="card-body p-2">
+          {{#abc_id_isimg}}
+          <img src="{{abc_id_url}}" class="img-fluid rounded border w-100 sid-zoomable"
+               style="max-height:200px;object-fit:cover;cursor:zoom-in;"
+               data-fullsrc="{{abc_id_url}}" alt="ABC ID">
+          {{/abc_id_isimg}}
+          {{#abc_id_ispdf}}
+          <iframe src="{{abc_id_url}}" width="100%" height="260"
+                  style="border:1px solid #dee2e6;border-radius:4px;display:block;"
+                  title="ABC ID Preview"></iframe>
+          <a href="{{abc_id_url}}" target="_blank" class="btn btn-sm btn-outline-primary w-100 mt-2">
+            <span class="fa fa-external-link mr-1"></span>{{abc_id_name}}
+          </a>
+          {{/abc_id_ispdf}}
+          {{^has_abc_id}}
+          <p class="text-muted small mb-0"><span class="fa fa-times-circle mr-1"></span>Not uploaded</p>
+          {{/has_abc_id}}
+        </div>
+      </div>
+
+      {{! Class 10 Marks Sheet (India only) }}
+      <div class="card shadow-sm">
+        <div class="card-header bg-light">
+          <strong><span class="fa fa-graduation-cap mr-1"></span>Class 10 Marks Sheet</strong>
+        </div>
+        <div class="card-body p-2">
+          {{#tenth_marks_isimg}}
+          <img src="{{tenth_marks_url}}" class="img-fluid rounded border w-100 sid-zoomable"
+               style="max-height:200px;object-fit:cover;cursor:zoom-in;"
+               data-fullsrc="{{tenth_marks_url}}" alt="Class 10 Marks Sheet">
+          {{/tenth_marks_isimg}}
+          {{#tenth_marks_ispdf}}
+          <iframe src="{{tenth_marks_url}}" width="100%" height="260"
+                  style="border:1px solid #dee2e6;border-radius:4px;display:block;"
+                  title="Class 10 Marks Sheet Preview"></iframe>
+          <a href="{{tenth_marks_url}}" target="_blank" class="btn btn-sm btn-outline-primary w-100 mt-2">
+            <span class="fa fa-external-link mr-1"></span>{{tenth_marks_name}}
+          </a>
+          {{/tenth_marks_ispdf}}
+          {{^has_tenth_marks}}
+          <p class="text-muted small mb-0"><span class="fa fa-times-circle mr-1"></span>Not uploaded</p>
+          {{/has_tenth_marks}}
+        </div>
+      </div>
+      {{/show_abc}}
+
+      {{! O Level Certificate (non-India only) }}
+      {{#show_olevel}}
+      <div class="card shadow-sm">
+        <div class="card-header bg-light">
+          <strong><span class="fa fa-graduation-cap mr-1"></span>O Level Certificate</strong>
+        </div>
+        <div class="card-body p-2">
+          {{#olevel_isimg}}
+          <img src="{{olevel_url}}" class="img-fluid rounded border w-100 sid-zoomable"
+               style="max-height:200px;object-fit:cover;cursor:zoom-in;"
+               data-fullsrc="{{olevel_url}}" alt="O Level Certificate">
+          {{/olevel_isimg}}
+          {{#olevel_ispdf}}
+          <iframe src="{{olevel_url}}" width="100%" height="260"
+                  style="border:1px solid #dee2e6;border-radius:4px;display:block;"
+                  title="O Level Certificate Preview"></iframe>
+          <a href="{{olevel_url}}" target="_blank" class="btn btn-sm btn-outline-primary w-100 mt-2">
+            <span class="fa fa-external-link mr-1"></span>{{olevel_name}}
+          </a>
+          {{/olevel_ispdf}}
+          {{^has_olevel}}
+          <p class="text-muted small mb-0"><span class="fa fa-times-circle mr-1"></span>Not uploaded</p>
+          {{/has_olevel}}
+        </div>
+      </div>
+      {{/show_olevel}}
+
+    </div>
+
+    {{! Right column: Student details + actions }}
+    <div class="col-md-8 mb-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-light">
+          <strong><span class="fa fa-info-circle mr-1"></span>{{#str}}student_details, local_studentid{{/str}}</strong>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted d-block">{{#str}}fullname, local_studentid{{/str}}</small>
+              <strong>{{fullname}}</strong>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted d-block">{{#str}}email, local_studentid{{/str}}</small>
+              <a href="mailto:{{email}}">{{email}}</a>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted d-block">{{#str}}usn, local_studentid{{/str}}</small>
+              <code>{{usn}}</code>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted d-block">{{#str}}batch, local_studentid{{/str}}</small>
+              {{batch}}
+            </div>
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted d-block">{{#str}}program, local_studentid{{/str}}</small>
+              {{program}}
+            </div>
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted d-block">{{#str}}dob, local_studentid{{/str}}</small>
+              {{dob}}
+            </div>
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted d-block">{{#str}}bloodgroup, local_studentid{{/str}}</small>
+              <strong class="text-danger">{{blood_group}}</strong>
+            </div>
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted d-block">{{#str}}contact, local_studentid{{/str}}</small>
+              {{contact}}
+            </div>
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted d-block">{{#str}}city, local_studentid{{/str}}</small>
+              {{city}}
+            </div>
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted d-block">{{#str}}state, local_studentid{{/str}}</small>
+              {{state}}
+            </div>
+            <div class="col-sm-6 mb-3">
+              <small class="text-muted d-block">{{#str}}country, local_studentid{{/str}}</small>
+              {{country}}
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col-sm-4">
+              <small class="text-muted d-block">{{#str}}timecreated, local_studentid{{/str}}</small>
+              <small>{{timecreated}}</small>
+            </div>
+            <div class="col-sm-4">
+              <small class="text-muted d-block">{{#str}}timesubmitted, local_studentid{{/str}}</small>
+              <small>{{timesubmitted}}</small>
+            </div>
+            <div class="col-sm-4">
+              <small class="text-muted d-block">{{#str}}timemodified, local_studentid{{/str}}</small>
+              <small>{{timemodified}}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{! Previous comment }}
+      {{#review_comment}}
+      <div class="alert alert-secondary small">
+        <strong>{{#str}}previous_comment, local_studentid{{/str}}:</strong> {{review_comment}}
+      </div>
+      {{/review_comment}}
+
+      {{! Generated card info }}
+      {{#has_card}}
+      <div class="alert alert-success">
+        <span class="fa fa-check-circle mr-1"></span>
+        {{#str}}card_already_generated, local_studentid{{/str}} &bull;
+        <code>{{card_number}}</code> &bull;
+        <a href="{{card_url}}" target="_blank">{{#str}}downloadid, local_studentid{{/str}}</a>
+      </div>
+      {{/has_card}}
+
+      {{! Action panel }}
+      {{#reviewable}}
+      <div class="card shadow-sm border-primary">
+        <div class="card-header bg-primary text-white">
+          <strong><span class="fa fa-gavel mr-1"></span>{{#str}}actions, local_studentid{{/str}}</strong>
+        </div>
+        <div class="card-body">
+
+          {{! Mark under review }}
+          {{#is_submitted}}
+          <form method="post" action="{{action_url}}" class="d-inline mr-2">
+            <input type="hidden" name="action" value="under_review">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <button type="submit" class="btn btn-warning">
+              <span class="fa fa-eye mr-1"></span>{{#str}}mark_under_review, local_studentid{{/str}}
+            </button>
+          </form>
+          {{/is_submitted}}
+
+          {{! Approve button }}
+          <button type="button" class="btn btn-success mr-2" id="sid-approve-btn">
+            <span class="fa fa-check mr-1"></span>{{#str}}approve, local_studentid{{/str}}
+          </button>
+
+          {{! Reject button }}
+          <button type="button" class="btn btn-danger" id="sid-reject-btn">
+            <span class="fa fa-times mr-1"></span>{{#str}}reject, local_studentid{{/str}}
+          </button>
+
+          {{! Approve panel }}
+          <div class="mt-3 d-none" id="approve-panel">
+            <div class="card border-success">
+              <div class="card-body">
+                <form method="post" action="{{action_url}}">
+                  <input type="hidden" name="action" value="approve">
+                  <input type="hidden" name="sesskey" value="{{sesskey}}">
+                  <div class="form-group mb-3">
+                    <label for="approve-comment">{{#str}}optional_comment, local_studentid{{/str}}</label>
+                    <textarea name="comment" id="approve-comment" class="form-control" rows="3"
+                              placeholder="{{#str}}approve_comment_placeholder, local_studentid{{/str}}"></textarea>
+                  </div>
+                  <button type="submit" class="btn btn-success">
+                    <span class="fa fa-check mr-1"></span>{{#str}}confirm_approve, local_studentid{{/str}}
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary ml-2" id="sid-approve-cancel">Cancel</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          {{! Reject panel }}
+          <div class="mt-3 d-none" id="reject-panel">
+            <div class="card border-danger">
+              <div class="card-body">
+                <form method="post" action="{{action_url}}" id="reject-form">
+                  <input type="hidden" name="action" value="reject">
+                  <input type="hidden" name="sesskey" value="{{sesskey}}">
+                  <div class="form-group mb-3">
+                    <label>{{#str}}rejection_reason, local_studentid{{/str}} <span class="text-danger">*</span></label>
+                    <select id="sid-reject-preset" class="form-control mb-2">
+                      <option value="">{{#str}}choosedots{{/str}}</option>
+                      {{#rejection_reasons}}
+                      {{#value}}<option value="{{value}}">{{label}}</option>{{/value}}
+                      {{^value}}<option value="">{{label}}</option>{{/value}}
+                      {{/rejection_reasons}}
+                    </select>
+                    <textarea name="comment" id="reject-comment" class="form-control" rows="3" required
+                              placeholder="{{#str}}reject_comment_placeholder, local_studentid{{/str}}"></textarea>
+                    <small class="text-muted">{{#str}}reject_comment_required_hint, local_studentid{{/str}}</small>
+                  </div>
+                  <button type="submit" class="btn btn-danger">
+                    <span class="fa fa-times mr-1"></span>{{#str}}confirm_reject, local_studentid{{/str}}
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary ml-2" id="sid-reject-cancel">Cancel</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      {{/reviewable}}
+
+      {{! Generate card button (approved, not yet generated) }}
+      {{#can_generate}}
+      <div class="card shadow-sm border-success mt-3">
+        <div class="card-body">
+          <h6 class="mb-2">{{#str}}generatecard, local_studentid{{/str}}</h6>
+          <p class="small text-muted mb-3">{{#str}}generate_card_hint, local_studentid{{/str}}</p>
+          <form method="post" action="{{action_url}}">
+            <input type="hidden" name="action" value="generate">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <button type="submit" class="btn btn-success"
+                    data-sid-confirm="{{#str}}confirm_generate, local_studentid{{/str}}">
+              <span class="fa fa-id-card mr-1"></span>{{#str}}generatecard, local_studentid{{/str}}
+            </button>
+          </form>
+        </div>
+      </div>
+      {{/can_generate}}
+
+    </div>
+  </div>
+
+</div>
+
+{{! Lightbox overlay — opened by verifier_dashboard.js, no Bootstrap dependency }}
+<div id="sid-lightbox" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.88);z-index:9999;cursor:zoom-out;align-items:center;justify-content:center;">
+  <button id="sid-lightbox-close" aria-label="Close"
+          style="position:absolute;top:14px;right:20px;background:none;border:none;color:#fff;font-size:32px;line-height:1;cursor:pointer;">&times;</button>
+  <img id="sid-lightbox-img" src="" alt=""
+       style="max-width:92%;max-height:92vh;object-fit:contain;box-shadow:0 4px 32px rgba(0,0,0,.6);border-radius:4px;">
+</div>

@@ -1,0 +1,31 @@
+{{!
+    @template block_weather/content
+
+    Current weather and 3-day forecast.
+}}
+<div class="block-weather">
+    <div class="bw-place text-muted small"><i class="fa fa-location-dot" aria-hidden="true"></i> {{place}}</div>
+    <div class="bw-now">
+        <i class="fa {{icon}} bw-icon" aria-hidden="true"></i>
+        <div>
+            <div class="bw-temp">{{temp}}{{deg}}</div>
+            <div class="bw-label">{{label}}</div>
+        </div>
+    </div>
+    <div class="bw-details small">
+        <span>{{feels}}</span>
+        {{#todaymax}}<span>{{todaymax}}° / {{todaymin}}°</span>{{/todaymax}}
+        <span><i class="fa fa-droplet" aria-hidden="true"></i> {{#str}}humidity, block_weather{{/str}} {{humidity}}</span>
+        <span><i class="fa fa-wind" aria-hidden="true"></i> {{#str}}wind, block_weather{{/str}} {{wind}}</span>
+    </div>
+    <div class="bw-days">
+        {{#days}}
+        <div class="bw-day" title="{{label}}">
+            <div class="small fw-bold">{{day}}</div>
+            <i class="fa {{icon}}" aria-hidden="true"></i>
+            <div class="small">{{max}}° <span class="text-muted">{{min}}°</span></div>
+        </div>
+        {{/days}}
+    </div>
+    <div class="bw-foot text-muted">{{updated}} · {{#str}}source, block_weather{{/str}}</div>
+</div>

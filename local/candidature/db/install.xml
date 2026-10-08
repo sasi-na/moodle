@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/candidature/db" VERSION="20260901" COMMENT="Candidate profile approval queue.">
+  <TABLES>
+    <TABLE NAME="local_candidature" COMMENT="One row per candidate awaiting or having received a decision.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The candidate"/>
+        <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="pending" SEQUENCE="false" COMMENT="pending|approved|rejected"/>
+        <FIELD NAME="categoryid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Programme category this candidate belongs to, when it could be resolved. NULL means unassigned and only a site-wide reviewer sees it."/>
+        <FIELD NAME="submittedtime" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="When the profile was completed and the candidate entered the queue"/>
+        <FIELD NAME="decisiondue" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="submittedtime plus the review SLA"/>
+        <FIELD NAME="decidedby" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="decidedtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="reason" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Rejection reason, or an approval note"/>
+        <FIELD NAME="loginblocked" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="1 when this plugin set the Block Access field. Only then may it clear it -- the field has other operational uses and clearing one of those would let someone in improperly."/>
+        <FIELD NAME="flaggedtime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="When oversight was told this had gone past its SLA. Set once so the flag is not re-sent."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign-unique" FIELDS="userid" REFTABLE="user" REFFIELDS="id" COMMENT="A candidate has exactly one candidature"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="status-decisiondue" UNIQUE="false" FIELDS="status, decisiondue" COMMENT="The queue, and the SLA scan"/>
+        <INDEX NAME="categoryid" UNIQUE="false" FIELDS="categoryid" COMMENT="A reviewer's own programmes"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="local_candidature_event" COMMENT="Audit trail: every state change, who and when.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="candidatureid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="actorid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="NULL when the system acted"/>
+        <FIELD NAME="action" TYPE="char" LENGTH="30" NOTNULL="true" SEQUENCE="false" COMMENT="submitted|approved|rejected|reopened|flagged"/>
+        <FIELD NAME="detail" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="candidatureid" TYPE="foreign" FIELDS="candidatureid" REFTABLE="local_candidature" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

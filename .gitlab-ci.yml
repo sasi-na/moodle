@@ -1,0 +1,1010 @@
+# =============================================================================
+# GitLab CI/CD Pipeline for Moodle LMS
+# =============================================================================
+# Branching Strategy:
+#   - develop branch -> Staging (auto-deploy)
+#   - main branch    -> Production (manual approval)
+# =============================================================================
+
+stages:
+  - lint
+  - build
+  - backup
+  - deploy
+  - verify
+  - notify
+
+# =============================================================================
+# GLOBAL VARIABLES
+# =============================================================================
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  
+  # GCP Configuration
+  GCP_PROJECT: org-dev-infra
+  GCP_REGION: asia-south1
+  ARTIFACT_REGISTRY: asia-south1-docker.pkg.dev/org-dev-infra/services
+  GCP_WORKLOAD_IDENTITY_PROVIDER: projects/794839270073/locations/global/workloadIdentityPools/gitlab/providers/gitlab-gitlab
+  GCP_SERVICE_ACCOUNT: gitlab-ci-cd@org-dev-infra.iam.gserviceaccount.com
+  
+  # Staging Configuration
+  #
+  # Corrected 2026-08-07. These previously read `moodel-cluster` / `jo-moodle`.
+  # Neither exists: `gcloud container clusters list` returns only
+  # usdc-prod-cluster-1, and there is no `jo-moodle` namespace on it. QA in fact
+  # runs in namespace `jain-moodle-qa` on the SAME cluster as production, so
+  # deploy:staging could not have been working -- `get-credentials moodel-cluster`
+  # fails outright.
+  STAGING_IMAGE: qa-jain-moodle
+  STAGING_CLUSTER: usdc-prod-cluster-1
+  STAGING_NAMESPACE: jain-moodle-qa
+  
+  # Production Configuration
+  #
+  # PROD_IMAGE was renamed from `jain-moodle` on 2026-08-07. The image is shared
+  # by every tenant -- jain-prod and nitk-prod run the SAME build off the same
+  # `main` -- so a tenant-specific name was actively misleading. (The existing
+  # `sharda-moodle-prod` tenant runs a separate image built from a forked copy of
+  # this codebase; that is the pattern this restructure exists to end.)
+  #
+  # The rename is complete: the overlays now reference moodle-lms directly, and
+  # LEGACY_PROD_IMAGE is gone. Old jain-moodle:<sha> tags remain in the registry
+  # and are untouched, so rolling back to a pre-rename commit still resolves.
+  PROD_IMAGE: moodle-lms
+  PROD_CLUSTER: usdc-prod-cluster-1
+  PROD_NAMESPACE: jo-moodle-prod
+
+# =============================================================================
+# REUSABLE TEMPLATES
+# =============================================================================
+
+# GCP authentication using Workload Identity Federation
+.gcp_auth: &gcp_auth
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: https://coderepos.thekaios.com
+  before_script:
+    - echo "$GITLAB_OIDC_TOKEN" > /tmp/gitlab-token.txt
+    - gcloud auth login --cred-file=<(echo "{\"type\":\"external_account\",\"audience\":\"//iam.googleapis.com/${GCP_WORKLOAD_IDENTITY_PROVIDER}\",\"subject_token_type\":\"urn:ietf:params:oauth:token-type:jwt\",\"token_url\":\"https://sts.googleapis.com/v1/token\",\"credential_source\":{\"file\":\"/tmp/gitlab-token.txt\"},\"service_account_impersonation_url\":\"https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${GCP_SERVICE_ACCOUNT}:generateAccessToken\"}")
+    - gcloud config set project $GCP_PROJECT
+    - gcloud auth configure-docker $GCP_REGION-docker.pkg.dev --quiet
+
+# Kubernetes authentication using Workload Identity Federation
+.k8s_auth: &k8s_auth
+  image: google/cloud-sdk:latest
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: https://coderepos.thekaios.com
+  before_script:
+    - echo "$GITLAB_OIDC_TOKEN" > /tmp/gitlab-token.txt
+    - gcloud auth login --cred-file=<(echo "{\"type\":\"external_account\",\"audience\":\"//iam.googleapis.com/${GCP_WORKLOAD_IDENTITY_PROVIDER}\",\"subject_token_type\":\"urn:ietf:params:oauth:token-type:jwt\",\"token_url\":\"https://sts.googleapis.com/v1/token\",\"credential_source\":{\"file\":\"/tmp/gitlab-token.txt\"},\"service_account_impersonation_url\":\"https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${GCP_SERVICE_ACCOUNT}:generateAccessToken\"}")
+    - gcloud config set project $GCP_PROJECT
+    # Install kubectl and gke-gcloud-auth-plugin (using apt since slim image disables gcloud components)
+    - apt-get update && apt-get install -y kubectl google-cloud-cli-gke-gcloud-auth-plugin
+    - export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
+# =============================================================================
+# STAGE: LINT
+# =============================================================================
+lint:php:
+  stage: lint
+  image: php:8.2-cli-alpine
+  script:
+    - echo "Running PHP syntax check on key files..."
+    - |
+      # Check only modified/new files in recent commits, or sample core files
+      error_count=0
+      for file in $(find ./lib ./admin ./login -name "*.php" -type f 2>/dev/null | head -100); do
+        if ! php -l "$file" > /dev/null 2>&1; then
+          php -l "$file"
+          error_count=$((error_count + 1))
+        fi
+      done
+      if [ $error_count -gt 0 ]; then
+        echo "Found $error_count PHP syntax errors!"
+        exit 1
+      fi
+      echo "Checked $(find ./lib ./admin ./login -name '*.php' -type f 2>/dev/null | head -100 | wc -l) files"
+    - echo "PHP syntax check passed!"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  allow_failure: false
+
+# =============================================================================
+# STAGE: BUILD & PUSH (Using Google Cloud Build)
+# =============================================================================
+
+# Manual job to rebuild base image (run when PHP extensions change)
+build:base-image:
+  stage: build
+  image: google/cloud-sdk:slim
+  <<: *gcp_auth
+  script:
+    - echo "Building base image with PHP extensions..."
+    - mkdir -p /tmp/base-build
+    - cp Dockerfile.base /tmp/base-build/Dockerfile
+    - |
+      BUILD_ID=$(gcloud builds submit /tmp/base-build \
+        --tag "${ARTIFACT_REGISTRY}/moodle-base:php8.2" \
+        --timeout=1800s \
+        --async \
+        --format='value(id)')
+      echo "Cloud Build started: $BUILD_ID"
+      echo "Logs: https://console.cloud.google.com/cloud-build/builds/$BUILD_ID?project=${GCP_PROJECT}"
+    - |
+      while true; do
+        STATUS=$(gcloud builds describe $BUILD_ID --format='value(status)')
+        echo "Build status: $STATUS"
+        if [ "$STATUS" = "SUCCESS" ]; then
+          echo "Base image built successfully!"
+          break
+        elif [ "$STATUS" = "FAILURE" ] || [ "$STATUS" = "TIMEOUT" ] || [ "$STATUS" = "CANCELLED" ]; then
+          echo "Build failed with status: $STATUS"
+          exit 1
+        fi
+        sleep 30
+      done
+  rules:
+    - when: manual
+  allow_failure: true
+  timeout: 30 minutes
+
+build:staging:
+  stage: build
+  image: google/cloud-sdk:slim
+  <<: *gcp_auth
+  script:
+    - echo "Building and pushing staging image with Cloud Build..."
+    # Submit build asynchronously and poll for completion (avoids log streaming permission issues)
+    - |
+      BUILD_ID=$(gcloud builds submit \
+        --tag "${ARTIFACT_REGISTRY}/${STAGING_IMAGE}:${CI_COMMIT_SHORT_SHA}" \
+        --timeout=1800s \
+        --async \
+        --format='value(id)')
+      echo "Cloud Build started: $BUILD_ID"
+      echo "Logs: https://console.cloud.google.com/cloud-build/builds/$BUILD_ID?project=${GCP_PROJECT}"
+    # Poll for build completion
+    - |
+      while true; do
+        STATUS=$(gcloud builds describe $BUILD_ID --format='value(status)')
+        echo "Build status: $STATUS"
+        if [ "$STATUS" = "SUCCESS" ]; then
+          echo "Build completed successfully!"
+          break
+        elif [ "$STATUS" = "FAILURE" ] || [ "$STATUS" = "TIMEOUT" ] || [ "$STATUS" = "CANCELLED" ]; then
+          echo "Build failed with status: $STATUS"
+          exit 1
+        fi
+        sleep 30
+      done
+    - |
+      gcloud artifacts docker tags add \
+        "${ARTIFACT_REGISTRY}/${STAGING_IMAGE}:${CI_COMMIT_SHORT_SHA}" \
+        "${ARTIFACT_REGISTRY}/${STAGING_IMAGE}:latest" \
+        --quiet || true
+    - echo "Image built and pushed successfully!"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+  timeout: 45 minutes
+
+build:production:
+  stage: build
+  image: google/cloud-sdk:slim
+  <<: *gcp_auth
+  script:
+    - echo "Building and pushing production image with Cloud Build..."
+    # Submit build asynchronously and poll for completion (avoids log streaming permission issues)
+    - |
+      BUILD_ID=$(gcloud builds submit \
+        --tag "${ARTIFACT_REGISTRY}/${PROD_IMAGE}:${CI_COMMIT_SHORT_SHA}" \
+        --timeout=1800s \
+        --async \
+        --format='value(id)')
+      echo "Cloud Build started: $BUILD_ID"
+      echo "Logs: https://console.cloud.google.com/cloud-build/builds/$BUILD_ID?project=${GCP_PROJECT}"
+    # Poll for build completion
+    - |
+      while true; do
+        STATUS=$(gcloud builds describe $BUILD_ID --format='value(status)')
+        echo "Build status: $STATUS"
+        if [ "$STATUS" = "SUCCESS" ]; then
+          echo "Build completed successfully!"
+          break
+        elif [ "$STATUS" = "FAILURE" ] || [ "$STATUS" = "TIMEOUT" ] || [ "$STATUS" = "CANCELLED" ]; then
+          echo "Build failed with status: $STATUS"
+          exit 1
+        fi
+        sleep 30
+      done
+    - |
+      gcloud artifacts docker tags add \
+        "${ARTIFACT_REGISTRY}/${PROD_IMAGE}:${CI_COMMIT_SHORT_SHA}" \
+        "${ARTIFACT_REGISTRY}/${PROD_IMAGE}:latest" \
+        --quiet || true
+
+    - echo "Image built and pushed successfully!"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  timeout: 45 minutes
+
+# =============================================================================
+# STAGE: BACKUP (Production only)
+# =============================================================================
+# Pre-deployment database backup, via the Percona operator.
+#
+# This previously created a Job from cronjob/moodle-db-backup, which ran
+# `mysqldump -h moodle-db`. That Service was removed during the PXC migration, so
+# the CronJob had not succeeded since 2026-06-26 -- and because the job was
+# `allow_failure: true`, the pipeline reported success anyway. A
+# "pre-deployment database backup" step was going green while backing up nothing
+# for roughly six weeks.
+#
+# It now asks the operator for an on-demand PerconaXtraDBClusterBackup, which is
+# the same mechanism as the nightly backups, and waits for it to actually reach
+# Succeeded.
+#
+# allow_failure stays true -- a backup you chose not to take should not block a
+# deploy -- but the job no longer LIES. If the backup fails, the job goes red.
+#
+# Matrixed per tenant, matching deploy:production: back up the tenant you are
+# about to deploy, not always jain.
+backup:production:
+  stage: backup
+  <<: *k8s_auth
+  parallel:
+    matrix:
+      - TENANT: jain-prod
+        TENANT_CLUSTER: usdc-prod-cluster-1
+        TENANT_NAMESPACE: jo-moodle-prod
+      - TENANT: nitk-prod
+        TENANT_CLUSTER: usdc-prod-cluster-1
+        TENANT_NAMESPACE: nitk-prod
+      - TENANT: usdc-prod
+        TENANT_CLUSTER: usdc-prod-cluster-1
+        TENANT_NAMESPACE: learn-usdc-prod
+      - TENANT: global-jain-prod
+        TENANT_CLUSTER: usdc-prod-cluster-1
+        TENANT_NAMESPACE: global-jain-prod
+      - TENANT: iiitd-prod
+        TENANT_CLUSTER: usdc-prod-cluster-1
+        TENANT_NAMESPACE: iiitd-prod
+      - TENANT: learningshala-prod
+        TENANT_CLUSTER: usdc-prod-cluster-1
+        TENANT_NAMESPACE: learningshala-prod
+  script:
+    - echo "Pre-deployment backup for ${TENANT} ..."
+    - gcloud container clusters get-credentials $TENANT_CLUSTER --region $GCP_REGION
+    - |
+      BACKUP_NAME="predeploy-${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d%H%M%S)"
+      CLUSTER=$(kubectl get pxc -n $TENANT_NAMESPACE -o jsonpath='{.items[0].metadata.name}')
+      if [ -z "$CLUSTER" ]; then
+        echo "No PerconaXtraDBCluster found in $TENANT_NAMESPACE -- nothing to back up."
+        exit 1
+      fi
+      echo "cluster=$CLUSTER backup=$BACKUP_NAME"
+
+      cat <<EOF | kubectl apply -f -
+      apiVersion: pxc.percona.com/v1
+      kind: PerconaXtraDBClusterBackup
+      metadata:
+        name: ${BACKUP_NAME}
+        namespace: ${TENANT_NAMESPACE}
+      spec:
+        pxcCluster: ${CLUSTER}
+        storageName: s3-primary
+      EOF
+
+    # Poll to Succeeded. `kubectl wait` cannot be used here: the operator reports
+    # progress in .status.state, not as a Condition.
+    - |
+      for i in $(seq 1 60); do
+        STATE=$(kubectl get pxc-backup "$BACKUP_NAME" -n $TENANT_NAMESPACE \
+          -o jsonpath='{.status.state}' 2>/dev/null)
+        echo "[$(date +%H:%M:%S)] backup state=${STATE:-<pending>}"
+        case "$STATE" in
+          Succeeded) echo "Backup completed."; exit 0 ;;
+          Failed|Error)
+            echo "Backup FAILED."
+            kubectl describe pxc-backup "$BACKUP_NAME" -n $TENANT_NAMESPACE | tail -20
+            exit 1 ;;
+        esac
+        sleep 20
+      done
+      echo "Backup did not reach Succeeded within 20 minutes."
+      exit 1
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+  allow_failure: true
+
+# =============================================================================
+# STAGE: DEPLOY
+# =============================================================================
+# Staging still deploys with `kubectl set image`, not the kustomize overlay.
+#
+# A verified overlay exists at deploy/overlays/jain-qa, but unlike jain-prod it
+# is deliberately NOT diff-clean: adopting it converges QA toward production and
+# CREATES three objects QA does not currently have (an HPA and both Moodle
+# CronJobs -- QA runs no Moodle cron at all today). Since this job auto-deploys
+# on every push to `develop`, switching it over would apply that convergence
+# unattended. Review the diff first:
+#
+#     kubectl diff -k deploy/overlays/jain-qa
+#
+# then swap the body of this job for the overlay-apply used by deploy:production.
+deploy:staging:
+  stage: deploy
+  <<: *k8s_auth
+  script:
+    - echo "Deploying to staging..."
+    - gcloud container clusters get-credentials $STAGING_CLUSTER --region $GCP_REGION
+    
+    # Update Moodle deployment
+    - kubectl set image deployment/moodle 
+        setup-logs-and-code=$ARTIFACT_REGISTRY/$STAGING_IMAGE:$CI_COMMIT_SHORT_SHA 
+        php-fpm=$ARTIFACT_REGISTRY/$STAGING_IMAGE:$CI_COMMIT_SHORT_SHA 
+        -n $STAGING_NAMESPACE
+    
+    # Annotate deployment
+    - kubectl annotate deployment/moodle 
+        kubernetes.io/change-cause="Deployed $CI_COMMIT_SHORT_SHA via GitLab CI at $(date -u +%Y-%m-%dT%H:%M:%SZ)" 
+        -n $STAGING_NAMESPACE --overwrite
+    
+    - echo "Staging deployment initiated!"
+  environment:
+    name: staging
+    url: https://dev.lms.thekaios.com
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+
+# Multi-tenant production deploy.
+#
+# Applies the tenant's kustomize overlay rather than running `kubectl set image`.
+# `set image` mutates the cluster behind the manifests' back, which is how
+# Deployment-files/ drifted to the point of being unapplyable -- git claimed 1 CPU
+# while production ran 6, and claimed a database host that no longer exists.
+# Applying the overlay makes git and cluster converge instead of diverge.
+#
+# Adding a tenant is one matrix entry. Each tenant is a separate manual job, so a
+# rollout can be staged and one tenant's failure never blocks another.
+#
+# This job also absorbs what verify:production used to do (rollout status plus
+# rollback on failure), because those checks have to run per tenant.
+deploy:production:
+  stage: deploy
+  <<: *k8s_auth
+  parallel:
+    matrix:
+      - TENANT: jain-prod
+        TENANT_CLUSTER: usdc-prod-cluster-1
+        TENANT_NAMESPACE: jo-moodle-prod
+        TENANT_URL: https://learn.onlinejain.com
+
+      # nitk is live: PXC cluster ready, moodledata directory created, secrets in
+      # place, Moodle installed and seeded.
+      #
+      # TENANT_URL is the TEMPORARY hostname, matching $CFG->wwwroot. It becomes
+      # learn.nitk.edu.in when NITK's DNS moves -- change both together, or the
+      # environment link here points somewhere Moodle will redirect away from.
+      - TENANT: nitk-prod
+        TENANT_CLUSTER: usdc-prod-cluster-1
+        TENANT_NAMESPACE: nitk-prod
+        TENANT_URL: https://learn.nitk.edu.in
+
+      # usdc is an ADOPTION, not a new build: learn.usdcglobal.com was already
+      # live on its own `learn-usdc-moodle` image, forked from this codebase.
+      # Its first run on this job is what moves it onto the shared image.
+      - TENANT: usdc-prod
+        TENANT_CLUSTER: usdc-prod-cluster-1
+        TENANT_NAMESPACE: learn-usdc-prod
+        TENANT_URL: https://learn.usdcglobal.com
+
+      # global-jain is the second ADOPTION, and the first with real users on it
+      # (1,138 accounts, 429 active in 30 days) -- usdc had three. Its {event}
+      # table must be pruned BEFORE this job runs for the first time or the
+      # upgrade step aborts on mod_feedback; see deploy/README.md.
+      - TENANT: global-jain-prod
+        TENANT_CLUSTER: usdc-prod-cluster-1
+        TENANT_NAMESPACE: global-jain-prod
+        TENANT_URL: https://global.onlinejain.com
+
+      # IIITD is a MIGRATION off AWS, not a new build. learning.iiitdwd.ac.in is
+      # still live on EC2 (Moodle 4.4.8, single box) and keeps serving production
+      # until the DNS flip. TENANT_URL is therefore the STAGING hostname, and it
+      # matches $CFG->wwwroot in the overlay -- both become
+      # learning.iiitdwd.ac.in at cutover, and they must change together.
+      #
+      # IIITD contributes 8 plugins and 17 patched core files to this shared
+      # codebase, so every other tenant on this image now carries them.
+      - TENANT: iiitd-prod
+        TENANT_CLUSTER: usdc-prod-cluster-1
+        TENANT_NAMESPACE: iiitd-prod
+        TENANT_URL: https://learning.iiitdwd.ac.in
+
+      # LearningShala is a FRESH INSTALL -- no prior site, no migration, no
+      # adoption. TENANT_URL is the real hostname from the first deploy: the DNS
+      # record is created before the site is installed, precisely so wwwroot
+      # never has to move afterwards.
+      #
+      # Smallest tenant in the fleet (<100 users). Sizing lives in
+      # deploy/overlays/learningshala-prod/patch-scale.yaml and
+      # deploy/learningshala-pxc-values.yaml.
+      - TENANT: learningshala-prod
+        TENANT_CLUSTER: usdc-prod-cluster-1
+        TENANT_NAMESPACE: learningshala-prod
+        TENANT_URL: https://learn.learningshala.co.in
+  script:
+    - echo "Deploying ${TENANT} to ${TENANT_NAMESPACE}..."
+    - gcloud container clusters get-credentials $TENANT_CLUSTER --region $GCP_REGION
+
+    # `kubectl kustomize` only renders -- it has no `edit` subcommand, so the
+    # standalone binary is needed to stamp the tag.
+    - |
+      curl -sS "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" \
+        | bash -s -- 5.4.3 /usr/local/bin
+      kustomize version
+
+    # Stamp the freshly built tag into the overlay. Deliberately NOT `|| true`:
+    # if this silently failed, the apply below would roll the tenant back to
+    # whatever tag is committed in git.
+    - cd deploy/overlays/${TENANT}
+    - kustomize edit set image moodle-lms=${ARTIFACT_REGISTRY}/${PROD_IMAGE}:${CI_COMMIT_SHORT_SHA}
+    - cd $CI_PROJECT_DIR
+    - grep -A3 '^images:' deploy/overlays/${TENANT}/kustomization.yaml
+
+    # Show what is about to change. `diff` exits non-zero when a diff exists,
+    # which is the normal case, so it must not fail the job.
+    - kubectl diff -k deploy/overlays/${TENANT} || true
+
+    - kubectl apply -k deploy/overlays/${TENANT}
+
+    # Quiesce cron for the rollout. A cron pod that dies mid-task leaves its
+    # adhoc claim behind, and with task_adhoc_concurrency_limit=1 a single
+    # orphaned claim wedges every adhoc task on the tenant -- grading, forum
+    # notifications, quickmail -- until the stale-claim sweeper passes its six
+    # hour threshold. jain lost about half an hour to exactly that on
+    # 2026-09-23, and it was a moodle-cron pod holding the claim, not
+    # moodle-adhoc-tasks: admin/cli/cron.php processes adhoc tasks too. Both
+    # have to be quiet, or this buys nothing.
+    #
+    # Deliberately AFTER the apply: the apply restores whatever `suspend` the
+    # committed manifests carry, so suspending before it would be undone.
+    - |
+      for cj in moodle-cron moodle-adhoc-tasks; do
+        if kubectl patch cronjob/$cj -n $TENANT_NAMESPACE \
+             -p '{"spec":{"suspend":true}}' >/dev/null 2>&1; then
+          echo "suspended $cj"
+        else
+          echo "no $cj cronjob in ${TENANT_NAMESPACE}, skipping"
+        fi
+      done
+
+      # Let anything already running finish rather than cutting it off --
+      # being cut off mid-task is the failure this exists to avoid. Bounded,
+      # because one long task must not hold the deploy open indefinitely.
+      # The Job objects do not carry the app label, only their pods do.
+      deadline=$(( $(date +%s) + 300 ))
+      while [ "$(date +%s)" -lt "$deadline" ]; do
+        running=$(kubectl get pods -n $TENANT_NAMESPACE \
+          -l 'app in (moodle-cron,moodle-adhoc-tasks)' \
+          --field-selector=status.phase=Running \
+          --no-headers 2>/dev/null | wc -l)
+        [ "$running" -eq 0 ] && break
+        echo "waiting for $running cron pod(s) to finish before rolling..."
+        sleep 15
+      done
+      if [ "${running:-0}" -ne 0 ]; then
+        echo "WARNING: cron still running after 300s; rolling anyway."
+      fi
+
+    - kubectl annotate deployment/moodle
+        kubernetes.io/change-cause="Deployed $CI_COMMIT_SHORT_SHA via GitLab CI at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        -n $TENANT_NAMESPACE --overwrite
+
+    # Roll out, and undo if it does not come up.
+    - |
+      if ! kubectl rollout status deployment/moodle -n $TENANT_NAMESPACE --timeout=900s; then
+        echo "Rollout failed for ${TENANT}! Initiating rollback..."
+        kubectl rollout undo deployment/moodle -n $TENANT_NAMESPACE
+        kubectl rollout status deployment/moodle -n $TENANT_NAMESPACE --timeout=900s || true
+        echo "Rollback completed. NOTE: CronJob images are not rolled back automatically."
+        exit 1
+      fi
+
+    # Moodle database upgrade. CI has never run this -- it was done by hand, and
+    # with more than one tenant someone will eventually forget one. A plugin
+    # version bump without its upgrade leaves a broken site.
+    - |
+      # Run the upgrade in a pod from the CURRENT ReplicaSet, retrying on the
+      # races that come with exec-ing into a deployment that is still settling.
+      #
+      # Three separate failures have been hit here, all the same shape:
+      #
+      #   1. `{.items[0]}` with no filter picked a terminating pod:
+      #        cannot exec into a container in a completed pod
+      #   2. Running+Ready at SELECTION time is not Running+Ready at EXEC time:
+      #        unable to upgrade connection: container not found ("php-fpm")
+      #   3. `rollout status` succeeding does not mean old pods are gone.
+      #
+      # Selecting once cannot fix this, because the pod can disappear between
+      # picking it and using it. Two things together do:
+      #
+      #   - restrict to the current ReplicaSet, so old terminating pods are never
+      #     candidates in the first place
+      #   - retry, re-selecting each time, so a pod lost mid-exec is survivable
+      #
+      # The upgrade is idempotent -- a repeat run reports "No upgrade needed" --
+      # so retrying is safe even if an attempt partially ran.
+      RS_HASH=$(kubectl get rs -n $TENANT_NAMESPACE -l app=moodle \
+        -o jsonpath='{range .items[?(@.spec.replicas>0)]}{.metadata.labels.pod-template-hash}{"\n"}{end}' \
+        | tail -1)
+      echo "current ReplicaSet pod-template-hash: ${RS_HASH:-<none>}"
+
+      UPGRADE_DONE=0
+      for attempt in 1 2 3 4 5; do
+        if [ -n "$RS_HASH" ]; then
+          SELECTOR="app=moodle,pod-template-hash=$RS_HASH"
+        else
+          SELECTOR="app=moodle"
+        fi
+
+        POD=$(kubectl get pod -n $TENANT_NAMESPACE -l "$SELECTOR" \
+          --field-selector=status.phase=Running \
+          -o jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.containerStatuses[?(@.name=="php-fpm")].ready}{"\n"}{end}' \
+          | awk '$2=="true"{print $1; exit}')
+
+        if [ -z "$POD" ]; then
+          echo "attempt $attempt: no Running+Ready pod yet, waiting..."
+          sleep 15
+          continue
+        fi
+
+        echo "attempt $attempt: running admin/cli/upgrade.php in $POD ..."
+        if kubectl exec -n $TENANT_NAMESPACE "$POD" -c php-fpm -- \
+             php admin/cli/upgrade.php --non-interactive --allow-unstable; then
+          UPGRADE_DONE=1
+          break
+        fi
+
+        echo "attempt $attempt failed (pod likely replaced mid-exec), retrying..."
+        sleep 15
+      done
+
+      if [ "$UPGRADE_DONE" -ne 1 ]; then
+        echo "admin/cli/upgrade.php did not complete after 5 attempts."
+        kubectl get pod -n $TENANT_NAMESPACE -l app=moodle
+        exit 1
+      fi
+
+    # Converge themerev across pods. A rollout restart, NOT sequential
+    # purge_caches: those race, each bumping themerev=time(), which leaves pods
+    # serving different CSS to different users.
+    - kubectl rollout restart deployment/moodle -n $TENANT_NAMESPACE
+    - kubectl rollout status  deployment/moodle -n $TENANT_NAMESPACE --timeout=900s
+
+    - kubectl get pods -n $TENANT_NAMESPACE -l app=moodle
+    - kubectl get hpa  -n $TENANT_NAMESPACE
+    - echo "${TENANT} deployed and verified."
+  # Always bring cron back, including after a failed or cancelled deploy.
+  # Leaving a tenant with cron suspended is a worse outage than the rollout
+  # that failed: no notifications, no grading, no scheduled anything, and
+  # nothing to signal it except work quietly not happening.
+  after_script:
+    - |
+      gcloud container clusters get-credentials $TENANT_CLUSTER --region $GCP_REGION >/dev/null 2>&1 || true
+      for cj in moodle-cron moodle-adhoc-tasks; do
+        if kubectl patch cronjob/$cj -n $TENANT_NAMESPACE \
+             -p '{"spec":{"suspend":false}}' >/dev/null 2>&1; then
+          echo "resumed $cj"
+        else
+          echo "could not resume $cj -- CHECK ${TENANT_NAMESPACE} BY HAND"
+        fi
+      done
+  environment:
+    name: production/$TENANT
+    url: $TENANT_URL
+  needs:
+    - job: build:production
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: manual
+  allow_failure: false
+
+# =============================================================================
+# STAGE: VERIFY
+# =============================================================================
+verify:staging:
+  stage: verify
+  <<: *k8s_auth
+  script:
+    - echo "Verifying staging deployment..."
+    - gcloud container clusters get-credentials $STAGING_CLUSTER --region $GCP_REGION
+    
+    # Wait for rollout
+    - |
+      if ! kubectl rollout status deployment/moodle -n $STAGING_NAMESPACE --timeout=600s; then
+        echo "Rollout failed! Initiating rollback..."
+        kubectl rollout undo deployment/moodle -n $STAGING_NAMESPACE
+        echo "Rollback completed."
+        exit 1
+      fi
+    
+    # Verify pods are ready
+    - kubectl get pods -n $STAGING_NAMESPACE -l app=moodle
+    - echo "Staging deployment verified successfully!"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+
+# verify:production was removed deliberately.
+#
+# It checked rollout status and rolled back on failure, but was hardcoded to a
+# single namespace ($PROD_NAMESPACE) and so could not verify a second tenant.
+# Worse, running it after a deploy job that had already rolled itself back would
+# report success against the rolled-back version.
+#
+# Those checks now live inside deploy:production and run per tenant.
+
+# =============================================================================
+# STAGE: NOTIFY
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# STAGING NOTIFICATIONS
+# -----------------------------------------------------------------------------
+notify:staging:success:
+  stage: notify
+  image: curlimages/curl:latest
+  script:
+    - |
+      COMMIT_MSG=$(echo "$CI_COMMIT_TITLE" | sed 's/"/\\"/g' | head -c 100)
+      curl -X POST -H 'Content-type: application/json' \
+        --data '{
+          "attachments": [{
+            "color": "#36a64f",
+            "blocks": [
+              {
+                "type": "header",
+                "text": {"type": "plain_text", "text": "JO Moodle LMS - Staging Deployment Successful", "emoji": true}
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Environment:*\n:test_tube: Staging"},
+                  {"type": "mrkdwn", "text": "*Branch:*\n'"$CI_COMMIT_BRANCH"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Commit:*\n`'"$CI_COMMIT_SHORT_SHA"'`"},
+                  {"type": "mrkdwn", "text": "*Author:*\n'"$GITLAB_USER_NAME"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*Message:*\n'"$COMMIT_MSG"'"}
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Image:*\n`'"$STAGING_IMAGE:$CI_COMMIT_SHORT_SHA"'`"},
+                  {"type": "mrkdwn", "text": "*Duration:*\n'"$CI_PIPELINE_DURATION"'s"}
+                ]
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {"type": "button", "text": {"type": "plain_text", "text": "View Pipeline"}, "url": "'"$CI_PIPELINE_URL"'", "style": "primary"},
+                  {"type": "button", "text": {"type": "plain_text", "text": "View Staging"}, "url": "https://dev.lms.thekaios.com"}
+                ]
+              }
+            ]
+          }]
+        }' \
+        "$SLACK_WEBHOOK_URL"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: on_success
+  allow_failure: true
+
+notify:staging:failure:
+  stage: notify
+  image: curlimages/curl:latest
+  script:
+    - |
+      COMMIT_MSG=$(echo "$CI_COMMIT_TITLE" | sed 's/"/\\"/g' | head -c 100)
+      curl -X POST -H 'Content-type: application/json' \
+        --data '{
+          "attachments": [{
+            "color": "#ff0000",
+            "blocks": [
+              {
+                "type": "header",
+                "text": {"type": "plain_text", "text": "JO Moodle LMS - Staging Deployment Failed", "emoji": true}
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Environment:*\n:test_tube: Staging"},
+                  {"type": "mrkdwn", "text": "*Branch:*\n'"$CI_COMMIT_BRANCH"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Commit:*\n`'"$CI_COMMIT_SHORT_SHA"'`"},
+                  {"type": "mrkdwn", "text": "*Author:*\n'"$GITLAB_USER_NAME"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*Message:*\n'"$COMMIT_MSG"'"}
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Image:*\n`'"$STAGING_IMAGE:$CI_COMMIT_SHORT_SHA"'`"}
+                ]
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {"type": "button", "text": {"type": "plain_text", "text": "View Pipeline"}, "url": "'"$CI_PIPELINE_URL"'", "style": "danger"}
+                ]
+              }
+            ]
+          }]
+        }' \
+        "$SLACK_WEBHOOK_URL"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: on_failure
+  allow_failure: true
+
+# -----------------------------------------------------------------------------
+# PRODUCTION NOTIFICATIONS
+# -----------------------------------------------------------------------------
+
+# Notify when build completes - awaiting manual backup
+notify:production:build-complete:
+  stage: notify
+  image: curlimages/curl:latest
+  needs:
+    - job: build:production
+      optional: false
+  script:
+    - |
+      COMMIT_MSG=$(echo "$CI_COMMIT_TITLE" | sed 's/"/\\"/g' | head -c 100)
+      curl -X POST -H 'Content-type: application/json' \
+        --data '{
+          "attachments": [{
+            "color": "#439FE0",
+            "blocks": [
+              {
+                "type": "header",
+                "text": {"type": "plain_text", "text": "JO Moodle LMS - Production Build Complete", "emoji": true}
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Environment:*\n:rocket: Production"},
+                  {"type": "mrkdwn", "text": "*Branch:*\n'"$CI_COMMIT_BRANCH"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Commit:*\n`'"$CI_COMMIT_SHORT_SHA"'`"},
+                  {"type": "mrkdwn", "text": "*Author:*\n'"$GITLAB_USER_NAME"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*Message:*\n'"$COMMIT_MSG"'"}
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Image:*\n`'"$PROD_IMAGE:$CI_COMMIT_SHORT_SHA"'`"}
+                ]
+              },
+              {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": ":hourglass_flowing_sand: *Ready for deployment. Backup is optional — you can trigger it or skip directly to deploy.*"}
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {"type": "button", "text": {"type": "plain_text", "text": "Trigger Backup (Optional)"}, "url": "'"$CI_PIPELINE_URL"'"},
+                  {"type": "button", "text": {"type": "plain_text", "text": "Go to Pipeline"}, "url": "'"$CI_PIPELINE_URL"'", "style": "primary"}
+                ]
+              }
+            ]
+          }]
+        }' \
+        "$SLACK_WEBHOOK_URL"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: on_success
+  allow_failure: true
+
+# Notify when backup completes - awaiting manual deploy
+notify:production:backup-complete:
+  stage: notify
+  image: curlimages/curl:latest
+  needs:
+    - job: backup:production
+      optional: true
+  script:
+    - |
+      COMMIT_MSG=$(echo "$CI_COMMIT_TITLE" | sed 's/"/\\"/g' | head -c 100)
+      curl -X POST -H 'Content-type: application/json' \
+        --data '{
+          "attachments": [{
+            "color": "#36a64f",
+            "blocks": [
+              {
+                "type": "header",
+                "text": {"type": "plain_text", "text": "JO Moodle LMS - Production Backup Complete", "emoji": true}
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Environment:*\n:rocket: Production"},
+                  {"type": "mrkdwn", "text": "*Branch:*\n'"$CI_COMMIT_BRANCH"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Commit:*\n`'"$CI_COMMIT_SHORT_SHA"'`"},
+                  {"type": "mrkdwn", "text": "*Triggered By:*\n'"$GITLAB_USER_NAME"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*Message:*\n'"$COMMIT_MSG"'"}
+              },
+              {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": ":hourglass_flowing_sand: *Awaiting manual deployment trigger*"}
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {"type": "button", "text": {"type": "plain_text", "text": "Trigger Deploy"}, "url": "'"$CI_PIPELINE_URL"'", "style": "primary"}
+                ]
+              }
+            ]
+          }]
+        }' \
+        "$SLACK_WEBHOOK_URL"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: on_success
+  allow_failure: true
+
+# Notify on successful production deployment
+notify:production:success:
+  stage: notify
+  image: curlimages/curl:latest
+  script:
+    - |
+      COMMIT_MSG=$(echo "$CI_COMMIT_TITLE" | sed 's/"/\\"/g' | head -c 100)
+      curl -X POST -H 'Content-type: application/json' \
+        --data '{
+          "attachments": [{
+            "color": "#36a64f",
+            "blocks": [
+              {
+                "type": "header",
+                "text": {"type": "plain_text", "text": "JO Moodle LMS - Production Deployment Successful", "emoji": true}
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Environment:*\n:rocket: Production"},
+                  {"type": "mrkdwn", "text": "*Branch:*\n'"$CI_COMMIT_BRANCH"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Commit:*\n`'"$CI_COMMIT_SHORT_SHA"'`"},
+                  {"type": "mrkdwn", "text": "*Author:*\n'"$CI_COMMIT_AUTHOR"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*Message:*\n'"$COMMIT_MSG"'"}
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Image:*\n`'"$PROD_IMAGE:$CI_COMMIT_SHORT_SHA"'`"},
+                  {"type": "mrkdwn", "text": "*Deployed By:*\n'"$GITLAB_USER_NAME"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Duration:*\n'"$CI_PIPELINE_DURATION"'s"}
+                ]
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {"type": "button", "text": {"type": "plain_text", "text": "View Pipeline"}, "url": "'"$CI_PIPELINE_URL"'", "style": "primary"},
+                  {"type": "button", "text": {"type": "plain_text", "text": "View Production"}, "url": "https://learn.onlinejain.com"}
+                ]
+              }
+            ]
+          }]
+        }' \
+        "$SLACK_WEBHOOK_URL"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: on_success
+  allow_failure: true
+
+# Notify on failed production deployment
+notify:production:failure:
+  stage: notify
+  image: curlimages/curl:latest
+  script:
+    - |
+      COMMIT_MSG=$(echo "$CI_COMMIT_TITLE" | sed 's/"/\\"/g' | head -c 100)
+      curl -X POST -H 'Content-type: application/json' \
+        --data '{
+          "attachments": [{
+            "color": "#ff0000",
+            "blocks": [
+              {
+                "type": "header",
+                "text": {"type": "plain_text", "text": "JO Moodle LMS - Production Deployment Failed", "emoji": true}
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Environment:*\n:rocket: Production"},
+                  {"type": "mrkdwn", "text": "*Branch:*\n'"$CI_COMMIT_BRANCH"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Commit:*\n`'"$CI_COMMIT_SHORT_SHA"'`"},
+                  {"type": "mrkdwn", "text": "*Author:*\n'"$CI_COMMIT_AUTHOR"'"}
+                ]
+              },
+              {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": "*Message:*\n'"$COMMIT_MSG"'"}
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {"type": "mrkdwn", "text": "*Image:*\n`'"$PROD_IMAGE:$CI_COMMIT_SHORT_SHA"'`"}
+                ]
+              },
+              {
+                "type": "section",
+                "text": {"type": "mrkdwn", "text": ":warning: *Auto-rollback has been triggered*"}
+              },
+              {
+                "type": "actions",
+                "elements": [
+                  {"type": "button", "text": {"type": "plain_text", "text": "View Pipeline"}, "url": "'"$CI_PIPELINE_URL"'", "style": "danger"}
+                ]
+              }
+            ]
+          }]
+        }' \
+        "$SLACK_WEBHOOK_URL"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: on_failure
+  allow_failure: true

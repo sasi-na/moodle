@@ -1,0 +1,4 @@
+# Tutor AI calls ".../provider/chat/completions" (no extension): run that file as PHP.
+<Files "completions">
+    SetHandler application/x-httpd-php
+</Files>

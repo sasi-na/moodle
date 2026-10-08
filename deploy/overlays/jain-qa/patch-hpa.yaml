@@ -1,0 +1,11 @@
+# QA has no HPA today. Base brings one, so adopting this overlay creates it.
+#
+# Scaled right down: without this patch QA would inherit production's
+# minReplicas: 4 and immediately quadruple, which is neither wanted nor paid for.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: moodle-hpa
+spec:
+  minReplicas: 1
+  maxReplicas: 3

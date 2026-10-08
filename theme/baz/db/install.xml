@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="theme/baz/db" VERSION="20260811" COMMENT="theme_baz tables"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="theme_baz_dashboard_news" COMMENT="Pre-rendered rss_client HTML for the student dashboard news cards, refreshed by a scheduled task so /my/ never fetches feeds during page render.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="cachekey" TYPE="char" LENGTH="50" NOTNULL="true" SEQUENCE="false" COMMENT="Which dashboard card this row feeds, e.g. business or podcast."/>
+        <FIELD NAME="content" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Rendered block HTML."/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="cachekey" UNIQUE="true" FIELDS="cachekey"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

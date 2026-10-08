@@ -1,0 +1,597 @@
+/* ==========================================================================
+   theme_baz — generic bespoke-shell wrapper (My Files, Profile).
+   Scoped to #sw-root. Navy / gold app shell + light restyle of the wrapped
+   core content (filemanager / profile) — the page's own markup + JS is kept.
+   Light + dark. scssphp-safe: block comments only.
+   ========================================================================== */
+
+#sw-root {
+    --sw-navy: #{$bz-navy};
+    --sw-on-accent: #{$bz-accent-on};
+    --sw-ground: #F4F7FB;
+    --sw-surface: #fff;
+    --sw-ink: #0B2034;
+    --sw-muted: #5C7184;
+    --sw-faint: #90A4B5;
+    --sw-line: #E5ECF3;
+    --sw-accent: #{$bz-accent};
+    --sw-green: #1FA37A;
+    --sw-blue: #2563EB;
+    --sw-gnavy: linear-gradient(135deg, #{$bz-navy-hi}, #{$bz-navy-lo});
+    --sw-gaccent: linear-gradient(135deg, #{$bz-accent-hi}, #{$bz-accent-lo});
+    --sw-sans: 'Manrope', 'Inter', system-ui, sans-serif;
+    --sw-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --sw-sh-sm: 0 1px 2px rgba(11, 32, 52, .06), 0 1px 3px rgba(11, 32, 52, .04);
+    --sw-sh: 0 4px 14px rgba(11, 32, 52, .07);
+    --sw-sh-lg: 0 18px 50px rgba(11, 32, 52, .12);
+
+    font-family: var(--sw-sans);
+    color: var(--sw-ink);
+    background: var(--sw-ground);
+    min-height: 100vh;
+
+    *, *::before, *::after { box-sizing: border-box; }
+    svg { display: block; }
+
+    /* ---- shell ---- */
+    &.sw-app { display: grid; grid-template-columns: 248px 1fr; }
+    .sw-side { background: linear-gradient(180deg, var(--sw-navy), $bz-navy-deep); color: #cfe0ec; padding: 20px 16px; display: flex; flex-direction: column; gap: 3px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sw-brand { display: block; padding: 4px 8px 18px; }
+    .sw-brand img { max-height: 38px; width: auto; }
+    .sw-brand-txt { color: #fff; font-weight: 800; font-size: 18px; }
+    .sw-nav a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 11px; color: #aec4d4; font-weight: 600; font-size: 14px; text-decoration: none; }
+    .sw-nav a svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .sw-nav a:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+    .sw-nav a.on { background: rgba($bz-accent, .2); color: var(--sw-accent); font-weight: 700; }
+    .sw-nav a.on svg { stroke: var(--sw-accent); }
+    .sw-navlbl { font: 600 11px/1 var(--sw-mono); letter-spacing: .12em; text-transform: uppercase; color: #5d7e95; padding: 16px 12px 8px; }
+
+    .sw-main-col { min-width: 0; display: flex; flex-direction: column; }
+
+    /* ---- topbar (dark-aware, actions right-aligned) ---- */
+    .sw-topbar { position: sticky; top: 0; z-index: 30; background: rgba(244, 247, 251, .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--sw-line); }
+    .sw-topbar-inner { display: flex; align-items: center; gap: 14px; padding: 12px 28px; }
+    .sw-tb-left { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
+    .sw-tb-right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+    .sw-burger { display: none; border: 0; background: none; padding: 0; cursor: pointer; }
+    .sw-burger svg { width: 24px; height: 24px; stroke: var(--sw-ink); fill: none; stroke-width: 1.9; }
+    .sw-crumb { font-weight: 600; color: var(--sw-muted); font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sw-crumb a { color: var(--sw-muted); text-decoration: none; }
+    .sw-crumb .sep { margin: 0 7px; color: var(--sw-faint); }
+    .sw-crumb .cur { color: var(--sw-ink); font-weight: 700; }
+    .sw-askjo { display: inline-flex; align-items: center; gap: 8px; background: var(--sw-gnavy); color: #fff; font-weight: 700; font-size: 13.5px; padding: 9px 15px; border: 0; border-radius: 12px; cursor: pointer; }
+    .sw-askjo svg { width: 16px; height: 16px; }
+    .sw-askjo[disabled] { opacity: .5; cursor: default; }
+    .sw-iconbtn { width: 42px; height: 42px; border-radius: 12px; background: var(--sw-surface); border: 1px solid var(--sw-line); display: grid; place-items: center; color: var(--sw-muted); box-shadow: var(--sw-sh-sm); cursor: pointer; }
+    .sw-iconbtn svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .sw-navbar-plugin { display: flex; align-items: center; gap: 10px; }
+    .sw-navbar-plugin .popover-region-toggle, .sw-navbar-plugin .nav-link { width: 42px; height: 42px; border-radius: 12px; background: var(--sw-surface); border: 1px solid var(--sw-line); display: grid; place-items: center; color: var(--sw-muted); box-shadow: var(--sw-sh-sm); position: relative; }
+    .sw-navbar-plugin .count-container { top: 4px; right: 4px; }
+    .sw-usermenu .dropdown-toggle { text-decoration: none; }
+
+    /* ---- content ---- */
+    .sw-content { padding: 24px 28px 70px; max-width: 1100px; width: 100%; }
+    .sw-phead { margin-bottom: 18px; }
+    .sw-eyebrow { font: 700 11px/1 var(--sw-mono); letter-spacing: .16em; text-transform: uppercase; color: $bz-accent-text; }
+    .sw-phead h1 { font-size: 28px; font-weight: 800; letter-spacing: -.02em; margin-top: 9px; }
+    .sw-backdrop { display: none; }
+
+    /* ---- wrapped content base card ---- */
+    .sw-wrap { background: var(--sw-surface); border: 1px solid var(--sw-line); border-radius: 16px; box-shadow: var(--sw-sh-sm); padding: 22px; }
+    .sw-wrap h2, .sw-wrap h3 { color: var(--sw-ink); }
+    .sw-wrap a { color: var(--sw-blue); }
+    /* Primary action buttons: one shared gold treatment across all pages. */
+    .sw-wrap .btn-primary { background: var(--sw-gaccent); color: var(--sw-on-accent); border: 0; border-radius: 11px; padding: 10px 18px; font: 800 13.5px/1 var(--sw-sans); box-shadow: 0 6px 16px rgba($bz-accent, .3); }
+    .sw-wrap .btn-primary:hover { color: var(--sw-on-accent); filter: brightness(1.03); }
+    .sw-wrap .btn-secondary, .sw-wrap .btn-outline-secondary { border-radius: 11px; }
+    /* mform button groups (Save / Cancel on change-password, profile edit, self-enrol):
+       addGroup()'s separator is whitespace, which renders as no flex item at all, so the
+       gold treatment above left adjacent buttons touching with their shadows overlapping.
+       nowrap only from 700px up -- students are mobile-heavy and a wrapped row reads far
+       better on a phone than a scrolling button bar. */
+    .sw-wrap .rui-form-element-group:has(> input[type="submit"]), .sw-wrap .rui-form-element-group:has(> button[type="submit"]), .sw-wrap .rui-form-element-group:has(> input[type="button"]), .sw-wrap .rui-form-element-group:has(> input[type="reset"]) { gap: 12px; }
+    @media (min-width: 700px) { .sw-wrap .rui-form-element-group:has(> input[type="submit"]), .sw-wrap .rui-form-element-group:has(> button[type="submit"]), .sw-wrap .rui-form-element-group:has(> input[type="button"]), .sw-wrap .rui-form-element-group:has(> input[type="reset"]) { flex-wrap: nowrap; } }
+    .sw-wrap .rui-form-element-group > input[type="submit"], .sw-wrap .rui-form-element-group > button[type="submit"], .sw-wrap .rui-form-element-group > input[type="button"], .sw-wrap .rui-form-element-group > input[type="reset"] { white-space: nowrap; }
+
+    /* ---- My Files: card-ify the filemanager + heading ---- */
+    .sw-files .filemanager, .sw-files .fm-content-wrapper { border-radius: 12px; }
+    .sw-files .filemanager-toolbar, .sw-files .fp-toolbar { border-radius: 10px; }
+    .sw-files .fp-btn-add a, .sw-files .fp-btn-mkdir a { color: var(--sw-navy); }
+
+    /* ---- Profile: navy/gold category cards ---- */
+    .sw-profile .userprofile { display: flex; flex-direction: column; gap: 0; }
+    .sw-profile .profile_tree { column-count: 2; column-gap: 18px; }
+    .sw-profile .node_category {
+        background: var(--sw-surface); border: 1px solid var(--sw-line); border-radius: 14px;
+        box-shadow: var(--sw-sh-sm); padding: 16px 18px; margin: 0 0 18px; break-inside: avoid; display: inline-block; width: 100%;
+    }
+    .sw-profile .node_category > h3 { font-size: 14px; font-weight: 800; margin: 0 0 12px; padding-bottom: 10px; border-bottom: 1px solid var(--sw-line); color: var(--sw-ink); }
+    .sw-profile .node_category ul { list-style: none; margin: 0; padding: 0; }
+    .sw-profile .node_category li { padding: 7px 0; border-bottom: 1px solid var(--sw-line); font-size: 13px; }
+    .sw-profile .node_category li:last-child { border-bottom: 0; }
+    .sw-profile .contentnode { color: var(--sw-muted); }
+    @media (max-width: 760px) { .sw-profile .profile_tree { column-count: 1; } }
+
+    /* ---- Viewing another user: profile hero (banner + avatar + name + Message) ---- */
+    .sw-profile-hero {
+        background: var(--sw-surface); border: 1px solid var(--sw-line); border-radius: 18px;
+        box-shadow: var(--sw-sh); overflow: hidden; margin-bottom: 18px;
+    }
+    .sw-ph-band { height: 74px; background: linear-gradient(120deg, $bz-navy-a, $bz-navy-b 60%, $bz-navy-c); }
+    .sw-ph-body { padding: 14px 24px 20px; display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+    .sw-ph-av { margin-top: -52px; flex: none; }
+    .sw-ph-av .sw-ph-pic,
+    .sw-ph-av img { width: 92px; height: 92px; border-radius: 22px; border: 4px solid #fff;
+        box-shadow: 0 8px 20px -8px rgba(0, 0, 0, .4); object-fit: cover; background: var(--sw-surface); }
+    .sw-ph-info { flex: 1 1 220px; min-width: 0; padding-bottom: 2px; }
+    .sw-ph-info h1 { font-size: 22px; font-weight: 800; letter-spacing: -.02em; color: var(--sw-ink); margin: 0; }
+    .sw-ph-status { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+        font: 800 10px var(--sw-mono); letter-spacing: .06em; text-transform: uppercase;
+        border-radius: 999px; padding: 4px 10px; color: var(--sw-green); background: #E6F6F0; border: 1px solid #cfe9df; }
+    .sw-ph-status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--sw-green); }
+    .sw-ph-acts { display: flex; gap: 9px; flex-wrap: wrap; padding-bottom: 4px; }
+    .sw-ph-btn { display: inline-flex; align-items: center; gap: 7px; font: 800 13px var(--sw-sans);
+        border-radius: 11px; padding: 10px 16px; text-decoration: none !important; }
+    .sw-ph-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.1; }
+    .sw-ph-btn.g { background: var(--sw-gaccent); color: var(--sw-on-accent) !important; box-shadow: 0 8px 20px rgba($bz-accent, .3); }
+
+    /* ---- Messages: let the full messaging app fill the shell ---- */
+    &.sw-app .sw-content.sw-messages { max-width: 1320px; }
+    .sw-wrap.sw-messages { padding: 0; border: 0; background: transparent; box-shadow: none; }
+    .sw-messages .message-app {
+        min-height: 72vh; border: 1px solid var(--sw-line); border-radius: 16px;
+        background: var(--sw-surface); box-shadow: var(--sw-sh-sm);
+    }
+    .sw-messages .message-app .btn-primary { background: var(--sw-gaccent); color: var(--sw-on-accent); border: 0; }
+
+    /* ---- Notifications: tidy the list inside the card ---- */
+    .sw-notifications .notification-area { border: 0; }
+    .sw-notifications .list-group-item,
+    .sw-notifications .content-item-container { border-radius: 10px; border-color: var(--sw-line); }
+    .sw-notifications .all-notifications { max-height: none; }
+    .sw-notifications .notification.unread,
+    .sw-notifications .content-item-container.unread { box-shadow: inset 3px 0 0 var(--sw-accent); }
+
+    /* ---- floating help (gold FAB, bottom-left) ---- */
+    .sw-help { position: fixed; left: 22px; bottom: 22px; z-index: 1050; }
+    .sw-help-fab { display: inline-flex; align-items: center; gap: 9px; background: var(--sw-gaccent); color: var(--sw-on-accent); font-weight: 800; font-size: 13.5px; border: 0; border-radius: 30px; padding: 13px 19px; cursor: pointer; box-shadow: 0 12px 30px rgba($bz-accent, .42); }
+    .sw-help-fab svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .sw-help-panel { position: absolute; left: 0; bottom: 62px; width: 320px; background: var(--sw-surface); border: 1px solid var(--sw-line); border-radius: 16px; box-shadow: var(--sw-sh-lg); overflow: hidden; }
+    .sw-help-head { display: flex; align-items: center; gap: 11px; padding: 14px 16px; border-bottom: 1px solid var(--sw-line); }
+    .sw-help-ic { width: 34px; height: 34px; border-radius: 10px; background: rgba($bz-accent, .16); color: $bz-accent-text; display: grid; place-items: center; }
+    .sw-help-ic svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.9; }
+    .sw-help-t b { display: block; font-size: 13.5px; font-weight: 800; }
+    .sw-help-t small { color: var(--sw-faint); font-size: 11px; }
+    .sw-help-close { margin-left: auto; border: 0; background: none; font-size: 22px; line-height: 1; color: var(--sw-faint); cursor: pointer; }
+    .sw-help-panel .sd-support { padding: 6px 16px 14px; }
+    .sw-help-panel .sd-support .support-block-button { display: flex; flex-direction: column; }
+    .sw-help-panel .sd-support .btn { display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%; text-align: left; padding: 13px 0; margin: 0; border: 0; border-bottom: 1px solid var(--sw-line); border-radius: 0; background: none; box-shadow: none; color: var(--sw-ink); font: 600 13px/1.3 var(--sw-sans); cursor: pointer; }
+    .sw-help-panel .sd-support .btn::before { content: ""; flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--sw-accent); }
+    .sw-help-panel .sd-support .btn:last-child { border-bottom: 0; }
+    .sw-help-panel .sd-support .btn:hover { color: var(--sw-blue); }
+
+    /* ---- Ask JO panel ---- */
+    .sw-askjo-panel { position: fixed; right: 22px; bottom: 22px; z-index: 1060; width: 380px; max-width: calc(100vw - 32px); background: var(--sw-surface); border: 1px solid var(--sw-line); border-radius: 16px; box-shadow: var(--sw-sh-lg); overflow: hidden; display: flex; flex-direction: column; max-height: 72vh; }
+    .sw-askjo-head { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; background: var(--sw-gnavy); color: #fff; font-weight: 800; }
+    .sw-askjo-close { border: 0; background: none; color: #fff; font-size: 22px; line-height: 1; cursor: pointer; }
+    .sw-askjo-body { flex: 1; overflow-y: auto; padding: 12px 14px; min-height: 220px; }
+    .sw-askjo-control { border-top: 1px solid var(--sw-line); padding: 10px 12px; }
+
+    @media (max-width: 980px) {
+        &.sw-app { grid-template-columns: 1fr; }
+        .sw-side { position: fixed; left: 0; top: 0; bottom: 0; width: 248px; z-index: 1080; transform: translateX(-100%); transition: transform .25s ease; }
+        &.sw-nav-open .sw-side { transform: translateX(0); }
+        &.sw-nav-open .sw-backdrop { display: block; position: fixed; inset: 0; background: rgba(11, 32, 52, .45); z-index: 1070; }
+        .sw-burger { display: block; }
+    }
+    @media (max-width: 560px) {
+        .sw-askjo span { display: none; }
+        .sw-content { padding: 16px 14px 80px; }
+    }
+}
+
+/* ==========================================================================
+   Dark mode
+   ========================================================================== */
+body.sd-dark #sw-root,
+body.theme-dark #sw-root {
+    --sw-ground: #0A1722;
+    --sw-surface: #0F2230;
+    --sw-ink: #EAF2F9;
+    --sw-muted: #9DB2C3;
+    --sw-faint: #6F8597;
+    --sw-line: #1E3445;
+    --sw-navy: #{$bz-navy-dm};
+    --sw-gnavy: linear-gradient(135deg, #{$bz-navy-dm-hi}, #{$bz-navy-dm-lo});
+
+    .sw-topbar { background: rgba(10, 23, 34, .92); }
+    .sw-help-ic { background: rgba($bz-accent, .18); }
+}
+
+/* ==========================================================================
+   Redesigned notification popover + message drawer.
+   Scoped to body.baz-student-exp so ONLY student-experience pages get the
+   navy/gold treatment — teachers and classic pages keep the stock components.
+   Cosmetic only (colour, radius, weight); no layout/position changes, so the
+   core popover + drawer behaviour ("See all", item links, mark-read) is intact.
+   ========================================================================== */
+body.baz-student-exp {
+    --sx-navy: #{$bz-navy};
+    --sx-gnavy: linear-gradient(135deg, #{$bz-navy-hi}, #{$bz-navy-lo});
+    --sx-accent: #{$bz-accent};
+    --sx-line: #E5ECF3;
+    --sx-sans: 'Manrope', 'Inter', system-ui, sans-serif;
+
+    /* notification popover (inline in the bespoke topbar). No overflow:hidden on
+       the container — it was clipping the "See all" footer; round the header +
+       footer corners individually instead. */
+    .popover-region-notifications .popover-region-container {
+        border-radius: 16px; border: 1px solid var(--sx-line);
+        box-shadow: 0 18px 50px rgba(11, 32, 52, .18); font-family: var(--sx-sans);
+    }
+    .popover-region-notifications .popover-region-header-container {
+        background: var(--sx-gnavy); color: #fff; padding: 13px 16px; border: 0;
+        border-radius: 16px 16px 0 0;
+    }
+    .popover-region-notifications .popover-region-header-container h3,
+    .popover-region-notifications .popover-region-header-container a,
+    .popover-region-notifications .popover-region-header-actions a { color: #fff; }
+    /* "See all" footer — full-width, never clipped, bold, branded. */
+    .popover-region-notifications .see-all-link {
+        display: block; text-align: center; padding: 12px 16px; margin: 0;
+        border-top: 1px solid var(--sx-line); border-radius: 0 0 16px 16px;
+        color: var(--sx-navy); font-weight: 700; text-decoration: none;
+    }
+    .popover-region-notifications .see-all-link:hover { background: rgba($bz-accent, .12); }
+    .popover-region-notifications .popover-region-seeall-text { color: inherit; }
+    .popover-region-notifications .notification.unread,
+    .popover-region-notifications [data-region="all-notifications"] .unread {
+        box-shadow: inset 3px 0 0 var(--sx-accent);
+    }
+    /* In dark mode the popover follows Moodle's theme-dark; make "See all" gold. */
+    &.theme-dark .popover-region-notifications .see-all-link { color: var(--sx-accent); }
+
+    /* message drawer (rendered at body level via standard_after_main_region_html) */
+    .message-drawer { font-family: var(--sx-sans); }
+    .message-drawer [data-region="header-container"],
+    .message-drawer .header-container { background: var(--sx-gnavy); color: #fff; }
+    .message-drawer [data-region="header-container"] a,
+    .message-drawer [data-region="header-container"] .btn { color: #fff; }
+    .message-drawer .btn-primary { background: var(--sx-gnavy); border: 0; }
+    .message-drawer .badge.bg-primary,
+    .message-drawer .unread-count { background: var(--sx-accent) !important; color: var(--sx-navy) !important; }
+    /* Injected "See all messages" footer (theme_baz/studentmsg). */
+    .message-drawer .sw-msg-seeall {
+        display: block; margin: 8px 12px 14px; padding: 11px 16px; text-align: center;
+        background: var(--sx-gnavy); color: #fff; font-weight: 700; font-size: 13px;
+        border-radius: 11px; text-decoration: none;
+    }
+    .message-drawer .sw-msg-seeall:hover { color: #fff; filter: brightness(1.08); }
+
+    /* ===================== Account pages (wrapped moodle content) =====================
+       Preferences hub, Edit profile and Change password render their standard
+       markup inside .sw-wrap; restyle it to the bespoke design here. Scoped by
+       wrapclass so it only touches these pages. Field names/validation untouched. */
+
+    /* ---- Preferences hub: bespoke setting cards (from build_pref_cards) ---- */
+    .sw-mc-hidden { display: none; }
+    .sw-pref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+    .sw-pref-card { background: var(--sw-surface); border: 1px solid var(--sw-line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--sw-sh); }
+    .sw-pref-ch { display: flex; align-items: center; gap: 11px; margin-bottom: 10px; }
+    .sw-pref-ic { width: 36px; height: 36px; flex: none; border-radius: 10px; display: grid; place-items: center; }
+    .sw-pref-ic svg { width: 19px; height: 19px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .sw-pref-ic.a { background: linear-gradient(135deg, $bz-navy-hi, $bz-navy-lo); }
+    .sw-pref-ic.b { background: linear-gradient(135deg, #8B5CF6, #6d3ff0); }
+    .sw-pref-ic.c { background: linear-gradient(135deg, #1FA37A, #127a59); }
+    .sw-pref-ic.d { background: linear-gradient(135deg, $bz-accent-hi, $bz-accent-lo); }
+    .sw-pref-ic.e { background: linear-gradient(135deg, #5B8DEF, #2f66d8); }
+    .sw-pref-ct { font: 800 15px var(--sw-sans); color: var(--sw-ink); }
+    .sw-pref-link { display: flex; align-items: center; padding: 9px 2px; font: 600 13.5px var(--sw-sans); color: var(--sw-ink) !important; text-decoration: none; border-bottom: 1px solid var(--sw-line); }
+    .sw-pref-link:last-child { border-bottom: 0; }
+    .sw-pref-link .ar { margin-left: auto; color: var(--sw-faint); font-size: 17px; }
+    .sw-pref-link:hover { color: var(--sw-navy) !important; }
+    .sw-pref-link:hover .ar { color: var(--sw-accent); }
+
+    /* Hide Moodle's in-content page heading + "Expand all" on the wrapped form
+       pages (the sw hero already shows the title). */
+    .sw-editprofile .sw-wrap .rui-main-content-title,
+    .sw-password .sw-wrap .rui-main-content-title,
+    .sw-settings .sw-wrap .rui-main-content-title,
+    .sw-generic .sw-wrap .rui-main-content-title,
+    .sw-profile .sw-wrap .rui-main-content-title,
+    .sw-editprofile .sw-wrap > h2, .sw-password .sw-wrap > h2,
+    .sw-settings .sw-wrap > h2, .sw-profile .sw-wrap > h2,
+    .sw-wrap .page-context-header,
+    .sw-wrap .collapsible-actions { display: none; }
+
+    /* ---- Generic wrap: notices and confirmations ----
+       core's notice() and confirm() render a box of text plus one or two
+       buttons, with no layout of their own. Inside the shell the box would
+       otherwise sit flush against the card edge with its buttons hard left,
+       reading as an unstyled fragment rather than a page. */
+    .sw-generic .sw-wrap { max-width: 640px; margin-inline: auto; }
+    .sw-generic .sw-wrap > .box,
+    .sw-generic .sw-wrap .generalbox {
+        background: none; border: 0; padding: 0; margin: 0 0 22px;
+        font-size: 15px; line-height: 1.6; color: var(--sw-ink); text-align: center;
+    }
+    .sw-generic .sw-wrap .continuebutton,
+    .sw-generic .sw-wrap .singlebutton {
+        display: flex; justify-content: center; gap: 12px; margin: 0;
+    }
+    .sw-generic .sw-wrap .continuebutton form,
+    .sw-generic .sw-wrap .singlebutton form { margin: 0; }
+    /* confirm() gives both choices .btn-primary; the second is the way back, so
+       it should not compete with the action the page is asking for. */
+    .sw-generic .sw-wrap .continuebutton form + form .btn-primary {
+        background: transparent; color: var(--sw-ink);
+        border: 1px solid var(--sw-line); box-shadow: none;
+    }
+    .sw-generic .sw-wrap .continuebutton form + form .btn-primary:hover {
+        background: var(--sw-ground); color: var(--sw-ink); filter: none;
+    }
+
+    /* Flatten Moodle's grey collapsible fieldset header into a clean section
+       label (uppercase mono, no grey bar / collapse chrome). */
+    .sw-wrap fieldset.collapsible > legend,
+    .sw-wrap fieldset.clearfix > legend { padding: 0; border: 0; }
+    .sw-wrap .fheader { background: none !important; border: 0 !important; padding: 4px 0 !important; box-shadow: none !important; }
+    .sw-wrap .fheader h3, .sw-wrap .fheader h2 { font: 800 11px/1 var(--sw-mono) !important; letter-spacing: .1em; text-transform: uppercase; color: var(--sw-muted) !important; margin: 0; }
+    .sw-wrap .fheader .icons-collapse-expand, .sw-wrap .fheader [data-collapse] svg,
+    .sw-wrap .ftoggler .icon { display: none; }
+
+    /* ---- (legacy) Preferences link groups — kept harmless; main_content now hidden ---- */
+    .sw-prefs .container-fluid { padding: 0 !important; margin: 0 !important; }
+    .sw-prefs .row { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin: 0; }
+    .sw-prefs [class*="col-"] { max-width: none; flex: none; width: auto; padding: 0; }
+    .sw-prefs .card { border: 1px solid var(--sw-line) !important; border-radius: 14px !important; box-shadow: var(--sw-sh) !important; background: var(--sw-surface); margin: 0 !important; }
+    .sw-prefs .card-body { padding: 16px 18px; }
+    .sw-prefs .card-body h3, .sw-prefs .card-body h2, .sw-prefs .card-title { font: 800 15px var(--sw-sans); color: var(--sw-ink); margin: 0 0 12px; padding-left: 11px; border-left: 3px solid var(--sw-accent); }
+    .sw-prefs .card-text > div { border-bottom: 1px solid var(--sw-line); }
+    .sw-prefs .card-text > div:last-child { border-bottom: 0; }
+    .sw-prefs .card-text a { display: flex; align-items: center; padding: 9px 2px; font: 600 13.5px var(--sw-sans); color: var(--sw-ink) !important; text-decoration: none; }
+    .sw-prefs .card-text a::after { content: "\203A"; margin-left: auto; color: var(--sw-faint); font-size: 16px; }
+    .sw-prefs .card-text a:hover { color: var(--sw-navy) !important; }
+
+    /* ---- Edit profile / Change password: moodleform → clean sections ---- */
+    .sw-editprofile form { max-width: 760px; }
+    .sw-password form { max-width: 520px; }
+    .sw-wrap fieldset.clearfix { background: var(--sw-surface); border: 1px solid var(--sw-line); border-radius: 14px; padding: 6px 18px 16px; margin: 0 0 16px; box-shadow: var(--sw-sh); }
+    .sw-wrap fieldset > legend, .sw-wrap fieldset .fheader { font: 800 11px/1 var(--sw-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--sw-muted); padding: 14px 0 4px; border: 0; }
+    .sw-wrap .ftoggler, .sw-wrap fieldset .fheader a { color: var(--sw-ink); text-decoration: none; }
+    .sw-wrap .fcontainer { padding-top: 8px; }
+    .sw-wrap .fitem.row { display: block; margin: 0 0 14px !important; padding: 0 !important; }
+    .sw-wrap .fitem .col-form-label, .sw-wrap .fitem [class*="col-md-3"] { text-align: left !important; max-width: none; flex: none; width: auto; padding: 0 0 6px !important; }
+    .sw-wrap .fitem .col-form-label label, .sw-wrap .fitem label { font: 800 12.5px var(--sw-sans); color: var(--sw-ink); margin: 0; }
+    .sw-wrap .fitem .felement, .sw-wrap .fitem [class*="col-md-9"] { max-width: none; flex: none; width: 100%; padding: 0 !important; }
+    .sw-wrap .felement input[type="text"], .sw-wrap .felement input[type="email"], .sw-wrap .felement input[type="password"],
+    .sw-wrap .felement input[type="url"], .sw-wrap .felement select, .sw-wrap .felement textarea {
+        width: 100%; max-width: 480px; border: 1px solid var(--sw-line) !important; border-radius: 10px !important;
+        padding: 10px 13px !important; font: 600 14px var(--sw-sans); color: var(--sw-ink); background: var(--sw-surface); box-shadow: none !important; height: auto; }
+    .sw-wrap .felement input:focus, .sw-wrap .felement select:focus, .sw-wrap .felement textarea:focus { border-color: var(--sw-accent) !important; outline: none; }
+    .sw-wrap .felement input[disabled], .sw-wrap .felement input[readonly] { background: var(--sw-ground); color: var(--sw-muted); }
+    .sw-wrap .btn-primary, .sw-wrap #id_submitbutton, .sw-wrap input[type="submit"].btn-primary {
+        background: var(--sw-gaccent) !important; border: 0 !important; color: var(--sw-on-accent) !important; font-weight: 800;
+        border-radius: 11px; padding: 12px 22px; box-shadow: 0 6px 16px rgba($bz-accent,.3); }
+    .sw-wrap .btn-secondary, .sw-wrap .btn-cancel .btn { background: var(--sw-surface) !important; border: 1.5px solid var(--sw-line) !important; color: var(--sw-navy) !important; border-radius: 11px; font-weight: 800; }
+    .sw-wrap .form-control-feedback, .sw-wrap .text-danger { color: #B23A25; font-size: 12.5px; }
+    .sw-wrap .collapseexpand { font: 800 12px var(--sw-sans); color: var(--sw-navy); }
+
+    // Event registration: open-forms list (index) + read-only response confirmation.
+    .sw-eventreg .list-group { border-radius: 12px; overflow: hidden; }
+    .sw-eventreg .list-group-item { background: var(--sw-surface); border-color: var(--sw-line); padding: 14px 16px; }
+    .sw-eventreg .list-group-item a { color: var(--sw-navy); font-weight: 700; }
+    .sw-eventreg .badge { border-radius: 999px; padding: 6px 12px; font-weight: 800; }
+    // "Your response" summary (dl.row): question label muted, answer in navy.
+    .sw-eventreg dl.row dt { color: var(--sw-muted, #6b7280); font-weight: 700; padding: 8px 0; }
+    .sw-eventreg dl.row dd { color: var(--sw-navy); padding: 8px 0; margin-bottom: 0; border-bottom: 1px solid var(--sw-line); }
+
+    /* ----------------------------------------------------------------------
+       Self-enrolment page (enrol-index) — restyle the wrapped core enrol
+       markup into a course-enrolment card. The enrol mform is untouched.
+       ---------------------------------------------------------------------- */
+    .sw-enrol { max-width: 720px; }
+    /* strip core page chrome (the shell already has its own crumb/header) */
+    .sw-enrol .rui-breadcrumbs-wrapper,
+    .sw-enrol #page-navbar,
+    .sw-enrol #user-notifications:empty { display: none; }
+    .sw-enrol #region-main-box,
+    .sw-enrol #region-main,
+    .sw-enrol .region-main-wrapper,
+    .sw-enrol .has-sidecourseblocks,
+    .sw-enrol .wrapper-has-blocks {
+        margin: 0 !important; padding: 0 !important; border: 0 !important;
+        background: none !important; width: 100% !important; max-width: none !important; box-shadow: none !important; }
+    .sw-enrol .row.no-gutters [class*="col-"] { max-width: none !important; flex: none !important; width: 100% !important; padding: 0 !important; }
+    /* the whole enrol content becomes one card */
+    .sw-enrol #region-main > div,
+    .sw-enrol .region-main-content {
+        background: var(--sw-surface); border: 1px solid var(--sw-line);
+        border-radius: 18px; box-shadow: var(--sw-sh); overflow: hidden; }
+    /* course header -> navy cover with white title */
+    .sw-enrol #page-header {
+        background: linear-gradient(135deg, var(--sw-navy), $bz-navy-deep);
+        padding: 26px 26px 22px; margin: 0; position: relative; overflow: hidden; }
+    .sw-enrol #page-header::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(420px 180px at 90% -20%, rgba($bz-accent,.30), transparent 70%); }
+    .sw-enrol #page-header .page-context-header,
+    .sw-enrol #page-header .rui-page-title,
+    .sw-enrol #page-header .rui-title-container,
+    .sw-enrol #page-header .header-actions-container { padding: 0 !important; margin: 0 !important; background: none !important; position: relative; }
+    .sw-enrol #page-header h1,
+    .sw-enrol .rui-main-content-title { color: #fff !important; font: 800 24px/1.2 var(--sw-sans) !important; margin: 0 !important; letter-spacing: -.01em; }
+    /* card body padding */
+    .sw-enrol .row.no-gutters { display: block; padding: 22px 24px 24px; }
+    /* course start-date -> chip */
+    .sw-enrol .rui-enroll-desc { margin: 0 0 4px; }
+    .sw-enrol .rui-course-info-box, .sw-enrol .rui-cinfo-container, .sw-enrol .rui-course-details { display: block; margin: 0; padding: 0; }
+    .sw-enrol .rui-course-startdate {
+        display: inline-flex; align-items: center; gap: 7px; background: var(--sw-ground);
+        border: 1px solid var(--sw-line); border-radius: 999px; padding: 6px 13px; font-size: 12.5px; margin: 0; }
+    .sw-enrol .rui-custom-field-name { color: var(--sw-muted); font-weight: 700; }
+    .sw-enrol .rui-custom-field-value { color: var(--sw-ink); font-weight: 800; }
+    /* enrolment options / method headings -> section labels */
+    .sw-enrol .rui-enroll-form h2,
+    .sw-enrol .rui-enroll-form h3,
+    .sw-enrol .rui-enroll-form .enrolment-options-header {
+        font: 800 12px/1.2 var(--sw-mono) !important; letter-spacing: .1em; text-transform: uppercase;
+        color: var(--sw-muted) !important; margin: 20px 0 12px !important; padding: 0; border: 0; }
+    .sw-enrol .rui-enroll-form h2:first-child { margin-top: 8px !important; }
+    /* keep the enrol description text readable */
+    .sw-enrol .rui-enroll-form p { color: var(--sw-ink); font-size: 14px; line-height: 1.6; }
+    /* Enrol me button: gold CTA (base .sw-wrap #id_submitbutton rule already golds
+       submits; enlarge it here) */
+    .sw-enrol #id_submitbutton,
+    .sw-enrol input[type="submit"].btn-primary,
+    .sw-enrol .btn-primary { padding: 13px 28px !important; font-size: 15px !important; border-radius: 12px !important; }
+    /* enrolment-key field, when present */
+    .sw-enrol .felement input[type="password"] { max-width: 360px; }
+    /* the shell hero already shows the course name, so hide the course-card's
+       duplicate title link inside the enrol card */
+    .sw-enrol .rui-course-card-title { display: none; }
+    /* tidy the actual course-card that the self-enrol method renders */
+    .sw-enrol .rui-course-cat-badge { display: inline-flex; background: var(--sw-ground); border: 1px solid var(--sw-line); border-radius: 999px; padding: 5px 12px; font-weight: 700; font-size: 12px; color: var(--sw-muted); }
+    .sw-enrol .rui-course-card-text .no-overflow { color: var(--sw-ink); font-size: 14px; line-height: 1.6; }
+    .sw-enrol .rui-card-course-contacts { margin-top: 12px; }
+    /* "About this course" — the enrolldesc custom field, which the classic
+       layout renders from efull_header. Its own card above the enrolment card.
+       The field is teacher-authored HTML pasted from Word, so the inline
+       font-family and font-size it carries are overridden to the shell's type. */
+    .sw-enroldesc {
+        background: var(--sw-surface); border: 1px solid var(--sw-line); border-radius: 18px;
+        box-shadow: var(--sw-sh); padding: 22px 24px; margin-bottom: 18px; max-width: 720px; }
+    .sw-enroldesc-h { font: 800 12px/1 var(--sw-mono); letter-spacing: .1em; text-transform: uppercase;
+        color: var(--sw-muted); margin: 0 0 12px; }
+    .sw-enroldesc .rui-custom-field-box { margin: 0; }
+    .sw-enroldesc .rui-custom-field-value,
+    .sw-enroldesc p, .sw-enroldesc li, .sw-enroldesc span {
+        color: var(--sw-ink) !important; font-family: var(--sw-sans) !important;
+        font-size: 14px !important; line-height: 1.65 !important; }
+    .sw-enroldesc p:last-child { margin-bottom: 0; }
+    .sw-enroldesc img { max-width: 100%; height: auto; border-radius: 12px; }
+
+    /* ======================================================================
+       Change password — bespoke security card (theme_baz/changepassword JS
+       enhances the real core form; these styles dress it. Fails safe: without
+       JS the .sw-cp class is absent and the plain wrapped form shows.)
+       ====================================================================== */
+    .sw-password { --sw-ok: #1E9E6A; --sw-bad: #C0402A; }
+    .sw-password form { max-width: 560px; }
+    /* The fieldset IS the card (override the generic fieldset padding). */
+    .sw-password fieldset.sw-cp { padding: 0 22px 22px !important; border-radius: 18px !important; overflow: hidden; }
+    .sw-password fieldset.sw-cp > legend { display: none; }
+    /* hero */
+    .sw-password .sw-cp-hero { display: flex; align-items: center; gap: 15px; margin: 0 -22px 20px; padding: 20px 22px;
+        border-bottom: 1px solid var(--sw-line); background: linear-gradient(180deg, rgba($bz-accent,.09), rgba($bz-accent,0)); }
+    .sw-password .sw-cp-shield { flex: 0 0 50px; width: 50px; height: 50px; border-radius: 14px; background: var(--sw-navy);
+        display: grid; place-items: center; box-shadow: inset 0 0 0 1px rgba($bz-accent,.35); }
+    .sw-password .sw-cp-shield svg { width: 26px; height: 26px; fill: none; stroke: var(--sw-accent); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .sw-password .sw-cp-ht { font: 800 16px var(--sw-sans); color: var(--sw-ink); }
+    .sw-password .sw-cp-hs { font-size: 13px; color: var(--sw-muted); margin-top: 2px; }
+    /* password field + eye toggle */
+    .sw-password .sw-cp-pwwrap { position: relative; }
+    .sw-password .sw-cp-pwwrap input { padding-right: 46px !important; max-width: none !important; }
+    .sw-password .sw-cp-eye { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px;
+        border-radius: 9px; border: 0; background: transparent; color: var(--sw-faint); display: grid; place-items: center; cursor: pointer; padding: 0; }
+    .sw-password .sw-cp-eye:hover { color: var(--sw-muted); }
+    .sw-password .sw-cp-eye svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    /* strength meter */
+    .sw-password .sw-cp-panel { margin: -4px 0 16px; }
+    .sw-password .sw-cp-meter { height: 6px; border-radius: 99px; background: var(--sw-line); overflow: hidden; }
+    .sw-password .sw-cp-meter i { display: block; height: 100%; width: 0; border-radius: 99px; background: var(--sw-bad); transition: width .25s, background .25s; }
+    .sw-password .sw-cp-meterlbl { display: flex; justify-content: space-between; font: 700 11px/1 var(--sw-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--sw-faint); margin-top: 7px; }
+    .sw-password .sw-cp-meterlbl b { color: var(--sw-ink); }
+    /* requirement checklist */
+    .sw-password .sw-cp-reqs { display: grid; grid-template-columns: 1fr 1fr; gap: 7px 16px; margin-top: 12px; }
+    .sw-password .sw-cp-req { display: flex; align-items: center; gap: 8px; font: 600 12.5px var(--sw-sans); color: var(--sw-muted); transition: color .15s; }
+    .sw-password .sw-cp-dot { flex: 0 0 18px; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--sw-line); display: grid; place-items: center; transition: all .15s; }
+    .sw-password .sw-cp-dot svg { width: 11px; height: 11px; fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; opacity: 0; }
+    .sw-password .sw-cp-req.met { color: var(--sw-ink); }
+    .sw-password .sw-cp-req.met .sw-cp-dot { background: var(--sw-ok); border-color: var(--sw-ok); }
+    .sw-password .sw-cp-req.met .sw-cp-dot svg { opacity: 1; }
+    /* passwords-match indicator */
+    .sw-password .sw-cp-match { display: none; align-items: center; gap: 7px; font: 700 12.5px var(--sw-sans); margin-top: 9px; }
+    .sw-password .sw-cp-match.show { display: flex; }
+    .sw-password .sw-cp-match.ok { color: var(--sw-ok); }
+    .sw-password .sw-cp-match.no { color: var(--sw-bad); }
+    .sw-password .sw-cp-match svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    /* the raw policy text is replaced by the live checklist */
+    .sw-password #fitem_id_passwordpolicyinfo { display: none; }
+    /* submit disabled (fail-open) state */
+    .sw-password .sw-cp #id_submitbutton[disabled] { opacity: .5; box-shadow: none; cursor: not-allowed; }
+}
+
+/* Helpdesk entry point inside the floating "Need help" panel. */
+.sd-support, .sw-support {
+    .sw-help-lead { font-size: 13px; color: $bz-navy-b; margin: 0 0 12px; }
+    .sw-help-btn {
+        display: block;
+        text-align: center;
+        background: $bz-accent;
+        color: $bz-accent-on;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-weight: 700;
+        font-size: 13.5px;
+        text-decoration: none;
+
+        &:hover { background: darken($bz-accent, 8%); color: $bz-accent-on; }
+    }
+    /* Email and phone, under whatever ticketing route the panel offered. These
+       are the route to a person when the ticket queue is not the answer, so they
+       are separated by a rule rather than sitting as more links in the stack. */
+    .sw-help-contact {
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid rgba($bz-navy, .12);
+    }
+    .sw-help-contact-lead {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: rgba($bz-navy, .6);
+        margin-bottom: 8px;
+    }
+    .sw-help-contact-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 0;
+        font-size: 13px;
+        font-weight: 600;
+        color: $bz-navy-b;
+        text-decoration: none;
+        word-break: break-all;
+
+        svg {
+            flex: 0 0 auto;
+            width: 15px;
+            height: 15px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: .7;
+        }
+
+        &:hover, &:focus {
+            color: $bz-navy;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        &:hover svg { opacity: 1; }
+    }
+
+    .sw-help-link {
+        display: block;
+        text-align: center;
+        margin-top: 9px;
+        font-size: 12.5px;
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+    }
+}

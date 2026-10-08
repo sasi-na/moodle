@@ -1,0 +1,135 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_dttutor/tutor_ia_drawer
+
+    Lateral drawer for Tutor-IA chat (based on aiplacement_courseassist).
+
+    Context variables required for this template:
+    * uniqid - Unique identifier
+    * courseid - Course ID
+    * cmid - Course module ID (0 if only in course)
+    * userrole - User role display (Teacher/Student)
+    * tutorname - Tutor name (may include teacher name or custom)
+    * welcomemessage - Welcome message with processed placeholders
+    * avatarurl - Selected avatar URL
+    * position - Drawer side (right/left, auto-determined for custom positions)
+    * chatproxy_url - URL of the chat proxy endpoint the client posts to
+
+    Example context (json):
+    {
+        "uniqid": "tia_123456",
+        "courseid": 2,
+        "cmid": 15,
+        "userrole": "Student",
+        "tutorname": "John Doe",
+        "welcomemessage": "Hello! I'm John Doe, your AI assistant. How can I help you today?",
+        "avatarurl": "/local/dttutor/pix/avatars/avatar_profesor_01.png",
+        "position": "right",
+        "chatproxy_url": "/local/dttutor/chatproxy.php"
+    }
+}}
+<div class="tutor-ia-drawer tutor-ia-drawer-{{position}}" id="tutor-ia-drawer-{{uniqid}}" data-position="{{position}}" aria-label="{{tutorname}}" tabindex="-1" role="region">
+    <div class="tutor-ia-drawer-header">
+        <div class="tutor-ia-header-content">
+            <img src="{{avatarurl}}" alt="{{tutorname}}" class="tutor-ia-avatar-small">
+            <div class="tutor-ia-title">
+                <h3>{{tutorname}}</h3>
+                <span class="tutor-ia-role">{{userrole}}</span>
+            </div>
+        </div>
+        <button id="tutor-ia-drawer-close-{{uniqid}}" class="btn tutor-ia-close-button" type="button">
+            {{#pix}}e/cancel, core{{/pix}}
+            <span class="sr-only">{{#str}}close, local_dttutor{{/str}}</span>
+        </button>
+    </div>
+    <div class="tutor-ia-drawer-body" id="tutor-ia-drawer-content-{{uniqid}}" data-welcomemessage="{{welcomemessage}}" data-chatproxy-url="{{chatproxy_url}}">
+        <h2 class="sr-only">{{tutorname}}</h2>
+
+        {{! Contenedor de mensajes }}
+        <div class="tutor-ia-messages-container" data-region="tutor-ia-messages">
+            <div class="tutor-ia-message ai">{{welcomemessage}}</div>
+        </div>
+
+        {{! Footer con input }}
+        <div class="tutor-ia-footer" data-region="tutor-ia-footer">
+            {{! Selection indicator badge }}
+            <div class="tutor-ia-selection-indicator" data-region="selection-indicator" style="display: none;">
+                <div class="selection-badge">
+                    <i class="fa fa-i-cursor"></i>
+                    <span class="selection-count" data-region="selection-count">0 lines selected</span>
+                    <button class="btn-clear-selection" data-action="clear-selection" aria-label="{{#str}}clear_selection, local_dttutor{{/str}}" title="{{#str}}clear_selection, local_dttutor{{/str}}">
+                        <i class="fa fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="tutor-ia-input-wrapper">
+                <textarea
+                    class="form-control tutor-ia-input"
+                    data-region="tutor-ia-input"
+                    placeholder="{{#str}}typemessage, local_dttutor{{/str}}"
+                    rows="1"
+                    aria-label="{{#str}}typemessage, local_dttutor{{/str}}"></textarea>
+                <button class="btn btn-primary tutor-ia-send" data-action="send-message" aria-label="{{#str}}sendmessage, local_dttutor{{/str}}">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22,2 15,22 11,13 2,9"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{{#js}}
+require(['local_dttutor/tutor_ia_chat'], function(TutorIAChat) {
+    // Never show the widget inside an iframe: prevents duplicated bubbles
+    // when the page is embedded (e.g. H5P content served via /h5p/embed.php).
+    if (window.self !== window.top) {
+        var toggleEl = document.getElementById('tutor-ia-toggle-{{uniqid}}');
+        var drawerEl = document.getElementById('tutor-ia-drawer-{{uniqid}}');
+        if (toggleEl) {
+            toggleEl.remove();
+        }
+        if (drawerEl) {
+            drawerEl.remove();
+        }
+        return;
+    }
+    var root = document.getElementById('tutor-ia-drawer-content-{{uniqid}}');
+    if (root) {
+        var chat = TutorIAChat.init(root, '{{uniqid}}', {{courseid}}, {{cmid}});
+
+        if (chat && typeof chat.finalizeStream === 'function' && typeof chat.renderMarkdown === 'function') {
+            var originalFinalizeStream = chat.finalizeStream.bind(chat);
+            chat.finalizeStream = function(sendBtn) {
+                if (this.markdownRenderFrameId) {
+                    window.cancelAnimationFrame(this.markdownRenderFrameId);
+                    this.markdownRenderFrameId = null;
+                    this.markdownRenderScheduled = false;
+                }
+
+                if (this.currentAIMessageEl) {
+                    this.currentAIMessageEl.innerHTML = this.renderMarkdown(this.currentAIMessageRawText || '');
+                    this.scrollToBottom();
+                }
+
+                return originalFinalizeStream(sendBtn);
+            };
+        }
+    }
+});
+{{/js}}

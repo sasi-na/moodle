@@ -1,0 +1,158 @@
+# Main Moodle cron.
+#
+# The DB password is read from the `moodle-secrets` Secret and passed to the
+# wait-loop via getenv(), NOT interpolated into the shell/PHP source. The live
+# object still has the literal password in two places (inline in this snippet and
+# as MOODLE_DOCKER_DBPASS), which is why adopting this file produces a non-empty
+# diff -- that diff is the fix, see deploy/README.md.
+#
+# `env` is supplied entirely by the overlay, same convention as the Deployment.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: moodle-cron
+  labels:
+    app: moodle-cron
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: moodle-cron
+        spec:
+          # Keep cron OFF spot. A preempted node hard-kills the runner ~30s after
+          # notice, and a runner killed mid-task leaves its task_adhoc claim
+          # (timestarted/pid/hostname) AND its cron_adhoc_task_runner_<n> lock in
+          # lock_db behind. Nothing reclaims either for 24 hours, and with
+          # task_adhoc_concurrency_limit=1 that one orphan stops ALL adhoc
+          # processing: on 2026-09-01 it froze the queue for 18 hours, 6,061 tasks
+          # deep, taking every async backup and forum notification with it.
+          #
+          # terminationGracePeriodSeconds=30 does not save it. Moodle handles
+          # SIGTERM (adhoc_task.php calls script_supports_graceful_exit), but the
+          # runner holds the slot lock for its whole 15-minute keep-alive window
+          # and processes tasks back to back, so a kill lands mid-claim far more
+          # often than not.
+          #
+          # Cron is a poor fit for spot generally: it is stateful for the length of
+          # a run and holds locks that outlive the process.
+          # `pool-type` (ondemand|spot) rather than cloud.google.com/gke-nodepool,
+          # matching what the PXC CR's nodeAffinity uses and surviving a pool rename.
+          nodeSelector:
+            pool-type: ondemand
+          restartPolicy: OnFailure
+          containers:
+          - name: moodle-cron
+            image: moodle-lms
+            command:
+              - /bin/bash
+              - -c
+              - |
+                set -e
+                echo "=== Starting Moodle Cron Job at $(date) ==="
+
+                echo "Waiting for database connection..."
+                until php -r '
+                  $m = @new mysqli(
+                    getenv("MOODLE_DOCKER_DBHOST"),
+                    getenv("MOODLE_DOCKER_DBUSER"),
+                    getenv("MOODLE_DOCKER_DBPASS"),
+                    getenv("MOODLE_DOCKER_DBNAME"),
+                    3306
+                  );
+                  if ($m->connect_error) {
+                    echo "Database connection failed: " . $m->connect_error . "\n";
+                    exit(1);
+                  }
+                  echo "Database connected successfully\n";
+                  $m->close();
+                  exit(0);
+                '; do
+                  echo "Database not ready, waiting 5 seconds..."
+                  sleep 5
+                done
+
+                cd /var/www/html
+
+                # Tenant-scoped plugins. The image ships these outside the scanned
+                # plugin tree (tenant-plugins/) so no tenant installs them by
+                # accident; a tenant that wants one names it in TENANT_PLUGINS.
+                #
+                # This MUST mirror whatever the tenant's Deployment does. It did not,
+                # once: the Deployment copied mod/pdfannotator in via its init
+                # container and the CronJobs did not, so cron pods saw the plugin in
+                # the database with no code on disk, concluded an upgrade was
+                # pending, and suspended themselves. Cron was silently dead for ~24
+                # hours -- no Zoom sync, no notifications, no attendance processing.
+                for p in $(echo "${TENANT_PLUGINS:-}" | tr ',' ' '); do
+                  [ -z "$p" ] && continue
+                  if [ -d "/var/www/html/tenant-plugins/$p" ] && [ ! -d "/var/www/html/mod/$p" ]; then
+                    echo "Installing tenant plugin: mod/$p"
+                    cp -R "/var/www/html/tenant-plugins/$p" "/var/www/html/mod/$p"
+                  fi
+                done
+
+
+                # cron_keepalive is configured in config.php, not as a CLI parameter.
+                php admin/cli/cron.php
+
+                echo "=== Moodle Cron Job completed at $(date) ==="
+
+            resources:
+              requests:
+                memory: "4Gi"
+                cpu: "1"
+
+            volumeMounts:
+            - name: moodle-data
+              mountPath: /var/moodledata
+            - name: moodle-config
+              mountPath: /var/www/html/config.php
+              subPath: moodle_config.php
+              readOnly: true
+            - name: php-config
+              mountPath: /usr/local/etc/php/conf.d/99-moodle.ini
+              subPath: php.ini
+            - name: tmp-cache
+              mountPath: /tmp/moodle-cache
+
+            readinessProbe:
+              exec:
+                command:
+                  - /bin/bash
+                  - -c
+                  - "test -f /var/www/html/config.php && echo 'Config exists'"
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 3
+
+          volumes:
+          - name: moodle-data
+            persistentVolumeClaim:
+              claimName: moodle-nfs-pvc
+          - name: moodle-config
+            configMap:
+              name: moodle-config
+              items:
+              - key: moodle_config.php
+                path: moodle_config.php
+          - name: php-config
+            configMap:
+              name: moodle-config
+          - name: tmp-cache
+            emptyDir:
+              sizeLimit: 2Gi
+
+          securityContext:
+            fsGroup: 33
+            runAsUser: 33
+            runAsGroup: 33
+            fsGroupChangePolicy: "OnRootMismatch"

@@ -1,0 +1,69 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_facultyfeedback/badge
+
+    The weekly-feedback figure in the course header, for faculty only.
+
+    Deliberately built on the theme's own course-header field classes
+    (.rui-custom-field-box / -name / -value) so it lines up with "Start date"
+    and inherits the theme's type and spacing. Only the gold left rule and the
+    "View feedback" link are new.
+
+    Below the response threshold it renders as a plain div, not a button: there
+    is nothing worth opening yet.
+
+    Context variables required for this template:
+    * hasenough - Whether the response count clears the minimum
+    * courseid - Course id, passed to the click handler
+    * fieldlabel - "Weekly feedback"
+    * averagedisplay - Average to two decimals, e.g. "3.99"
+    * summaryline - "/ 5 · 1,811 responses", built server-side
+    * statusline - "Not enough responses yet", when below the threshold
+    * awaitingline - "Week of 25 Jul is open · 0 of 5 needed", when known
+    * ctalabel - "View feedback"
+
+    Example context (json):
+    {
+        "hasenough": true,
+        "courseid": 939,
+        "fieldlabel": "Weekly feedback",
+        "averagedisplay": "3.99",
+        "summaryline": "/ 5 · 1,811 responses",
+        "statusline": "",
+        "awaitingline": "",
+        "ctalabel": "View feedback"
+    }
+}}
+<div class="rui-custom-field-box lff-field {{^hasenough}}lff-field--muted{{/hasenough}}"
+     data-region="local-facultyfeedback">
+    <span class="rui-custom-field-name lff-field__name">{{fieldlabel}}</span>
+    {{#hasenough}}
+        <span class="rui-custom-field-value lff-field__value">
+            <span class="lff-star" aria-hidden="true">&#9733;</span>{{averagedisplay}}<span class="lff-field__meta">{{summaryline}}</span>
+        </span>
+        <button type="button" class="lff-field__cta"
+                data-action="local-facultyfeedback-open"
+                data-courseid="{{courseid}}">{{ctalabel}}</button>
+    {{/hasenough}}
+    {{^hasenough}}
+        <span class="rui-custom-field-value lff-field__value lff-field__value--muted">
+            <span class="lff-star lff-star--muted" aria-hidden="true">&#9734;</span>{{statusline}}
+        </span>
+        {{#awaitingline}}<span class="lff-field__note">{{awaitingline}}</span>{{/awaitingline}}
+    {{/hasenough}}
+</div>

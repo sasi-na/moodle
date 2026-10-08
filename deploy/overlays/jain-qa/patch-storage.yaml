@@ -1,0 +1,17 @@
+# QA's NFS claim is named differently from every other tenant's.
+#
+# Base uses `moodle-nfs-pvc`; QA's existing, already-Bound claim is
+# `moodle-nfs-pvc-jain-qa`. Pointing at base's name would leave the pod waiting
+# on a claim that does not exist here, so the volume is repointed instead of the
+# claim being renamed -- renaming a bound PVC means deleting and recreating it.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  template:
+    spec:
+      volumes:
+      - name: moodle-data-storage
+        persistentVolumeClaim:
+          claimName: moodle-nfs-pvc-jain-qa

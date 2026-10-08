@@ -1,0 +1,31 @@
+{{!
+    @template local_dashboardpoll/thanks
+
+    The done state shown after voting when the poll hides its results
+    (resultsdisplay = 0): a simple thank-you card with no tallies.
+
+    Context variables required for this template:
+    * question - The poll question text
+
+    Example context (json):
+    {
+        "question": "How are you finding the new dashboard?"
+    }
+}}
+<div class="ldp-card ldp-card--results ldp-card--thanks" role="dialog" aria-modal="true" aria-labelledby="ldp-question" tabindex="-1">
+    <button type="button" class="ldp-close" data-action="dismiss" aria-label="{{#str}} closebtn, local_dashboardpoll {{/str}}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </button>
+    <p class="ldp-eyebrow ldp-eyebrow--done">
+        <span class="ldp-check" aria-hidden="true"></span>{{#str}} thanks, local_dashboardpoll {{/str}}
+    </p>
+    <h2 class="ldp-question" id="ldp-question">{{question}}</h2>
+    <p class="ldp-thanks-body">{{#str}} thankssaved, local_dashboardpoll {{/str}}</p>
+    <div class="ldp-results-foot ldp-results-foot--thanks">
+        <button type="button" class="ldp-btn ldp-btn-primary" data-action="close">
+            {{#str}} closebtn, local_dashboardpoll {{/str}}
+        </button>
+    </div>
+</div>

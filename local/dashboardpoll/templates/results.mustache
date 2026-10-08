@@ -1,0 +1,57 @@
+{{!
+    @template local_dashboardpoll/results
+
+    The results state of the dashboard poll popup, shown after the user votes.
+
+    Context variables required for this template:
+    * question - The poll question text
+    * totalvotes - Total number of responses
+    * showpercent - Whether to show the per-option percentage
+    * showvotecounts - Whether to show the per-option vote count line
+    * options - Array of { id, text, percent, votes, mine }
+
+    Example context (json):
+    {
+        "question": "How are you finding the new dashboard?",
+        "totalvotes": 128,
+        "options": [
+            { "id": 1, "text": "Love it", "percent": 62, "votes": 79, "mine": true },
+            { "id": 2, "text": "It's fine", "percent": 28, "votes": 36, "mine": false },
+            { "id": 3, "text": "Needs work", "percent": 10, "votes": 13, "mine": false }
+        ]
+    }
+}}
+<div class="ldp-card ldp-card--results" role="dialog" aria-modal="true" aria-labelledby="ldp-question" tabindex="-1">
+    <button type="button" class="ldp-close" data-action="dismiss" aria-label="{{#str}} closebtn, local_dashboardpoll {{/str}}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </button>
+    <p class="ldp-eyebrow ldp-eyebrow--done">
+        <span class="ldp-check" aria-hidden="true"></span>{{#str}} thanks, local_dashboardpoll {{/str}}
+    </p>
+    <h2 class="ldp-question" id="ldp-question">{{question}}</h2>
+    <ul class="ldp-results" data-region="results">
+        {{#options}}
+            <li class="ldp-result {{#mine}}is-mine{{/mine}}">
+                <div class="ldp-result-head">
+                    <span class="ldp-result-text">
+                        {{text}}
+                        {{#mine}}<span class="ldp-chip">{{#str}} yourpick, local_dashboardpoll {{/str}}</span>{{/mine}}
+                    </span>
+                    {{#showpercent}}<span class="ldp-result-pct">{{percent}}%</span>{{/showpercent}}
+                </div>
+                <div class="ldp-bar"><span class="ldp-bar-fill" data-pct="{{percent}}"></span></div>
+                {{#showvotecounts}}<div class="ldp-result-votes">{{#str}} votes, local_dashboardpoll, {{votes}} {{/str}}</div>{{/showvotecounts}}
+            </li>
+        {{/options}}
+    </ul>
+    <div class="ldp-results-foot">
+        <span class="ldp-total">
+            {{#str}} totalresponses, local_dashboardpoll {{/str}}: <strong>{{totalvotes}}</strong>
+        </span>
+        <button type="button" class="ldp-btn ldp-btn-primary" data-action="close">
+            {{#str}} closebtn, local_dashboardpoll {{/str}}
+        </button>
+    </div>
+</div>

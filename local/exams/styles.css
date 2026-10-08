@@ -1,0 +1,422 @@
+/*
+ * local_exams — self-contained ".exui" design system.
+ *
+ * Everything is scoped under .exui so it neither inherits nor leaks the active
+ * Moodle theme. Theme-independent: the portal looks identical under theme_baz,
+ * Boost, or any other theme. Dark-mode aware via prefers-color-scheme and an
+ * explicit .exui-dark toggle class.
+ */
+
+/* ----------------------------------------------------------------------------
+ * Design tokens
+ * ------------------------------------------------------------------------- */
+.exui {
+    --exui-bg: #f4f6fb;
+    --exui-surface: #ffffff;
+    --exui-surface-2: #f8fafc;
+    --exui-border: #e6e9f0;
+    --exui-text: #1b2330;
+    --exui-text-muted: #5b6676;
+    --exui-primary: #4f46e5;
+    --exui-primary-weak: #eef0fe;
+    --exui-success: #16a34a;
+    --exui-success-weak: #e7f6ec;
+    --exui-warn: #d97706;
+    --exui-warn-weak: #fdf2e2;
+    --exui-danger: #dc2626;
+    --exui-danger-weak: #fbeaea;
+    --exui-info: #0ea5e9;
+
+    --exui-radius: 14px;
+    --exui-radius-sm: 9px;
+    --exui-shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 6px 20px rgba(16, 24, 40, .06);
+    --exui-shadow-lg: 0 10px 40px rgba(16, 24, 40, .12);
+
+    --exui-gap: 18px;
+
+    color: var(--exui-text);
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
+}
+
+.exui-dark {
+    --exui-bg: #0e1117;
+    --exui-surface: #161b24;
+    --exui-surface-2: #1c2430;
+    --exui-border: #2a323f;
+    --exui-text: #e6eaf2;
+    --exui-text-muted: #9aa6b6;
+    --exui-primary: #818cf8;
+    --exui-primary-weak: #232a44;
+    --exui-success-weak: #15291d;
+    --exui-warn-weak: #2c2113;
+    --exui-danger-weak: #2c1717;
+    --exui-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 6px 20px rgba(0, 0, 0, .35);
+}
+
+@media (prefers-color-scheme: dark) {
+    .exui:not(.exui-light) {
+        --exui-bg: #0e1117;
+        --exui-surface: #161b24;
+        --exui-surface-2: #1c2430;
+        --exui-border: #2a323f;
+        --exui-text: #e6eaf2;
+        --exui-text-muted: #9aa6b6;
+        --exui-primary: #818cf8;
+        --exui-primary-weak: #232a44;
+        --exui-success-weak: #15291d;
+        --exui-warn-weak: #2c2113;
+        --exui-danger-weak: #2c1717;
+    }
+}
+
+/* ----------------------------------------------------------------------------
+ * Layout primitives
+ * ------------------------------------------------------------------------- */
+.exui-root {
+    background: var(--exui-bg);
+    border-radius: var(--exui-radius);
+    padding: clamp(16px, 3vw, 32px);
+    min-height: 60vh;
+}
+
+.exui * { box-sizing: border-box; }
+
+.exui-grid {
+    display: grid;
+    gap: var(--exui-gap);
+    grid-template-columns: repeat(12, 1fr);
+}
+.exui-col-3  { grid-column: span 3; }
+.exui-col-4  { grid-column: span 4; }
+.exui-col-6  { grid-column: span 6; }
+.exui-col-8  { grid-column: span 8; }
+.exui-col-12 { grid-column: span 12; }
+@media (max-width: 900px) {
+    .exui-col-3, .exui-col-4, .exui-col-6, .exui-col-8 { grid-column: span 12; }
+}
+
+/* ----------------------------------------------------------------------------
+ * Header
+ * ------------------------------------------------------------------------- */
+.exui-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--exui-gap);
+    margin-bottom: var(--exui-gap);
+    flex-wrap: wrap;
+}
+.exui-header h1 { font-size: 1.5rem; font-weight: 700; margin: 0; }
+.exui-header .exui-sub { color: var(--exui-text-muted); font-size: .9rem; margin-top: 2px; }
+
+/* ----------------------------------------------------------------------------
+ * Cards & stat tiles
+ * ------------------------------------------------------------------------- */
+.exui-card {
+    background: var(--exui-surface);
+    border: 1px solid var(--exui-border);
+    border-radius: var(--exui-radius);
+    box-shadow: var(--exui-shadow);
+    padding: 20px;
+}
+.exui-card-title {
+    font-size: .8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--exui-text-muted);
+    margin: 0 0 14px;
+}
+
+.exui-tile { display: flex; flex-direction: column; gap: 6px; }
+.exui-tile .exui-tile-value { font-size: 2rem; font-weight: 750; line-height: 1; }
+.exui-tile .exui-tile-label { color: var(--exui-text-muted); font-size: .85rem; }
+.exui-tile .exui-tile-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: grid; place-items: center; margin-bottom: 4px;
+    background: var(--exui-primary-weak); color: var(--exui-primary);
+}
+
+/* ----------------------------------------------------------------------------
+ * Badges / pills
+ * ------------------------------------------------------------------------- */
+.exui-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: .78rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 999px;
+    background: var(--exui-surface-2); color: var(--exui-text-muted);
+}
+.exui-badge-success { background: var(--exui-success-weak); color: var(--exui-success); }
+.exui-badge-warn    { background: var(--exui-warn-weak);    color: var(--exui-warn); }
+.exui-badge-danger  { background: var(--exui-danger-weak);  color: var(--exui-danger); }
+.exui-badge-primary { background: var(--exui-primary-weak); color: var(--exui-primary); }
+.exui-badge-correct    { background: var(--exui-success-weak); color: var(--exui-success); }
+.exui-badge-partial    { background: var(--exui-warn-weak);    color: var(--exui-warn); }
+.exui-badge-incorrect  { background: var(--exui-danger-weak);  color: var(--exui-danger); }
+.exui-badge-unanswered { background: var(--exui-surface-2);    color: var(--exui-text-muted); }
+.exui-badge-pending    { background: var(--exui-primary-weak); color: var(--exui-primary); }
+.exui-badge-easy       { background: var(--exui-success-weak); color: var(--exui-success); }
+.exui-badge-medium     { background: var(--exui-warn-weak);    color: var(--exui-warn); }
+.exui-badge-hard       { background: var(--exui-danger-weak);  color: var(--exui-danger); }
+
+/* ----------------------------------------------------------------------------
+ * Progress ring / gauge container
+ * ------------------------------------------------------------------------- */
+.exui-ring { position: relative; width: 132px; height: 132px; }
+.exui-ring svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+.exui-ring .exui-ring-bg   { fill: none; stroke: var(--exui-border); stroke-width: 10; }
+.exui-ring .exui-ring-fg   { fill: none; stroke: var(--exui-primary); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .8s ease; }
+.exui-ring .exui-ring-text {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    text-align: center;
+}
+.exui-ring .exui-ring-text .v { font-size: 1.7rem; font-weight: 750; }
+.exui-ring .exui-ring-text .l { font-size: .72rem; color: var(--exui-text-muted); }
+
+/* ----------------------------------------------------------------------------
+ * Chart frame
+ * ------------------------------------------------------------------------- */
+.exui-chart { position: relative; width: 100%; min-height: 240px; }
+.exui-chart canvas { max-width: 100%; }
+
+/* ----------------------------------------------------------------------------
+ * Tables
+ * ------------------------------------------------------------------------- */
+.exui-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.exui-table th, .exui-table td { padding: 11px 12px; text-align: left; border-bottom: 1px solid var(--exui-border); }
+.exui-table th { color: var(--exui-text-muted); font-weight: 600; font-size: .8rem; text-transform: uppercase; letter-spacing: .03em; }
+.exui-table tbody tr:hover { background: var(--exui-surface-2); }
+.exui-table td.num, .exui-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ----------------------------------------------------------------------------
+ * Buttons
+ * ------------------------------------------------------------------------- */
+.exui-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-weight: 600; font-size: .9rem;
+    padding: 9px 16px; border-radius: var(--exui-radius-sm);
+    border: 1px solid var(--exui-border); background: var(--exui-surface);
+    color: var(--exui-text); cursor: pointer; text-decoration: none;
+    transition: transform .06s ease, box-shadow .12s ease;
+}
+.exui-btn:hover { box-shadow: var(--exui-shadow); }
+.exui-btn:active { transform: translateY(1px); }
+.exui-btn-primary { background: var(--exui-primary); border-color: var(--exui-primary); color: #fff; }
+
+/* ----------------------------------------------------------------------------
+ * Empty / skeleton states
+ * ------------------------------------------------------------------------- */
+.exui-empty { text-align: center; color: var(--exui-text-muted); padding: 48px 16px; }
+.exui-skeleton {
+    background: linear-gradient(90deg, var(--exui-surface-2) 25%, var(--exui-border) 37%, var(--exui-surface-2) 63%);
+    background-size: 400% 100%; animation: exui-shimmer 1.4s ease infinite;
+    border-radius: 8px; height: 14px;
+}
+@keyframes exui-shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+
+/* ----------------------------------------------------------------------------
+ * Exam runner: question palette + timer (Part B)
+ * ------------------------------------------------------------------------- */
+.exui-palette { display: grid; grid-template-columns: repeat(auto-fill, 40px); gap: 8px; }
+.exui-palette button {
+    width: 40px; height: 40px; border-radius: 9px; border: 1px solid var(--exui-border);
+    font-weight: 600; cursor: pointer; background: var(--exui-surface);
+}
+.exui-pal-answered      { background: var(--exui-success-weak); color: var(--exui-success); border-color: var(--exui-success); }
+.exui-pal-notanswered   { background: var(--exui-danger-weak);  color: var(--exui-danger); }
+.exui-pal-review        { background: var(--exui-warn-weak);    color: var(--exui-warn); border-color: var(--exui-warn); }
+.exui-pal-reviewanswered{ background: var(--exui-primary-weak); color: var(--exui-primary); border-color: var(--exui-primary); }
+.exui-pal-current       { outline: 2px solid var(--exui-primary); outline-offset: 1px; }
+
+.exui-timer-ring { width: 84px; height: 84px; }
+.exui-timer-warn  .exui-ring-fg { stroke: var(--exui-warn); }
+.exui-timer-danger .exui-ring-fg { stroke: var(--exui-danger); }
+
+/* ============================================================================
+ * Rich polish layer (sharper, denser, more premium). Single fixed light theme
+ * — the dark/mode toggle is intentionally removed.
+ * ========================================================================= */
+.exui {
+    --exui-bg: #eef1f8;
+    --exui-surface: #ffffff;
+    --exui-surface-2: #f5f7fc;
+    --exui-border: #e4e8f2;
+    --exui-text: #141a26;
+    --exui-text-muted: #66708a;
+    --exui-primary: #5b51f0;
+    --exui-primary-weak: #ecebfe;
+    --exui-grad: linear-gradient(135deg, #6a5cf6 0%, #8b6ff7 100%);
+    --exui-grad-accent: linear-gradient(135deg, #5b51f0 0%, #22b8cf 120%);
+    --exui-radius: 16px;
+    --exui-shadow: 0 1px 2px rgba(16,24,40,.05), 0 10px 28px rgba(20,26,38,.07);
+    --exui-shadow-lg: 0 18px 50px rgba(20,26,38,.16);
+    font-feature-settings: "cv02","cv03","ss01";
+    letter-spacing: -0.01em;
+}
+
+.exui-root {
+    background:
+        radial-gradient(1200px 400px at 100% -10%, rgba(91,81,240,.06), transparent 60%),
+        var(--exui-bg);
+    padding: clamp(18px, 3vw, 34px);
+}
+
+.exui-header { padding-bottom: 6px; border-bottom: 1px solid var(--exui-border); }
+.exui-header h1 { font-size: clamp(1.35rem, 2.4vw, 1.85rem); font-weight: 760; letter-spacing: -0.03em; }
+
+.exui-card {
+    border-radius: var(--exui-radius);
+    transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
+}
+.exui-card:hover { box-shadow: var(--exui-shadow-lg); transform: translateY(-2px); border-color: #d7ddec; }
+.exui-card-title { letter-spacing: .08em; font-size: .72rem; }
+
+/* Stat tiles get a gradient accent rail + bigger numerals. */
+.exui-tile { position: relative; padding-left: 4px; }
+.exui-tile .exui-tile-value {
+    font-size: clamp(1.7rem, 3vw, 2.3rem); font-weight: 800; letter-spacing: -0.03em;
+    background: var(--exui-grad-accent); -webkit-background-clip: text;
+    background-clip: text; -webkit-text-fill-color: transparent;
+}
+.exui-tile .exui-tile-label { font-size: .8rem; font-weight: 500; }
+.exui-card.exui-tile::before {
+    content: ""; position: absolute; left: 0; top: 16px; bottom: 16px; width: 4px;
+    border-radius: 4px; background: var(--exui-grad);
+}
+
+.exui-badge { padding: 4px 11px; font-weight: 650; }
+
+.exui-btn { border-radius: 11px; font-weight: 650; transition: transform .08s ease, box-shadow .16s ease, filter .16s ease; }
+.exui-btn-primary { background: var(--exui-grad); border: none; box-shadow: 0 8px 20px rgba(91,81,240,.32); }
+.exui-btn-primary:hover { filter: brightness(1.05); box-shadow: 0 10px 26px rgba(91,81,240,.4); }
+
+.exui-table thead th { border-bottom: 2px solid var(--exui-border); }
+.exui-table tbody tr { transition: background .12s ease; }
+
+/* ============================================================================
+ * Full-screen exam runner — takes over the whole viewport (above theme chrome).
+ * ========================================================================= */
+#local-exams-runner.exui {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    overflow: auto;
+    background: var(--exui-bg);
+    -webkit-overflow-scrolling: touch;
+}
+#local-exams-runner .exui-root {
+    min-height: 100vh;
+    border-radius: 0;
+    padding: clamp(18px, 3vw, 44px);
+    max-width: 1320px;
+    margin: 0 auto;
+}
+#local-exams-runner .exui-header {
+    position: sticky; top: 0; z-index: 5;
+    background: rgba(238,241,248,.86); backdrop-filter: saturate(160%) blur(8px);
+    margin: -8px -8px 16px; padding: 14px 8px;
+}
+/* Question panel reads like a real exam paper. */
+#local-exams-runner .local-exams-qpanel {
+    font-size: 1.06rem; line-height: 1.7; padding: 26px 28px;
+}
+#local-exams-runner .local-exams-qpanel .qtext { font-weight: 600; margin-bottom: 14px; }
+.exui-palette button { transition: transform .06s ease, box-shadow .12s ease; }
+.exui-palette button:hover { transform: translateY(-1px); box-shadow: var(--exui-shadow); }
+
+/* ============================================================================
+ * Runner: 3-zone command center
+ * ========================================================================= */
+#local-exams-runner .exui-root { max-width: 1560px; }
+
+/* Header */
+.exui-runner-header {
+    display: flex; align-items: center; gap: 18px;
+    position: sticky; top: 0; z-index: 6;
+    background: rgba(238,241,248,.9); backdrop-filter: saturate(160%) blur(8px);
+    padding: 12px 6px; margin: -8px -8px 16px; border-bottom: 1px solid var(--exui-border);
+}
+.exui-runner-header .hdr-left { min-width: 180px; }
+.exui-runner-header .hdr-title { font-weight: 750; font-size: 1.05rem; letter-spacing: -.02em; }
+.exui-runner-header .hdr-progress { flex: 1 1 auto; }
+.exui-runner-header .hdr-right { display: flex; align-items: center; gap: 8px; }
+.exui-icon-btn { padding: 7px 10px; }
+
+/* Progress bar */
+.exui-progress { height: 8px; border-radius: 999px; background: var(--exui-border); overflow: hidden; }
+.exui-progress.big { height: 12px; margin-bottom: 14px; }
+.exui-progress-fill { height: 100%; width: 0; background: var(--exui-grad-accent); transition: width .4s ease; }
+
+/* The 3 zones */
+.exui-runner-grid {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr) 300px;
+    gap: var(--exui-gap);
+    align-items: start;
+}
+.exui-rail { display: flex; flex-direction: column; gap: var(--exui-gap); position: sticky; top: 84px; }
+.exui-runner-center { min-width: 0; }
+.exui-runner-center .local-exams-qpanel { max-width: 820px; margin: 0 auto; }
+.exui-qhead { font-size: .8rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--exui-primary); margin-bottom: 12px; }
+
+@media (max-width: 1080px) {
+    .exui-runner-grid { grid-template-columns: 1fr; }
+    .exui-rail { position: static; flex-direction: row; flex-wrap: wrap; }
+    .exui-rail .exui-card { flex: 1 1 200px; }
+}
+
+/* Left-rail stats */
+.exui-stat-rows { display: flex; justify-content: space-between; gap: 8px; text-align: center; }
+.exui-stat-rows > div { flex: 1; }
+.exui-stat-rows b { display: block; font-size: 1.5rem; font-weight: 800; letter-spacing: -.02em; }
+.exui-stat-rows small { color: var(--exui-text-muted); font-size: .72rem; }
+.exui-stat-mini { display: flex; justify-content: space-between; font-size: .82rem; color: var(--exui-text-muted); margin-top: 6px; }
+.exui-stat-mini b { color: var(--exui-text); font-variant-numeric: tabular-nums; }
+.exui-pace { font-size: 1.25rem; font-weight: 750; }
+.exui-pace.ok { color: var(--exui-success); }
+.exui-pace.behind { color: var(--exui-danger); }
+
+/* Nav bar */
+.exui-runner-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; max-width: 820px; margin-left: auto; margin-right: auto; }
+.exui-runner-nav-mid { display: flex; gap: 8px; }
+
+/* Palette legend */
+.exui-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; font-size: .74rem; color: var(--exui-text-muted); }
+.exui-legend i.lg { display: inline-block; width: 12px; height: 12px; border-radius: 4px; margin-right: 4px; vertical-align: -1px; }
+.exui-legend .lg-ans { background: var(--exui-success); }
+.exui-legend .lg-rev { background: var(--exui-warn); }
+.exui-legend .lg-cur { background: var(--exui-primary); }
+
+/* Webcam thumbnail */
+.exui-webcam-card .exui-card-title { color: var(--exui-danger); }
+.exui-webcam { width: 100%; border-radius: 10px; background: #000; aspect-ratio: 4/3; object-fit: cover; transform: scaleX(-1); }
+.exui-save { font-size: .85rem; color: var(--exui-text-muted); }
+
+/* Question transition */
+.exui-qfade { animation: exui-qfade .28s ease; }
+@keyframes exui-qfade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* Launch / system check */
+.exui-runner-launch { display: grid; place-items: center; min-height: 80vh; }
+.exui-launch-card { max-width: 880px; width: 100%; }
+.exui-launch-grid { display: grid; grid-template-columns: 1fr 280px; gap: 24px; margin-top: 16px; }
+@media (max-width: 760px) { .exui-launch-grid { grid-template-columns: 1fr; } }
+.exui-checklist { list-style: none; margin: 0; padding: 0; }
+.exui-checklist li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--exui-border); }
+.exui-checklist .ck-ic { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--exui-surface-2); color: var(--exui-text-muted); font-size: .8rem; }
+.exui-checklist li.ck-ok .ck-ic { background: var(--exui-success-weak); color: var(--exui-success); }
+.exui-checklist li.ck-fail .ck-ic { background: var(--exui-danger-weak); color: var(--exui-danger); }
+.exui-checklist .ck-st { margin-left: auto; font-size: .82rem; color: var(--exui-text-muted); }
+.exui-launch-actions { display: flex; gap: 10px; margin-top: 18px; }
+.exui-launch-preview { display: flex; flex-direction: column; gap: 10px; }
+.exui-launch-preview video { width: 100%; aspect-ratio: 4/3; border-radius: 12px; background: #000; object-fit: cover; transform: scaleX(-1); }
+
+/* Submit modal centering */
+.exui-runner-modal { max-width: 620px; margin: 40px auto; }
+.exui-runner-modal-actions { display: flex; gap: 10px; margin-top: 14px; }
+
+/* High-contrast accessibility mode */
+#local-exams-runner.exui-contrast { --exui-bg: #ffffff; --exui-surface: #ffffff; --exui-text: #000000; --exui-border: #000000; --exui-text-muted: #222; }
+#local-exams-runner.exui-contrast .exui-card { border-width: 2px; }

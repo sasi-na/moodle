@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<XMLDB PATH="local/journalgrader/db" VERSION="2026042803" COMMENT="XMLDB file for local_journalgrader"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+
+    <TABLES>
+
+        <TABLE NAME="local_journalgrader_queue" COMMENT="Queue for automatic journal grading">
+
+            <FIELDS>
+
+                <FIELD
+                    NAME="id"
+                    TYPE="int"
+                    LENGTH="10"
+                    NOTNULL="true"
+                    SEQUENCE="true"
+                />
+
+                <FIELD
+                    NAME="cmid"
+                    TYPE="int"
+                    LENGTH="10"
+                    NOTNULL="true"
+                    DEFAULT="0"
+                />
+
+                <FIELD
+                    NAME="userid"
+                    TYPE="int"
+                    LENGTH="10"
+                    NOTNULL="true"
+                    DEFAULT="0"
+                />
+
+                <FIELD
+                    NAME="timecreated"
+                    TYPE="int"
+                    LENGTH="10"
+                    NOTNULL="true"
+                    DEFAULT="0"
+                />
+
+                <FIELD
+                    NAME="processed"
+                    TYPE="int"
+                    LENGTH="1"
+                    NOTNULL="true"
+                    DEFAULT="0"
+                />
+
+            </FIELDS>
+
+            <KEYS>
+
+                <KEY
+                    NAME="primary"
+                    TYPE="primary"
+                    FIELDS="id"
+                />
+
+            </KEYS>
+
+            <INDEXES>
+
+                <INDEX
+                    NAME="cmid_idx"
+                    UNIQUE="false"
+                    FIELDS="cmid"
+                />
+
+                <INDEX
+                    NAME="userid_idx"
+                    UNIQUE="false"
+                    FIELDS="userid"
+                />
+
+                <INDEX
+                    NAME="processed_idx"
+                    UNIQUE="false"
+                    FIELDS="processed"
+                />
+
+                <INDEX
+                    NAME="cmid_user_processed_idx"
+                    UNIQUE="false"
+                    FIELDS="cmid, userid, processed"
+                />
+
+            </INDEXES>
+
+        </TABLE>
+
+    </TABLES>
+
+</XMLDB>

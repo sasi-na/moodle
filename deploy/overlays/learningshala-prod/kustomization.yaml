@@ -1,0 +1,68 @@
+# LearningShala -- namespace learningshala-prod, cluster usdc-prod-cluster-1.
+#
+# A FRESH INSTALL, not a migration and not an adoption: there is no prior site,
+# so there is no plugin-version diff to run, no {event} table to prune and no
+# live objects to reproduce. The site is installed by admin/cli/install_database.php
+# at the real hostname and then seeded with configuration exported from jain via
+# deploy/tools/export-tenant-config.php -- settings, custom profile field
+# DEFINITIONS and custom roles, never user data.
+#
+# The seed strips every credential by name pattern, so SMTP, any API keys, VPL,
+# Zoom/Teams and the AMS webservice token all have to be re-entered here.
+#
+# dbname, dbuser and the site are all `learningshala`; the table prefix is `acu_`,
+# the fleet convention.
+#
+# Sized for fewer than 100 users -- smaller than usdc, the previous smallest
+# tenant. See patch-scale.yaml and deploy/learningshala-pxc-values.yaml.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: learningshala-prod
+
+resources:
+  - ../../base
+  - namespace.yaml
+  - nfs-pv.yaml
+  - nfs-pvc.yaml
+  - healthcheck-policy.yaml
+
+patches:
+  - path: patch-deployment-env.yaml
+  - path: patch-cronjob-env.yaml
+  - path: patch-scale.yaml
+  - path: patch-hpa.yaml
+  - path: patch-redis.yaml
+
+# Merges this tenant's files into the moodle-config ConfigMap that base
+# generates. The remaining keys -- healthz.php, my.cnf, nginx.conf, php.ini --
+# come from base unchanged.
+configMapGenerator:
+  - name: moodle-config
+    behavior: merge
+    files:
+      - config/moodle_config.php
+      - config/redis.conf
+      - config/www.conf
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+# Same image as every other tenant on this repo, deliberately.
+#
+# newTag is only a default: the deploy job runs `kustomize edit set image` with
+# the freshly built commit sha before applying, so this value is what a manual
+# `kubectl apply -k` would use, not what CI deploys.
+images:
+  - name: moodle-lms
+    newName: asia-south1-docker.pkg.dev/org-dev-infra/services/moodle-lms
+    newTag: d64ab66c
+
+# Routing is NOT here. Every HTTPRoute in this cluster belongs to the single
+# `gateway-api` Helm release in the `default` namespace.
+#
+# Not included:
+#   Secret moodle-secrets -- created out of band. Do NOT commit credentials.
+#   Secret learningshala-moodle-s3-credentials -- likewise; the PXC backup
+#     storage will not reconcile without it.
+#   PXC cluster -- a Helm release (deploy/learningshala-pxc-values.yaml).

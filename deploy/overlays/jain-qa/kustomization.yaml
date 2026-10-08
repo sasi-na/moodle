@@ -1,0 +1,53 @@
+# dev.lms.thekaios.com -- namespace jain-moodle-qa, cluster usdc-prod-cluster-1
+#
+# IMPORTANT: unlike jain-prod, this overlay is NOT diff-clean, and cannot be.
+# QA has drifted structurally from production, so adopting it deliberately
+# converges QA toward prod. See "What adopting this changes" in deploy/README.md
+# for the exact list. QA is a test environment, which is the right place to
+# accept a converging change -- but it is a change, not a no-op. Do not adopt it
+# expecting silence from `kubectl diff`.
+#
+# Note also that QA runs on the SAME cluster as production (usdc-prod-cluster-1,
+# namespace jain-moodle-qa). The STAGING_CLUSTER/STAGING_NAMESPACE variables in
+# .gitlab-ci.yml pointed at `moodel-cluster` / `jo-moodle`, neither of which
+# exists any more.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: jain-moodle-qa
+
+resources:
+  - ../../base
+  - namespace.yaml
+  - serviceaccount.yaml
+
+patches:
+  - path: patch-deployment-env.yaml
+  - path: patch-cronjob-env.yaml
+  - path: patch-scale.yaml
+  - path: patch-hpa.yaml
+  - path: patch-storage.yaml
+  - path: patch-nodepool.yaml
+
+# QA builds its own image from the `develop` branch.
+images:
+  - name: moodle-lms
+    newName: asia-south1-docker.pkg.dev/org-dev-infra/services/qa-jain-moodle
+    newTag: ec5d1bd0
+
+# Only moodle_config.php is QA-specific. The six tuning keys come from base.
+#
+# QA's live copies of those six differ from prod's, but the differences read as
+# copy-paste drift rather than deliberate sizing: QA is a ONE-replica
+# environment currently carrying `innodb_buffer_pool_size=50G`,
+# `max_connections=10000` and `maxmemory 6gb` -- all LARGER than production's
+# 48G / 1200 / 5gb. Converging QA onto base is therefore neutral-to-better, and
+# removes a source of drift rather than creating one.
+configMapGenerator:
+  - name: moodle-config
+    behavior: merge
+    files:
+      - config/moodle_config.php
+
+generatorOptions:
+  disableNameSuffixHash: true

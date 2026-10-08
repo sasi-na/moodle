@@ -1,0 +1,37 @@
+# moodledata for LearningShala -- a fresh install, so this starts empty.
+#
+# Must be a SEPARATE export path from every other tenant's. Two Moodle sites
+# sharing a moodledata directory would collide on filedir, sessions, muc and
+# trashdir -- it is not a supported configuration and would corrupt both.
+#
+# PersistentVolume is cluster-scoped, so the name must be globally unique;
+# jain's is `moodle-nfs-pv`.
+#
+# The export /moodle_nfs/learningshala_data_prod was created on the shared
+# Filestore instance `moodle-nfs` (10.185.32.234, BASIC_HDD 1TB) on 2026-09-16,
+# owned 33:33 mode 2755 to match nitk's. A missing export means pods hang on
+# mount rather than failing visibly.
+#
+# 100Gi is a claim against that shared 1TB share, not a reservation -- Filestore
+# BASIC_HDD has no per-directory quota, so this number documents intent and
+# bounds nothing. The share had 343G free when this was written.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: learningshala-moodle-nfs-pv
+spec:
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  nfs:
+    path: /moodle_nfs/learningshala_data_prod
+    server: 10.185.32.234
+  mountOptions:
+    - nfsvers=3
+    - hard
+    - timeo=600
+    - retrans=2
+    - rsize=1048576
+    - wsize=1048576

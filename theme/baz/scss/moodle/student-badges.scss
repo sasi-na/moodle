@@ -1,0 +1,229 @@
+/* ------------------------------------------------------------------
+   Bespoke student badge pages (theme_baz).
+   Markup emitted by theme_baz_core_badges_renderer::baz_* for eligible
+   student-only users. Self-scoped via the .baz-badges / .baz-badge- /
+   .baz-abadge- prefixes so it works both inside the shell (My Badges,
+   single badge) and on the course/site available-badges page.
+   Local hex values (not the #sw-root tokens) so it is scope-independent.
+   ------------------------------------------------------------------ */
+
+.baz-badges {
+    --bz-navy: #{$bz-navy};
+    --bz-ink: #0B2034;
+    --bz-muted: #5C7184;
+    --bz-faint: #90A4B5;
+    --bz-line: #E5ECF3;
+    --bz-surface: #fff;
+    --bz-accent: #{$bz-accent};
+    --bz-gaccent: linear-gradient(135deg, #{$bz-accent-hi}, #{$bz-accent-lo});
+    --bz-green: #1FA37A;
+    --bz-sans: 'Manrope', 'Inter', system-ui, sans-serif;
+    --bz-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --bz-sh: 0 4px 14px rgba(11, 32, 52, .07);
+    --bz-sh-lg: 0 14px 30px -14px rgba(11, 32, 52, .3);
+    font-family: var(--bz-sans);
+    color: var(--bz-ink);
+
+    /* toolbar: count stat + search */
+    .baz-badges-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin: 0 0 18px;
+    }
+    .baz-badges-stat {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 7px;
+        background: var(--bz-surface);
+        border: 1px solid var(--bz-line);
+        border-radius: 12px;
+        padding: 10px 16px;
+        box-shadow: var(--bz-sh);
+    }
+    .baz-badges-stat .n { font: 800 22px/1 var(--bz-sans); color: var(--bz-navy); }
+    .baz-badges-stat .l { font: 700 11px var(--bz-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--bz-faint); }
+    .baz-badges-search { margin-left: auto; }
+    .baz-badges-search form { display: flex; gap: 8px; align-items: center; margin: 0; }
+    .baz-badges-search input[type="text"] {
+        border: 1.5px solid var(--bz-line);
+        border-radius: 10px;
+        padding: 9px 13px;
+        font: 500 13px var(--bz-sans);
+        min-width: 200px;
+    }
+    .baz-badges-search input:focus { outline: 0; border-color: var(--bz-accent); box-shadow: 0 0 0 3px rgba($bz-accent, .18); }
+
+    /* the badge card grid */
+    .baz-badges-grid {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(178px, 1fr));
+        gap: 16px;
+    }
+    .baz-badge-card {
+        position: relative;
+        background: var(--bz-surface);
+        border: 1px solid var(--bz-line);
+        border-radius: 16px;
+        padding: 20px 16px 14px;
+        text-align: center;
+        box-shadow: 0 4px 14px rgba(11, 32, 52, .06);
+        transition: transform .14s ease, box-shadow .14s ease;
+    }
+    .baz-badge-card:hover { transform: translateY(-3px); box-shadow: var(--bz-sh-lg); }
+    .baz-badge-card.is-expired { opacity: .72; }
+
+    .baz-badge-link { display: block; text-decoration: none !important; color: inherit; }
+    .baz-badge-medal {
+        width: 90px;
+        height: 90px;
+        margin: 0 auto 12px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 50% 38%, $bz-accent-bg2, $bz-accent-bg6);
+        border: 2px solid $bz-accent-bd2;
+    }
+    .baz-badge-medal img { width: 62px; height: 62px; object-fit: contain; }
+    .baz-badge-medal.is-expired { filter: grayscale(.8); }
+    .baz-badge-name { display: block; font: 800 14px/1.3 var(--bz-sans); color: var(--bz-ink); }
+    .baz-badge-date { display: block; margin-top: 5px; font: 600 11px var(--bz-mono); color: var(--bz-faint); letter-spacing: .02em; }
+
+    .baz-badge-vis {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        font: 700 8.5px var(--bz-mono);
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        border-radius: 999px;
+        padding: 3px 7px;
+    }
+    .baz-badge-vis.is-public { color: var(--bz-green); background: #E6F6F0; border: 1px solid #cfe9df; }
+    .baz-badge-vis.is-private { color: var(--bz-muted); background: #eef1f4; border: 1px solid #e0e6ec; }
+
+    .baz-badge-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 13px;
+        padding-top: 13px;
+        border-top: 1px solid var(--bz-line);
+    }
+    .baz-badge-act {
+        width: 34px;
+        height: 34px;
+        border-radius: 9px;
+        border: 1.5px solid var(--bz-line);
+        display: grid;
+        place-items: center;
+        color: var(--bz-navy) !important;
+        background: #fff;
+        transition: border-color .12s, background .12s;
+    }
+    .baz-badge-act:hover { border-color: var(--bz-accent); background: rgba($bz-accent, .08); }
+    .baz-badge-act.dl { background: var(--bz-gaccent); border: 0; color: $bz-accent-ink !important; }
+    .baz-badge-act svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+    .baz-badges-foot { margin-top: 18px; }
+    .baz-badges-foot .btn,
+    .baz-badges-foot button {
+        background: var(--bz-surface) !important;
+        border: 1.5px solid var(--bz-line) !important;
+        color: var(--bz-navy) !important;
+        font: 800 13px var(--bz-sans);
+        border-radius: 11px;
+        padding: 10px 18px;
+    }
+
+    /* empty state */
+    .baz-badges-empty {
+        text-align: center;
+        padding: 46px 20px;
+        background: var(--bz-surface);
+        border: 1px dashed var(--bz-line);
+        border-radius: 16px;
+        color: var(--bz-muted);
+    }
+    .baz-badges-empty svg { width: 46px; height: 46px; stroke: var(--bz-faint); fill: none; stroke-width: 1.5; margin-bottom: 10px; }
+    .baz-badges-empty p { margin: 0; font-weight: 600; }
+
+    .pagingbar, .paging { justify-content: center; }
+}
+
+/* Available badges (course/site) — richer horizontal cards. */
+.baz-badges-available {
+    display: grid;
+    gap: 16px;
+
+    .baz-abadge-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        background: var(--bz-surface);
+        border: 1px solid var(--bz-line);
+        border-radius: 16px;
+        padding: 20px 22px;
+        box-shadow: 0 4px 14px rgba(11, 32, 52, .06);
+    }
+    .baz-abadge-card.is-earned { border-left: 3px solid var(--bz-accent); }
+    .baz-abadge-medal {
+        width: 96px;
+        height: 96px;
+        flex: none;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(circle at 50% 38%, $bz-accent-bg2, $bz-accent-bg6);
+        border: 2px solid $bz-accent-bd2;
+    }
+    .baz-abadge-medal img { max-width: 68px; max-height: 68px; object-fit: contain; }
+    .baz-abadge-body { flex: 1; min-width: 0; }
+    .baz-abadge-name { font: 800 17px var(--bz-sans); color: var(--bz-ink); }
+    .baz-abadge-earned {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin: 8px 0 4px;
+        font: 700 12px var(--bz-sans);
+        color: var(--bz-green) !important;
+        background: #E6F6F0;
+        border: 1px solid #cfe9df;
+        border-radius: 999px;
+        padding: 5px 11px;
+        text-decoration: none !important;
+    }
+    .baz-abadge-earned svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.5; }
+    .baz-abadge-desc { margin: 10px 0 0; font-size: 14px; line-height: 1.6; color: var(--bz-muted); }
+    .baz-abadge-crit { margin-top: 12px; }
+    .baz-abadge-crit .h { display: block; font: 800 10.5px var(--bz-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--bz-faint); margin-bottom: 5px; }
+    .baz-abadge-crit-body { font-size: 13.5px; color: var(--bz-ink); }
+    .baz-abadge-crit-body ul { margin: 0; padding-left: 18px; }
+}
+
+/* Single badge detail (badge.php) — badge.php is wrapped in the shell, so the
+   standard vendor markup (.rui-badge-*) is restyled to the navy/gold system. */
+#sw-root .sw-badges {
+    .rui-badge-overview-wrapper {
+        background: var(--sw-surface, #fff);
+        border: 1px solid var(--sw-line, #E5ECF3) !important;
+        border-radius: 18px !important;
+        box-shadow: 0 4px 14px rgba(11, 32, 52, .07);
+        padding: 24px !important;
+        gap: 24px;
+    }
+    .rui-badge-overview-wrapper > .border {
+        border: 2px solid $bz-accent-bd2 !important;
+        border-radius: 18px !important;
+        background: radial-gradient(circle at 50% 38%, $bz-accent-bg2, $bz-accent-bg6);
+        padding: 18px !important;
+    }
+    .rui-badge-name { font: 800 22px var(--sw-sans, 'Manrope', sans-serif); color: var(--sw-navy, $bz-navy); letter-spacing: -.02em; }
+    .rui-badge-desc h5 { font: 800 10.5px var(--sw-mono, monospace) !important; letter-spacing: .1em; text-transform: uppercase; color: var(--sw-faint, #90A4B5); margin-top: 18px; }
+    .badge-success { background: #E6F6F0 !important; color: #1a7d5a !important; border-radius: 999px; padding: 5px 11px; }
+    .rui-badge-expires-info { color: var(--sw-muted, #5C7184); font-weight: 600; }
+}

@@ -1,0 +1,21 @@
+/* AI Course Tutor side drawer */
+.ctutor { position: fixed; top: 0; right: 0; bottom: 0; width: 420px; max-width: 100vw; z-index: 1060;
+  background: #fff; box-shadow: -8px 0 30px rgba(0,0,0,.18); display: flex; flex-direction: column;
+  transform: translateX(105%); transition: transform .25s ease; }
+.ctutor.open { transform: none; }
+.ctutor.ctutor-embedded { position: static; width: auto; height: 70vh; transform: none; box-shadow: none;
+  border: 1px solid #e2e8f0; border-radius: 12px; }
+.ctutor-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px; background: #f98012; color: #fff; }
+.ctutor-embedded .ctutor-head { border-radius: 12px 12px 0 0; }
+.ctutor-head .ctutor-title { flex: 1; }
+.ctutor-head .ctutor-select { max-width: 55%; }
+.ctutor-head a.ctutor-manage { color: #fff; text-decoration: underline; font-size: .85em; }
+.ctutor-close { background: none; border: 0; color: #fff; font-size: 26px; line-height: 1; cursor: pointer; }
+.ctutor-log { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: #f8fafc; }
+.ctutor-msg { max-width: 85%; padding: 9px 12px; border-radius: 12px; line-height: 1.45; word-wrap: break-word; }
+.ctutor-msg.bot { background: #fff; border: 1px solid #e2e8f0; align-self: flex-start; }
+.ctutor-msg.me { background: #f98012; color: #fff; align-self: flex-end; }
+.ctutor-msg.wait { opacity: .6; font-style: italic; }
+.ctutor-form { display: flex; gap: 8px; padding: 10px; border-top: 1px solid #e2e8f0; }
+.ctutor-form textarea { flex: 1; resize: none; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px; }
+.ctutor-empty { padding: 16px; color: #475569; }

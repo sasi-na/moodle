@@ -1,0 +1,219 @@
+{{!
+    @template theme_baz/student-calendar
+
+    Bespoke Calendar (Month grid + Focus board) for student-only users. Reuses the
+    theme head / session chrome; the body is a custom app shell matching the
+    student dashboard and My courses.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="cal-root" class="cal-app">
+
+            <div class="cal-backdrop" id="cal-backdrop"></div>
+            <aside class="cal-side" id="cal-side">
+                <a class="cal-brand" href="{{dashboardurl}}">
+                    {{! The sidebar is always navy, unlike the classic topbar that customlogo
+                        also feeds, so prefer the sidebar logo where a site supplies one. }}
+                    {{#customsidebarlogo}}<img src="{{customsidebarlogo}}" alt="{{sitename}}">{{/customsidebarlogo}}
+                    {{^customsidebarlogo}}
+                        {{#customlogo}}<img src="{{customlogo}}" alt="{{sitename}}">{{/customlogo}}
+                        {{^customlogo}}<span class="cal-brand-txt">{{{ sitename }}}</span>{{/customlogo}}
+                    {{/customsidebarlogo}}
+                </a>
+                <nav class="cal-nav">
+                    <a href="{{dashboardurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg> {{#str}}sd_nav_dashboard, theme_baz{{/str}}</a>
+                    <a href="{{coursesurl}}"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M9 11h6M9 15h4"/></svg> {{#str}}sd_nav_courses, theme_baz{{/str}}</a>
+                    <a href="{{calendarurl}}" class="on"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg> {{#str}}sd_nav_calendar, theme_baz{{/str}}</a>
+                    <a href="{{gradesurl}}"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg> {{#str}}sd_nav_grades, theme_baz{{/str}}</a>
+                    {{#hasinterestzone}}
+                    <a href="{{interestzoneurl}}"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.25"/><circle cx="12" cy="9" r="1" fill="currentColor" stroke="none"/><path d="M12 13V15"/></svg> {{interestzonelabel}}</a>
+                    {{/hasinterestzone}}
+                    <div class="cal-navlbl">{{#str}}sd_nav_resources, theme_baz{{/str}}</div>
+                    {{#showeidcard}}<a href="{{eidcardurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M13 10h5M13.5 14h3M5 16c.4-1.4 1.5-2 3-2s2.6.6 3 2"/></svg> {{#str}}pluginname, local_studentid{{/str}}</a>{{/showeidcard}}
+                    <a href="{{filesurl}}"><svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h6l2 2h6a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> {{#str}}sd_nav_files, theme_baz{{/str}}</a>
+                </nav>
+            {{> theme_baz/sidebar-support }}
+            </aside>
+
+            <div class="cal-main">
+                <header class="cal-topbar">
+                    <div class="cal-topbar-inner">
+                        <div class="cal-tb-left">
+                            <button type="button" class="cal-burger" id="cal-burger" aria-label="{{#str}}sd_menu, theme_baz{{/str}}"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                            <nav class="cal-crumb"><a href="{{dashboardurl}}">{{#str}}sd_nav_dashboard, theme_baz{{/str}}</a><span class="sep">/</span><span class="cur">{{#str}}cal_title, theme_baz{{/str}}</span></nav>
+                        </div>
+                        <div class="cal-search-wrap">
+                            <form class="cal-search" action="{{{ config.wwwroot }}}/course/search.php" method="get" role="search">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                                <input type="text" name="search" autocomplete="off" placeholder="{{#str}}sd_searchph, theme_baz{{/str}}" aria-label="{{#str}}search, core{{/str}}">
+                            </form>
+                        </div>
+                        <div class="cal-top-actions">
+                            {{#hasaskjo}}<button type="button" class="cal-askjo" id="cal-askjo-btn"><svg viewBox="0 0 24 24" fill="var(--bz-accent)"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg> {{#str}}sd_askjo, theme_baz{{/str}}</button>{{/hasaskjo}}
+                            <button type="button" class="cal-iconbtn" id="cal-themebtn" title="{{#str}}sd_toggletheme, theme_baz{{/str}}"><svg id="cal-themeicon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+                            <div class="cal-navbar-plugin">{{{ output.navbar_plugin_output }}}</div>
+                            <div class="cal-usermenu">{{{ output.user_menu }}}</div>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="cal-content">
+                    {{! toolbar }}
+                    <div class="cal-bar">
+                        {{#hasdatenav}}<div class="cal-cnav"><a class="nb" href="{{prevurl}}"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></a><a class="nb" href="{{nexturl}}"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></a></div>{{/hasdatenav}}
+                        <div class="cal-month">{{label}}</div>
+                        {{#hasdatenav}}<a class="cal-today" href="{{todayurl}}">{{#str}}cal_today, theme_baz{{/str}}</a>{{/hasdatenav}}
+                        <span class="cal-spacer"></span>
+                        <div class="cal-filter" id="cal-filter">
+                            <svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5"/></svg>
+                            <span id="cal-filterlabel">{{#coursefilter}}{{#selected}}{{name}}{{/selected}}{{/coursefilter}}</span>
+                            <svg class="cv" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                            <div class="cal-menu" id="cal-filtermenu" hidden>{{#coursefilter}}<button type="button" data-cid="{{id}}">{{name}}</button>{{/coursefilter}}</div>
+                        </div>
+                        <div class="cal-vseg">
+                            <a class="{{#ismonth}}on{{/ismonth}}" href="{{monthurl}}">{{#str}}cal_month, theme_baz{{/str}}</a>
+                            <a class="{{#isweek}}on{{/isweek}}" href="{{weekurl}}">{{#str}}cal_week, theme_baz{{/str}}</a>
+                            <a class="{{#isday}}on{{/isday}}" href="{{dayurl}}">{{#str}}cal_day, theme_baz{{/str}}</a>
+                            <a class="{{#isupcoming}}on{{/isupcoming}}" href="{{upcomingurl}}">{{#str}}cal_upcoming, theme_baz{{/str}}</a>
+                        </div>
+                    </div>
+                    {{! legend }}
+                    <div class="cal-legend">
+                        <span class="lchip" data-type="deadline"><i style="background:#E5556E"></i> {{#str}}cal_t_deadline, theme_baz{{/str}}</span>
+                        <span class="lchip" data-type="course"><i style="background:#406CD2"></i> {{#str}}cal_t_course, theme_baz{{/str}}</span>
+                        <span class="lchip" data-type="live"><i style="background:#8B5CF6"></i> {{#str}}cal_t_live, theme_baz{{/str}}</span>
+                        <span class="lchip" data-type="user"><i style="background:#1FA37A"></i> {{#str}}cal_t_user, theme_baz{{/str}}</span>
+                        <span class="lchip" data-type="site"><i style="background:#5C7184"></i> {{#str}}cal_t_site, theme_baz{{/str}}</span>
+                    </div>
+
+                    {{#ismonth}}
+                    {{! month grid — full width }}
+                    <div class="cal-monthwrap">
+                        <div class="cal-grid-cal">
+                            <div class="cal-dow">{{#weekdaynames}}<span>{{.}}</span>{{/weekdaynames}}</div>
+                            <div class="cal-grid">
+                                {{#cells}}
+                                {{#blank}}<div class="cal-cell mut"></div>{{/blank}}
+                                {{^blank}}<div class="cal-cell{{#istoday}} today{{/istoday}}" data-col="{{col}}">
+                                    <a class="cal-dn" href="{{url}}">{{day}}</a>
+                                    {{#events}}<a class="cev t-{{type}}" data-evtype="{{type}}" href="{{url}}"{{#newtab}} target="_blank" rel="noopener"{{/newtab}} title="{{name}}"><i></i><b>{{time}}</b> {{name}}</a>{{/events}}
+                                    {{#hasmore}}<a class="cev-more" href="{{url}}">{{#str}}cal_more, theme_baz, {{more}}{{/str}}</a>{{/hasmore}}
+                                </div>{{/blank}}
+                                {{/cells}}
+                            </div>
+                        </div>
+                    </div>
+                    {{! focus board — row of 4 below the grid }}
+                    <div class="cal-board cal-board-row">
+                        {{#board}}
+                        <div class="cal-bcol">
+                            <div class="cal-bh bh-{{tone}}">{{label}} <span>{{count}}</span></div>
+                            <div class="cal-bcards">
+                                {{#items}}
+                                <a class="cal-bcard" data-evtype="{{type}}" href="{{url}}"{{#newtab}} target="_blank" rel="noopener"{{/newtab}}><span class="bdot t-{{type}}"></span><div class="bn">{{name}}</div><div class="bm">{{datelbl}} · {{time}} · {{action}}</div></a>
+                                {{/items}}
+                                {{^hasitems}}<div class="cal-bempty">{{#str}}cal_empty, theme_baz{{/str}}</div>{{/hasitems}}
+                            </div>
+                        </div>
+                        {{/board}}
+                    </div>
+                    {{/ismonth}}
+
+                    {{#isweek}}
+                    <div class="cal-weekwrap">
+                        {{#weekdays}}
+                        <div class="cal-wday{{#istoday}} today{{/istoday}}">
+                            <a class="cal-wdh" href="{{dayurl}}"><span class="wdow">{{dow}}</span><span class="wnum">{{daynum}}</span></a>
+                            <div class="cal-wbody">
+                                {{#events}}<a class="cev t-{{type}}" data-evtype="{{type}}" href="{{url}}"{{#newtab}} target="_blank" rel="noopener"{{/newtab}} title="{{name}}"><i></i><b>{{time}}</b> {{name}}</a>{{/events}}
+                                {{^hasevents}}<div class="cal-wempty"></div>{{/hasevents}}
+                            </div>
+                        </div>
+                        {{/weekdays}}
+                    </div>
+                    {{/isweek}}
+
+                    {{#isday}}
+                    <div class="cal-daywrap">
+                        {{#hasdayevents}}
+                        <div class="cal-daylist">
+                            {{#dayevents}}
+                            <a class="cal-dayrow t-{{type}}" data-evtype="{{type}}" href="{{url}}"{{#newtab}} target="_blank" rel="noopener"{{/newtab}}>
+                                <div class="cal-dtime">{{time}}</div>
+                                <div class="cal-dbody"><div class="cal-dttl">{{name}}</div><div class="cal-dmeta">{{action}}</div></div>
+                            </a>
+                            {{/dayevents}}
+                        </div>
+                        {{/hasdayevents}}
+                        {{^hasdayevents}}<div class="cal-empty-big">{{#str}}cal_empty, theme_baz{{/str}}</div>{{/hasdayevents}}
+                    </div>
+                    {{/isday}}
+
+                    {{#isupcoming}}
+                    <div class="cal-upwrap">
+                        {{#hasupcoming}}
+                        {{#upgroups}}
+                        <div class="cal-upgroup">
+                            <div class="cal-uphead">{{datelbl}}</div>
+                            {{#events}}
+                            <a class="cal-uprow t-{{type}}" data-evtype="{{type}}" href="{{url}}"{{#newtab}} target="_blank" rel="noopener"{{/newtab}}>
+                                <div class="cal-uptime">{{time}}</div>
+                                <div class="cal-upbody"><div class="cal-upttl">{{name}}</div></div>
+                                <div class="cal-upact">{{action}}</div>
+                            </a>
+                            {{/events}}
+                        </div>
+                        {{/upgroups}}
+                        {{/hasupcoming}}
+                        {{^hasupcoming}}<div class="cal-empty-big">{{#str}}cal_empty, theme_baz{{/str}}</div>{{/hasupcoming}}
+                    </div>
+                    {{/isupcoming}}
+
+                    <div id="region-main-box" class="cal-region-main">
+                        <section id="region-main" aria-label="{{#str}}content{{/str}}">{{{ output.main_content }}}</section>
+                    </div>
+                </main>
+            </div>
+
+            {{#hassupport}}
+            <div class="cal-help">
+                <div class="cal-help-panel" id="cal-help-panel" hidden>
+                    <div class="cal-help-head"><span class="cal-help-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg></span><div class="cal-help-t"><b>{{#str}}sd_help, theme_baz{{/str}}</b><small>{{#str}}sd_help_sub, theme_baz{{/str}}</small></div><button type="button" class="cal-help-close" id="cal-help-close" aria-label="Close">&times;</button></div>
+                    <div class="sd-blockcontent sd-support">{{{ support_html }}}</div>
+                </div>
+                <button type="button" class="cal-help-fab" id="cal-help-fab" aria-expanded="false">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg>
+                    <span>{{#str}}sd_help, theme_baz{{/str}}</span>
+                </button>
+            </div>
+            {{/hassupport}}
+
+            {{#hasaskjo}}
+            <div class="cal-askjo-panel" id="cal-askjo-panel" hidden>
+                <div class="cal-askjo-head"><span>{{#str}}sd_askjo, theme_baz{{/str}}</span><button type="button" class="cal-askjo-close" id="cal-askjo-close" aria-label="Close">&times;</button></div>
+                <div class="block_openai_chat" data-instance-id="{{askjo.blockid}}">
+                    <div class="cal-askjo-body">{{{ askjo.log }}}</div>
+                    <div class="cal-askjo-control">{{{ askjo.control }}}</div>
+                </div>
+            </div>
+            {{/hasaskjo}}
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+</body>
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/studentcalendar'], function(Loader, StudentCalendar) {
+        StudentCalendar.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

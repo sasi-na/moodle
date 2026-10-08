@@ -1,0 +1,101 @@
+{{!
+    @template theme_baz/banner_order
+
+    Drag-to-reorder board for the dashboard banner slides, rendered inside the
+    theme settings page by \theme_baz\admin_setting_bannerorder. Each card is a
+    slide slot; dragging reorders them and theme_baz/bannerorder writes the new
+    slot sequence into the hidden input, saved with the settings form.
+
+    Styling is inlined so the board looks right regardless of which theme renders
+    the admin page.
+
+    Context variables required for this template:
+    * id - Element id of the hidden order input
+    * name - Form field name of the hidden input (must be the setting's full name)
+    * value - Comma-separated slot order, e.g. "3,1,2"
+    * slides - Array of { slot, hasimg, img, label, movetitle }
+
+    Example context (json):
+    {
+        "id": "id_s_theme_baz_dashboardbannerorder",
+        "name": "s_theme_baz_dashboardbannerorder",
+        "value": "2,1",
+        "slides": [
+            { "slot": 2, "hasimg": true, "img": "https://example.com/b2.jpg", "label": "Slide 2", "movetitle": "Move slide 2" },
+            { "slot": 1, "hasimg": false, "img": "", "label": "Slide 1", "movetitle": "Move slide 1" }
+        ]
+    }
+}}
+<div class="baz-bannerorder">
+    <style>
+        .baz-bannerorder__list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .baz-bannerorder__card {
+            position: relative;
+            width: 180px;
+            border: 1px solid #d0d3d9;
+            border-radius: 8px;
+            background: #fff;
+            padding: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .06);
+        }
+        .baz-bannerorder__card.sortable-list-is-dragged {
+            opacity: .85;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, .18);
+        }
+        .baz-bannerorder__top {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+        .baz-bannerorder__handle [data-drag-type=move] {
+            cursor: grab;
+            color: #6b7280;
+        }
+        .baz-bannerorder__label {
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .baz-bannerorder__thumb {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            aspect-ratio: 16 / 7;
+            background: #f1f3f5;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .baz-bannerorder__thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .baz-bannerorder__noimg {
+            font-size: 12px;
+            color: #868e96;
+        }
+    </style>
+    <ul class="baz-bannerorder__list" role="list">
+        {{#slides}}
+        <li class="baz-bannerorder__card" data-slot="{{slot}}">
+            <div class="baz-bannerorder__top">
+                <span class="baz-bannerorder__handle">{{> core/drag_handle}}</span>
+                <span class="baz-bannerorder__label">{{label}}</span>
+            </div>
+            <div class="baz-bannerorder__thumb">
+                {{#hasimg}}<img src="{{img}}" alt="">{{/hasimg}}
+                {{^hasimg}}<span class="baz-bannerorder__noimg">{{#str}}dashboardbannernoimg, theme_baz{{/str}}</span>{{/hasimg}}
+            </div>
+        </li>
+        {{/slides}}
+    </ul>
+    <input type="hidden" name="{{name}}" id="{{id}}" value="{{value}}">
+</div>

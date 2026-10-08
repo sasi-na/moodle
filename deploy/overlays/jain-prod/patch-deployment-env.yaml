@@ -1,0 +1,64 @@
+# Tenant environment for learn.onlinejain.com.
+#
+# The full env list lives here rather than in base -- see the comment in
+# base/deployment.yaml. Order matches the live Deployment exactly so that
+# adopting this overlay does not rewrite the pod spec and force a rollout.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  template:
+    spec:
+      # The tenant-assets copy loop runs in the INIT container, not in php-fpm
+      # -- it writes into the shared code volume before any app container
+      # starts. Naming TENANT_ASSETS only on php-fpm left the loop with an
+      # empty variable, so jain-images was never copied into the web root and
+      # every /jain-images/* URL on this site returned 404.
+      #
+      # setup-logs-and-code is already FIRST in the base list, so kustomize
+      # floating a patched entry to the front cannot reorder anything here.
+      initContainers:
+      - name: setup-logs-and-code
+        env:
+        - name: TENANT_ASSETS
+          value: "jain-images"
+      containers:
+      - name: php-fpm
+        env:
+        # Tenant-scoped assets: /jain-images used to sit at the web root of
+        # the shared image, so every institution served Jain's marketing
+        # creative from its own domain. It ships under tenant-assets/ now
+        # and only this site copies it into place.
+        - name: TENANT_ASSETS
+          value: "jain-images"
+        - name: MOODLE_SITE_URL
+          value: "https://learn.onlinejain.com"
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        - name: MOODLE_DATABASE_TYPE
+          value: "mysqli"
+        - name: MOODLE_DATABASE_HOST
+          value: "mysql-db-pxc-db-haproxy"
+        - name: MOODLE_DATABASE_PORT_NUMBER
+          value: "3306"
+        - name: MOODLE_DATABASE_NAME
+          value: "moodledb"
+        - name: MOODLE_DATABASE_USER
+          value: "moodleuser"
+        - name: MOODLE_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: database-password
+        - name: MOODLE_USERNAME
+          value: "admin"
+        - name: MOODLE_EMAIL
+          value: "admin@example.com"
+        - name: MOODLE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: admin-password
+        - name: PHP_MEMORY_LIMIT
+          value: "4G"

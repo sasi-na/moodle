@@ -1,0 +1,10 @@
+# Two to four pods. usdc runs the same range on comparable traffic; four is well
+# beyond anything a sub-100-user site should need, and raising it later is a
+# one-line change with no outage.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: moodle-hpa
+spec:
+  minReplicas: 2
+  maxReplicas: 4

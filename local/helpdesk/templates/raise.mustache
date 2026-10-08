@@ -1,0 +1,37 @@
+{{!
+    @template local_helpdesk/raise
+
+    Contact support form.
+
+    Example context (json):
+    {
+        "formhtml": "<form></form>",
+        "maxlength": 2000,
+        "trackurl": "/local/helpdesk/mytickets.php",
+        "supportemail": "support@example.edu",
+        "slackurl": "https://slack.example",
+        "responsehours": 6
+    }
+}}
+<div class="hd-page">
+    <div class="hd-head">
+        <div>
+            <h2 class="hd-title">{{#str}}raisetitle, local_helpdesk{{/str}}</h2>
+            <p class="hd-sub">{{#str}}raiseintro, local_helpdesk{{/str}}</p>
+        </div>
+        <a class="hd-btn hd-btn-quiet" href="{{trackurl}}">{{#str}}mytickets, local_helpdesk{{/str}}</a>
+    </div>
+
+    <div class="hd-card">
+        {{{ formhtml }}}
+        <p class="hd-note">{{#str}}respondwithin, local_helpdesk, {{responsehours}}{{/str}}</p>
+    </div>
+
+    {{#supportemail}}
+    <div class="hd-card hd-alt">
+        <h3 class="hd-h3">{{#str}}otherchannels, local_helpdesk{{/str}}</h3>
+        <p><a href="mailto:{{supportemail}}">{{#str}}viaemail, local_helpdesk, {{supportemail}}{{/str}}</a></p>
+        {{#slackurl}}<p><a href="{{slackurl}}" target="_blank" rel="noopener">{{#str}}viaslack, local_helpdesk{{/str}}</a></p>{{/slackurl}}
+    </div>
+    {{/supportemail}}
+</div>

@@ -1,0 +1,505 @@
+/*
+ * local_facultyfeedback
+ *
+ * Colours are theme_baz's own, so the field reads as part of the course header
+ * rather than something bolted on (theme/baz/scss/bootstrap/_variables.scss):
+ *
+ *   $body-color       $gray-900           #212121
+ *   $body-color-light $gray-700           #6B6B6B
+ *   $border-color     $gray-400           #D8D8D8
+ *   $gray-200                             #EEEEEE
+ *   $primary          $primary-color-600  var(--bz-navy, #002D47)
+ *   $yellow-700       (already the tool_courserating star colour)  #F4A614
+ *
+ * $primary is read through the theme's CSS custom property rather than as a
+ * literal. theme_baz derives forty brand tones from two per-tenant settings and
+ * publishes --bz-navy on :root; this file is plain CSS, so it cannot see the
+ * SCSS variable and was missed when those literals were centralised. The result
+ * was that this report rendered in one tenant's navy on every site that runs it.
+ * The literal stays as the fallback, so the file is still correct on its own.
+ *
+ * Dark mode is off on this site (theme_baz/darkmodetheme = 0), but the theme's
+ * .theme-dark overrides are honoured anyway so nothing breaks if it is enabled.
+ */
+
+/* ---------------------------------------------------------------------------
+   Course-header field
+   --------------------------------------------------------------------------- */
+
+/* Sits in .rui-course-info-box, which the theme lays out as a wrapping flex
+   row of .rui-custom-field-box items (Course start date, End date, course
+   custom fields). The theme already supplies the flex column and type via
+   .rui-custom-field-box / -name / -value; all we add is the accent rule and
+   the inline meta.
+
+   Deliberately inline, sharing that row with Course start date, rather than
+   dropped onto its own full-width line: keeping it up beside the course facts
+   was the preference. It does mean the horizontal position shifts between
+   courses, since they carry anywhere from no custom fields (939) to several. */
+.lff-field {
+    padding-left: 13px;
+    border-left: 3px solid #F4A614;
+}
+
+.lff-field--muted {
+    border-left-color: #C7CCD1;
+}
+
+.lff-star {
+    margin-right: 5px;
+    color: #F4A614;
+}
+
+.lff-star--muted {
+    color: #B6BCC1;
+}
+
+.lff-field__value {
+    font-variant-numeric: tabular-nums;
+}
+
+.lff-field__value--muted {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B6B6B;
+}
+
+.lff-field__meta {
+    margin-left: 6px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: #6B6B6B;
+}
+
+.lff-field__note {
+    font-size: 11.5px;
+    color: #6B6B6B;
+}
+
+/* A link, not a button, visually — it opens a dialog rather than changing
+   anything. Reset the UA button chrome instead of leaning on .btn-link, whose
+   padding fights the field's flex column. */
+.lff-field__cta {
+    padding: 0;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--bz-navy, #002D47);
+    text-align: left;
+    background: none;
+    border: 0;
+}
+
+.lff-field__cta:hover,
+.lff-field__cta:focus {
+    text-decoration: underline;
+}
+
+.lff-field__cta:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+.theme-dark .lff-field__value--muted,
+.theme-dark .lff-field__meta,
+.theme-dark .lff-field__note {
+    color: #a0a3a5;
+}
+
+.theme-dark .lff-field__cta {
+    color: #9CC4DC;
+}
+
+/* ---------------------------------------------------------------------------
+   Pop-up
+   --------------------------------------------------------------------------- */
+
+.lff-modal {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.lff-modal__subtitle {
+    margin: 0;
+    font-size: 12px;
+    color: #6B6B6B;
+}
+
+.lff-modal__foot {
+    margin: 0;
+}
+
+.lff-empty {
+    margin: 0;
+    font-size: 13px;
+    color: #6B6B6B;
+}
+
+/* Headline number */
+.lff-hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+}
+
+.lff-hero__num {
+    display: block;
+    font-size: 46px;
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--bz-navy, #002D47);
+    font-variant-numeric: tabular-nums;
+}
+
+.lff-hero__scale {
+    margin-left: 2px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #6B6B6B;
+    letter-spacing: 0;
+    vertical-align: baseline;
+    bottom: 0;
+}
+
+.lff-hero__stars {
+    display: block;
+    margin-top: 5px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: #F4A614;
+}
+
+/* Net Promoter Score, beside the average. Deliberately smaller and quieter:
+   the two measure different things and are easy to conflate, so the average
+   stays the primary figure. The rule separates them rather than letting them
+   read as one number. */
+.lff-hero__figure--nps {
+    padding-left: 20px;
+    border-left: 1px solid #EEEEEE;
+}
+
+.lff-hero__num--nps {
+    font-size: 30px;
+    color: #2E5771;
+}
+
+.lff-hero__caption {
+    display: block;
+    margin-top: 4px;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #6B6B6B;
+    cursor: help;
+}
+
+.theme-dark .lff-hero__figure--nps {
+    border-left-color: #262a30;
+}
+
+.theme-dark .lff-hero__num--nps {
+    color: #7FA8C4;
+}
+
+.theme-dark .lff-hero__caption {
+    color: #a0a3a5;
+}
+
+.lff-hero__facts {
+    display: grid;
+    gap: 3px;
+    margin: 0;
+}
+
+.lff-hero__pair {
+    display: flex;
+    gap: 26px;
+}
+
+.lff-hero__facts dt {
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: #6B6B6B;
+}
+
+.lff-hero__facts dd {
+    margin: 0 0 7px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #212121;
+    font-variant-numeric: tabular-nums;
+}
+
+.lff-hero__facts dd:last-child {
+    margin-bottom: 0;
+}
+
+.theme-dark .lff-hero__num {
+    color: #9CC4DC;
+}
+
+.theme-dark .lff-hero__facts dd {
+    color: #e9e9e9;
+}
+
+.theme-dark .lff-modal__subtitle,
+.theme-dark .lff-empty,
+.theme-dark .lff-hero__scale,
+.theme-dark .lff-hero__facts dt {
+    color: #a0a3a5;
+}
+
+/* Section headings inside the pop-up */
+.lff-block__title {
+    margin: 0 0 3px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #212121;
+}
+
+.lff-block__note {
+    margin: 0 0 12px;
+    font-size: 10.5px;
+    color: #6B6B6B;
+}
+
+.lff-block__note--warn {
+    margin: 10px 0 0;
+}
+
+.theme-dark .lff-block__title {
+    color: #e9e9e9;
+}
+
+.theme-dark .lff-block__note {
+    color: #a0a3a5;
+}
+
+/* Trend chart */
+.lff-chart {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.lff-chart__grid {
+    stroke: #EEEEEE;
+    stroke-width: 1;
+}
+
+.lff-chart__axis {
+    font-size: 8.5px;
+    fill: #6B6B6B;
+    font-variant-numeric: tabular-nums;
+}
+
+.lff-chart__value {
+    font-size: 9px;
+    font-weight: 700;
+    fill: var(--bz-navy, #002D47);
+    font-variant-numeric: tabular-nums;
+}
+
+.lff-chart__area {
+    fill: var(--bz-navy, #002D47);
+    fill-opacity: 0.1;
+    stroke: none;
+}
+
+.lff-chart__line {
+    fill: none;
+    stroke: var(--bz-navy, #002D47);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.lff-chart__dot {
+    fill: #fff;
+    stroke: var(--bz-navy, #002D47);
+    stroke-width: 2;
+}
+
+.lff-chart__dot--last {
+    fill: var(--bz-navy, #002D47);
+    stroke: #fff;
+}
+
+.lff-chart__hit {
+    fill: transparent;
+}
+
+.theme-dark .lff-chart__grid {
+    stroke: #262a30;
+}
+
+.theme-dark .lff-chart__axis {
+    fill: #a0a3a5;
+}
+
+.theme-dark .lff-chart__value {
+    fill: #9CC4DC;
+}
+
+.theme-dark .lff-chart__area {
+    fill: #9CC4DC;
+}
+
+.theme-dark .lff-chart__line,
+.theme-dark .lff-chart__dot {
+    stroke: #9CC4DC;
+}
+
+.theme-dark .lff-chart__dot {
+    fill: #1f2023;
+}
+
+.theme-dark .lff-chart__dot--last {
+    fill: #9CC4DC;
+    stroke: #1f2023;
+}
+
+/* Answer distribution. One fill colour on purpose: bar length carries the
+   count and the row label carries the rating, so nothing depends on telling
+   five shades apart. */
+.lff-hist {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+}
+
+.lff-hist__row {
+    display: grid;
+    grid-template-columns: 46px 1fr 42px 48px;
+    gap: 10px;
+    align-items: center;
+    font-size: 11px;
+}
+
+.lff-hist__key {
+    color: #8A5C06;
+    letter-spacing: -0.5px;
+}
+
+.lff-hist__track {
+    height: 12px;
+    margin: 0;
+    overflow: hidden;
+    background: #EEF0F1;
+    border-radius: 3px;
+}
+
+.lff-hist__fill {
+    display: block;
+    height: 100%;
+    min-width: 4px;
+    background: #2E5771;
+    border-radius: 0 4px 4px 0;
+}
+
+.lff-hist__fill--mode {
+    background: var(--bz-navy, #002D47);
+}
+
+.lff-hist__count {
+    margin: 0;
+    text-align: right;
+    color: #212121;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Share of all respondents. Recessive against the count: the count is the
+   figure, the percentage is context. */
+.lff-hist__share {
+    margin: 0;
+    text-align: right;
+    color: #6B6B6B;
+    font-variant-numeric: tabular-nums;
+}
+
+.theme-dark .lff-hist__key {
+    color: #F4A614;
+}
+
+.theme-dark .lff-hist__track {
+    background: #1f2023;
+}
+
+.theme-dark .lff-hist__fill {
+    background: #4A7B98;
+}
+
+.theme-dark .lff-hist__fill--mode {
+    background: #9CC4DC;
+}
+
+.theme-dark .lff-hist__count {
+    color: #e9e9e9;
+}
+
+.theme-dark .lff-hist__share {
+    color: #a0a3a5;
+}
+
+/* Table view */
+.lff-table > summary {
+    padding: 4px 0;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--bz-navy, #002D47);
+    cursor: pointer;
+}
+
+.lff-table__wrap {
+    margin-top: 8px;
+    overflow-x: auto;
+}
+
+.lff-table table {
+    min-width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.lff-table th,
+.lff-table td {
+    padding: 4px 9px;
+    text-align: right;
+    white-space: nowrap;
+    border-bottom: 1px solid #EEEEEE;
+}
+
+.lff-table thead th {
+    font-weight: 500;
+    color: #6B6B6B;
+}
+
+.lff-table th[scope="row"] {
+    text-align: left;
+    font-weight: 400;
+}
+
+.lff-table tfoot th[scope="row"],
+.lff-table tfoot td {
+    font-weight: 700;
+}
+
+.theme-dark .lff-table > summary {
+    color: #9CC4DC;
+}
+
+.theme-dark .lff-table th,
+.theme-dark .lff-table td {
+    border-bottom-color: #262a30;
+}
+
+.theme-dark .lff-table thead th {
+    color: #a0a3a5;
+}

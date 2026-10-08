@@ -1,0 +1,161 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_baz/student-interestzone
+
+    Bespoke "Interest Zone" category page for student-only users. Reuses the
+    My-courses app shell (#sc-root / sc-* chrome) and adds the club-card grid
+    (iz-*). Course enrolment/access is unchanged — cards link to each course.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="sc-root" class="sc-app">
+            <div class="sc-backdrop" id="sc-backdrop"></div>
+            <aside class="sc-side" id="sc-side">
+                <a class="sc-brand" href="{{{ config.wwwroot }}}/my/">
+                    {{! The sidebar is always navy, unlike the classic topbar that customlogo
+                        also feeds, so prefer the sidebar logo where a site supplies one. }}
+                    {{#customsidebarlogo}}<img src="{{customsidebarlogo}}" alt="{{sitename}}">{{/customsidebarlogo}}
+                    {{^customsidebarlogo}}
+                        {{#customlogo}}<img src="{{customlogo}}" alt="{{sitename}}">{{/customlogo}}
+                        {{^customlogo}}<span class="sc-brand-txt">{{{ sitename }}}</span>{{/customlogo}}
+                    {{/customsidebarlogo}}
+                </a>
+                <nav class="sc-nav">
+                    <a href="{{{ config.wwwroot }}}/my/">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+                        {{#str}}sd_nav_dashboard, theme_baz{{/str}}</a>
+                    <a href="{{coursesurl}}">
+                        <svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M9 11h6M9 15h4"/></svg>
+                        {{#str}}sd_nav_courses, theme_baz{{/str}}</a>
+                    <a href="{{calendarurl}}">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+                        {{#str}}sd_nav_calendar, theme_baz{{/str}}</a>
+                    <a href="{{gradesurl}}">
+                        <svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg>
+                        {{#str}}sd_nav_grades, theme_baz{{/str}}</a>
+                    {{#hasinterestzone}}
+                    <a href="{{interestzoneurl}}" class="on">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.25"/><circle cx="12" cy="9" r="1" fill="currentColor" stroke="none"/><path d="M12 13V15"/></svg>
+                        {{interestzonelabel}}</a>
+                    {{/hasinterestzone}}
+                    <div class="sc-navlbl">{{#str}}sd_nav_resources, theme_baz{{/str}}</div>
+                    {{#showeidcard}}
+                    <a href="{{eidcardurl}}">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M13 10h5M13.5 14h3M5 16c.4-1.4 1.5-2 3-2s2.6.6 3 2"/></svg>
+                        {{#str}}pluginname, local_studentid{{/str}}</a>
+                    {{/showeidcard}}
+                    <a href="{{filesurl}}">
+                        <svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h6l2 2h6a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                        {{#str}}sd_nav_files, theme_baz{{/str}}</a>
+                </nav>
+            {{> theme_baz/sidebar-support }}
+            </aside>
+
+            <div class="sc-main">
+                <header class="sc-topbar iz-topbar">
+                    <div class="sc-topbar-inner">
+                        <div class="sc-tb-left">
+                            <button type="button" class="sc-burger" id="sc-burger" aria-label="{{#str}}sd_menu, theme_baz{{/str}}" aria-expanded="false" aria-controls="sc-side">
+                                <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            </button>
+                            <nav class="sc-crumb"><a href="{{{ config.wwwroot }}}/my/">{{#str}}sd_nav_dashboard, theme_baz{{/str}}</a><span class="sc-sep">/</span><span class="sc-cur">{{categoryname}}</span></nav>
+                        </div>
+                        <div class="sc-top-actions">
+                            <div class="sc-navbar-plugin">{{{ output.navbar_plugin_output }}}</div>
+                            <div class="sc-usermenu">{{{ output.user_menu }}}</div>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="sc-content">
+                    <section class="iz-hero">
+                        <div class="iz-orb"></div>
+                        <div class="iz-kick">{{#str}}iz_kicker, theme_baz, {{brandname}}{{/str}}</div>
+                        <h1>{{categoryname}}</h1>
+                        {{#hasdesc}}<div class="iz-desc">{{{categorydesc}}}</div>{{/hasdesc}}
+                        {{^hasdesc}}<p class="iz-desc">{{#str}}iz_subtitle, theme_baz{{/str}}</p>{{/hasdesc}}
+                        <div class="iz-count"><b>{{clubcount}}</b> {{#str}}iz_count, theme_baz{{/str}}</div>
+                    </section>
+
+                    {{#hasclubs}}
+                    <div class="iz-grid">
+                        {{#clubs}}
+                        <article class="iz-club{{#enrolled}} is-enrolled{{/enrolled}}">
+                            <a class="iz-cover{{^hasimage}} iz-cover-grad{{/hasimage}}" href="{{url}}" tabindex="-1" aria-hidden="true"{{^hasimage}} style="background:linear-gradient(135deg,{{gradfrom}},{{gradto}})"{{/hasimage}}>
+                                {{#hasimage}}<img class="iz-cover-img" src="{{imageurl}}" alt="" loading="lazy">{{/hasimage}}
+                                <span class="iz-ic"><svg viewBox="0 0 24 24">{{{iconsvg}}}</svg></span>
+                            </a>
+                            <div class="iz-body">
+                                <a class="iz-nm" href="{{url}}">{{name}}</a>
+                                {{#hasdesc}}<div class="iz-cdesc">{{desc}}</div>{{/hasdesc}}
+                                <a class="iz-cta" href="{{url}}">
+                                    {{#enrolled}}<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> {{#str}}iz_open, theme_baz{{/str}}{{/enrolled}}
+                                    {{^enrolled}}{{#str}}iz_explore, theme_baz{{/str}} <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>{{/enrolled}}
+                                </a>
+                            </div>
+                        </article>
+                        {{/clubs}}
+                    </div>
+                    {{/hasclubs}}
+                    {{^hasclubs}}
+                    <div class="iz-empty">{{#str}}iz_empty, theme_baz{{/str}}</div>
+                    {{/hasclubs}}
+
+                    {{! Required Moodle main-content placeholder — hidden: the standard
+                        category listing renders into main_content but the bespoke club
+                        grid above replaces it. Kept in the DOM so header() can slice. }}
+                    <div id="region-main-box" class="iz-region-main">
+                        <section id="region-main" aria-label="{{#str}}content{{/str}}">{{{ output.main_content }}}</section>
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+    </div>
+
+    {{{ output.standard_end_of_body_html }}}
+    <script>
+    (function() {
+        var burger = document.getElementById('sc-burger'),
+            side = document.getElementById('sc-side'),
+            bd = document.getElementById('sc-backdrop');
+        if (!burger || !side) { return; }
+        var toggle = function(open) {
+            side.classList.toggle('is-open', open);
+            if (bd) { bd.classList.toggle('is-open', open); }
+            burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        burger.addEventListener('click', function() { toggle(!side.classList.contains('is-open')); });
+        if (bd) { bd.addEventListener('click', function() { toggle(false); }); }
+    })();
+    </script>
+</body>
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader'], function(Loader) {
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

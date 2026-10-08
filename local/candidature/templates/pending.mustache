@@ -1,0 +1,69 @@
+{{!
+    @template local_candidature/pending
+
+    The only page a candidate sees until a decision is made.
+
+    Example context (json):
+    {
+        "rejected": false,
+        "firstname": "Asha",
+        "submitted": "Monday, 1 September 2026, 9:14 AM",
+        "hours": 48,
+        "profileurl": "#",
+        "hassupport": true,
+        "supporturl": "#",
+        "logouturl": "#"
+    }
+}}
+<div class="lc-hold">
+<style>
+.lc-hold{--lc-line:#dde3ef;--lc-muted:#5a6680;--lc-ok:#2e7d5b;--lc-no:#ae3f2f;
+    --lc-surface:#fff;--lc-text:#131e36}
+@media (prefers-color-scheme:dark){.lc-hold{--lc-line:#26324d;--lc-muted:#9aa6bf;
+    --lc-ok:#5fbe92;--lc-no:#e0796a;--lc-surface:#151f35;--lc-text:#e9edf5}}
+.lc-hold{max-width:640px;margin:32px auto;color:var(--lc-text)}
+.lc-card{background:var(--lc-surface);border:1px solid var(--lc-line);border-radius:12px;
+    padding:28px 30px;text-align:center}
+.lc-icon{width:56px;height:56px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;
+    background:rgba(46,125,91,.12);color:var(--lc-ok)}
+.lc-icon.no{background:rgba(174,63,47,.12);color:var(--lc-no)}
+.lc-icon svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2;
+    stroke-linecap:round;stroke-linejoin:round}
+.lc-card h2{font-size:21px;font-weight:700;margin:0 0 10px;color:var(--lc-text)}
+.lc-card p{color:var(--lc-muted);margin:0 0 12px;line-height:1.6}
+.lc-meta{font-size:13px;color:var(--lc-muted);border-top:1px solid var(--lc-line);
+    margin-top:18px;padding-top:14px}
+.lc-reason{background:rgba(174,63,47,.08);border:1px solid rgba(174,63,47,.28);border-radius:8px;
+    padding:12px 14px;margin:14px 0;text-align:left;color:var(--lc-text);white-space:pre-wrap}
+.lc-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
+</style>
+
+    <div class="lc-card">
+        {{^rejected}}
+        <div class="lc-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </div>
+        <h2>{{#str}}pending_heading, local_candidature{{/str}}</h2>
+        <p>{{#str}}pending_body, local_candidature, {{hours}}{{/str}}</p>
+        {{/rejected}}
+
+        {{#rejected}}
+        <div class="lc-icon no">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+        </div>
+        <h2>{{#str}}rejected_heading, local_candidature{{/str}}</h2>
+        <p>{{#str}}rejected_body, local_candidature{{/str}}</p>
+        {{#hasreason}}<div class="lc-reason">{{reason}}</div>{{/hasreason}}
+        {{/rejected}}
+
+        <div class="lc-actions">
+            <a class="btn btn-secondary" href="{{profileurl}}">{{#str}}editprofile{{/str}}</a>
+            {{#hassupport}}
+            <a class="btn btn-secondary" href="{{supporturl}}">{{#str}}pending_contact, local_candidature{{/str}}</a>
+            {{/hassupport}}
+            <a class="btn btn-primary" href="{{logouturl}}">{{#str}}logout{{/str}}</a>
+        </div>
+
+        <div class="lc-meta">{{#str}}pending_submitted, local_candidature, {{submitted}}{{/str}}</div>
+    </div>
+</div>

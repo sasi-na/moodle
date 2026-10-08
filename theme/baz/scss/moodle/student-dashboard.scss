@@ -1,0 +1,770 @@
+// Bespoke student dashboard (theme_baz). All rules are scoped under #sd-root and
+// use --sd- prefixed custom properties so nothing leaks onto other pages.
+
+// Self-hosted webfonts (served from theme/baz/fonts/). Only #sd-root references
+// these families, so the files download solely on the student dashboard.
+@font-face { font-family: 'Manrope'; font-weight: 400; font-style: normal; font-display: swap; src: url('[[font:theme_baz|manrope-400.woff2]]') format('woff2'); }
+@font-face { font-family: 'Manrope'; font-weight: 500; font-style: normal; font-display: swap; src: url('[[font:theme_baz|manrope-500.woff2]]') format('woff2'); }
+@font-face { font-family: 'Manrope'; font-weight: 600; font-style: normal; font-display: swap; src: url('[[font:theme_baz|manrope-600.woff2]]') format('woff2'); }
+@font-face { font-family: 'Manrope'; font-weight: 700; font-style: normal; font-display: swap; src: url('[[font:theme_baz|manrope-700.woff2]]') format('woff2'); }
+@font-face { font-family: 'Manrope'; font-weight: 800; font-style: normal; font-display: swap; src: url('[[font:theme_baz|manrope-800.woff2]]') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 400; font-style: normal; font-display: swap; src: url('[[font:theme_baz|jetbrains-mono-400.woff2]]') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 500; font-style: normal; font-display: swap; src: url('[[font:theme_baz|jetbrains-mono-500.woff2]]') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 600; font-style: normal; font-display: swap; src: url('[[font:theme_baz|jetbrains-mono-600.woff2]]') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-weight: 700; font-style: normal; font-display: swap; src: url('[[font:theme_baz|jetbrains-mono-700.woff2]]') format('woff2'); }
+
+#sd-root {
+    --sd-navy: #{$bz-navy};
+    /* Label on an accent surface. Derived from the accent's contrast in
+       theme_baz_brand_palette(), so a dark accent gets white and a light
+       one keeps the navy. */
+    --sd-on-accent: #{$bz-accent-on};
+    --sd-ground: #F4F7FB;
+    --sd-surface: #FFFFFF;
+    --sd-text: #0B2034;
+    --sd-muted: #5C7184;
+    --sd-faint: #90A4B5;
+    --sd-line: #E5ECF3;
+    --sd-accent: #{$bz-accent};
+    --sd-green: #1FA37A;
+    --sd-blue: #406CD2;
+    --sd-rose: #E5556E;
+    --sd-r: 18px;
+    // Button gradients — accent (amber) and navy. Used by every action button.
+    --sd-grad-accent: linear-gradient(135deg, #{$bz-accent-hi} 0%, #{$bz-accent-lo} 100%);
+    --sd-grad-navy: linear-gradient(135deg, #{$bz-navy-hi} 0%, #{$bz-navy-lo} 100%);
+    --sd-grad-ghost: linear-gradient(135deg, #EEF3FC 0%, #DEEAFB 100%);
+    --sd-sh-sm: 0 1px 2px rgba(11,32,52,.06), 0 1px 3px rgba(11,32,52,.04);
+    --sd-sh: 0 4px 14px rgba(11,32,52,.07), 0 2px 6px rgba(11,32,52,.04);
+    --sd-sh-lg: 0 18px 50px rgba(11,32,52,.12);
+    --sd-sans: 'Manrope', -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --sd-mono: 'JetBrains Mono', ui-monospace, "SF Mono", "SFMono-Regular", Menlo, monospace;
+
+    display: grid;
+    grid-template-columns: 248px 1fr;
+    min-height: 100vh;
+    background: var(--sd-ground);
+    color: var(--sd-text);
+    font-family: var(--sd-sans);
+    font-size: 14px;
+    line-height: 1.5;
+
+    *, *::before, *::after { box-sizing: border-box; }
+    a { color: inherit; text-decoration: none; }
+    // Headings must follow the theme token (the global theme sets a fixed dark
+    // heading colour that wins over inheritance and disappears in dark mode).
+    h1, h2, h3, h4 { color: var(--sd-text); }
+
+    // ---------- Sidebar ----------
+    .sd-side {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        background: linear-gradient(180deg, var(--sd-navy) 0%, $bz-navy-deep 100%);
+        color: #cfe0ec;
+        display: flex;
+        flex-direction: column;
+        padding: 22px 16px;
+        gap: 4px;
+
+        // The sidebar is pinned to the viewport, so anything past 100vh has to
+        // scroll inside it -- without this it simply overflows out of sight and
+        // cannot be reached at all, because the page itself has already hit the
+        // bottom of its own scroll. On an activity page the nav runs to 1168px
+        // against a 936px viewport, which put mod_assign's "Submissions" entry
+        // 86px below the fold with no way to get to it. The mobile drawer below
+        // already scrolls; the pinned desktop rail was the one that did not.
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, .25) transparent;
+
+        &::-webkit-scrollbar { width: 8px; }
+        &::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, .22);
+            border-radius: 4px;
+        }
+        &::-webkit-scrollbar-track { background: transparent; }
+    }
+    .sd-brand {
+        padding: 6px 8px 22px;
+        display: flex;
+        align-items: center;
+        img { max-width: 140px; height: auto; }
+        .sd-brand-txt { color: #fff; font-weight: 800; font-size: 18px; }
+    }
+    .sd-navlbl {
+        font: 600 11px/1 var(--sd-sans);
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: #5d7e95;
+        padding: 18px 12px 8px;
+    }
+    .sd-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 11px;
+            color: #aec4d4;
+            font-weight: 500;
+            position: relative;
+            transition: background .15s, color .15s;
+            svg { width: 18px; height: 18px; flex: 0 0 18px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+            &:hover { background: rgba(255,255,255,.06); color: #fff; }
+            &.on {
+                background: rgba($bz-accent,.2);
+                color: var(--sd-accent);
+                font-weight: 700;
+                svg { stroke: var(--sd-accent); }
+                &::before {
+                    content: ""; position: absolute; left: -16px; top: 8px; bottom: 8px;
+                    width: 4px; border-radius: 0 4px 4px 0; background: var(--sd-accent);
+                }
+            }
+        }
+    }
+    .sd-cnt {
+        margin-left: auto;
+        font: 600 11px/1 var(--sd-mono);
+        background: rgba(255,255,255,.1);
+        padding: 4px 7px;
+        border-radius: 20px;
+        &--accent { background: rgba($bz-accent,.2); color: var(--sd-accent); }
+    }
+    // "Need help" item in the sidebar nav (opens the support panel).
+    .sd-navhelp { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border-radius: 11px;
+        border: 0; background: none; color: #aec4d4; font: 600 14px/1 var(--sd-sans); cursor: pointer; text-align: left;
+        svg { width: 18px; height: 18px; flex: 0 0 18px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+        &:hover { background: rgba(255,255,255,.06); color: #fff; } }
+
+    // ---------- Main ----------
+    .sd-main { min-width: 0; display: flex; flex-direction: column; }
+    // Full-bleed sticky bar; the inner grid is capped to the same max-width as
+    // .sd-content so items (esp. the profile menu) align with the content below.
+    .sd-topbar {
+        position: sticky; top: 0; z-index: 20;
+        padding: 14px 0;
+        background: rgba(244,247,251,.85);
+        backdrop-filter: saturate(1.4) blur(12px);
+        border-bottom: 1px solid var(--sd-line);
+    }
+    .sd-topbar-inner {
+        display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px;
+        max-width: 1320px; width: 100%; margin: 0; padding: 0 30px;
+    }
+    .sd-tb-left { display: flex; align-items: center; gap: 10px; justify-self: start; min-width: 0; }
+    .sd-tb-title { font-size: 17px; font-weight: 800; letter-spacing: -.01em; white-space: nowrap; }
+    .sd-tb-chip { font: 700 11px/1 var(--sd-mono); color: var(--sd-blue); background: #eef3fc;
+        padding: 6px 9px; border-radius: 8px; white-space: nowrap; }
+    .sd-search-wrap { justify-self: center; width: clamp(220px, 32vw, 460px); position: relative; }
+    .sd-search-kbd { font: 600 11px/1 var(--sd-mono); color: var(--sd-faint);
+        border: 1px solid var(--sd-line); border-radius: 6px; padding: 3px 6px; flex: 0 0 auto; }
+    // Mobile hamburger (hidden on desktop; revealed at <=860).
+    .sd-burger { display: none; width: 42px; height: 42px; border-radius: 12px; padding: 0;
+        background: var(--sd-surface); border: 1px solid var(--sd-line); place-items: center;
+        color: var(--sd-text); box-shadow: var(--sd-sh-sm); cursor: pointer; flex: 0 0 auto;
+        svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.9; } }
+    // Dim backdrop behind the mobile drawer.
+    .sd-backdrop { position: fixed; inset: 0; background: rgba(3,12,20,.5); z-index: 95;
+        opacity: 0; visibility: hidden; transition: opacity .26s ease, visibility .26s ease;
+        &.sd-show { opacity: 1; visibility: visible; } }
+    .sd-search { display: flex; align-items: center; gap: 10px; width: 100%;
+        // A stronger border than --sd-line: the white field needs a clear edge
+        // against the light topbar.
+        background: var(--sd-surface); border: 1px solid #CBD8E6; border-radius: 12px;
+        padding: 10px 14px; box-shadow: var(--sd-sh-sm); color: var(--sd-faint); margin: 0;
+        svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.8; flex: 0 0 17px; }
+        input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: inherit; color: var(--sd-text); }
+    }
+    .sd-suggest { position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 50;
+        background: var(--sd-surface); border: 1px solid var(--sd-line); border-radius: 12px;
+        box-shadow: var(--sd-sh-lg); max-height: 340px; overflow-y: auto;
+        &[hidden] { display: none; }
+        a { display: flex; flex-direction: column; padding: 10px 14px; border-bottom: 1px solid var(--sd-line); }
+        a:last-child { border-bottom: 0; }
+        a:hover, a.sd-active { background: var(--sd-ground); }
+        .sd-sg-label { font-weight: 600; font-size: 13px; color: var(--sd-text); }
+        .sd-sg-sub { font-size: 11.5px; color: var(--sd-muted); margin-top: 2px; }
+        .sd-sg-empty { padding: 12px 14px; color: var(--sd-muted); font-size: 13px; }
+    }
+    .sd-top-actions { display: flex; align-items: center; gap: 10px; justify-self: end;
+        > * { flex: 0 0 auto; } }
+    .sd-askjo {
+        display: flex; align-items: center; justify-content: center; gap: 9px; text-align: center;
+        background: var(--sd-grad-navy); color: #fff; font-weight: 700; border: 0; white-space: nowrap;
+        padding: 10px 16px; border-radius: 12px; box-shadow: var(--sd-sh); cursor: pointer;
+        transition: transform .12s, box-shadow .12s;
+        svg { width: 16px; height: 16px; }
+        &:hover { transform: translateY(-1px); box-shadow: var(--sd-sh-lg); color: #fff; }
+    }
+    .sd-iconbtn {
+        width: 42px; height: 42px; border-radius: 12px;
+        background: var(--sd-surface); border: 1px solid var(--sd-line);
+        display: grid; place-items: center; color: var(--sd-muted);
+        box-shadow: var(--sd-sh-sm); cursor: pointer;
+        svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    }
+    .sd-usermenu { display: flex; align-items: center; }
+    // Notifications + native Messages popovers (both emitted by navbar_plugin_output)
+    // styled as icon buttons matching the theme toggle, count badge pinned top-right.
+    .sd-navbar-plugin { display: flex; align-items: center; gap: 10px;
+        // The messages popover container carries data-region="popover-region-messages"
+        // (its class is just .popover-region); its toggle is a <button>, not .popover-region-toggle.
+        .popover-region { position: relative; }
+        .popover-region-toggle,
+        [data-region="popover-region-messages"] > button {
+            position: relative; width: 42px; height: 42px; border-radius: 12px; padding: 0;
+            // !important: the native messages <button> ships Bootstrap's .border-0.
+            background: var(--sd-surface); border: 1px solid var(--sd-line) !important; display: grid; place-items: center;
+            box-shadow: var(--sd-sh-sm); color: var(--sd-muted); cursor: pointer;
+            transition: transform .12s, box-shadow .12s;
+            &:hover { transform: translateY(-1px); box-shadow: var(--sd-sh); color: var(--sd-text); }
+            svg { width: 19px; height: 19px; } }
+        .count-container,
+        [data-region="count-container"] {
+            position: absolute; top: -5px; right: -5px; min-width: 17px; height: 17px;
+            padding: 0 4px; border-radius: 9px; background: var(--sd-rose); color: #fff;
+            font: 700 10px/17px var(--sd-mono); text-align: center; box-shadow: 0 0 0 2px var(--sd-ground);
+            &.hidden { display: none; } }
+    }
+
+    // Ask JO chat panel (toggled from the topbar button).
+    .sd-askjo-panel { position: fixed; bottom: 24px; right: 24px; width: 380px;
+        max-width: calc(100vw - 32px); max-height: 72vh; background: var(--sd-surface);
+        border: 1px solid var(--sd-line); border-radius: 18px; box-shadow: var(--sd-sh-lg);
+        z-index: 60; display: flex; flex-direction: column; overflow: hidden;
+        &[hidden] { display: none; } }
+    .sd-askjo-head { display: flex; align-items: center; justify-content: space-between;
+        padding: 13px 18px; background: var(--sd-navy); color: #fff; font-weight: 700; flex: 0 0 auto; }
+    .sd-askjo-close { background: none; border: 0; color: #fff; font-size: 22px; line-height: 1; cursor: pointer; padding: 0 4px; }
+    .sd-askjo-body { flex: 1 1 auto; padding: 14px 16px; overflow-y: auto; min-height: 160px; }
+    .sd-askjo-control { flex: 0 0 auto; border-top: 1px solid var(--sd-line); padding: 10px 12px; background: var(--sd-surface); }
+
+    // Floating "Need help?" support button + panel (bottom-left; Ask JO is bottom-right).
+    .sd-help { position: fixed; bottom: 24px; left: 24px; z-index: 60; }
+    .sd-help-fab { display: inline-flex; align-items: center; gap: 9px; background: var(--sd-grad-accent); color: var(--sd-on-accent);
+        font-weight: 800; font-size: 14px; padding: 13px 18px; border-radius: 30px; border: 0; cursor: pointer;
+        box-shadow: 0 10px 26px rgba($bz-accent,.42); transition: transform .12s, box-shadow .12s;
+        svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 2; }
+        &:hover { transform: translateY(-1px); box-shadow: 0 14px 32px rgba($bz-accent,.5); color: var(--sd-navy); } }
+    .sd-help-panel { position: absolute; bottom: calc(100% + 12px); left: 0; width: 340px; max-width: calc(100vw - 32px);
+        background: var(--sd-surface); border: 1px solid var(--sd-line); border-radius: 18px; box-shadow: var(--sd-sh-lg); overflow: hidden;
+        &[hidden] { display: none; } }
+    .sd-help-head { display: flex; align-items: center; gap: 11px; padding: 14px 16px; border-bottom: 1px solid var(--sd-line);
+        .sd-help-ic { width: 34px; height: 34px; flex: 0 0 34px; border-radius: 10px; background: var(--sd-accent); color: var(--sd-navy); display: grid; place-items: center;
+            svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.9; } }
+        .sd-help-t { flex: 1; min-width: 0; b { font-size: 14px; font-weight: 800; } small { display: block; font-size: 11.5px; color: var(--sd-muted); margin-top: 2px; } }
+        .sd-help-close { background: none; border: 0; font-size: 22px; line-height: 1; color: var(--sd-muted); cursor: pointer; padding: 0 4px; } }
+
+    .sd-content {
+        padding: 28px 30px 56px;
+        display: flex; flex-direction: column; gap: 24px;
+        max-width: 1320px; width: 100%;
+    }
+
+    // ---------- Dashboard banner ----------
+    .sd-banner-wrap { position: relative; }
+    .sd-banner { display: block; border-radius: var(--sd-r); overflow: hidden;
+        border: 1px solid var(--sd-line); box-shadow: var(--sd-sh);
+        transition: transform .14s, box-shadow .14s;
+        img { display: block; width: 100%; height: auto; }
+    }
+    a.sd-banner:hover { transform: translateY(-2px); box-shadow: var(--sd-sh-lg); }
+    // Carousel (only when more than one banner): show one slide at a time.
+    .sd-banner-carousel { .sd-banner { display: none; &:first-child { display: block; } } }
+    .sd-banner-dots { position: absolute; left: 0; right: 0; bottom: 12px; display: flex; justify-content: center; gap: 7px;
+        button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 50%; cursor: pointer;
+            background: rgba(255,255,255,.55); box-shadow: 0 0 0 1px rgba(0,0,0,.15);
+            &.sd-on { background: #fff; width: 20px; border-radius: 5px; } }
+    }
+
+    // ---------- End-semester exam CTA (Jan-26 batch) ----------
+    // The bespoke dashboard renders no generic blocks, so block_endsemesterexam
+    // ('my' block) never appears here. This gold banner is the exam entry point
+    // for the gated audience; it links to the same redirect.php the block uses.
+    .sd-exam-cta {
+        display: flex; align-items: center; gap: 18px;
+        padding: 18px 22px; border-radius: var(--sd-r);
+        background: var(--sd-grad-accent); color: var(--sd-on-accent);
+        box-shadow: 0 10px 26px rgba($bz-accent,.42);
+        border: 1px solid rgba(255,255,255,.35);
+        transition: transform .14s, box-shadow .14s;
+        &:hover { transform: translateY(-2px); box-shadow: 0 16px 36px rgba($bz-accent,.55); color: var(--sd-navy); }
+        .sd-exam-ic { flex: 0 0 46px; width: 46px; height: 46px; border-radius: 13px;
+            background: var(--sd-navy); color: var(--sd-accent); display: grid; place-items: center;
+            svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; } }
+        .sd-exam-txt { min-width: 0; flex: 1; }
+        .sd-exam-tag { font: 700 10px/1 var(--sd-mono); letter-spacing: .12em; text-transform: uppercase; opacity: .8; }
+        .sd-exam-ti { font-weight: 800; font-size: 18px; margin: 5px 0 3px; }
+        .sd-exam-meta { font-size: 12.5px; opacity: .85; }
+        .sd-exam-go { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px;
+            background: var(--sd-navy); color: #fff; font-weight: 700; font-size: 14px;
+            padding: 12px 20px; border-radius: 12px;
+            svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2; } }
+    }
+    @media (max-width: 640px) {
+        .sd-exam-cta { flex-wrap: wrap; .sd-exam-go { width: 100%; justify-content: center; } }
+    }
+
+    // ---------- Hero ----------
+    .sd-hero { display: grid; grid-template-columns: 1.55fr 1fr; gap: 20px; }
+    .sd-hero-l {
+        background: linear-gradient(135deg, var(--sd-navy) 0%, $bz-navy-d 55%, $bz-navy-e 100%);
+        border-radius: 24px; padding: 28px 30px; color: #fff;
+        position: relative; overflow: hidden; box-shadow: var(--sd-sh-lg);
+        h1 { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin: 10px 0 6px; color: #fff; }
+    }
+    .sd-glow { position: absolute; inset: 0; pointer-events: none;
+        background: radial-gradient(420px 220px at 88% -10%, rgba($bz-accent,.28), transparent 70%); }
+    .sd-eyebrow { font: 600 12px/1 var(--sd-mono); letter-spacing: .06em; color: var(--sd-accent); text-transform: uppercase; }
+    .sd-sub { color: #a9c4d6; max-width: 46ch; b { color: #fff; } }
+    .sd-upnext {
+        margin-top: 22px; background: rgba(255,255,255,.07);
+        border: 1px solid rgba(255,255,255,.13); border-radius: 18px;
+        padding: 16px; display: flex; align-items: center; gap: 16px;
+        .sd-upnext-bar { width: 4px; align-self: stretch; border-radius: 4px; background: var(--sd-accent); }
+        .sd-upnext-info { min-width: 0; flex: 1; }
+        .sd-tag { font: 600 10px/1 var(--sd-mono); letter-spacing: .1em; color: var(--sd-accent); text-transform: uppercase; }
+        .sd-ti { font-weight: 700; font-size: 16px; margin: 7px 0 4px; }
+        .sd-meta { color: #9fbccf; font-size: 12.5px; }
+    }
+    .sd-count { text-align: center; flex: 0 0 auto;
+        .sd-num { font: 800 24px/1 var(--sd-mono); color: #fff; }
+        .sd-lbl { font: 600 10px/1 var(--sd-mono); color: #8fb0c5; text-transform: uppercase; letter-spacing: .1em; margin-top: 5px; }
+    }
+    .sd-go {
+        flex: 0 0 auto; background: var(--sd-grad-accent); color: var(--sd-on-accent);
+        font-weight: 700; padding: 11px 18px; border-radius: 11px; text-align: center;
+        display: flex; align-items: center; justify-content: center; gap: 7px; transition: transform .12s, box-shadow .12s;
+        svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+        &:hover { transform: translateY(-1px); box-shadow: 0 8px 22px rgba($bz-accent,.4); color: var(--sd-navy); }
+    }
+    .sd-qa { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; align-items: center;
+        a {
+            white-space: nowrap; flex: 0 0 auto;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-align: center;
+            padding: 9px 16px; border-radius: 11px;
+            background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+            color: #e3eef6; font-weight: 600; font-size: 13px;
+            transition: background .15s, transform .12s;
+            svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+            &:hover { background: rgba(255,255,255,.17); transform: translateY(-1px); color: #fff; }
+        }
+        .sd-qa-primary { background: var(--sd-grad-accent); border-color: transparent; color: var(--sd-navy);
+            svg { stroke: var(--sd-navy); } &:hover { color: var(--sd-navy); } }
+        // Highlighted End-Sem Exam button (gold + pulsing glow + EXAM tag).
+        // Shares the actions row on wide screens; wraps to its own line when the
+        // hero column is too narrow (never clipped by the card's overflow).
+        .sd-qa-exam {
+            background: var(--sd-grad-accent); border: 0; color: var(--sd-navy); font-weight: 800; padding: 11px 18px;
+            box-shadow: 0 8px 22px rgba($bz-accent,.4); animation: sd-exam-glow 2.2s ease-in-out infinite;
+            svg { stroke: var(--sd-navy); width: 16px; height: 16px; }
+            &:hover { color: var(--sd-navy); transform: translateY(-1px); box-shadow: 0 14px 32px rgba($bz-accent,.6); }
+        }
+        .sd-qa-exam-tag { font: 800 9px/1 var(--sd-mono); letter-spacing: .12em; background: rgba(11,32,52,.85);
+            color: var(--sd-accent); padding: 3px 6px; border-radius: 5px; margin-left: 2px; }
+    }
+    @keyframes sd-exam-glow { 0%, 100% { box-shadow: 0 8px 22px rgba($bz-accent,.35); } 50% { box-shadow: 0 10px 30px rgba($bz-accent,.7); } }
+    @media (prefers-reduced-motion: reduce) { .sd-qa .sd-qa-exam { animation: none; } }
+
+    .sd-hero-r {
+        background: var(--sd-surface); border: 1px solid var(--sd-line);
+        border-radius: 24px; padding: 24px; box-shadow: var(--sd-sh);
+        display: flex; flex-direction: column;
+    }
+    .sd-hr-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px;
+        .sd-t { font-weight: 700; font-size: 14.5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .sd-streak { display: inline-flex; align-items: center; gap: 6px; flex: 0 0 auto;
+            font: 700 11.5px/1 var(--sd-mono); color: $bz-accent-text2; background: $bz-accent-bg;
+            padding: 7px 10px; border-radius: 20px; white-space: nowrap; }
+    }
+    // A+C progress: segmented activity donut + count chips.
+    .sd-donut-row { display: flex; align-items: center; gap: 20px; }
+    .sd-donut { position: relative; width: 124px; height: 124px; flex: 0 0 124px;
+        svg { transform: rotate(-90deg); }
+        .sd-donut-mid { position: absolute; inset: 0; display: grid; place-content: center; text-align: center;
+            b { font: 800 26px/1 var(--sd-mono); color: var(--sd-text); }
+            span { font-size: 10px; color: var(--sd-muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 2px; }
+        }
+    }
+    .sd-chips { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 0;
+        .sd-chip2 { display: flex; align-items: center; gap: 10px; padding: 8px 11px; border-radius: 10px;
+            background: var(--sd-ground); font-size: 12.5px; font-weight: 600; color: var(--sd-muted);
+            i { width: 10px; height: 10px; border-radius: 50%; flex: 0 0 10px; }
+            .sd-sw-empty { background: #C7D2DC; }
+            b { margin-left: auto; font: 800 15px/1 var(--sd-mono); color: var(--sd-text); font-variant-numeric: tabular-nums; }
+        }
+    }
+    // 7-day activity sparkline.
+    .sd-spark-row { margin-top: 18px; }
+    .sd-spark-lbl { display: flex; justify-content: space-between; font: 600 10px/1 var(--sd-mono);
+        color: var(--sd-faint); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 7px; }
+    .sd-spark { display: flex; align-items: flex-end; gap: 5px; height: 38px;
+        .sd-sbar { flex: 1; background: linear-gradient(180deg, #5B9BFF, #2563EB);
+            border-radius: 4px 4px 2px 2px; min-height: 4px;
+            &.dim { background: #e3e9ef; } }
+    }
+    // "Focus next" nudge → the least-progressed course.
+    .sd-focus { margin-top: 16px; display: flex; align-items: center; gap: 12px; background: var(--sd-ground);
+        border-radius: 13px; padding: 12px 14px; transition: transform .12s, box-shadow .12s;
+        &:hover { transform: translateY(-1px); box-shadow: var(--sd-sh-sm); }
+        .sd-focus-ic { width: 34px; height: 34px; border-radius: 9px; background: var(--sd-navy); color: #fff;
+            display: grid; place-items: center; flex: 0 0 34px;
+            svg { width: 16px; height: 16px; fill: #fff; } }
+        .sd-focus-txt { flex: 1; min-width: 0;
+            .sd-focus-k { font: 600 10px/1 var(--sd-mono); color: var(--sd-faint); text-transform: uppercase; letter-spacing: .07em; }
+            .sd-focus-v { font-size: 13px; font-weight: 700; color: var(--sd-text); margin-top: 3px;
+                white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        }
+        .sd-focus-go { flex: 0 0 auto; background: var(--sd-grad-accent); color: var(--sd-on-accent); font-weight: 700; font-size: 12px;
+            padding: 9px 15px; border: 0; border-radius: 11px; text-align: center; transition: filter .12s; white-space: nowrap; }
+    }
+    .sd-focus:hover .sd-focus-go { filter: brightness(1.04); }
+
+    // ---------- KPI strip (read-only "stat" tiles — deliberately flat, not cards) ----------
+    .sd-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .sd-stat {
+        background: var(--sd-surface); border: 1px solid var(--sd-line);
+        border-radius: 16px; padding: 17px 19px; box-shadow: none; cursor: default;
+        display: flex; flex-direction: column; gap: 11px;
+        .sd-stat-top { display: flex; align-items: center; justify-content: space-between; }
+        .sd-ic2 { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; color: #fff;
+            svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.9; } }
+        .sd-v { font: 800 26px/1 var(--sd-mono); color: var(--sd-text); }
+        .sd-l { font-size: 12.5px; color: var(--sd-muted); font-weight: 600; }
+        .sd-chip { font: 600 11px/1 var(--sd-mono); padding: 5px 8px; border-radius: 20px; }
+    }
+
+    // ---------- Clickable affordance (jump-back-in + course cards) ----------
+    // These open an activity, so they get a corner "open" arrow + pointer + lift,
+    // unlike the read-only stat tiles above.
+    .sd-clickable { position: relative; cursor: pointer;
+        .sd-open { position: absolute; top: 12px; right: 12px; z-index: 2;
+            width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center;
+            background: var(--sd-ground); color: var(--sd-muted); opacity: .55;
+            transition: opacity .15s, background .15s, color .15s, transform .15s;
+            svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.4; } }
+        &:hover .sd-open { opacity: 1; background: var(--sd-accent); color: var(--sd-navy); transform: translate(2px, -2px); }
+    }
+    // On a course's coloured cover the chip reads as translucent white.
+    .sd-course.sd-clickable .sd-open { background: rgba(255,255,255,.22); color: #fff; opacity: .9; }
+    .sd-course.sd-clickable:hover .sd-open { background: var(--sd-accent); color: var(--sd-navy); }
+
+    // ---------- Section headings ----------
+    .sd-sec-h { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2px;
+        h2 { font-size: 18px; font-weight: 800; letter-spacing: -.01em; }
+        .sd-all { font-weight: 600; color: var(--sd-blue); font-size: 13px; &:hover { text-decoration: underline; } }
+    }
+    .sd-sembadge { font: 600 12px/1 var(--sd-mono); color: var(--sd-blue); background: #eef3fc; padding: 4px 9px; border-radius: 7px; margin-left: 8px; vertical-align: middle; }
+
+    // ---------- Jump back in ----------
+    .sd-rail { display: flex; gap: 14px; overflow-x: auto; padding: 4px 2px 12px; }
+    .sd-ritem {
+        flex: 0 0 260px; background: var(--sd-surface); border: 1px solid var(--sd-line);
+        border-radius: 16px; padding: 15px; box-shadow: var(--sd-sh-sm);
+        transition: transform .14s, box-shadow .14s;
+        &:hover { transform: translateY(-3px); box-shadow: var(--sd-sh); }
+        .sd-ico { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; color: #fff; margin-bottom: 26px;
+            svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; } }
+        .sd-kind { font: 600 10px/1 var(--sd-mono); color: var(--sd-faint); text-transform: uppercase; letter-spacing: .08em; }
+        .sd-nm { font-weight: 700; font-size: 14px; margin: 7px 0 4px; line-height: 1.3; }
+        .sd-crs { font-size: 12px; color: var(--sd-muted); }
+    }
+
+    // ---------- Course bento ----------
+    .sd-courses { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .sd-course {
+        background: var(--sd-surface); border: 1px solid var(--sd-line);
+        border-radius: 20px; overflow: hidden; box-shadow: var(--sd-sh-sm);
+        transition: transform .14s, box-shadow .14s;
+        &:hover { transform: translateY(-4px); box-shadow: var(--sd-sh-lg); }
+        .sd-cover { height: 92px; position: relative; display: flex; align-items: flex-start; justify-content: space-between; padding: 15px 16px; color: #fff;
+            .sd-code { font: 700 11px/1 var(--sd-mono); background: rgba(0,0,0,.22); padding: 5px 8px; border-radius: 7px; }
+            .sd-mono { font: 800 22px/1 var(--sd-mono); opacity: .9; }
+            .sd-deco { position: absolute; right: -20px; bottom: -34px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.12); }
+        }
+        /* Uploaded course image as the cover (falls back to gradient + initials). */
+        .sd-cover.has-img { padding: 0; overflow: hidden; }
+        .sd-cover-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+        .sd-cover.has-img::after { content: ""; position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(0,20,40,.04), rgba(0,20,40,.42)); }
+        .sd-cover.has-img .sd-open { position: relative; z-index: 2; margin-left: auto; }
+        .sd-cbody { padding: 15px 16px 17px;
+            h3 { font-size: 15px; font-weight: 700; letter-spacing: -.01em; line-height: 1.25; }
+        }
+    }
+    .sd-prog { display: flex; align-items: center; gap: 10px; margin-top: 14px;
+        .sd-p { font: 700 12px/1 var(--sd-mono); color: var(--sd-text); } }
+    .sd-bar { flex: 1; height: 7px; border-radius: 6px; background: #eef2f6; overflow: hidden;
+        i { display: block; height: 100%; border-radius: 6px; } }
+    .sd-cstatus { margin-top: 13px;
+        .sd-pill { font: 600 10px/1 var(--sd-mono); padding: 5px 9px; border-radius: 20px; } }
+
+    // ---------- Lower grid ----------
+    .sd-lower { display: grid; grid-template-columns: 1.7fr 1fr; gap: 22px; align-items: start; }
+    // Nothing to show on the left: take the whole width and let the remaining
+    // cards flow across it, rather than leaving a column of empty space.
+    .sd-lower--noleft { grid-template-columns: 1fr;
+        .sd-rstack { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); align-items: start; } }
+    .sd-lstack, .sd-rstack { display: flex; flex-direction: column; gap: 22px; }
+    .sd-card { background: var(--sd-surface); border: 1px solid var(--sd-line); border-radius: 20px; box-shadow: var(--sd-sh-sm); }
+    .sd-hd { display: flex; align-items: center; gap: 10px; padding: 18px 20px; border-bottom: 1px solid var(--sd-line);
+        h3 { font-size: 15px; font-weight: 800; }
+        .sd-hic { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; color: #fff;
+            svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.9; } }
+    }
+    .sd-pad { padding: 18px 20px; }
+
+    // timeline / events
+    .sd-tl { padding: 4px 20px 14px; }
+    .sd-day { font: 600 11px/1 var(--sd-mono); color: var(--sd-faint); text-transform: uppercase; letter-spacing: .08em; padding: 16px 0 8px; }
+    .sd-ev { display: flex; align-items: center; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--sd-line);
+        &:last-child { border-bottom: 0; }
+        .sd-tm { font: 700 13px/1 var(--sd-mono); color: var(--sd-text); width: 54px; flex: 0 0 54px; }
+        .sd-evbar { width: 3px; align-self: stretch; border-radius: 3px; background: var(--sd-accent); }
+        .sd-evinfo { flex: 1; min-width: 0;
+            .sd-evt { font-weight: 600; font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+            .sd-evc { font-size: 12px; color: var(--sd-muted); margin-top: 2px; }
+        }
+        .sd-act { flex: 0 0 auto; font: 700 12px/1 var(--sd-sans); color: var(--sd-navy); background: var(--sd-grad-accent);
+            padding: 8px 14px; border-radius: 9px; text-align: center;
+            &--ghost { background: var(--sd-grad-ghost); color: var(--sd-blue); } }
+    }
+
+    // Level Up XP
+    .sd-xp-row { display: flex; align-items: center; gap: 15px; }
+    .sd-lvl-badge { width: 56px; height: 56px; flex: 0 0 56px; border-radius: 50%;
+        background: linear-gradient(135deg, $bz-accent, $bz-accent-lo2); display: grid; place-items: center;
+        color: var(--sd-navy); font: 800 22px/1 var(--sd-mono); box-shadow: 0 6px 16px rgba($bz-accent,.4); }
+    .sd-xp-info { flex: 1; min-width: 0;
+        .sd-xp-pts { font-weight: 700; font-size: 14px; margin-bottom: 7px; span { color: var(--sd-muted); font-weight: 600; } }
+        .sd-xp-next { font-size: 11.5px; color: var(--sd-muted); margin-top: 7px; }
+    }
+    .sd-xp-rank { display: flex; align-items: center; gap: 9px; margin-top: 15px; padding-top: 14px; border-top: 1px dashed var(--sd-line); font-size: 12.5px; color: var(--sd-muted); }
+
+    // Fee
+    .sd-fee { background: linear-gradient(135deg, $bz-accent-bg, $bz-accent-bg3); border: 1px solid $bz-accent-bd; border-radius: 20px; padding: 20px; box-shadow: var(--sd-sh-sm);
+        .sd-fee-head { display: flex; align-items: flex-start; gap: 13px; margin-bottom: 15px; }
+        .sd-fee-ic { flex: 0 0 42px; width: 42px; height: 42px; border-radius: 12px; background: var(--sd-accent); color: var(--sd-navy); display: grid; place-items: center;
+            svg { width: 21px; height: 21px; stroke: currentColor; fill: none; stroke-width: 1.9; } }
+        .sd-fee-txt { min-width: 0; }
+        h3 { font-size: 15px; font-weight: 800; }
+        p { font-size: 12.5px; color: #8a6d2f; margin: 4px 0 0; }
+        .sd-pay { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; text-align: center; background: var(--sd-grad-navy); color: #fff; font-weight: 700; padding: 12px; border-radius: 11px; font-size: 13.5px; transition: transform .12s, box-shadow .12s;
+            svg { width: 15px; height: 15px; } &:hover { transform: translateY(-1px); box-shadow: var(--sd-sh); color: #fff; } }
+    }
+
+    // Support — embed the real support block buttons (LSM / ticket / SOP) as rows.
+    .sd-support { padding: 6px 20px 14px;
+        .support-block-button { display: flex; flex-direction: column; }
+        .btn { display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%;
+            text-align: left; padding: 13px 0; margin: 0; border: 0; border-bottom: 1px solid var(--sd-line);
+            border-radius: 0; background: none; box-shadow: none; color: var(--sd-text);
+            font: 600 13px/1.3 var(--sd-sans); cursor: pointer;
+            &:before { content: ""; flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--sd-accent); }
+            &:last-child { border-bottom: 0; }
+            &:hover { color: var(--sd-blue); } }
+    }
+
+    // Support
+    .sd-sup { padding: 8px 20px 16px;
+        .sd-sup-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--sd-line);
+            &:last-child { border-bottom: 0; }
+            .sd-si { width: 34px; height: 34px; border-radius: 10px; background: #E6F6F0; color: var(--sd-green); display: grid; place-items: center;
+                svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 1.9; } }
+            .sd-sup-lab { font-weight: 600; font-size: 13px; }
+            .sd-sup-meta { font-size: 11.5px; color: var(--sd-muted); }
+            .sd-arr { margin-left: auto; color: var(--sd-faint); }
+        }
+    }
+
+    // Mini calendar
+    .sd-cal { padding: 16px 20px 20px; overflow: visible;
+        .sd-ct { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; b { font-weight: 700; font-size: 14px; } }
+    }
+    .sd-grid7 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; text-align: center;
+        .sd-dow { font: 600 10px/1 var(--sd-mono); color: var(--sd-faint); padding: 6px 0; }
+        .sd-d { aspect-ratio: 1; display: grid; place-items: center; font-size: 12.5px; color: var(--sd-text); border-radius: 9px; position: relative;
+            .sd-d-n { display: grid; place-items: center; width: 100%; height: 100%;
+                color: inherit; text-decoration: none; border-radius: inherit; }
+            &:hover { background: var(--sd-ground); }
+            &.sd-mut { color: var(--sd-faint); }
+            &.sd-today { background: var(--sd-navy); color: #fff; font-weight: 700; }
+            &.sd-due::after { content: ""; position: absolute; bottom: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--sd-accent); }
+            &.sd-today.sd-due::after { background: #fff; }
+            &:hover, &:focus-within { z-index: 90; }
+        }
+    }
+    // Styled hover popover for a day's events (replaces the plain title tooltip).
+    .sd-cal-pop {
+        position: absolute; bottom: calc(100% + 9px); left: 50%;
+        transform: translateX(-50%) translateY(4px);
+        width: 196px; background: var(--sd-navy); color: #fff;
+        border-radius: 12px; padding: 11px 13px; box-shadow: var(--sd-sh-lg);
+        display: flex; flex-direction: column; gap: 6px; text-align: left;
+        opacity: 0; visibility: hidden; z-index: 95;
+        transition: opacity .14s ease, transform .14s ease;
+        // Transparent bridge across the 9px gap to the day cell, so travelling from
+        // the date to the popover never crosses dead space and drops :hover.
+        &::before { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 11px; }
+        &::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            border: 6px solid transparent; border-top-color: var(--sd-navy); }
+        .sd-cal-pop-d { font: 700 10px/1.2 var(--sd-mono); color: var(--sd-accent);
+            text-transform: uppercase; letter-spacing: .05em; }
+        .sd-cal-pop-ev { display: block; font-size: 12px; line-height: 1.35; color: #d6e6f3;
+            text-decoration: none; border-radius: 6px; margin: -2px -5px; padding: 2px 5px;
+            &:hover, &:focus-visible { background: rgba(255, 255, 255, .12); color: #fff; }
+            b { color: #fff; font: 700 11px/1 var(--sd-mono); margin-right: 5px; } }
+    }
+    .sd-d:hover .sd-cal-pop, .sd-d:focus-within .sd-cal-pop {
+        opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+    // Flip the popover away from the grid edges (col 0-1 open right, col 5-6 open
+    // left) so it never runs off-screen. Columns come from the exporter (sd-col0..6).
+    .sd-d.sd-col0 .sd-cal-pop, .sd-d.sd-col1 .sd-cal-pop {
+        left: 0; right: auto; transform: translateX(0) translateY(4px);
+        &::after { left: 22px; right: auto; } }
+    .sd-d.sd-col5 .sd-cal-pop, .sd-d.sd-col6 .sd-cal-pop {
+        left: auto; right: 0; transform: translateX(0) translateY(4px);
+        &::after { left: auto; right: 22px; } }
+    .sd-d.sd-col0:hover .sd-cal-pop, .sd-d.sd-col1:hover .sd-cal-pop,
+    .sd-d.sd-col5:hover .sd-cal-pop, .sd-d.sd-col6:hover .sd-cal-pop,
+    .sd-d.sd-col0:focus-within .sd-cal-pop, .sd-d.sd-col1:focus-within .sd-cal-pop,
+    .sd-d.sd-col5:focus-within .sd-cal-pop, .sd-d.sd-col6:focus-within .sd-cal-pop {
+        transform: translateX(0) translateY(0); }
+
+    // Hero streak chip.
+    .sd-herometa { display: flex; gap: 9px; margin-top: 12px; flex-wrap: wrap; }
+    .sd-hm { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600;
+        color: #cfe0ec; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.13);
+        padding: 6px 11px; border-radius: 20px; }
+
+    // Embedded real-block content (rss_client, support, news_items) inside a card.
+    .sd-blockcontent { padding: 6px 20px 18px; font-size: 13px; color: var(--sd-text);
+        a { color: var(--sd-blue); font-weight: 600; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        ul, ol { list-style: none; margin: 0; padding: 0; }
+        li { padding: 11px 0; border-bottom: 1px solid var(--sd-line); line-height: 1.4; }
+        li:last-child { border-bottom: 0; }
+        p { margin: 0 0 8px; color: var(--sd-muted); }
+        img { max-width: 100%; height: auto; border-radius: 8px; }
+        h4, h5 { font-size: 13.5px; font-weight: 700; margin: 0 0 4px; }
+    }
+
+    // Business news + Podcasts feeds row.
+    .sd-feeds { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+    .sd-feed { padding: 8px 20px 16px; }
+    .sd-fitem {
+        display: flex; gap: 13px; padding: 13px 0; align-items: flex-start;
+        border-bottom: 1px solid var(--sd-line); text-decoration: none;
+        &:last-child { border-bottom: 0; }
+        &:hover .sd-fhl { color: var(--sd-blue); }
+        .sd-th { flex: 0 0 46px; width: 46px; height: 46px; border-radius: 11px; display: grid; place-items: center; color: #fff; font: 800 12px/1 var(--sd-mono); }
+        .sd-play { flex: 0 0 46px; width: 46px; height: 46px; border-radius: 50%; background: #f0e9ff; color: #7C3AED; display: grid; place-items: center;
+            svg { width: 18px; height: 18px; } }
+        .sd-ft { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        .sd-fsrc { font: 600 10px/1 var(--sd-mono); color: var(--sd-faint); text-transform: uppercase; letter-spacing: .06em; }
+        .sd-fhl { font-weight: 600; font-size: 13px; line-height: 1.35; margin-top: 4px; color: var(--sd-text);
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    }
+
+    .sd-footnote { text-align: center; color: var(--sd-faint); font-size: 12px; padding-top: 6px; }
+
+    // Required main-content placeholder — usually empty on /my/; neutralise any
+    // inherited theme styling so it adds no visible box/gap.
+    .sd-region-main, .sd-region-main #region-main {
+        margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none;
+    }
+
+    // Reveal animation for course cards.
+    .sd-reveal { animation: sd-fadeup .5s ease both; }
+
+    // Responsive.
+    @media (max-width: 1080px) {
+        .sd-courses { grid-template-columns: repeat(2, 1fr); }
+        .sd-hero, .sd-lower, .sd-feeds { grid-template-columns: 1fr; }
+        .sd-stats { grid-template-columns: repeat(2, 1fr); }
+        // Free up topbar space: drop the title (keep the hamburger), let search flex wider.
+        .sd-tb-title, .sd-tb-chip { display: none; }
+        .sd-search-wrap { width: clamp(200px, 46vw, 460px); }
+    }
+    @media (max-width: 860px) {
+        grid-template-columns: 1fr;
+        // Sidebar becomes a slide-in drawer from the left.
+        .sd-side { position: fixed; top: 0; left: 0; height: 100vh; width: 272px; z-index: 100;
+            overflow-y: auto; transform: translateX(-100%);
+            transition: transform .26s cubic-bezier(.2,.8,.2,1); box-shadow: var(--sd-sh-lg); }
+        .sd-side.sd-open { transform: none; }
+        .sd-burger { display: grid; }
+        // Condense the bar: drop the wide Ask JO button + theme toggle on phones.
+        .sd-askjo, #sd-themebtn { display: none; }
+        // Mobile topbar: hamburger (auto) · search (flexes, can shrink) · tools (auto),
+        // so nothing overlaps the hamburger at narrow widths.
+        .sd-topbar-inner { grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; }
+        .sd-search-wrap { width: auto; justify-self: stretch; }
+        .sd-courses { grid-template-columns: 1fr; }
+        .sd-topbar-inner, .sd-content { padding-left: 18px; padding-right: 18px; }
+    }
+}
+
+@keyframes sd-fadeup { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+    #sd-root .sd-reveal { animation: none; transition: none; }
+}
+
+// ---------- Dark mode (toggled via body.sd-dark by studentdashboard.js) ----------
+body.sd-dark #sd-root,
+body.theme-dark #sd-root {
+    --sd-ground: #0A1722;
+    --sd-surface: #102439;
+    --sd-text: #E7EEF5;
+    --sd-muted: #9DB2C4;
+    --sd-faint: #6F8597;
+    --sd-line: rgba(255,255,255,.09);
+    --sd-sh-sm: 0 1px 2px rgba(0,0,0,.45);
+    --sd-sh: 0 6px 18px rgba(0,0,0,.5);
+    --sd-sh-lg: 0 22px 54px rgba(0,0,0,.6);
+
+    .sd-topbar { background: rgba(10,23,34,.85); }
+    .sd-search { border-color: rgba(255,255,255,.16); }
+    .sd-fee { background: linear-gradient(135deg, #2a2310, $bz-accent-ink2); border-color: $bz-accent-ink5;
+        h3 { color: #fff; } p { color: #cdb87f; } }
+    .sd-donut .sd-donut-track { stroke: #22384a; }
+    .sd-bar { background: #1b3144; }
+    .sd-ev .sd-act--ghost, .sd-sembadge, .sd-tb-chip { background: #15304a; color: #86b4e4; }
+    .sd-stat .sd-chip { filter: brightness(.9); }
+    .sd-sup .sd-si { background: #0f3128; }
+    .sd-streak { background: #2a2310; color: $bz-accent-bd5; }
+    .sd-spark .sd-sbar.dim { background: #24384a; }
+    .sd-chips .sd-chip2 .sd-sw-empty { background: #5a6b7d; }
+    .sd-fitem .sd-play { background: #2a1f44; color: #b794f6; }
+}
+
+/* Actions under the mini calendar: the full calendar, and core's calendar
+   import/export so students can subscribe from Google or Outlook. Reachable
+   only from the classic calendar block otherwise, which this layout does not
+   render. */
+.sd-cal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--sd-line, #E5ECF3);
+
+    a {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--sd-blue, #406CD2);
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

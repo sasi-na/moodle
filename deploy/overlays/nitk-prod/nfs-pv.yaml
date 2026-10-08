@@ -1,0 +1,31 @@
+# moodledata for nitk.
+#
+# Must be a SEPARATE export path from jain's /moodle_nfs/jain_data_prod. Two
+# Moodle sites sharing a moodledata directory would collide on filedir, sessions,
+# muc and trashdir -- it is not a supported configuration and would corrupt both.
+#
+# PersistentVolume is cluster-scoped, so the name must be globally unique;
+# jain's is `moodle-nfs-pv`.
+#
+# PRE-REQUISITE: the export /moodle_nfs/nitk_data_prod must exist on the NFS
+# server before this is applied, otherwise pods hang on mount.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nitk-moodle-nfs-pv
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  nfs:
+    path: /moodle_nfs/nitk_data_prod
+    server: 10.185.32.234
+  mountOptions:
+    - nfsvers=3
+    - hard
+    - timeo=600
+    - retrans=2
+    - rsize=1048576
+    - wsize=1048576

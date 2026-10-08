@@ -1,0 +1,144 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_dttutor/admin_position_preview
+
+    Admin position preview configurator template
+
+    Context variables required for this template:
+    * presets - Array of preset options
+    * drawerside_options - Array of drawer side options
+    * xref_options - Array of horizontal reference edge options
+    * yref_options - Array of vertical reference edge options
+    * xvalue - Current X coordinate value
+    * yvalue - Current Y coordinate value
+    * avatarurl - URL to avatar image
+    * hiddenvalue - JSON string for hidden input
+    * str_position_preset - Localized string
+    * str_drawer_side - Localized string
+    * str_drawer_side_help - Localized string
+    * str_position_x - Localized string
+    * str_position_y - Localized string
+    * str_position_x_help - Localized string
+    * str_position_y_help - Localized string
+    * str_reference_edge_x - Localized string
+    * str_reference_edge_y - Localized string
+    * str_preview - Localized string
+    * custom_active - Boolean, true if custom preset is selected
+
+    Example context (json):
+    {
+        "presets": [
+            {"value": "right", "label": "Right corner", "selected": true},
+            {"value": "left", "label": "Left corner", "selected": false}
+        ],
+        "drawerside_options": [
+            {"value": "right", "label": "Open from right", "selected": true}
+        ],
+        "xref_options": [{"value": "left", "label": "Left", "selected": true}],
+        "yref_options": [{"value": "bottom", "label": "Bottom", "selected": true}],
+        "xvalue": "2rem",
+        "yvalue": "6rem",
+        "avatarurl": "https://example.com/avatar.png",
+        "hiddenvalue": "{\"preset\":\"right\"}",
+        "str_position_preset": "Preset position",
+        "str_drawer_side": "Drawer side",
+        "str_drawer_side_help": "Choose side",
+        "str_position_x": "X Position",
+        "str_position_y": "Y Position",
+        "str_position_x_help": "Distance from edge",
+        "str_position_y_help": "Distance from edge",
+        "str_reference_edge_x": "Horizontal reference",
+        "str_reference_edge_y": "Vertical reference",
+        "str_preview": "Preview",
+        "custom_active": false
+    }
+}}
+<div class="position-configurator">
+    <div class="position-controls">
+        <div class="position-control-left">
+            <div class="position-preset-group">
+                <label>{{str_position_preset}}</label>
+                {{#presets}}
+                <div class="preset-option {{#selected}}selected{{/selected}}" data-preset="{{value}}">
+                    <input type="radio" name="position_preset" value="{{value}}" id="preset_{{value}}" {{#selected}}checked{{/selected}}>
+                    <label for="preset_{{value}}">{{label}}</label>
+                </div>
+                {{/presets}}
+            </div>
+
+            <div class="drawer-side-group">
+                <label for="drawer_side">{{str_drawer_side}}</label>
+                <select id="drawer_side" name="drawer_side">
+                    {{#drawerside_options}}
+                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+                    {{/drawerside_options}}
+                </select>
+                <div class="coord-help">{{str_drawer_side_help}}</div>
+            </div>
+
+            <div class="custom-coords {{#custom_active}}active{{/custom_active}}" id="custom-coords">
+                <div class="coord-input-group">
+                    <label for="position_x">{{str_position_x}}:</label>
+                    <input type="text" id="position_x" value="{{xvalue}}" placeholder="2rem">
+                </div>
+                <div class="coord-help">{{str_position_x_help}}</div>
+
+                <div class="coord-input-group">
+                    <label for="position_y">{{str_position_y}}:</label>
+                    <input type="text" id="position_y" value="{{yvalue}}" placeholder="6rem">
+                </div>
+                <div class="coord-help">{{str_position_y_help}}</div>
+
+                <div class="reference-edge-group">
+                    <label>{{str_reference_edge_x}}:</label>
+                    <div class="reference-edge-options">
+                        {{#xref_options}}
+                        <label>
+                            <input type="radio" name="ref_x" value="{{value}}" {{#selected}}checked{{/selected}}>
+                            {{label}}
+                        </label>
+                        {{/xref_options}}
+                    </div>
+                </div>
+
+                <div class="reference-edge-group">
+                    <label>{{str_reference_edge_y}}:</label>
+                    <div class="reference-edge-options">
+                        {{#yref_options}}
+                        <label>
+                            <input type="radio" name="ref_y" value="{{value}}" {{#selected}}checked{{/selected}}>
+                            {{label}}
+                        </label>
+                        {{/yref_options}}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="position-control-right">
+            <div class="position-preview">
+                <div class="preview-grid"></div>
+                <div class="preview-label">{{str_preview}}</div>
+                <img id="preview-avatar" class="preview-avatar" src="{{avatarurl}}" alt="Avatar Preview">
+                <div class="preview-coordinates" id="coords-display"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input type="hidden" name="s_local_dttutor_avatar_position_data" id="id_s_local_dttutor_avatar_position_data" value="{{hiddenvalue}}">

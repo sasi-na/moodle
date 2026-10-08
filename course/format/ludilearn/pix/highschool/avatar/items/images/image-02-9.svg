@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 300">
+  <defs>
+    <filter id="b" data-name="drop-shadow-3" x="43.046" y="45.468" width="121.351" height="139.392" filterUnits="userSpaceOnUse">
+      <feOffset dx="-1.219" dy="0"/>
+      <feGaussianBlur result="c" stdDeviation="0"/>
+      <feFlood flood-color="#42496f" flood-opacity="1"/>
+      <feComposite in2="c" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <clipPath id="d">
+      <polygon points="156.156 68.935 141.319 77.003 126.468 87.653 114.309 99.834 103.482 119.216 96.055 134.915 160.265 158.069 160.581 113.227 156.156 68.935" fill="none"/>
+    </clipPath>
+    <clipPath id="e">
+      <polygon points="109.008 49.395 92.54 61.697 76.506 77.111 63.981 93.9 54.315 119.132 48.102 139.336 129.477 156.045 122.05 101.977 109.008 49.395" fill="none"/>
+    </clipPath>
+  </defs>
+  <g isolation="isolate">
+    <g id="a" data-name="bateau 09">
+      <g filter="url(#b)">
+        <g>
+          <polygon points="156.156 68.935 141.319 77.003 126.468 87.653 114.309 99.834 103.482 119.216 96.055 134.915 160.265 158.069 160.581 113.227 156.156 68.935" fill="#e86170"/>
+          <g clip-path="url(#d)">
+            <polygon points="160.581 113.227 153.556 80.652 141.05 87.084 130.329 99.233 121.753 114.599 118.537 132.108 117.823 150.69 160.703 160.338 160.581 113.227" fill="#a384bb" mix-blend-mode="multiply" opacity=".25"/>
+          </g>
+          <path d="M156.364,181.426l5.584-112.531c.036-.721.684-1.255,1.399-1.152h0c.612.088,1.062.619,1.05,1.236l-2.184,113.108-5.849-.661Z" fill="#42496f"/>
+          <polyline points="140.046 74.621 160.581 113.227 155.837 65.75" fill="none" stroke="#42496f" stroke-miterlimit="10" stroke-width="1.002"/>
+          <line x1="124.631" y1="85.904" x2="160.29" y2="120.258" fill="none" stroke="#42496f" stroke-miterlimit="10" stroke-width="1.002"/>
+          <line x1="112.147" y1="98.246" x2="159.608" y2="133.762" fill="none" stroke="#42496f" stroke-miterlimit="10" stroke-width="1.002"/>
+          <line x1="101.23" y1="118.163" x2="159.284" y2="145.413" fill="none" stroke="#42496f" stroke-miterlimit="10" stroke-width="1.002"/>
+          <line x1="158.806" y1="157.495" x2="93.125" y2="133.854" fill="none" stroke="#42496f" stroke-miterlimit="10" stroke-width="1.002"/>
+        </g>
+        <g>
+          <polygon points="109.008 49.395 92.54 61.697 76.506 77.111 63.981 93.9 54.315 119.132 48.102 139.336 129.477 156.045 122.05 101.977 109.008 49.395" fill="#e86170"/>
+          <g clip-path="url(#e)">
+            <path d="M122.468,106.023l-15.366-43.953-10.363,10.72-11.078,15.008-12.507,17.51-7.147,22.512-3.573,19.654s66.644,11.614,66.108,10.72-6.075-52.171-6.075-52.171Z" fill="#a384bb" mix-blend-mode="multiply" opacity=".25"/>
+          </g>
+          <path d="M128.846,184.859l-12.868-136.521c-.082-.875.606-1.631,1.485-1.631h0c.752,0,1.387.56,1.48,1.307l17.064,136.623-7.16.223Z" fill="#42496f"/>
+          <polyline points="90.592 59.05 122.05 101.977 108.068 45.614" fill="none" stroke="#42496f" stroke-miterlimit="10" stroke-width="1.219"/>
+          <line x1="73.989" y1="75.325" x2="122.923" y2="110.497" fill="none" stroke="#42496f" stroke-miterlimit="10" stroke-width="1.219"/>
+          <line x1="61.1" y1="92.365" x2="124.453" y2="126.881" fill="none" stroke="#42496f" stroke-miterlimit="10" stroke-width="1.219"/>
+          <line x1="51.418" y1="118.256" x2="126.091" y2="140.971" fill="none" stroke="#42496f" stroke-miterlimit="10" stroke-width="1.219"/>
+          <line x1="44.388" y1="138.568" x2="127.62" y2="155.608" fill="none" stroke="#42496f" stroke-miterlimit="10" stroke-width="1.219"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

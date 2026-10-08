@@ -1,0 +1,15 @@
+# Claim name stays `moodle-nfs-pvc` for every tenant -- namespace-scoped, so it
+# cannot collide, and keeping it identical means base/deployment.yaml needs no
+# per-tenant volume patch. Adopts the live claim; already Bound.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: moodle-nfs-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 200Gi
+  volumeName: global-jain-nfs-pv

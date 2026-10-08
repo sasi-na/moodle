@@ -1,0 +1,434 @@
+/* Dashboard poll popup. All rules scoped under .ldp-overlay / .ldp-* so nothing
+   leaks into the theme. Dark mode keys off the theme's body.theme-dark class. */
+
+.ldp-overlay {
+    --ldp-accent: #4f46e5;
+    --ldp-accent-2: #7c3aed;
+    --ldp-card-bg: #ffffff;
+    --ldp-text: #1f2330;
+    --ldp-muted: #6b7280;
+    --ldp-line: #e7e8ee;
+    --ldp-option-bg: #f6f7fb;
+    --ldp-option-bg-hover: #eef0f9;
+    --ldp-bar-track: #eceef5;
+    --ldp-shadow: 0 24px 60px -12px rgba(20, 22, 40, 0.45);
+
+    position: fixed;
+    inset: 0;
+    z-index: 10500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(17, 19, 34, 0.46);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.22s ease;
+}
+
+.ldp-overlay.ldp-in {
+    opacity: 1;
+}
+
+.ldp-overlay.ldp-leaving {
+    opacity: 0;
+}
+
+body.theme-dark .ldp-overlay {
+    --ldp-card-bg: #1b1e2b;
+    --ldp-text: #e8eaf2;
+    --ldp-muted: #9aa1b4;
+    --ldp-line: #2c3042;
+    --ldp-option-bg: #232839;
+    --ldp-option-bg-hover: #2b3043;
+    --ldp-bar-track: #2c3144;
+    --ldp-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.6);
+    background: rgba(5, 6, 14, 0.6);
+}
+
+/* ---- card ---- */
+.ldp-overlay .ldp-card {
+    width: 100%;
+    max-width: 460px;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    background: var(--ldp-card-bg);
+    color: var(--ldp-text);
+    border-radius: 20px;
+    box-shadow: var(--ldp-shadow);
+    padding: 28px 28px 24px;
+    transform: translateY(12px) scale(0.97);
+    opacity: 0;
+    transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.32s ease;
+    position: relative;
+}
+
+.ldp-overlay .ldp-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    color: var(--ldp-muted);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ldp-overlay .ldp-close:hover {
+    background: var(--ldp-option-bg);
+    color: var(--ldp-text);
+}
+
+.ldp-overlay .ldp-close:focus-visible {
+    outline: 2px solid var(--ldp-accent);
+    outline-offset: 2px;
+}
+
+.ldp-overlay.ldp-in .ldp-card {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+.ldp-overlay .ldp-eyebrow {
+    margin: 0 0 10px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ldp-accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 34px;
+}
+
+.ldp-overlay .ldp-eyebrow--done {
+    color: #16a34a;
+}
+
+.ldp-overlay .ldp-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #16a34a;
+    position: relative;
+    flex: 0 0 auto;
+}
+
+.ldp-overlay .ldp-check::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 3px;
+    width: 4px;
+    height: 8px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.ldp-overlay .ldp-question {
+    margin: 0 0 18px;
+    font-size: 1.32rem;
+    line-height: 1.3;
+    font-weight: 700;
+    color: var(--ldp-text);
+    padding-right: 8px;
+}
+
+/* ---- options (voting) ---- */
+.ldp-overlay .ldp-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+}
+
+.ldp-overlay .ldp-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 13px;
+    background: var(--ldp-option-bg);
+    border: 1.5px solid transparent;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+
+.ldp-overlay .ldp-option:hover {
+    background: var(--ldp-option-bg-hover);
+}
+
+.ldp-overlay .ldp-option:active {
+    transform: scale(0.99);
+}
+
+.ldp-overlay .ldp-option:has(.ldp-radio:checked) {
+    border-color: var(--ldp-accent);
+    background: color-mix(in srgb, var(--ldp-accent) 9%, var(--ldp-card-bg));
+}
+
+.ldp-overlay .ldp-option:has(.ldp-radio:focus-visible) {
+    outline: 2px solid var(--ldp-accent);
+    outline-offset: 2px;
+}
+
+.ldp-overlay .ldp-radio {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+}
+
+.ldp-overlay .ldp-dot {
+    flex: 0 0 auto;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--ldp-muted);
+    position: relative;
+    transition: border-color 0.15s ease;
+}
+
+.ldp-overlay .ldp-option:has(.ldp-radio:checked) .ldp-dot {
+    border-color: var(--ldp-accent);
+}
+
+.ldp-overlay .ldp-option:has(.ldp-radio:checked) .ldp-dot::after {
+    content: "";
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--ldp-accent);
+}
+
+/* Multi-select polls use a rounded-square box with a check instead of a dot. */
+.ldp-overlay .ldp-dot--check {
+    border-radius: 6px;
+}
+
+.ldp-overlay .ldp-option:has(.ldp-radio:checked) .ldp-dot--check::after {
+    inset: 0;
+    border-radius: 6px;
+    background: var(--ldp-accent);
+}
+
+.ldp-overlay .ldp-hint {
+    margin: -4px 2px 14px;
+    font-size: 0.85rem;
+    color: var(--ldp-muted);
+}
+
+.ldp-overlay .ldp-option.is-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ldp-overlay .ldp-option-text {
+    font-size: 0.98rem;
+    font-weight: 500;
+}
+
+.ldp-overlay .ldp-error {
+    margin: 12px 2px 0;
+    color: #dc2626;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+/* ---- actions ---- */
+.ldp-overlay .ldp-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.ldp-overlay .ldp-btn {
+    appearance: none;
+    border: none;
+    border-radius: 11px;
+    padding: 11px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.15s ease, background 0.15s ease, opacity 0.15s ease;
+}
+
+.ldp-overlay .ldp-btn-primary {
+    color: #fff;
+    background: linear-gradient(135deg, var(--ldp-accent), var(--ldp-accent-2));
+    box-shadow: 0 6px 16px -6px var(--ldp-accent);
+}
+
+.ldp-overlay .ldp-btn-primary:hover {
+    filter: brightness(1.07);
+}
+
+.ldp-overlay .ldp-btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.ldp-overlay .ldp-btn-ghost {
+    background: transparent;
+    color: var(--ldp-muted);
+}
+
+.ldp-overlay .ldp-btn-ghost:hover {
+    background: var(--ldp-option-bg);
+}
+
+.ldp-overlay .ldp-btn:focus-visible {
+    outline: 2px solid var(--ldp-accent);
+    outline-offset: 2px;
+}
+
+/* ---- results ---- */
+.ldp-overlay .ldp-results {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ldp-overlay .ldp-result-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 7px;
+}
+
+.ldp-overlay .ldp-result-text {
+    font-size: 0.96rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ldp-overlay .ldp-result.is-mine .ldp-result-text {
+    font-weight: 700;
+}
+
+.ldp-overlay .ldp-chip {
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ldp-accent);
+    background: color-mix(in srgb, var(--ldp-accent) 14%, var(--ldp-card-bg));
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+.ldp-overlay .ldp-result-pct {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--ldp-text);
+    font-variant-numeric: tabular-nums;
+}
+
+.ldp-overlay .ldp-bar {
+    height: 10px;
+    border-radius: 999px;
+    background: var(--ldp-bar-track);
+    overflow: hidden;
+}
+
+.ldp-overlay .ldp-bar-fill {
+    display: block;
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--ldp-accent) 55%, #9aa1f0), var(--ldp-accent));
+    transition: width 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ldp-overlay .ldp-result.is-mine .ldp-bar-fill {
+    background: linear-gradient(90deg, var(--ldp-accent), var(--ldp-accent-2));
+}
+
+.ldp-overlay .ldp-result-votes {
+    margin-top: 5px;
+    font-size: 0.78rem;
+    color: var(--ldp-muted);
+}
+
+.ldp-overlay .ldp-results-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--ldp-line);
+}
+
+.ldp-overlay .ldp-total {
+    font-size: 0.9rem;
+    color: var(--ldp-muted);
+}
+
+.ldp-overlay .ldp-total strong {
+    color: var(--ldp-text);
+}
+
+/* Thank-you-only done state (poll hides its results). */
+.ldp-overlay .ldp-thanks-body {
+    margin: 10px 0 0;
+    font-size: 0.95rem;
+    color: var(--ldp-muted);
+}
+
+.ldp-overlay .ldp-results-foot--thanks {
+    justify-content: flex-end;
+    border-top: 0;
+    margin-top: 20px;
+    padding-top: 0;
+}
+
+/* ---- small screens ---- */
+@media (max-width: 480px) {
+    .ldp-overlay {
+        padding: 0;
+        align-items: flex-end;
+    }
+    .ldp-overlay .ldp-card {
+        max-width: none;
+        border-radius: 22px 22px 0 0;
+        padding: 24px 20px 20px;
+        max-height: 90vh;
+    }
+    .ldp-overlay .ldp-card {
+        transform: translateY(100%);
+    }
+    .ldp-overlay.ldp-in .ldp-card {
+        transform: translateY(0);
+    }
+}
+
+body.ldp-noscroll {
+    overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ldp-overlay,
+    .ldp-overlay .ldp-card,
+    .ldp-overlay .ldp-bar-fill {
+        transition: none;
+    }
+}

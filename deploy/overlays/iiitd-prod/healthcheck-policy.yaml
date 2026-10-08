@@ -1,0 +1,34 @@
+# Without this, GKE Gateway infers the health check from the pods' readinessProbe
+# -- and if the Service is created before any pod exists, there is nothing to
+# infer from, so it defaults to requestPath: "/". Moodle answers "/" with a 303
+# (sslproxy redirect), GCP health checks accept only 200, every backend goes
+# UNHEALTHY and the load balancer serves 503 while the pods look perfectly fine.
+#
+# Every existing tenant has an equivalent policy, but created OUT OF BAND -- it
+# is in the cluster and not in this repo. Named to match the object already
+# present in iiitd-prod so kustomize adopts it rather than creating a second
+# policy targeting the same Service.
+#
+# TODO: promote this to deploy/base once the other tenants' hand-made policies
+# are reconciled, so no future tenant repeats the 503.
+apiVersion: networking.gke.io/v1
+kind: HealthCheckPolicy
+metadata:
+  name: iiitd-prod-healthcheck
+spec:
+  default:
+    checkIntervalSec: 20
+    timeoutSec: 10
+    healthyThreshold: 1
+    unhealthyThreshold: 5
+    logConfig:
+      enabled: true
+    config:
+      type: HTTP
+      httpHealthCheck:
+        port: 80
+        requestPath: /healthz.php
+  targetRef:
+    group: ""
+    kind: Service
+    name: moodle-service

@@ -1,0 +1,134 @@
+# Weekly submission report -- global.onlinejain.com only.
+#
+# This job is NOT in base and has no equivalent on any other tenant, so it lives
+# here as an overlay resource rather than a patch. It is reproduced field for
+# field from the live object; the only changes are the two called out below.
+#
+# WHY IT IS ADOPTED RATHER THAN LEFT ALONE. It runs `php /scripts/report_email.php`
+# after `cd /var/www/html`, so it executes against the Moodle codebase baked into
+# the image. Leaving it on `global-jain-moodle:23e8f11d` while the rest of the
+# tenant moves to the shared image would quietly split this tenant across two
+# codebases -- the report would keep working, on a snapshot of the code that
+# nothing else runs and that no pipeline rebuilds. Declaring it here means the
+# deploy job's `kustomize edit set image` stamps it with the same tag as
+# everything else.
+#
+# THE CHANGE THAT MATTERS: MOODLE_DATABASE_PASSWORD.
+#
+# The live job mounts moodle_config.php but injects NO database credentials -- it
+# works today only because that config.php carries the password as a literal.
+# config/moodle_config.php now reads $CFG->dbpass from the environment, so
+# WITHOUT the env var below this report would start failing the moment the
+# adoption deploys, and it would fail silently: a weekly job nobody watches,
+# whose output is an email that simply stops arriving.
+#
+# The script itself comes from the `submission-report-script` ConfigMap, which is
+# created out of band and deliberately not managed here.
+#
+# CATID and RECIPIENTS are reproduced exactly as live. RECIPIENTS is a real
+# distribution list; changing it is a business decision, not a migration one.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: submission-report-weekly
+  labels:
+    app: submission-report
+spec:
+  schedule: "0 7 * * 1"
+  # WITHOUT this the schedule is interpreted as UTC, so "07:00 Monday" silently
+  # becomes 12:30 IST and the weekly report lands mid-afternoon. Reproduced from
+  # the live object; `kubectl diff -k` is what caught its absence.
+  timeZone: Asia/Kolkata
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 4
+  failedJobsHistoryLimit: 4
+  startingDeadlineSeconds: 600
+  jobTemplate:
+    spec:
+      backoffLimit: 3
+      ttlSecondsAfterFinished: 604800
+      template:
+        metadata:
+          labels:
+            app: submission-report
+        spec:
+          restartPolicy: OnFailure
+          # Runs as www-data, matching the live object. Without this the job runs
+          # as root and anything it writes into moodledata lands owned by root,
+          # which php-fpm (uid 33) then cannot read.
+          securityContext:
+            fsGroup: 33
+            fsGroupChangePolicy: OnRootMismatch
+            runAsGroup: 33
+            runAsUser: 33
+          containers:
+          - name: submission-report
+            image: moodle-lms
+            imagePullPolicy: Always
+            command:
+              - /bin/bash
+              - -c
+              - |
+                set -e
+                echo "=== Submission report job started at $(date) ==="
+                cd /var/www/html
+                php /scripts/report_email.php
+                echo "=== Submission report job finished at $(date) ==="
+            env:
+            - name: CATID
+              value: "240"
+            - name: RECIPIENTS
+              value: "support15.online@jainuniversity.ac.in,puneeth.d@usdcglobal.com"
+            - name: PHP_MEMORY_LIMIT
+              value: "2G"
+            # NEW, and the reason this file exists -- see the header.
+            - name: MOODLE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            # Left at the live values. This runs once a week for a few minutes and
+            # its real usage was never measured, so it is not a sensible place to
+            # trim -- unlike the every-5-minutes jobs above.
+            resources:
+              requests:
+                cpu: "500m"
+                memory: "1Gi"
+            volumeMounts:
+            - name: moodle-data
+              mountPath: /var/moodledata
+            - name: moodle-config
+              mountPath: /var/www/html/config.php
+              subPath: moodle_config.php
+              readOnly: true
+            - name: php-config
+              mountPath: /usr/local/etc/php/conf.d/99-moodle.ini
+              subPath: php.ini
+            - name: report-script
+              mountPath: /scripts/report_email.php
+              subPath: report_email.php
+              readOnly: true
+            - name: tmp-cache
+              mountPath: /tmp/moodle-cache
+          volumes:
+          - name: moodle-data
+            persistentVolumeClaim:
+              claimName: moodle-nfs-pvc
+          - name: moodle-config
+            configMap:
+              name: moodle-config
+              items:
+                - key: moodle_config.php
+                  path: moodle_config.php
+          - name: php-config
+            configMap:
+              name: moodle-config
+          - name: report-script
+            configMap:
+              name: submission-report-script
+              items:
+                - key: report_email.php
+                  path: report_email.php
+          - name: tmp-cache
+            emptyDir:
+              sizeLimit: 2Gi

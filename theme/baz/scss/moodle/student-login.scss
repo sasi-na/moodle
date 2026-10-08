@@ -1,0 +1,387 @@
+/* ==========================================================================
+   theme_baz — bespoke pre-auth (login + forgot-password) shell.
+   Wrap-and-restyle: the REAL core login/forgot form renders into #lp-root's
+   right panel (logintoken / CSRF / errors untouched); this only supplies the
+   split navy/gold layout and restyles the form. Scoped to #lp-root.
+   scssphp-safe: block comments only.
+   ========================================================================== */
+
+/* The login body has id="page-login-index" (etc.) which rui sets to
+   display:flex — that shrink-wraps #lp-root to its content width. Force the
+   bespoke pre-auth body back to block so #lp-root fills the full viewport. */
+body.lp-bespoke{ display:block !important; margin:0; padding:0; }
+
+#lp-root {
+    --lp-ground:#F4F7FB; --lp-surface:#fff; --lp-ink:#0B2034; --lp-muted:#5C7184;
+    --lp-faint:#90A4B5; --lp-line:#E5ECF3; --lp-navy:#{$bz-navy};
+    --lp-gnavy:linear-gradient(140deg,#{$bz-navy-hi} 0%,#{$bz-navy-lo} 100%);
+    --lp-accent:#{$bz-accent}; --lp-gaccent:linear-gradient(135deg,#{$bz-accent-hi},#{$bz-accent-lo});
+    --lp-sans:'Manrope','Inter',system-ui,sans-serif;
+    --lp-mono:'JetBrains Mono',ui-monospace,monospace;
+
+    font-family:var(--lp-sans); color:var(--lp-ink); background:var(--lp-ground);
+    min-height:100vh; width:100%; flex:1 1 100%;
+    display:grid; grid-template-columns:1fr 1fr;
+
+    *,*::before,*::after{ box-sizing:border-box; }
+    svg{ display:block; }
+
+    /* ---- brand panel: existing illustration on navy ---- */
+    .lp-brand{ position:relative; overflow:hidden; background:var(--lp-gnavy); display:grid; place-items:center; padding:56px; }
+    .lp-brand::before{ content:""; position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px); background-size:22px 22px; opacity:.6; }
+    .lp-glow{ position:absolute; width:520px; height:520px; right:-150px; top:-150px; border-radius:50%; background:radial-gradient(circle,rgba($bz-accent,.16),transparent 62%); }
+    .lp-art{ position:relative; z-index:1; width:100%; max-width:460px; background:#fff; border-radius:26px; padding:30px; box-shadow:0 30px 70px rgba(0,15,28,.38); border:1px solid rgba(255,255,255,.5); }
+    .lp-art::before{ content:""; position:absolute; left:30px; right:30px; top:0; height:4px; border-radius:0 0 4px 4px; background:var(--lp-gaccent); }
+    .lp-art img{ display:block; width:100%; height:auto; border-radius:8px; }
+
+    /* ---- form panel ---- */
+    .lp-form-col{ position:relative; display:flex; align-items:center; justify-content:center; padding:40px; }
+    .lp-card{ width:100%; max-width:404px; }
+    .lp-phead{ font-size:27px; font-weight:800; letter-spacing:-.02em; margin:0 0 22px; color:var(--lp-ink); }
+    .lp-form-foot{ position:absolute; left:0; right:0; bottom:26px; text-align:center; font:600 11px/1 var(--lp-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--lp-faint); }
+
+    /* The core form is dropped in here; neutralise rui's own login chrome so
+       only the fields remain (the brand panel already shows the logo/illustration). */
+    .rui-login-wrapper,
+    .rui-login-container,
+    .rui-login-box,
+    .rui-login-content,
+    .login-wrapper,
+    .login-container,
+    .rui-login-form,
+    .rui-login-form form,
+    #login{
+        display:block !important; width:100% !important; max-width:none !important;
+        margin:0 !important; padding:0 !important; background:none !important;
+        box-shadow:none !important; border:0 !important; flex:none !important;
+    }
+    /* Hide rui's duplicate branding + everything that isn't username/password. */
+    .rui-login-logo-container,
+    .rui-loginpage-intro,
+    .rui-login-bg-container,
+    .rui-login-bg,
+    .rui-login-createaccount,
+    .rui-canloginasguest{ display:none !important; }
+
+    /* fields */
+    .form-group{ margin:0 0 15px; position:relative; }
+    label.sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+    .form-control{
+        width:100%; height:50px; border:1px solid #CBD8E6; border-radius:13px;
+        background:var(--lp-surface); padding:0 14px 0 44px;
+        font:600 15px var(--lp-sans); color:var(--lp-ink);
+        background-repeat:no-repeat; background-position:14px center; background-size:19px 19px;
+    }
+    .form-control::placeholder{ color:var(--lp-faint); font-weight:500; }
+    .form-control:focus{ outline:0; border-color:var(--lp-accent); box-shadow:0 0 0 4px rgba($bz-accent,.18); }
+    /* leading icons via inline SVG (no external assets) */
+    .form-control--username, #id_username{
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2390A4B5' stroke-width='1.8'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M5 20c.6-3.4 3.3-5 7-5s6.4 1.6 7 5'/%3E%3C/svg%3E");
+    }
+    .form-control--password{
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2390A4B5' stroke-width='1.8'%3E%3Crect x='4' y='10' width='16' height='11' rx='2.5'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E");
+        padding-right:44px;
+    }
+    #id_email{
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2390A4B5' stroke-width='1.8'%3E%3Crect x='3' y='5' width='18' height='14' rx='2.5'/%3E%3Cpath d='m4 7 8 6 8-6'/%3E%3C/svg%3E");
+    }
+
+    /* show/hide password toggle pinned right */
+    .form-control--password-box{ position:relative; }
+    #togglePassword{ position:absolute; right:8px; top:50%; transform:translateY(-50%); border:0; background:none; padding:6px; cursor:pointer; color:var(--lp-muted); z-index:2; }
+
+    /* primary button (Log in) */
+    #loginbtn,
+    .btn-primary{
+        width:100%; height:52px; border:0; border-radius:13px; margin-top:8px;
+        background:var(--lp-gaccent); color:var(--lp-on-accent);
+        font:800 15px var(--lp-sans); letter-spacing:.01em; cursor:pointer;
+        box-shadow:0 12px 26px rgba($bz-accent,.36); transition:transform .12s, box-shadow .12s;
+    }
+    #loginbtn:hover,
+    .btn-primary:hover{ transform:translateY(-1px); box-shadow:0 16px 32px rgba($bz-accent,.46); color:var(--lp-navy); }
+
+    /* forgot link */
+    .rui-login-forgot-btn{
+        display:inline-block; margin-top:18px; font-size:13px; font-weight:700;
+        color:var(--lp-navy); text-decoration:none;
+    }
+    .rui-login-forgot-btn:hover{ color:$bz-accent-text; }
+
+    /* HIDE third-party sign-in (Google / identity providers) — username+password only */
+    .rui-login-additional-btns,
+    .login-identityproviders,
+    .rui-potentialidplist,
+    .login-divider,
+    .potentialidp,
+    .rui-potentialidp{ display:none !important; }
+
+    /* ---- forgot-password form: match the login field + button styling ---- */
+    #id_searchbyusername,
+    #id_searchbyemail{ border:0; margin:0 0 20px; padding:0; }
+    /* Stack Moodle's mform grid so label sits above a full-width field. */
+    .fitem,
+    .fitem > .form-group,
+    .form-group.row{ display:block !important; margin:0 0 12px; }
+    .fitem [class*="col-md-"],
+    .fitem .felement,
+    .fcontainer [class*="col-md-"]{ flex:0 0 100% !important; max-width:100% !important; width:100% !important; padding:0 !important; }
+    .felement label,
+    #id_username_label,
+    #id_email_label,
+    .fitem label{ display:block; font-weight:700; font-size:12.5px; color:var(--lp-ink); margin:0 0 8px; }
+    /* Full-width gold Search button(s) — same look as the login button. */
+    #fgroup_id_buttonar,
+    .form-buttons{ display:block; margin-top:10px; }
+    #id_submitbutton,
+    #id_searchbyusername button[type="submit"],
+    #id_searchbyemail button[type="submit"],
+    #id_searchbyusername input[type="submit"],
+    #id_searchbyemail input[type="submit"]{ width:100%; height:52px; padding:0; } /* gold via .btn-primary base */
+    #id_cancel,
+    .btn-secondary{ width:100%; height:50px; border-radius:13px; border:1px solid #CBD8E6; background:#fff; color:var(--lp-muted); font:700 14px var(--lp-sans); padding:0 18px; margin-top:10px; cursor:pointer; }
+
+    /* generic content (confirm / message pre-auth pages) */
+    .lp-card h2{ font-weight:800; letter-spacing:-.02em; }
+    .lp-card a{ color:var(--lp-navy); font-weight:600; }
+}
+
+/* full-page reset so the split fills the viewport even with the theme's wrappers */
+body.lp-bespoke #page-wrapper,
+body.lp-bespoke #page,
+body.lp-bespoke #region-main{ margin:0; padding:0; max-width:none; background:none; }
+
+@media(max-width:880px){
+    #lp-root{ grid-template-columns:1fr; }
+    #lp-root .lp-brand{ padding:26px 26px 30px; }
+    #lp-root .lp-art{ max-width:340px; padding:20px; }
+    #lp-root .lp-form-foot{ display:none; }
+}
+@media(max-width:560px){
+    #lp-root .lp-art{ max-width:240px; padding:16px; }
+}
+
+/* ==========================================================================
+   "Block Access" overlay — shown when a blocked account submits credentials.
+   Full-screen scrim over the bespoke login shell; token values mirror #lp-root.
+   ========================================================================== */
+#lp-blockoverlay{
+    --lp-ink:#0B2034; --lp-muted:#5C7184; --lp-faint:#90A4B5; --lp-line:#E5ECF3;
+    --lp-navy:#{$bz-navy};
+    /* Label on an accent surface. Derived from the accent's contrast in
+       theme_baz_brand_palette(), so a dark accent gets white and a light
+       one keeps the navy. */
+    --lp-on-accent: #{$bz-accent-on}; --lp-gnavy:linear-gradient(140deg,#{$bz-navy-hi} 0%,#{$bz-navy-lo} 100%);
+    --lp-accent:#{$bz-accent}; --lp-gaccent:linear-gradient(135deg,#{$bz-accent-hi},#{$bz-accent-lo});
+    --lp-sans:'Manrope','Inter',system-ui,-apple-system,sans-serif;
+    --lp-mono:'JetBrains Mono',ui-monospace,monospace;
+
+    position:fixed; inset:0; z-index:1080; display:grid; place-items:center; padding:24px;
+    font-family:var(--lp-sans);
+    background:radial-gradient(120% 120% at 50% 0%, rgba($bz-navy,.72), rgba(4,14,24,.86));
+    -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+    animation:lpblockfade .28s ease both;
+
+    *,*::before,*::after{ box-sizing:border-box; }
+
+    .lp-block-modal{
+        position:relative; width:100%; max-width:520px; background:#fff;
+        border-radius:22px; overflow:hidden; box-shadow:0 40px 90px rgba(0,15,28,.5);
+        animation:lpblockrise .34s cubic-bezier(.2,.7,.2,1) both;
+    }
+    .lp-block-modal::before{ content:""; position:absolute; left:0; right:0; top:0; height:5px; background:var(--lp-gaccent); }
+
+    .lp-block-body{ padding:38px 40px 34px; }
+    .lp-block-badge{
+        display:inline-flex; align-items:center; gap:8px; padding:6px 12px; border-radius:999px;
+        background:rgba($bz-accent,.16); color:$bz-accent-text;
+        font:700 11px/1 var(--lp-mono); letter-spacing:.14em; text-transform:uppercase;
+    }
+    .lp-block-shield{
+        width:56px; height:56px; border-radius:16px; display:grid; place-items:center; margin:20px 0 18px;
+        background:var(--lp-gnavy); box-shadow:0 12px 26px rgba($bz-navy,.28);
+    }
+    .lp-block-shield svg{ width:28px; height:28px; display:block; }
+    .lp-block-title{ margin:0 0 12px; font-size:23px; font-weight:800; letter-spacing:-.02em; color:var(--lp-ink); }
+    .lp-block-msg{ font-size:15px; line-height:1.68; color:#33485B; }
+    .lp-block-msg p{ margin:0 0 10px; }
+    .lp-block-msg p:last-child{ margin-bottom:0; }
+    .lp-block-msg a{ color:$bz-navy-hi; font-weight:700; }
+
+    .lp-block-actions{ margin-top:26px; }
+    .lp-block-btn{
+        display:inline-flex; align-items:center; justify-content:center; width:100%; height:50px;
+        border-radius:13px; background:var(--lp-gaccent); color:var(--lp-on-accent);
+        font:800 14px var(--lp-sans); text-decoration:none; cursor:pointer;
+        box-shadow:0 12px 26px rgba($bz-accent,.34);
+    }
+    .lp-block-btn:hover{ color:var(--lp-navy); text-decoration:none; }
+}
+@keyframes lpblockfade{ from{ opacity:0; } to{ opacity:1; } }
+@keyframes lpblockrise{ from{ opacity:0; transform:translateY(14px) scale(.985); } to{ opacity:1; transform:none; } }
+
+@media(max-width:560px){
+    #lp-blockoverlay .lp-block-body{ padding:30px 24px 26px; }
+    #lp-blockoverlay .lp-block-title{ font-size:20px; }
+}
+
+/* ---------------------------------------------------------------------------
+   Centred sign-in card (theme_baz/login_layout = centered).
+   A full-bleed photograph with a scrim and one card, rather than the split
+   screen. Scoped to .lp-centered so a site on the shipped layout is untouched.
+   --------------------------------------------------------------------------- */
+#lp-root.lp-centered {
+    display: block;
+    position: relative;
+    min-height: 100vh;
+    background-color: $bz-navy-lo;
+    background-image: var(--lpc-shot, none);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+
+    /* Three stops rather than a flat wash: the card sits in the lighter middle,
+       so it stays legible without dulling the photograph top and bottom. */
+    .lpc-scrim {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg,
+            rgba(8, 24, 42, .42) 0%,
+            rgba(8, 24, 42, .22) 45%,
+            rgba(8, 24, 42, .55) 100%);
+    }
+
+    .lpc-mid {
+        position: relative;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 24px 64px;
+    }
+
+    .lpc-card {
+        width: 100%;
+        max-width: 420px;
+        box-sizing: border-box;
+        background: $bz-navy;
+        border-radius: 4px;
+        padding: 34px 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        box-shadow: 0 24px 60px rgba(4, 14, 26, .5);
+    }
+
+    .lpc-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-bottom: 4px;
+
+        img { width: 100%; max-width: 300px; height: auto; display: block; }
+    }
+    .lpc-logo-txt { color: #fff; font-weight: 800; font-size: 20px; letter-spacing: -.02em; }
+
+    .lpc-phead { color: #fff; font-size: 19px; font-weight: 700; margin: 0; letter-spacing: -.02em; }
+
+    .lpc-foot {
+        position: relative;
+        padding: 20px 40px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: rgba(255, 255, 255, .55);
+        text-align: center;
+    }
+
+    /* The card's own markup (core/loginform.mustache, centred branch). */
+    .lpc-form { display: flex; flex-direction: column; gap: 20px; margin: 0; }
+    .lpc-fields { display: flex; flex-direction: column; gap: 14px; }
+    .lpc-field { display: flex; flex-direction: column; gap: 7px; margin: 0; }
+    .lpc-label {
+        font-size: 11.5px;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        color: #A9BBD1;
+        font-family: var(--lp-mono, ui-monospace, monospace);
+    }
+    .lpc-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .lpc-textbtn {
+        background: none;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        font-size: 13px;
+        color: #A9BBD1;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+
+        &:hover { color: #fff; }
+    }
+    .lpc-error {
+        font-size: 13px;
+        color: #FFC9A3;
+        border-left: 2px solid #E9A96A;
+        padding-left: 12px;
+    }
+    .lpc-submit {
+        width: 100%;
+        padding: 14px 18px;
+        background: $bz-accent;
+        color: $bz-accent-on;
+        border: 0;
+        border-radius: 3px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 140ms ease;
+
+        &:hover { background: darken($bz-accent, 8%); }
+    }
+
+    label { color: #A9BBD1; font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; font-weight: 500; }
+    input[type="text"],
+    input[type="password"],
+    input[type="email"] {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 14px;
+        font-size: 15px;
+        color: #14202E;
+        background: #fff;
+        border: 1px solid #2E4265;
+        border-radius: 3px;
+        outline: none;
+
+        &:focus {
+            border-color: $bz-accent;
+            box-shadow: 0 0 0 3px rgba($bz-accent, .25);
+        }
+    }
+    .btn-primary,
+    button[type="submit"],
+    input[type="submit"] {
+        width: 100%;
+        padding: 14px 18px;
+        background: $bz-accent;
+        color: $bz-accent-on;
+        border: 0;
+        border-radius: 3px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 140ms ease;
+
+        &:hover { background: darken($bz-accent, 8%); }
+    }
+    a { color: #A9BBD1; font-size: 13px; }
+    a:hover { color: #fff; }
+
+    @media (max-width: 560px) {
+        .lpc-card { padding: 26px 22px; }
+        .lpc-logo img { max-width: 240px; }
+    }
+}

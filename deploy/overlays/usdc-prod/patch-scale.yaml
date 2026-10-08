@@ -1,0 +1,56 @@
+# usdc is sized from its measured load, not from base and not from its own
+# historical values.
+#
+# Measured on 2026-09-01 with `kubectl top`: each moodle pod uses **1m CPU and
+# ~350Mi**, against a request of 250m / 1536Mi. For scale, jain -- 61,000 users,
+# 34,000 active in 30 days -- runs at 54-125m and 768-1016Mi per pod. usdc has
+# three accounts, four courses and eight enrolments.
+#
+# Requests, not limits, are what reserve capacity on the shared prod node pool,
+# so these numbers are what the tenant actually costs whether or not anyone logs
+# in. There are deliberately still no memory limits anywhere in base: the pods
+# stay Burstable, so a request slightly above steady state protects against
+# eviction while still letting a heavy request spike.
+#
+# Most of the ~350Mi is not Moodle, it is 25 idle php-fpm workers from base's
+# pool config. config/www.conf cuts that to 4, so 768Mi is roughly double what
+# this should now idle at -- headroom for the heavier shared image (24 plugins
+# and the full theme) rather than a measurement.
+#
+# Two replicas is availability, not capacity: one pod would mean downtime on
+# every rollout.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: php-fpm
+        resources:
+          requests:
+            memory: "768Mi"
+            cpu: "100m"
+      - name: nginx
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "50m"
+      # theme-css-warmer is deliberately NOT patched, though base's 50m/128Mi is
+      # more than it needs.
+      #
+      # It is a native sidecar -- an initContainer carrying restartPolicy: Always
+      # -- so a patch for it has to go in the initContainers list. Doing that with
+      # a single-entry list makes kustomize's strategic merge treat it as the HEAD
+      # of that list and hoist it in front of setup-logs-and-code, which is the
+      # container that copies Moodle into the shared emptyDir the warmer then
+      # reads. Running first it would find /var/www/html empty and loop on it
+      # forever -- and because a sidecar only has to START for the pod to proceed,
+      # the pod would come up healthy with the CSS pre-warm permanently dead,
+      # quietly restoring the ~31%-of-egress problem it exists to prevent.
+      #
+      # Listing the two preceding initContainers as no-op entries would hold the
+      # order, but 25m and 32Mi per pod is not worth a patch whose failure mode is
+      # invisible.

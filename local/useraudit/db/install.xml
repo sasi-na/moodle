@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/useraudit/db" VERSION="20260529" COMMENT="XMLDB file for local_useraudit"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+
+    <!--
+      Audit log: one row per user_updated event, with resolved change type.
+      changetype values: profile_updated | suspended | activated
+    -->
+    <TABLE NAME="local_useraudit_log" COMMENT="Audit trail for user profile updates, suspensions and activations">
+      <FIELDS>
+        <FIELD NAME="id"          TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid"      TYPE="int"  LENGTH="10" NOTNULL="true" COMMENT="User whose account was changed"/>
+        <FIELD NAME="actorid"     TYPE="int"  LENGTH="10" NOTNULL="true" COMMENT="Admin or user who triggered the change"/>
+        <FIELD NAME="changetype"  TYPE="char" LENGTH="20" NOTNULL="true" COMMENT="profile_updated | suspended | activated"/>
+        <FIELD NAME="ip"          TYPE="char" LENGTH="45" NOTNULL="false" COMMENT="IP address of actor at time of change"/>
+        <FIELD NAME="timecreated" TYPE="int"  LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid"      UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="actorid"     UNIQUE="false" FIELDS="actorid"/>
+        <INDEX NAME="changetype"  UNIQUE="false" FIELDS="changetype"/>
+        <INDEX NAME="timecreated" UNIQUE="false" FIELDS="timecreated"/>
+      </INDEXES>
+    </TABLE>
+
+    <!--
+      Shadow state: tracks the last-known suspended value for each user.
+      Populated at install time for all existing users.
+      Updated by the observer whenever a suspension state change is detected.
+    -->
+    <TABLE NAME="local_useraudit_suspended" COMMENT="Shadow suspended state used to detect suspension vs profile-update events">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid"       TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="suspended"    TYPE="int" LENGTH="1"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid"  TYPE="unique"  FIELDS="userid"/>
+      </KEYS>
+    </TABLE>
+
+  </TABLES>
+</XMLDB>

@@ -1,0 +1,106 @@
+# Cron environment for learn.usdcglobal.com.
+#
+# The live CronJobs carry the database password as a literal in the pod spec,
+# readable by anyone with `get cronjob` in the namespace. Both jobs below take it
+# from the moodle-secrets Secret instead, which is the whole reason this patch
+# exists rather than being left as-is.
+#
+# Resource requests are sized from measured load, not from base and not from the
+# live values. Base is jain's adhoc queue (12Gi / 2 CPU); usdc's live settings
+# were 2Gi/500m and 4Gi/1 CPU. A cron pod on this tenant measures 24m and ~1Mi,
+# and these Jobs run every 5 and 15 minutes, so the request is real reserved
+# capacity for a site with four courses. No limits are set, so a heavy adhoc task
+# can still burst to $CFG->extramemorylimit.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: moodle-cron
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: moodle-cron
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "100m"
+            env:
+            - name: MOODLE_DOCKER_DBTYPE
+              value: "mysqli"
+            - name: MOODLE_DOCKER_DBHOST
+              value: "mysql-db-pxc-db-haproxy"
+            - name: MOODLE_DOCKER_DBNAME
+              value: "learn_usdc"
+            - name: MOODLE_DOCKER_DBUSER
+              value: "learnusdc"
+            - name: MOODLE_DOCKER_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            # usdc's config.php reads $CFG->dbpass from this variable, and the
+            # CronJobs mount that same config.php. Without it, cron bootstraps
+            # Moodle with an empty password and cannot reach the database.
+            - name: MOODLE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            - name: MOODLE_DOCKER_PREFIX
+              value: "acu_"
+            - name: MOODLE_DOCKER_WWWROOT
+              # Must match $CFG->wwwroot in config/moodle_config.php. Cron builds
+              # the absolute URLs in emails and notifications from this, so a
+              # mismatch sends learners links to the wrong host.
+              value: "https://learn.usdcglobal.com"
+            - name: PHP_MEMORY_LIMIT
+              value: "2G"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: moodle-adhoc-tasks
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: moodle-adhoc-tasks
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "100m"
+            env:
+            - name: MOODLE_DOCKER_DBTYPE
+              value: "mysqli"
+            - name: MOODLE_DOCKER_DBHOST
+              value: "mysql-db-pxc-db-haproxy"
+            - name: MOODLE_DOCKER_DBNAME
+              value: "learn_usdc"
+            - name: MOODLE_DOCKER_DBUSER
+              value: "learnusdc"
+            - name: MOODLE_DOCKER_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            - name: MOODLE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            - name: MOODLE_DOCKER_PREFIX
+              value: "acu_"
+            - name: MOODLE_DOCKER_WWWROOT
+              value: "https://learn.usdcglobal.com"
+            # Nothing reads this: there is no entrypoint consuming it, and the
+            # official PHP image does not either. The effective CLI limit comes
+            # from the image's conf.d/memory-limit.ini, which Moodle then raises
+            # itself via $CFG->extramemorylimit. Carried for parity with the
+            # jain and nitk overlays, and spelled "4G" rather than the live
+            # "4Gi" so it is at least a string PHP would accept if ever wired up.
+            - name: PHP_MEMORY_LIMIT
+              value: "4G"

@@ -1,0 +1,1778 @@
+// Bespoke shell for the administration pages (theme_baz\output\admin_wrap).
+//
+// The shell structure (.sd-side / .sd-topbar / .sd-main / .sd-content) and every
+// --sd-* token come from student-dashboard.scss + admin-dashboard.scss, so this
+// file only adds the admin-page chrome and restyles the CORE content that is
+// rendered untouched into .aw-wrap. Everything is scoped under
+// #sd-root.sd-adminpage so no rule can reach a classic page.
+
+#sd-root.sd-adminpage {
+
+    // Admin screens are table- and form-heavy; give them the width back.
+    --aw-maxw: 1360px;
+
+    .sd-content {
+        max-width: var(--aw-maxw);
+    }
+
+    // ---------- sidebar ----------
+    // The tenant logo is a wide banner; the dashboard's cap left it illegible here.
+    .sd-brand img {
+        max-height: 40px;
+        width: auto;
+    }
+
+    .aw-nav {
+        a {
+            span {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+
+        .aw-nav-home {
+            margin-bottom: 6px;
+        }
+    }
+
+    .sd-search-wrap {
+        max-width: 340px;
+    }
+
+    // ---------- course-scoped chrome ----------
+    // Inside a course the sidebar is the course's, not the site's, so it needs the
+    // course's identity and a visible way back out to site administration.
+    .aw-coursebadge {
+        background: rgba(255, 255, 255, .12);
+    }
+
+    .aw-nav-back {
+        opacity: .78;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    .aw-coursename {
+        margin: 2px 10px 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(255, 255, 255, .12);
+        color: #fff;
+        font-weight: 700;
+        font-size: .92rem;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    // ---------- breadcrumb ----------
+    .aw-crumb {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        font-size: .84rem;
+        line-height: 1.3;
+
+        a {
+            color: var(--sd-muted);
+            text-decoration: none;
+
+            &:hover {
+                color: var(--sd-text);
+                text-decoration: underline;
+            }
+        }
+
+        span:not(.sep) {
+            color: var(--sd-text);
+            font-weight: 600;
+        }
+
+        .sep {
+            color: var(--sd-faint);
+        }
+
+        // On narrow screens keep only the tail of the trail.
+        @media (max-width: 900px) {
+            a:not(:last-of-type),
+            .sep:not(:last-of-type) {
+                display: none;
+            }
+        }
+    }
+
+    // ---------- page head ----------
+    // Deliberately tight: the classic admin layout left ~150px of dead space
+    // between the navigation and the first heading.
+    .aw-phead {
+        margin: 0 0 18px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+
+        // The eyebrow + h1 stay a block; only the action menu is a sibling.
+        > .sd-eyebrow {
+            flex: 1 1 100%;
+            margin-bottom: 2px;
+        }
+
+        > h1 {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .sd-eyebrow {
+            margin-bottom: 2px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(1.45rem, 2.4vw, 2rem);
+            font-weight: 800;
+            letter-spacing: -.02em;
+            line-height: 1.12;
+        }
+    }
+
+    // ---------- the wrapped core content ----------
+    .aw-wrap {
+        background: var(--sd-surface);
+        border: 1px solid var(--sd-line);
+        border-radius: var(--sd-r);
+        box-shadow: var(--sd-sh-sm);
+        padding: 22px 24px;
+
+        @media (max-width: 640px) {
+            padding: 16px 14px;
+            border-radius: 12px;
+        }
+
+        // Links inside the wrap read as links -- but not the ones Bootstrap has
+        // already made buttons. `.aw-wrap a` is specificity 1,2,1 and the
+        // .btn-primary rule further down is 1,2,0, so without this exclusion an
+        // <a class="btn btn-primary"> loses its button ink and is painted link
+        // blue on the accent gradient: blue on blue, label invisible. mod_assign's
+        // "Grade" button is the case that surfaced it, at about 1.8:1 contrast.
+        a:not(.btn) {
+            color: var(--sd-blue);
+        }
+
+        table {
+            width: 100%;
+        }
+
+        // Core's generaltable centres its headers and draws its own borders,
+        // which reads as a different product inside this shell. Restyled to the
+        // same tokens the rest of the wrap uses. Scoped to generaltable so
+        // layout tables and third-party markup are left alone.
+        table.generaltable {
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid var(--sd-line);
+            border-radius: 14px;
+            background: var(--sd-surface);
+
+            // The corner cells are rounded individually rather than clipping the
+            // table with overflow:hidden. Clipping rounded the corners, but it also
+            // cut off every absolutely positioned descendant -- the row action
+            // menus opened downward out of the last row and were sliced at the
+            // table's bottom edge, which read as the menu not opening at all.
+            > thead > tr:first-child > *:first-child {
+                border-top-left-radius: 13px;
+            }
+
+            > thead > tr:first-child > *:last-child {
+                border-top-right-radius: 13px;
+            }
+
+            > tbody > tr:last-child > *:first-child {
+                border-bottom-left-radius: 13px;
+            }
+
+            > tbody > tr:last-child > *:last-child {
+                border-bottom-right-radius: 13px;
+            }
+
+            th, thead th {
+                text-align: left;
+                vertical-align: middle;
+                background: var(--sd-ground);
+                color: var(--sd-muted);
+                font-size: .72rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .06em;
+                border: 0;
+                padding: 12px 14px;
+            }
+
+            td {
+                vertical-align: middle;
+                border: 0;
+                border-top: 1px solid var(--sd-line);
+                padding: 12px 14px;
+            }
+
+            tbody tr:hover > td {
+                background: var(--sd-ground);
+            }
+        }
+
+        // The page name, which the shell already shows as the h1. The theme wraps
+        // every heading in .rui-title-container directly inside .main-content, so
+        // this one rule covers settings, category, report, profile and management
+        // screens. :first-of-type matters -- report pages carry a SECOND one that
+        // is real content ("Choose which logs you want to see").
+        .main-content > .rui-title-container:first-of-type {
+            display: none;
+        }
+
+        // Report builder puts the title and its action button in a flex row, so
+        // the container is a grandchild and the rule above misses it -- the page
+        // then shows its name twice, the second time italic because
+        // .rui-main-content-title is styled for the classic layout. Limited to a
+        // single level of nesting and to the leading child, so a genuine second
+        // heading further down the page is untouched.
+        .main-content > div > .rui-title-container:first-child {
+            display: none;
+        }
+
+        .main-content > h2:first-of-type {
+            display: none;
+        }
+
+        // The theme's sticky action bars carry no ground of their own, so they sit
+        // on top of the content underneath. Applies to every wrapclass: the settings
+        // pages use .rui-sticky-btns, the moodform screens a sticky .form-group row.
+        //
+        // The row must be identified by CONTAINING A SUBMIT CONTROL, not by its
+        // classes: on forms like blocks/quickmail/compose.php every one of the 11
+        // field rows is also a `.form-group.row.px-0` directly under `.mform`, so a
+        // class-only selector made all of them sticky. The visible damage was worse
+        // than overlapping rows -- `justify-content: flex-end` pushed each label to
+        // the right edge and the 10px gap made 25% + 75% overflow, wrapping every
+        // label onto its own line above its field.
+        .rui-sticky-btns,
+        .mform > .form-group.row.px-0:has(input[type="submit"]),
+        .mform > .form-group.row.px-0:has(button[type="submit"]) {
+            position: sticky;
+            bottom: 0;
+            z-index: 20;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            margin: 22px -24px -22px;
+            padding: 14px 24px;
+            background: var(--sd-surface);
+            border-top: 1px solid var(--sd-line);
+            border-radius: 0 0 var(--sd-r) var(--sd-r);
+            box-shadow: 0 -6px 18px rgba(11, 32, 52, .06);
+
+            @media (max-width: 640px) {
+                margin: 16px -14px -16px;
+                padding: 12px 14px;
+            }
+        }
+    }
+
+    // The course fact row sits directly under .aw-phead, which already supplies
+    // an 18px bottom margin, so the 10px top margin the classic
+    // .rui-course-info-box carries doubles up. Its own children keep their
+    // margin-bottom, which is the row's real spacing to what follows.
+    .aw-coursefacts {
+        margin-top: 0;
+    }
+
+    // ---------- content column + block rail ----------
+    // Admin pages almost never carry blocks, so the rail only appears when there is
+    // something in it -- a block instance, or the add-block button in edit mode.
+    .aw-cols {
+        display: block;
+
+        &.has-blocks {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 300px;
+            gap: 20px;
+            align-items: start;
+
+            @media (max-width: 1100px) {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+    }
+
+    .aw-blocks {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+        min-width: 0;
+
+        .block {
+            background: var(--sd-surface);
+            border: 1px solid var(--sd-line);
+            border-radius: 12px;
+            padding: 14px 16px;
+            box-shadow: var(--sd-sh-sm);
+
+            .card-title,
+            h5 {
+                font-size: .9rem;
+                font-weight: 700;
+                color: var(--sd-text);
+            }
+
+            .card-text,
+            .content {
+                font-size: .87rem;
+                color: var(--sd-ink-2, var(--sd-muted));
+            }
+        }
+    }
+
+    // ---------- edit mode ----------
+    // Core's own switch, which renders nothing unless the page allows editing.
+    .aw-editswitch {
+        display: flex;
+        align-items: center;
+
+        &:empty {
+            display: none;
+        }
+
+        .form-check-label {
+            font-size: .82rem;
+            color: var(--sd-muted);
+            white-space: nowrap;
+        }
+    }
+
+    // ---------- settings pages (266 views) ----------
+    .aw-settings {
+        // Core's own page heading, which the shell already shows as the h1. It is an
+        // h3 inside .settingsform, after four hidden inputs -- there is exactly one
+        // per page, so this cannot catch a section heading.
+        .settingsform > h3 {
+            display: none;
+        }
+
+        .form-item {
+            display: grid;
+            grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+            gap: 6px 28px;
+            align-items: start;
+            padding: 18px 0;
+            margin: 0;
+            border-bottom: 1px solid var(--sd-line);
+
+            &:last-of-type {
+                border-bottom: 0;
+            }
+
+            @media (max-width: 1100px) {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 8px;
+            }
+        }
+
+        .form-label {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+            width: auto;
+            padding: 0;
+            text-align: left;
+
+            label,
+            > p {
+                margin: 0;
+                font-weight: 700;
+                font-size: .95rem;
+                color: var(--sd-text);
+            }
+        }
+
+        // The config key: quiet, monospace, secondary.
+        .form-shortname {
+            margin: 0 !important;
+            padding: 1px 6px;
+            border-radius: 4px;
+            background: var(--sd-ground);
+            border: 1px solid var(--sd-line);
+            color: var(--sd-faint);
+            font-family: var(--sd-mono);
+            font-size: .68rem;
+            line-height: 1.5;
+        }
+
+        .form-setting {
+            width: auto;
+            padding: 0;
+        }
+
+        .form-description {
+            margin-top: 8px !important;
+            color: var(--sd-muted);
+            font-size: .87rem;
+            line-height: 1.5;
+            max-width: 72ch;
+
+            p:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        // The default value was rendered as a filled navy button, which read as
+        // the primary action and outweighed the real control beside it.
+        .form-defaultinfo {
+            background: transparent !important;
+            border: 1px dashed var(--sd-line);
+            color: var(--sd-faint) !important;
+            font-weight: 500;
+            font-size: .72rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .form-dependenton {
+            font-size: .74rem;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        input[type="email"],
+        input[type="number"],
+        input[type="password"],
+        select,
+        textarea {
+            max-width: 520px;
+        }
+
+    }
+
+    // ---------- category landing pages (95 views) ----------
+    // Core prints one <h3><a>…</a></h3> per child node. Turn that list into cards
+    // without touching the markup.
+    .aw-category {
+        // Core wraps each child node in fieldset > div.rui-title-container > h3 > a.
+        fieldset {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+            gap: 12px;
+            border: 0;
+            padding: 0;
+            margin: 0;
+
+            > .clearer,
+            > br {
+                display: none;
+            }
+
+            > .rui-title-container {
+                margin: 0;
+            }
+        }
+
+        h3 {
+            margin: 0;
+            font-size: 1rem;
+
+            a {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 10px;
+                min-height: 62px;
+                padding: 14px 16px;
+                border: 1px solid var(--sd-line);
+                border-radius: 12px;
+                background: var(--sd-surface);
+                color: var(--sd-text);
+                font-weight: 700;
+                font-size: .95rem;
+                text-decoration: none;
+                box-shadow: var(--sd-sh-sm);
+                transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+
+                &::after {
+                    content: "›";
+                    color: var(--sd-faint);
+                    font-size: 1.3rem;
+                    line-height: 1;
+                }
+
+                &:hover {
+                    border-color: var(--sd-accent);
+                    box-shadow: var(--sd-sh);
+                    transform: translateY(-1px);
+                    text-decoration: none;
+
+                    &::after {
+                        color: var(--sd-accent);
+                    }
+                }
+            }
+        }
+
+        // A category page can also carry settings inline; keep those full width.
+        .form-item {
+            grid-column: 1 / -1;
+        }
+    }
+
+    // ---------- management tables ----------
+    .aw-table,
+    .aw-manage,
+    .aw-generic,
+    // aw-settings belongs here too: the ~10 admin_setting_manage* plugin tables
+    // (manageauths, manageformats, manageeditors and the rest) all render inside a
+    // settings page, and were the one table family with no styling at all.
+    .aw-settings {
+        .table-responsive,
+        .no-overflow {
+            overflow-x: auto;
+        }
+
+        table.generaltable,
+        table.admintable,
+        table.flexible {
+            border-collapse: collapse;
+            font-size: .9rem;
+
+            // thead ONLY. theme_baz @extends .rolecap from .generaltable, so a bare
+            // `th` here also matches every row-header cell in the 1,141-row
+            // capability matrix, which uppercased 862 capability names.
+            thead th {
+                background: var(--sd-ground);
+                color: var(--sd-muted);
+                font-size: .72rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .07em;
+                white-space: nowrap;
+                border-bottom: 1px solid var(--sd-line);
+            }
+
+            tbody th {
+                font-weight: 600;
+                text-transform: none;
+                letter-spacing: 0;
+                color: var(--sd-text);
+            }
+
+            td {
+                border-bottom: 1px solid var(--sd-line);
+                vertical-align: middle;
+            }
+
+            tbody tr:hover td {
+                background: var(--sd-ground);
+            }
+        }
+
+        // Core drops the bulk-action controls loose under the table.
+        .singleselect,
+        .singlebutton {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        // Digits in columns should line up.
+        td.cell.c2,
+        td.lastaccess,
+        .aw-num {
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    // ---------- permission matrices ----------
+    // admin/roles/define.php is 1,141 rows: 278 component headings interleaved with
+    // 862 capability rows, each carrying a permission cell and six risk columns.
+    // Verified against the live table (#defineroletable.rolecap).
+    .aw-permissions {
+        #defineroletable,
+        table.rolecap {
+            font-size: .86rem;
+            border-collapse: separate;
+            border-spacing: 0;
+
+            // Both header levels stick, so you never lose the column meaning or the
+            // component you are inside while scrolling 862 rows.
+            thead th {
+                position: sticky;
+                top: 0;
+                z-index: 3;
+                background: var(--sd-surface);
+                border-bottom: 2px solid var(--sd-line);
+                box-shadow: 0 2px 6px rgba(11, 32, 52, .06);
+            }
+
+            tr.rolecapheading td.header {
+                position: sticky;
+                top: 38px;
+                z-index: 2;
+                background: var(--sd-ground);
+                border-top: 1px solid var(--sd-line);
+                border-bottom: 1px solid var(--sd-line);
+                padding: 8px 12px;
+                font-size: .8rem;
+                font-weight: 800;
+                letter-spacing: .02em;
+                color: var(--sd-text);
+            }
+
+            td,
+            th.name {
+                padding: 5px 10px;
+                vertical-align: middle;
+            }
+
+            th.name {
+                width: 46%;
+                font-weight: 500;
+                text-transform: none;
+                letter-spacing: 0;
+                color: var(--sd-text);
+            }
+
+            // The permission state is already in the cell class. 742 of 862 rows are
+            // the inherited default, so those recede and the ~120 deliberate
+            // decisions are what the eye lands on.
+            td.inherit {
+                color: var(--sd-faint);
+            }
+
+            td.allow {
+                color: #12805e;
+                background: rgba(31, 163, 122, .10);
+                font-weight: 700;
+                border-radius: 6px;
+            }
+
+            td.prevent {
+                color: #a8324a;
+                background: rgba(229, 85, 110, .10);
+                font-weight: 700;
+                border-radius: 6px;
+            }
+
+            td.prohibit {
+                color: #fff;
+                background: #a8324a;
+                font-weight: 700;
+                border-radius: 6px;
+            }
+
+            td.risk {
+                width: 24px;
+                padding: 5px 2px;
+                text-align: center;
+            }
+
+            // Risk is otherwise only legible by decoding six icon columns. A stripe
+            // on the row makes it scannable; the destructive risks win the colour.
+            tr.rolecap th.name {
+                border-left: 3px solid transparent;
+            }
+
+            tr.riskspam th.name,
+            tr.riskxss th.name,
+            tr.riskpersonal th.name {
+                border-left-color: rgba(229, 171, 60, .55);
+            }
+
+            tr.riskconfig th.name,
+            tr.riskdataloss th.name,
+            tr.riskmanagetrust th.name {
+                border-left-color: #a8324a;
+            }
+        }
+    }
+
+    // ---------- plugins control panel ----------
+    // admin/plugins.php is 568 rows in one table. Same reasoning as aw-tasks: core
+    // wraps it so it already scrolls sideways, but the container has no height, so a
+    // sticky header does nothing until it gets one.
+    .aw-plugins {
+        .table-responsive {
+            max-height: 74vh;
+        }
+
+        table.generaltable {
+            font-size: .84rem;
+
+            thead th {
+                position: sticky;
+                top: 0;
+                z-index: 2;
+                background: var(--sd-ground);
+                border-bottom: 2px solid var(--sd-line);
+                font-size: .68rem;
+                text-transform: uppercase;
+                letter-spacing: .06em;
+                color: var(--sd-muted);
+                white-space: nowrap;
+            }
+
+            td {
+                padding: 6px 9px;
+                border-bottom: 1px solid var(--sd-line);
+                vertical-align: middle;
+            }
+
+            // Plugin type headings break the list into sections; make them read as
+            // section bands rather than as another data row.
+            tr.plugintypeheader td,
+            td.plugintypeheader {
+                position: sticky;
+                top: 34px;
+                z-index: 1;
+                background: var(--sd-ground);
+                font-weight: 800;
+                font-size: .78rem;
+                letter-spacing: .02em;
+                border-top: 1px solid var(--sd-line);
+            }
+
+            // Version columns line up; a missing or mismatched version is the thing
+            // worth spotting on this page.
+            td.versiondb,
+            td.versiondisk,
+            td.version {
+                font-variant-numeric: tabular-nums;
+                font-family: var(--sd-mono);
+                font-size: .76rem;
+                white-space: nowrap;
+            }
+
+            tr.dimmed_text,
+            tr.dimmed {
+                color: var(--sd-faint);
+            }
+
+            tbody tr:hover td {
+                background: var(--sd-ground);
+            }
+        }
+    }
+
+    // ---------- reports ----------
+    // A row of unlabelled selects with one button; group it into a real filter bar.
+    .aw-report {
+        form select,
+        form input[type="text"] {
+            max-width: 260px;
+        }
+
+        .main-content > form:first-of-type {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 16px;
+            margin-bottom: 18px;
+            background: var(--sd-ground);
+            border: 1px solid var(--sd-line);
+            border-radius: 12px;
+        }
+    }
+
+    // ---------- moodleform screens (add/edit user, upload users) ----------
+    .aw-form {
+        .mform fieldset {
+            border: 1px solid var(--sd-line);
+            border-radius: 12px;
+            padding: 4px 18px 18px;
+            margin: 0 0 16px;
+        }
+
+        .mform fieldset legend {
+            font-family: var(--sd-sans);
+            font-size: .95rem;
+            font-weight: 700;
+            color: var(--sd-text);
+        }
+
+        .fitem {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--sd-line-soft, var(--sd-line));
+
+            &:last-child {
+                border-bottom: 0;
+            }
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select,
+        textarea {
+            max-width: 520px;
+        }
+    }
+
+    // ---------- two-pane selectors ----------
+    // Bulk user actions, cohort assign, capability overview and assign-roles all use
+    // paired <select multiple> boxes. Core leaves them at the browser default height,
+    // which makes a 4-row box for a list of hundreds.
+    .aw-wrap {
+        select[multiple] {
+            min-height: 210px;
+            padding: 6px;
+            border: 1px solid var(--sd-line);
+            border-radius: 10px;
+            background: var(--sd-surface);
+            font-size: .88rem;
+
+            option {
+                padding: 3px 6px;
+                border-radius: 4px;
+            }
+        }
+    }
+
+    // ---------- collapsible mform sections ----------
+    // Add/edit user carries 78 fields across 11 collapsible fieldsets, and the bulk
+    // filter form 110 across 25, so the section headers are the navigation.
+    .aw-form {
+        .mform fieldset.collapsible legend a.fheader {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--sd-text);
+            text-decoration: none;
+
+            &:hover {
+                color: var(--sd-blue);
+            }
+        }
+
+        .mform fieldset.collapsed {
+            padding-bottom: 6px;
+            background: var(--sd-ground);
+        }
+
+        // Required-field markers should read as information, not as an error.
+        .req,
+        .adminerror {
+            color: var(--sd-accent);
+        }
+    }
+
+    // ---------- profile field editor ----------
+    .aw-list {
+        .profileeditor {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        // Each category is a div.profilefield wrapping ul.rui-profilefield.list-group,
+        // so the card is the wrapper and the rows are the list items.
+        .profilefield {
+            border: 1px solid var(--sd-line);
+            border-radius: 10px;
+            background: var(--sd-surface);
+            overflow: hidden;
+        }
+
+        ul.rui-profilefield {
+            margin: 0 !important;
+
+            > li {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 10px 14px;
+                border: 0;
+                border-bottom: 1px solid var(--sd-line);
+                background: transparent;
+
+                &:last-child {
+                    border-bottom: 0;
+                }
+
+                &:hover {
+                    background: var(--sd-ground);
+                }
+            }
+        }
+    }
+
+    // ---------- pagination ----------
+    // Unstyled until now, and it is not niche: jain's data-privacy queue alone is
+    // 104 pages (2,596 requests at 25 per page), and every flexible_table paginates.
+    .aw-wrap {
+        nav.pagination,
+        .paging {
+            margin-top: 18px;
+        }
+
+        ul.pagination {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 4px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        li.page-item {
+            margin: 0;
+
+            .page-link {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-width: 34px;
+                height: 34px;
+                padding: 0 9px;
+                border: 1px solid var(--sd-line);
+                border-radius: 8px;
+                background: var(--sd-surface);
+                color: var(--sd-text);
+                font-size: .85rem;
+                font-variant-numeric: tabular-nums;
+                text-decoration: none;
+            }
+
+            a.page-link:hover {
+                border-color: var(--sd-accent);
+                color: var(--sd-text);
+            }
+
+            &.active .page-link {
+                background: var(--sd-navy);
+                border-color: var(--sd-navy);
+                color: #fff;
+                font-weight: 700;
+            }
+
+            &.disabled .page-link {
+                background: var(--sd-ground);
+                color: var(--sd-faint);
+            }
+        }
+    }
+
+    // ---------- Moodle's autocomplete filter ----------
+    // The data-privacy queue filters through this rather than a plain select.
+    .aw-wrap {
+        .form-autocomplete-selection {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 6px 0;
+
+            [role="option"],
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 3px 9px;
+                border-radius: 999px;
+                background: var(--sd-ground);
+                border: 1px solid var(--sd-line);
+                color: var(--sd-text);
+                font-size: .8rem;
+                font-weight: 600;
+            }
+        }
+
+        .form-autocomplete-suggestions {
+            border: 1px solid var(--sd-line);
+            border-radius: 10px;
+            background: var(--sd-surface);
+            box-shadow: var(--sd-sh);
+
+            li[aria-selected="true"] {
+                background: var(--sd-ground);
+            }
+        }
+    }
+
+    // ---------- two-pane user selectors ----------
+    // ausers[]/susers[] ship size=15 and can hold ~2,000 options, so the search
+    // inputs above them are the real navigation and are treated as such.
+    .aw-form,
+    .aw-table {
+        // Nested element-group wrappers -- NOT field rows.
+        //
+        // mform wraps every control inside an $mform->addGroup() in its own
+        // `.form-group.fitem`, so a button bar and a date/time selector each
+        // arrive as several `.fitem` children of a `.d-flex.flex-wrap` parent.
+        // Those wrappers must size to their control, stay on the group's line,
+        // and draw no row separator.
+        //
+        // This read `flex: 1 1 320px` for the two-pane selectors above, but
+        // those are an `admintable` of `td > .userselector` with no `.fitem`
+        // anywhere on the page -- `select[multiple]` below is what sizes them.
+        // The basis only ever reached these nested wrappers, where it stacked
+        // them: three 320px items in a 438px button bar put every button on
+        // its own row, and six in a 644px date row did the same.
+        fieldset > .d-flex.flex-wrap > .fitem {
+            flex: 0 0 auto;
+            min-width: 0;
+            max-width: 100%;
+
+            // `.fitem` above carries the row separator and its vertical
+            // padding. Inherited by a nested wrapper it underlined every date
+            // dropdown and every button.
+            padding-top: 0;
+            padding-bottom: 0;
+            border-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        select[multiple] {
+            width: 100%;
+            min-height: 300px;
+        }
+
+        input[name="realname"],
+        input[name="lastname"],
+        input[name="firstname"],
+        input[name="username"] {
+            max-width: 320px;
+        }
+    }
+
+    // ---------- check reports (status, security, performance) ----------
+    // All three are table.admintable with Status | Check | Summary | Action, and the
+    // severity lives in a Bootstrap badge inside the status cell. Reading 19 security
+    // checks should not mean reading 19 rows of identical grey text.
+    .aw-checks {
+        table.admintable {
+            border-collapse: collapse;
+            font-size: .9rem;
+
+            thead th {
+                position: sticky;
+                top: 0;
+                z-index: 2;
+                background: var(--sd-surface);
+                border-bottom: 2px solid var(--sd-line);
+            }
+
+            td.status {
+                width: 108px;
+                text-align: left !important;
+                white-space: nowrap;
+            }
+
+            td.check {
+                font-weight: 700;
+                color: var(--sd-text);
+                width: 26%;
+            }
+
+            td.summary {
+                color: var(--sd-muted);
+                max-width: 60ch;
+            }
+
+            td.action {
+                text-align: right;
+                white-space: nowrap;
+            }
+
+            td {
+                padding: 10px 12px;
+                border-bottom: 1px solid var(--sd-line);
+                vertical-align: top;
+            }
+
+            // Restate the badges in the shell's own semantics rather than Bootstrap's.
+            .badge {
+                display: inline-block;
+                padding: 3px 10px;
+                border-radius: 999px;
+                font-size: .72rem;
+                font-weight: 700;
+                letter-spacing: .04em;
+                text-transform: uppercase;
+            }
+
+            .badge.bg-success {
+                background: rgba(31, 163, 122, .14) !important;
+                color: #12805e !important;
+            }
+
+            .badge.bg-warning {
+                background: rgba(229, 171, 60, .18) !important;
+                color: #8a5d09 !important;
+            }
+
+            .badge.bg-danger,
+            .badge.bg-error {
+                background: #a8324a !important;
+                color: #fff !important;
+            }
+
+            .badge.bg-secondary {
+                background: var(--sd-ground) !important;
+                color: var(--sd-muted) !important;
+            }
+
+            .badge.bg-info {
+                background: rgba(64, 108, 210, .14) !important;
+                color: #2b4a96 !important;
+            }
+
+            // A stripe on the row so a failing check is visible before it is read.
+            // :has() is well supported in the browsers an admin console runs in; where
+            // it is not, the badge colouring above still carries the meaning.
+            tbody tr:has(.badge.bg-warning) td.status {
+                box-shadow: inset 3px 0 0 rgba(229, 171, 60, .8);
+            }
+
+            tbody tr:has(.badge.bg-danger) td.status,
+            tbody tr:has(.badge.bg-error) td.status {
+                box-shadow: inset 3px 0 0 #a8324a;
+            }
+        }
+    }
+
+    // ---------- scheduled and ad-hoc tasks ----------
+    // 149 rows x 13 columns, five of which are cron fields. Density and alignment
+    // are the whole job; a non-zero fail delay is the thing worth spotting.
+    .aw-tasks {
+        // Core already wraps this table in div.table-responsive with overflow-x:auto,
+        // so horizontal scrolling is its behaviour, not something to add. But that
+        // container also has overflow-y:auto and no height, which makes a sticky
+        // thead inert. Constraining the height turns it into a real data viewport:
+        // the header sticks inside it and both axes scroll. 149 rows justify it;
+        // this is deliberately not applied to the shorter admin tables.
+        .table-responsive {
+            max-height: 72vh;
+        }
+
+        table.admintable,
+        table.generaltable {
+            border-collapse: collapse;
+            font-size: .82rem;
+
+            thead th {
+                position: sticky;
+                top: 0;
+                z-index: 2;
+                background: var(--sd-ground);
+                border-bottom: 2px solid var(--sd-line);
+                font-size: .68rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: .06em;
+                color: var(--sd-muted);
+                white-space: nowrap;
+            }
+
+            td {
+                padding: 6px 8px;
+                border-bottom: 1px solid var(--sd-line);
+                vertical-align: middle;
+            }
+
+            // The cron fields: minute, hour, day, day of week, month.
+            td.c6,
+            td.c7,
+            td.c8,
+            td.c9,
+            td.c10 {
+                font-family: var(--sd-mono);
+                font-size: .76rem;
+                text-align: center;
+                color: var(--sd-muted);
+                white-space: nowrap;
+            }
+
+            td.c4,
+            td.c5 {
+                font-variant-numeric: tabular-nums;
+                white-space: nowrap;
+            }
+
+            tbody tr.disabled {
+                color: var(--sd-faint);
+
+                td.c0,
+                td.c1 {
+                    font-style: italic;
+                }
+            }
+
+            tbody tr:hover td {
+                background: var(--sd-ground);
+            }
+        }
+    }
+
+    // ---------- settings search results ----------
+    .aw-search {
+        h2,
+        h3 {
+            font-size: 1rem;
+            margin-top: 18px;
+        }
+    }
+
+    // ---------- notifications / upgrade page ----------
+    .aw-notifications {
+        .alert {
+            border-radius: 10px;
+        }
+    }
+}
+
+// The classic footer was grey-on-grey and collided with content on short pages.
+body.baz-admin-exp {
+    #page-footer,
+    .rui-footer-content {
+        display: none;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Lite restyle for the layouts the shell must NOT wrap.
+//
+// popup and embedded render inside modals and file-picker iframes, secure is the
+// quiz browser, print is print, and maintenance must not touch config or caches.
+// Wrapping any of them adds a 300px sidebar inside a 400px modal, so they stay
+// unhooked -- but that is no reason for them to keep the old look.
+//
+// This is deliberately CHROME-FREE: tokens, type, tables, controls. No sidebar, no
+// topbar, no navigation -- which also means nothing is added to the secure quiz
+// browser that could help a candidate navigate away. Scoped on the pagelayout-*
+// classes core already puts on <body>, so not a line of layout PHP changes.
+// ---------------------------------------------------------------------------
+body.pagelayout-popup,
+body.pagelayout-embedded,
+body.pagelayout-maintenance,
+body.pagelayout-secure,
+body.pagelayout-print {
+    --sd-navy: #{$bz-navy};
+    --sd-ground: #F4F7FB;
+    --sd-surface: #FFFFFF;
+    --sd-text: #0B2034;
+    --sd-muted: #5C7184;
+    --sd-faint: #90A4B5;
+    --sd-line: #E5ECF3;
+    --sd-accent: #{$bz-accent};
+    --sd-mono: 'JetBrains Mono', ui-monospace, "SF Mono", "SFMono-Regular", Menlo, monospace;
+
+    // Deliberately NO background or colour on the body. Checked against help.php:
+    // the theme already presents popup pages as a white card on a grey ground, and
+    // setting a body background flattened that card. These layouts were never
+    // unstyled -- so this block only adds styling for content they may contain.
+
+    h1, h2, h3, h4 {
+        color: var(--sd-text);
+        letter-spacing: -.01em;
+    }
+
+    a {
+        color: var(--sd-navy);
+    }
+
+    // Deliberately no width or padding changes: these pages are sized by the modal
+    // or iframe that contains them.
+    table.generaltable,
+    table.admintable,
+    table.flexible {
+        border-collapse: collapse;
+        font-size: .88rem;
+
+        thead th {
+            background: var(--sd-ground);
+            color: var(--sd-muted);
+            font-size: .7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            border-bottom: 1px solid var(--sd-line);
+        }
+
+        td {
+            border-bottom: 1px solid var(--sd-line);
+        }
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    input[type="number"],
+    input[type="password"],
+    select,
+    textarea {
+        border: 1px solid var(--sd-line);
+        border-radius: 8px;
+        color: var(--sd-text);
+
+        &:focus {
+            outline: 2px solid var(--sd-accent);
+            outline-offset: 1px;
+        }
+    }
+
+    .btn-primary {
+        background: var(--sd-navy);
+        border-color: var(--sd-navy);
+    }
+
+    .btn-secondary,
+    .btn-outline-secondary {
+        border-color: var(--sd-line);
+        color: var(--sd-text);
+    }
+}
+
+// The maintenance page deliberately gets nothing beyond the shared block above.
+// It cannot be inspected without putting the site into maintenance mode, and the
+// popup check just showed that assuming a layout is unstyled is how you make it
+// worse.
+
+
+// ---------- regions the wrapped layouts own, which the shell must not drop ----------
+// The shell emits main_content, but several hooked layouts keep real content in
+// block regions of their own (259 sidecourseblocks instances on jain) plus an
+// activity header and a region-main action menu. These are the containers for them.
+#sd-root.sd-adminpage {
+
+    // Region-main action menu, opposite the page title.
+    .aw-pagemenu {
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        .action-menu,
+        .dropdown {
+            margin: 0;
+        }
+    }
+
+    // Activity header: completion state, dates and the intro of the activity.
+    .aw-activityheader {
+        margin: 0 0 16px;
+        padding: 14px 16px;
+        background: var(--sd-surface);
+        border: 1px solid var(--sd-line);
+        border-radius: var(--sd-r);
+        box-shadow: var(--sd-sh-sm);
+        color: var(--sd-text);
+
+        &:empty {
+            display: none;
+        }
+
+        .activity-header,
+        .activity-description {
+            margin: 0;
+        }
+    }
+
+    // Full-width block rows above and below the wrapped content.
+    .aw-blockrow {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 14px;
+
+        &.aw-blockrow-top {
+            margin: 0 0 18px;
+        }
+
+        &.aw-blockrow-bottom {
+            margin: 18px 0 0;
+        }
+
+        // These regions are asides of block cards, not a nested page layout.
+        > section,
+        > aside {
+            display: contents;
+        }
+    }
+
+    // The course side rail shares the existing blocks aside with side-pre, so its
+    // cards need the same treatment rather than the theme's course-page styling.
+    .aw-blocks {
+        > section,
+        > aside {
+            display: contents;
+        }
+    }
+}
+
+// ---------- the rest of the page's own navigation ----------
+// The curated sidebar is eight items; a course page's secondary navigation offers
+// 48 and an activity page 13. These are the derived remainder, so the gradebook,
+// question bank, course reports and course reuse stay reachable from the shell.
+// The sidebar ground is dark, so everything here is light-on-dark.
+#sd-root.sd-adminpage {
+
+    .aw-nav-more {
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    .aw-nav-heading {
+        margin: 0 10px 6px;
+        font-size: .68rem;
+        font-weight: 700;
+        letter-spacing: .09em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, .5);
+    }
+
+    // Inherited .sd-nav a rules assume an icon plus a span; these are plain text
+    // links one level in, so the shape is set explicitly rather than inherited.
+    .aw-navsub,
+    .aw-navflat {
+        display: block;
+        margin: 1px 6px;
+        padding: 6px 10px;
+        border-radius: 8px;
+        color: rgba(255, 255, 255, .74);
+        font-size: .83rem;
+        font-weight: 500;
+        line-height: 1.3;
+        text-decoration: none;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &:hover,
+        &:focus-visible {
+            background: rgba(255, 255, 255, .1);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        &[aria-current="page"] {
+            background: rgba(255, 255, 255, .16);
+            color: #fff;
+            font-weight: 700;
+        }
+    }
+
+    .aw-navsub {
+        margin-left: 18px;
+    }
+
+    .aw-navgroup {
+        margin: 0 0 2px;
+
+        > summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin: 1px 6px;
+            padding: 6px 10px;
+            border-radius: 8px;
+            color: rgba(255, 255, 255, .88);
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            list-style: none;
+
+            &::-webkit-details-marker,
+            &::marker {
+                display: none;
+                content: '';
+            }
+
+            &:hover,
+            &:focus-visible {
+                background: rgba(255, 255, 255, .1);
+                color: #fff;
+            }
+
+            span {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+        }
+
+        .aw-navchev {
+            flex: 0 0 auto;
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform .16s ease;
+        }
+
+        &[open] > summary .aw-navchev {
+            transform: rotate(90deg);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .aw-navgroup .aw-navchev {
+            transition: none;
+        }
+    }
+}
+
+// ---------- the persistent block ----------
+// Dashboard / My courses / Calendar / Site administration sit above everything and
+// never change, so the menu no longer swaps wholesale when the context does. This
+// is the rule that separates them from the contextual block below.
+#sd-root.sd-adminpage {
+
+    .aw-nav-sep {
+        height: 1px;
+        margin: 12px 10px 10px;
+        background: rgba(255, 255, 255, .12);
+    }
+
+    // The course name already acts as its own heading, so it needs no rule above it.
+    .aw-coursename + .aw-nav-heading {
+        margin-top: 8px;
+    }
+}
+
+// ---------- action buttons ----------
+// Same treatment the student portal gives its buttons (student-wrap's .btn-primary):
+// the accent gradient with the accent-on ink, so the administration screens read as
+// the same product. Deliberately driven by --sd-grad-accent and $bz-accent-on rather
+// than a literal gold: the accent is per-tenant, so this renders amber on jain and
+// green on NITK, and $bz-accent-on is the one ink value with sufficient contrast on
+// both.
+#sd-root.sd-adminpage {
+
+    .btn-primary,
+    input[type="submit"].btn-primary,
+    button[type="submit"].btn-primary {
+        background: var(--sd-grad-accent);
+        color: #{$bz-accent-on};
+        border: 0;
+        border-radius: 11px;
+        padding: 10px 18px;
+        font-weight: 800;
+        font-size: .85rem;
+        line-height: 1.15;
+        box-shadow: 0 6px 16px rgba($bz-accent, .3);
+
+        &:hover,
+        &:focus {
+            color: #{$bz-accent-on};
+            filter: brightness(1.03);
+        }
+
+        &:active {
+            filter: brightness(.97);
+        }
+
+        &:disabled,
+        &.disabled {
+            filter: none;
+            opacity: .55;
+            box-shadow: none;
+        }
+    }
+
+    // Secondary keeps the theme's own look and only picks up the matching radius,
+    // exactly as the student portal does, so the primary action stays the one that
+    // draws the eye.
+    .btn-secondary,
+    .btn-outline-secondary,
+    .btn-outline-primary {
+        border-radius: 11px;
+    }
+
+    // Space the controls inside an mform element group.
+    //
+    // $mform->addGroup() renders through theme_baz's own
+    // core_form/element-group.mustache as `.d-flex.flex-wrap
+    // .rui-form-element-group`, with nothing but a literal space between the
+    // controls -- and a whitespace-only text node creates no rendered flex
+    // item, so there is no separation at all. The base theme only ever spaced
+    // ANCHORS in that group (scss/bootstrap/_buttons.scss targets
+    // `.rui-form-element-group a`), never input/button.
+    //
+    // The gap goes on the CONTAINER, for every group. An earlier version
+    // scoped it `:has(> input[type="submit"])` and matched NOTHING: mform puts
+    // each control in its own `.form-group.fitem`, so the submit is a
+    // grandchild of the group, never a direct child.
+    //
+    // 12px because .btn-primary spreads its shadow 16px: it clears the
+    // neighbouring button without opening a visible hole in a Save/Cancel
+    // pair. 10px on the block axis keeps a wrapped group readable.
+    .rui-form-element-group,
+    .fdate_time_selector {
+        gap: 10px 12px;
+        align-items: center;
+    }
+
+    // No `flex-wrap: nowrap` here, deliberately.
+    //
+    // The container carries Bootstrap's own `.flex-wrap` utility in its class
+    // list, and that ships `flex-wrap: wrap !important` -- no selector in this
+    // file can win against it, so a `nowrap` declaration here is dead CSS. It
+    // was in this file until 2026-09-04 doing nothing.
+    //
+    // It is not needed either: with the nested wrappers sized to their content
+    // (see the `fieldset > .d-flex.flex-wrap > .fitem` rule above) a Save /
+    // Save-and-enter-another-override / Cancel bar fits on one line by itself,
+    // which is what put those three back on one row. Where the viewport really
+    // is too narrow, wrapping into a second row -- with the 10px block-axis gap
+    // above -- reads better than the horizontally scrolling bar that the old
+    // `nowrap` needed as an escape hatch.
+
+    // Applied to controls in ANY group: a button label was never meant to
+    // break mid-word, and letting the ROW wrap instead is what flex-wrap on
+    // the container already allows.
+    .rui-form-element-group input[type="submit"],
+    .rui-form-element-group button[type="submit"],
+    .rui-form-element-group input[type="button"],
+    .rui-form-element-group input[type="reset"] {
+        white-space: nowrap;
+    }
+
+    // A Cancel marked up as .btn-primary must NOT read as the primary action.
+    // Plugins do this more often than core: blocks/quickmail/compose.php ships
+    // Send Message, Save Draft AND Cancel all as .btn-primary, so the accent fill
+    // alone made backing out look as inviting as sending. Moodle's convention is
+    // that cancel controls carry "cancel" in the name or id, which is what this
+    // matches -- it is not quickmail-specific.
+    .btn-primary[name*="cancel"],
+    .btn-primary[id*="cancel"],
+    input[type="submit"].btn-primary[name*="cancel"],
+    input[type="submit"].btn-primary[id*="cancel"] {
+        background: transparent;
+        color: var(--sd-muted);
+        border: 1px solid var(--sd-line);
+        font-weight: 700;
+        box-shadow: none;
+
+        &:hover,
+        &:focus {
+            background: var(--sd-ground);
+            color: var(--sd-text);
+            filter: none;
+        }
+    }
+
+    // Destructive actions stay red. Making a delete button gold would remove the
+    // one visual cue that separates it from a safe action.
+    .btn-danger,
+    .btn-outline-danger {
+        border-radius: 11px;
+    }
+
+    // Keyboard focus must stay visible against the accent fill.
+    .btn:focus-visible {
+        outline: 2px solid var(--sd-navy);
+        outline-offset: 2px;
+    }
+}
+
+// ---------- tabbed theme settings ----------
+// theme_baz's own settings page is a theme_baz_admin_settingspage_tabs, and the
+// vendor stylesheet indents its section headings by margin-left: 60px. The rule is
+// PAGE-SCOPED (#page-admin-setting-themesettingbaz .rui-setting-heading-wrapper),
+// not a general .rui- rule, so this only ever affected the theme's own settings
+// page -- which is why the override below is scoped the same way.
+//
+// The .aw-settings grid puts
+// setting rows flush with the tab pane's left edge, so the two disagreed by 60px
+// on every tab: headings and their descriptions sat 60px right of the labels
+// beneath them. Measured live -- 7 headings at x=543 against 60 setting rows at
+// x=483. Aligning the headings to the rows is the direction that keeps one edge
+// for the whole panel.
+#sd-root.sd-adminpage .aw-settings {
+
+    [class*="rui-setting-heading-wrapper"] {
+        margin-left: 0;
+    }
+
+    // The tab column and the content pane share an edge (the tabs end at the same x
+    // the pane begins), and the vendor's 60px heading indent had been doing double
+    // duty as the gutter. Zeroing it above fixed the alignment but left the settings
+    // touching the tab list, so the gutter is restored here -- once, on the pane, so
+    // headings and rows keep the single left edge they now share.
+    //
+    // margin, not padding: the pane carries Bootstrap's .px-0, whose
+    // padding-left: 0 is !important and would win.
+    .tab-content {
+        margin-left: 28px;
+    }
+}
+
+// ---------- course & category management ----------
+// Category rows put their action icons in a flex .menubar whose items stretch to
+// the tallest child -- the "..." trigger, at 34px. Each icon anchor then sits at
+// the TOP of that 34px box, so the eye / move / gear icons rendered 6-7px above
+// the category name and the enrolment count beside them. Measured live: anchor
+// centres at -7px and -6px from the row centre, 0 after this rule.
+// Course rows are unaffected: they use ms-auto and were already centred.
+#sd-root.sd-adminpage .aw-manage {
+
+    .menubar {
+        align-items: center;
+    }
+}
+
+// ---------- add-block button ----------
+// Core emits the add-block control inside output.main_content, so on the /my/
+// dashboards it cannot be removed from a theme template the way it was from the
+// pages shell -- it arrives with the page's own content. Hidden here instead.
+// In edit mode it otherwise opened an empty block rail and took roughly a quarter
+// of the width off the content column (measured 1300px -> 980px), which threw out
+// the alignment of every wrapped form and listing.
+#sd-root {
+
+    .add_block_button {
+        display: none;
+    }
+}
+
+// ---------- report builder editor ----------
+// Report builder pins its own header bar AND its tab strip to the viewport with
+// position: fixed / z-index 1030. That is fine on the bare popup layout it used to
+// get, but inside the shell both land on top of the sidebar and topbar -- measured
+// as a full-viewport-width 1728px navbar at z-1030 over a topbar at z-20. Letting
+// them flow in the content column instead fixes it without touching their markup.
+//
+// Scoped to the page by body id, which is how the vendor stylesheet scopes its own
+// overrides, so no other tab strip in the shell is affected.
+body#page-admin-reportbuilder-edit #sd-root.sd-adminpage .aw-wrap {
+
+    .navbar.fixed-top {
+        position: static;
+        width: auto;
+        z-index: auto;
+        margin: 0 0 14px;
+        border-radius: 12px;
+    }
+
+    .nav-tabs {
+        position: static;
+        width: auto;
+        z-index: auto;
+        margin: 0 0 18px;
+    }
+}

@@ -1,0 +1,55 @@
+# Tenant environment for learn.nitk.edu.in.
+#
+# Same list and same order as jain-prod; only the tenant values differ.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  template:
+    spec:
+      containers:
+      - name: php-fpm
+        env:
+        - name: MOODLE_SITE_URL
+          # Must match $CFG->wwwroot in config/moodle_config.php. These moved off
+          # the temporary nitk.lms.thekaios.com together when NITK repointed DNS.
+          value: "https://learn.nitk.edu.in"
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        - name: MOODLE_DATABASE_TYPE
+          value: "mysqli"
+        # nitk gets its OWN PXC cluster in this namespace, so this is the short
+        # in-namespace service name -- no cross-namespace FQDN.
+        #
+        # Decided rather than sharing jain's cluster: a shared cluster puts both
+        # sites in one failure domain, and the PXC FullClusterCrash on
+        # 2026-06-30 took jain down for ~14 minutes. Shared, it would have taken
+        # both sites down together.
+        #
+        # The cluster itself is NOT created by this kustomization -- it is a Helm
+        # release, matching every other tenant. See deploy/nitk-pxc-values.yaml.
+        - name: MOODLE_DATABASE_HOST
+          value: "mysql-db-pxc-db-haproxy"
+        - name: MOODLE_DATABASE_PORT_NUMBER
+          value: "3306"
+        - name: MOODLE_DATABASE_NAME
+          value: "nitkdb"
+        - name: MOODLE_DATABASE_USER
+          value: "nitkuser"
+        - name: MOODLE_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: database-password
+        - name: MOODLE_USERNAME
+          value: "admin"
+        - name: MOODLE_EMAIL
+          value: "admin@example.com"
+        - name: MOODLE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: admin-password
+        - name: PHP_MEMORY_LIMIT
+          value: "4G"

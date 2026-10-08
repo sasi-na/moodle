@@ -1,0 +1,151 @@
+{{!
+    @template theme_baz/student-wrap
+
+    Generic bespoke-shell wrapper for student-only pages that keep their own
+    content + JS (My Files, Profile). The page content is rendered by core into
+    region-main and restyled via SCSS — every existing feature/filter is kept.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="sw-root" class="sw-app">
+
+            <div class="sw-backdrop" id="sw-backdrop"></div>
+            <aside class="sw-side" id="sw-side">
+                <a class="sw-brand" href="{{dashboardurl}}">
+                    {{! The sidebar is always navy, unlike the classic topbar that customlogo
+                        also feeds, so prefer the sidebar logo where a site supplies one. }}
+                    {{#customsidebarlogo}}<img src="{{customsidebarlogo}}" alt="{{sitename}}">{{/customsidebarlogo}}
+                    {{^customsidebarlogo}}
+                        {{#customlogo}}<img src="{{customlogo}}" alt="{{sitename}}">{{/customlogo}}
+                        {{^customlogo}}<span class="sw-brand-txt">{{{ sitename }}}</span>{{/customlogo}}
+                    {{/customsidebarlogo}}
+                </a>
+                {{#isstaffshell}}
+                <nav class="sw-nav">
+                    {{#staffnav}}
+                    <div class="sw-navlbl">{{label}}</div>
+                    {{#items}}
+                    <a href="{{url}}"{{#active}} class="on"{{/active}}><svg viewBox="0 0 24 24">{{{iconpath}}}</svg><span>{{label}}</span></a>
+                    {{/items}}
+                    {{/staffnav}}
+                </nav>
+                {{/isstaffshell}}
+                {{^isstaffshell}}
+                <nav class="sw-nav">
+                    <a href="{{dashboardurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg> {{#str}}sd_nav_dashboard, theme_baz{{/str}}</a>
+                    <a href="{{coursesurl}}"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M9 11h6M9 15h4"/></svg> {{#str}}sd_nav_courses, theme_baz{{/str}}</a>
+                    <a href="{{calendarurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg> {{#str}}sd_nav_calendar, theme_baz{{/str}}</a>
+                    <a href="{{mygradesurl}}"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg> {{#str}}sd_nav_grades, theme_baz{{/str}}</a>
+                    {{#hasinterestzone}}
+                    <a href="{{interestzoneurl}}"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.25"/><circle cx="12" cy="9" r="1" fill="currentColor" stroke="none"/><path d="M12 13V15"/></svg> {{interestzonelabel}}</a>
+                    {{/hasinterestzone}}
+                    <div class="sw-navlbl">{{#str}}sd_nav_resources, theme_baz{{/str}}</div>
+                    {{#showeidcard}}<a href="{{eidcardurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M13 10h5M13.5 14h3M5 16c.4-1.4 1.5-2 3-2s2.6.6 3 2"/></svg> {{#str}}pluginname, local_studentid{{/str}}</a>{{/showeidcard}}
+                    <a href="{{filesurl}}"{{#isfiles}} class="on"{{/isfiles}}><svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h6l2 2h6a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> {{#str}}sd_nav_files, theme_baz{{/str}}</a>
+                </nav>
+                {{/isstaffshell}}
+            {{> theme_baz/sidebar-support }}
+            </aside>
+
+            <div class="sw-main-col">
+                <header class="sw-topbar">
+                    <div class="sw-topbar-inner">
+                        <div class="sw-tb-left">
+                            <button type="button" class="sw-burger" id="sw-burger" aria-label="{{#str}}sd_menu, theme_baz{{/str}}"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                            <nav class="sw-crumb"><a href="{{dashboardurl}}">{{#str}}sd_nav_dashboard, theme_baz{{/str}}</a><span class="sep">/</span><span class="cur">{{wraptitle}}</span></nav>
+                        </div>
+                        <div class="sw-tb-right">
+                            {{#hasaskjo}}<button type="button" class="sw-askjo" id="sw-askjo-btn"><svg viewBox="0 0 24 24" fill="var(--bz-accent)"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg> {{#str}}sd_askjo, theme_baz{{/str}}</button>{{/hasaskjo}}
+                            <button type="button" class="sw-iconbtn" id="sw-themebtn" title="{{#str}}sd_toggletheme, theme_baz{{/str}}"><svg id="sw-themeicon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+                            <div class="sw-navbar-plugin">{{{ output.navbar_plugin_output }}}</div>
+                            <div class="sw-usermenu">{{{ output.user_menu }}}</div>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="sw-content {{wrapclass}}">
+                    {{#hasprofilehero}}
+                    <div class="sw-profile-hero">
+                        <div class="sw-ph-band"></div>
+                        <div class="sw-ph-body">
+                            <div class="sw-ph-av">{{{profilehero.avatar}}}</div>
+                            <div class="sw-ph-info">
+                                <h1>{{profilehero.name}}</h1>
+                                {{#profilehero.online}}<span class="sw-ph-status online">{{#str}}online, message{{/str}}</span>{{/profilehero.online}}
+                            </div>
+                            {{#profilehero.hasmessage}}
+                            <div class="sw-ph-acts">
+                                <a class="sw-ph-btn g" href="{{profilehero.messageurl}}"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> {{#str}}message, message{{/str}}</a>
+                            </div>
+                            {{/profilehero.hasmessage}}
+                        </div>
+                    </div>
+                    {{/hasprofilehero}}
+                    {{^hasprofilehero}}
+                    <div class="sw-phead">
+                        <div class="sw-eyebrow">{{wrapeyebrow}}</div>
+                        <h1>{{wraptitle}}</h1>
+                    </div>
+                    {{/hasprofilehero}}
+                    {{#hasprefcards}}
+                    <div class="sw-pref-grid">
+                        {{#prefcards}}
+                        <div class="sw-pref-card">
+                            <div class="sw-pref-ch"><span class="sw-pref-ic {{cls}}"><svg viewBox="0 0 24 24">{{{iconsvg}}}</svg></span><span class="sw-pref-ct">{{title}}</span></div>
+                            {{#links}}<a class="sw-pref-link" href="{{url}}">{{text}}<span class="ar">&rsaquo;</span></a>{{/links}}
+                        </div>
+                        {{/prefcards}}
+                    </div>
+                    {{/hasprefcards}}
+                    {{#hasenroldesc}}
+                    <div class="sw-enroldesc">
+                        <h2 class="sw-enroldesc-h">{{#str}}sw_enroldesc_heading, theme_baz{{/str}}</h2>
+                        {{{ enroldesc }}}
+                    </div>
+                    {{/hasenroldesc}}
+                    <div class="sw-wrap {{wrapclass}}{{#hasprefcards}} sw-mc-hidden{{/hasprefcards}}">{{{ output.main_content }}}</div>
+                </main>
+            </div>
+
+            {{#hassupport}}
+            <div class="sw-help">
+                <div class="sw-help-panel" id="sw-help-panel" hidden>
+                    <div class="sw-help-head"><span class="sw-help-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg></span><div class="sw-help-t"><b>{{#str}}sd_help, theme_baz{{/str}}</b><small>{{#str}}sd_help_sub, theme_baz{{/str}}</small></div><button type="button" class="sw-help-close" id="sw-help-close" aria-label="Close">&times;</button></div>
+                    <div class="sd-blockcontent sd-support">{{{ support_html }}}</div>
+                </div>
+                <button type="button" class="sw-help-fab" id="sw-help-fab" aria-expanded="false">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg>
+                    <span>{{#str}}sd_help, theme_baz{{/str}}</span>
+                </button>
+            </div>
+            {{/hassupport}}
+
+            {{#hasaskjo}}
+            <div class="sw-askjo-panel" id="sw-askjo-panel" hidden>
+                <div class="sw-askjo-head"><span>{{#str}}sd_askjo, theme_baz{{/str}}</span><button type="button" class="sw-askjo-close" id="sw-askjo-close" aria-label="Close">&times;</button></div>
+                <div class="block_openai_chat" data-instance-id="{{askjo.blockid}}">
+                    <div class="sw-askjo-body">{{{ askjo.log }}}</div>
+                    <div class="sw-askjo-control">{{{ askjo.control }}}</div>
+                </div>
+            </div>
+            {{/hasaskjo}}
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+</body>
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/studentwrap'], function(Loader, StudentWrap) {
+        StudentWrap.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

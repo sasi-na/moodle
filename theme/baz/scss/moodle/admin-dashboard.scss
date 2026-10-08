@@ -1,0 +1,93 @@
+// Bespoke admin dashboard (theme_baz). Reuses the student #sd-root shell
+// (sidebar / topbar / hero / --sd-* tokens) and adds admin-widget styles under
+// the .sd-admin modifier so nothing leaks onto the student/teacher dashboards.
+
+#sd-root.sd-admin {
+
+    // ---- sidebar role badge ----
+    .ad-rolebadge {
+        display: inline-flex; align-items: center; gap: 6px; margin: 2px 8px 14px;
+        padding: 4px 9px; border-radius: 6px; background: var(--sd-navy);
+        color: #fff; font: 700 9px/1 var(--sd-mono); letter-spacing: .12em; text-transform: uppercase;
+    }
+
+    // ---- hero: reuse .sd-hero / .sd-hero-l; style the health side ----
+    .ad-health { display: flex; flex-direction: column; }
+    .ad-health-h { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        font-weight: 800; font-size: 14px; color: var(--sd-text); }
+    .ad-health-pill { font: 700 10px/1 var(--sd-mono); letter-spacing: .04em; text-transform: uppercase;
+        padding: 5px 9px; border-radius: 20px; color: #1f6b3a; background: rgba(46,160,90,.15); white-space: nowrap;
+        &.warn { color: #8a2131; background: rgba(229,85,110,.15); } }
+    .ad-health-list { margin-top: 14px; display: flex; flex-direction: column; gap: 2px; }
+    .ad-health-row { display: flex; align-items: center; gap: 10px; padding: 9px 4px;
+        border-bottom: 1px solid var(--sd-line);
+        &:last-child { border-bottom: 0; } }
+    .ad-dot { width: 9px; height: 9px; flex: 0 0 9px; border-radius: 50%; background: var(--sd-green);
+        box-shadow: 0 0 0 3px rgba(46,160,90,.16);
+        &.warn { background: var(--sd-rose); box-shadow: 0 0 0 3px rgba(229,85,110,.16); } }
+    .ad-hl-label { flex: 1; min-width: 0; color: var(--sd-muted); font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ad-hl-value { font: 700 12.5px/1 var(--sd-mono); color: var(--sd-text); white-space: nowrap; }
+
+    // ---- KPI strip ----
+    .ad-kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-top: 20px; }
+    .ad-kpi {
+        background: var(--sd-surface); border: 1px solid var(--sd-line); border-radius: 16px; padding: 16px 18px;
+        box-shadow: var(--sd-sh-sm); display: flex; align-items: center; gap: 13px;
+        .ic { width: 40px; height: 40px; flex: 0 0 40px; border-radius: 12px; display: grid; place-items: center;
+            svg { width: 20px; height: 20px; stroke: #fff; fill: none; stroke-width: 2; } }
+        .ic.b { background: var(--sd-blue); } .ic.g { background: var(--sd-green); }
+        .ic.n { background: var(--sd-navy); } .ic.r { background: var(--sd-rose); }
+        .ic.p { background: #6f5bd6; }
+        .k { font: 800 21px/1 var(--sd-sans); letter-spacing: -.01em; color: var(--sd-text); }
+        .l { color: var(--sd-muted); font-size: 12px; margin-top: 3px; }
+    }
+
+    // ---- engagement section (full-width card) ----
+    .ad-engage-sec { margin-top: 20px; }
+    .ad-card { background: var(--sd-surface); border: 1px solid var(--sd-line); border-radius: var(--sd-r);
+        box-shadow: var(--sd-sh); overflow: hidden; display: flex; flex-direction: column; }
+    .ad-card-h { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--sd-line);
+        h2 { font-size: 15px; font-weight: 800; margin: 0; } }
+    .ad-card-b { padding: 18px 20px; flex: 1; }
+
+    // engagement mini tiles
+    .ad-eng-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .ad-mini { background: var(--sd-ground); border: 1px solid var(--sd-line); border-radius: 13px; padding: 13px 15px;
+        .k { font: 800 22px/1 var(--sd-sans); letter-spacing: -.01em; color: var(--sd-text); }
+        .l { color: var(--sd-muted); font-size: 11.5px; margin-top: 5px; }
+        &.accent { background: var(--sd-grad-accent); border-color: transparent;
+            .k { color: var(--sd-navy); } .l { color: rgba(31,42,68,.75); } } }
+
+    // area chart (full-width; drawn with preserveAspectRatio=none at a fixed
+    // height, so x-axis labels live in HTML below to avoid text distortion).
+    .ad-chart-cap { margin: 18px 0 8px; font: 600 10px/1 var(--sd-mono); letter-spacing: .06em;
+        text-transform: uppercase; color: var(--sd-faint); }
+    .ad-chart-wrap { width: 100%; }
+    .ad-chart { display: block; width: 100%; height: 150px; }
+    .ad-chart-x { display: flex; justify-content: space-between; margin-top: 6px;
+        span { font: 600 10px var(--sd-mono); color: var(--sd-faint); } }
+
+    // ---- quick-action grid ----
+    .ad-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 20px; }
+    .ad-act { background: var(--sd-surface); border: 1px solid var(--sd-line); border-radius: 16px; padding: 18px;
+        box-shadow: var(--sd-sh-sm); text-decoration: none; display: flex; flex-direction: column; gap: 4px;
+        transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+        &:hover { transform: translateY(-2px); box-shadow: var(--sd-sh); border-color: var(--sd-faint); }
+        .ad-act-ic { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 8px;
+            svg { width: 21px; height: 21px; stroke: #fff; fill: none; stroke-width: 2; }
+            &.b { background: var(--sd-blue); } &.g { background: var(--sd-green); }
+            &.n { background: var(--sd-navy); } &.r { background: var(--sd-rose); } }
+        .ad-act-t { font-weight: 800; font-size: 14px; color: var(--sd-text); }
+        .ad-act-s { color: var(--sd-muted); font-size: 12px; } }
+
+    // ---- responsive ----
+    @media (max-width: 1100px) {
+        .ad-kpis { grid-template-columns: repeat(3, 1fr); }
+        .ad-actions { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+        .ad-kpis { grid-template-columns: 1fr 1fr; }
+        .ad-eng-grid { grid-template-columns: 1fr 1fr; }
+        .ad-actions { grid-template-columns: 1fr; }
+    }
+}

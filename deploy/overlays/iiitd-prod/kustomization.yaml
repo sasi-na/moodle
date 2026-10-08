@@ -1,0 +1,67 @@
+# IIITD -- namespace iiitd-prod, cluster usdc-prod-cluster-1.
+#
+# MIGRATED OFF AWS on 2026-09-14. learning.iiitdwd.ac.in is served from here;
+# the EC2 box (Moodle 4.4.8) is frozen in maintenance mode and no longer serves
+# traffic. The staging hostname used to build and validate this overlay has been
+# retired and is gone from the HTTPRoute.
+#
+# MOODLE_SITE_URL here and $CFG->wwwroot in config/moodle_config.php must agree
+# -- the environment link and Moodle's own redirect both derive from them.
+#
+# dbname/dbuser are `jaincfs` and the table prefix is `cfs_`. Both are leftovers
+# from an older migration and look wrong; they are kept verbatim on purpose,
+# because renaming during a migration buys nothing and risks a missed table.
+#
+# IIITD brings 8 plugins no other tenant has (local: zoomattendance, videotracker,
+# assigngradelog, emailbranding; blocks: examdashboard, liverecordingstats,
+# livesessionstats, reflectivejournal) and 17 patched core files. Because this is
+# a shared codebase, every tenant on this image now carries them.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: iiitd-prod
+
+resources:
+  - ../../base
+  - namespace.yaml
+  - nfs-pv.yaml
+  - nfs-pvc.yaml
+  - healthcheck-policy.yaml
+
+patches:
+  - path: patch-deployment-env.yaml
+  - path: patch-cronjob-env.yaml
+  - path: patch-node-affinity.yaml
+  - path: patch-cron-suspend.yaml
+  - path: patch-scale.yaml
+  - path: patch-hpa.yaml
+
+# Merges IIITD's moodle_config.php into the moodle-config ConfigMap that base
+# generates. The other six keys come from base unchanged.
+configMapGenerator:
+  - name: moodle-config
+    behavior: merge
+    files:
+      - config/moodle_config.php
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+# Same image as every other tenant on this repo, deliberately.
+#
+# newTag is only a default: the deploy job runs `kustomize edit set image` with
+# the freshly built commit sha before applying, so this value is what a manual
+# `kubectl apply -k` would use, not what CI deploys.
+images:
+  - name: moodle-lms
+    newName: asia-south1-docker.pkg.dev/org-dev-infra/services/moodle-lms
+    newTag: 207dc5fd
+
+# Routing is NOT here. Every HTTPRoute in this cluster belongs to the single
+# `gateway-api` Helm release in the `default` namespace. IIITD's route lists
+# learning.iiitdwd.ac.in only -- the staging hostname was removed from it when
+# that host was retired after cutover.
+#
+# Not included:
+#   Secret moodle-secrets -- created out of band. Do NOT commit credentials.
+#   PXC cluster -- a Helm release, like every other tenant.

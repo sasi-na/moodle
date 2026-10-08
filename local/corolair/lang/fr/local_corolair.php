@@ -1,0 +1,233 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Language strings for the Raison Local Plugin.
+ *
+ * @package   local_corolair
+ * @copyright  2025 Raison
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['adhocqueued'] = 'La synchronisation avec les services Raison aurait dû commencer dans votre tâche ad hoc <a href="{$a->adhoc_link}">\local_corolair\task\setup_corolair_connection_task</a>. Si ce n\'est pas le cas, déclenchez une génération de clé API depuis <a href="{$a->trainer_page_link}">ici</a>.';
+$string['apikey'] = 'Clé API Raison';
+$string['apikeydesc'] = 'Cette clé est générée lors de l\'installation du plugin. Veuillez la garder secrète. Elle peut être demandée par l\'équipe support de Raison.';
+$string['apikeymissing'] = 'Clé API non trouvée dans la réponse de l\'API Raison.';
+$string['apikeyrotate'] = 'Renouveler la clé API';
+$string['apikeyrotateconfirm'] = 'Cette action génère une nouvelle clé API Raison et invalide immédiatement la clé actuelle. Continuer ?';
+$string['apikeyrotatefailed'] = 'Le renouvellement de la clé API Raison a échoué. Vérifiez les services web et la connectivité, puis réessayez.';
+$string['apikeyrotatenotoken'] = 'Aucun jeton de service web Raison n\'a été trouvé. Terminez la configuration du plugin avant de renouveler la clé API.';
+$string['apikeyrotatesuccess'] = 'Une nouvelle clé API Raison a été générée. La clé précédente est désormais invalide.';
+$string['apikeyset'] = 'La clé API a été définie avec succès.';
+$string['assignmanagerrolecapability'] = 'Attribuer le rôle Gestionnaire Raison via l’API d’intégration à portée limitée.';
+$string['cachedef_widgetcourses'] = 'Liste des cours Raison : les cours de ce site qui disposent d\'un assistant Raison, actualisée toutes les cinq minutes.';
+$string['calendlydemo'] = 'Pour que nous puissions vous aider au mieux, nous vous invitons à nous présenter votre cas d\'usage lors d\'un appel découverte avec l\'équipe Raison. Après cela, nos développeurs pourront se concentrer sur la résolution des problèmes de connexion avec votre instance Moodle. Vous pouvez réserver un échange <strong> <a href="https://discoverycall.raison.is/" target="_blank">ici</a> </strong>.';
+$string['capabilityassignerror'] = 'Impossible d\'attribuer la capacité "{$a}" au rôle.';
+$string['capabilityfalse'] = 'Faux';
+$string['capabilitytrue'] = 'Vrai';
+$string['corolair:assignmanagerrole'] = 'Attribuer le rôle Gestionnaire Raison via l’API d’intégration à portée limitée.';
+$string['corolair:createtutor'] = 'Permet à l\'utilisateur de créer et gérer des Tuteurs IA dans le plugin Raison.';
+$string['corolair:viewroles'] = 'Permet à l\'utilisateur de récupérer les métadonnées des rôles Moodle pour l\'intégration Raison.';
+$string['coursenodetitle'] = 'Assistant IA de Raison';
+$string['createtutorcapability'] = 'Permet à l\'utilisateur de créer et gérer ses Tuteurs IA avec Raison';
+$string['createtutorcapabilitydesc'] = 'L\'utilisateur ne pourra créer des Tuteurs IA qu\'à partir des cours qu\'il peut gérer. Si cette option est à Faux, il pourra créer des Tuteurs IA à partir des ressources des cours où il est simplement inscrit.';
+$string['curlerror'] = 'Une erreur est survenue lors de la communication avec l\'API Raison. Impossible d\'enregistrer votre instance Moodle, veuillez réessayer. Si l\'erreur persiste, veuillez contacter l\'équipe Raison.';
+$string['deregisterfailed'] = 'Raison n\'a pas pu confirmer la désinscription distante après les tentatives disponibles. L\'accès à Moodle a été révoqué et les identifiants locaux de l\'intégration ont été supprimés, mais la suppression des données déjà détenues par Raison n\'a pas été confirmée techniquement. Contactez contact@raison.is dans le cadre de votre contrat de service ou accord de traitement des données applicable et fournissez l\'URL de ce site Moodle afin de terminer la procédure de suppression.';
+$string['disabletokenrotation'] = 'Désactiver le renouvellement du jeton de service web';
+$string['disabletokenrotationdesc'] = 'Par défaut, le jeton de service web Raison expire après 15 jours et est remplacé automatiquement avant son expiration. N\'activez cette option que si ce remplacement automatique ne peut pas être garanti, par exemple lorsque le cron Moodle ne s\'exécute pas régulièrement ou lorsque l\'accès sortant vers Raison n\'est pas assuré. Trois conséquences : le jeton n\'expire plus ; à chaque changement de ce réglage, le jeton précédent reste utilisable pendant 7 jours supplémentaires afin de ne pas interrompre les requêtes en cours ; et Raison cesse de vérifier périodiquement que ce site accorde toujours les fonctions nécessaires à l\'intégration, ce qui retarde la détection d\'une mauvaise configuration. L\'application d\'un changement nécessite le cron et un appel réussi à Raison ; l\'avancement est indiqué ci-dessus.';
+$string['disclosureaccess'] = 'Accès';
+$string['disclosureaccessread'] = 'Lecture';
+$string['disclosureaccesswrite'] = 'Écriture';
+$string['disclosureacknowledgebutton'] = 'Je reconnais avoir pris connaissance de cette information';
+$string['disclosureacknowledgmentnote'] = 'Cette reconnaissance confirme que vous avez examiné le périmètre de l’intégration. Elle ne constitue pas un consentement juridique.';
+$string['disclosureallowlist'] = 'Le jeton est limité à la liste fixe de fonctions du service corolair_rest. Il ne peut invoquer aucune fonction de service web Moodle hors de cette liste.';
+$string['disclosurecapabilitiesheading'] = 'Pourquoi des capacités Moodle sont nécessaires';
+$string['disclosurecapabilitiesintro'] = 'Moodle vérifie les capacités du propriétaire du jeton ainsi que la liste du service. Le jeton appartient à un compte de service dédié qui n’est pas administrateur du site et qui possède exactement les capacités listées ci-dessous, et aucune autre. Chaque capacité listée est exigée par une fonction précise de la liste ci-dessus.';
+$string['disclosurecapability'] = 'Capacité';
+$string['disclosurecapcompletion'] = 'Autorise les lectures de progression prévues pour de futurs tutorats et analyses adaptatifs. Ces données ne sont pas traitées actuellement.';
+$string['disclosurecapcontent'] = 'Permet de lire le contenu des types d’activité pris en charge et de télécharger les fichiers correspondants.';
+$string['disclosurecapcoursevisibility'] = 'Permet de lire la structure des cours et catégories, y compris les éléments masqués, comme sources et contexte d’organisation des tuteurs. Le compte de service n’est inscrit à aucun cours : c’est course:view qui lui donne accès en lecture aux cours. Il lit également les activités et sections soumises à des restrictions d’accès, y compris celles réglées pour être entièrement masquées : Moodle les omet totalement de sa réponse, et une synchronisation de contenu ne peut pas distinguer une activité omise d’une activité supprimée.';
+$string['disclosurecapexam'] = 'Permet au flux spécifique de placement d’examen de créer, renommer et supprimer l’activité Outil externe qui porte un examen Raison. C’est la seule partie de l’intégration qui écrit dans un cours, et elle ne peut atteindre que les activités créées par Raison : le plugin enregistre chaque placement qu’il effectue, et les fonctions de renommage et de suppression refusent tout ce qui ne figure pas dans cet enregistrement. Une activité Outil externe ajoutée par un enseignant, ou appartenant à un autre produit, est hors de portée. Le placement est refusé si l’outil sélectionné n’est pas lancé depuis l’hôte Raison configuré.';
+$string['disclosurecapidentity'] = 'Permet de lire l’identité et l’adresse électronique pour l’association des comptes, les invitations, la personnalisation et le contrôle d’accès. Ce sont des conditions de lecture : elles n’autorisent aucune modification de compte. Moodle classe moodle/course:useremail comme une écriture et l’intitule « Activer/désactiver l’adresse de courriel », ce qui est exagéré : cette capacité ne porte aucun indicateur de risque et permet seulement de lire une adresse qu’un utilisateur a choisi de ne pas afficher. Elle est incluse parce que Moodle omet sinon complètement l’adresse sur les sites ayant restreint leurs champs d’identité, et parce que Raison associe les comptes par adresse électronique lorsqu’il ne dispose pas d’identifiant Moodle enregistré.';
+$string['disclosurecapparticipants'] = 'Permet de lire les participants et le contenu de tous les groupes afin de définir correctement les accès.';
+$string['disclosurecapprotocol'] = 'Permet au jeton d’appeler le service web REST de Moodle. Sans elle, toute requête est refusée avant même l’examen de la fonction ou des autres capacités.';
+$string['disclosurecaproleassign'] = 'Permet de lire les rôles Moodle et d’attribuer le rôle Manager Raison à un formateur invité depuis Raison. Elle ne peut attribuer que ce seul rôle, qui n’accorde rien en dehors de ce plugin.';
+$string['disclosuredataaccess'] = 'Les inscriptions, rôles, groupes et relations entre participants servent à déterminer l’accès à chaque tuteur.';
+$string['disclosuredatacompletion'] = 'La progression des activités et cours est réservée à une fonctionnalité adaptative future et n’est pas traitée actuellement.';
+$string['disclosuredatacourse'] = 'Les catégories, structures, sections, ressources, leçons, SCORM et métadonnées LTI servent de sources et de contexte aux tuteurs.';
+$string['disclosuredataexam'] = 'Lorsque le placement d’examen est utilisé, les informations LTI servent à créer, modifier ou supprimer le placement demandé.';
+$string['disclosuredataheading'] = 'Utilisation des données personnelles et pédagogiques';
+$string['disclosuredataidentity'] = 'Les identifiants, noms, adresses électroniques et rôles servent au provisionnement, aux invitations, à l’association des identités, à la personnalisation et aux sessions.';
+$string['disclosuredatasite'] = 'L’URL et le nom du site Moodle ainsi que l’identité du service identifient et enregistrent cette installation.';
+$string['disclosurefiletransfer'] = 'Le téléchargement de fichiers est activé pour ce service afin de lire les ressources de cours prises en charge. L’envoi de fichiers est désactivé : l’intégration n’écrit jamais de fichier dans Moodle, et Moodle contrôle les envois uniquement par ce paramètre du service, sans tenir compte de la liste de fonctions.';
+$string['disclosurefunction'] = 'Fonction de service web';
+$string['disclosurefunctionsheading'] = 'Liste fixe des fonctions de service web';
+$string['disclosurefunctionsintro'] = 'Le plugin standardisé expose les 26 fonctions suivantes. Développez chaque groupe pour voir les noms exacts et leur type d’accès.';
+$string['disclosuregroupcompletion'] = 'Lectures de progression';
+$string['disclosuregroupcompletiondesc'] = 'Lire la progression des activités et cours pour une future adaptation des tuteurs. Ces données ne sont pas traitées actuellement.';
+$string['disclosuregroupcontent'] = 'Lectures des cours et contenus pédagogiques';
+$string['disclosuregroupcontentdesc'] = 'Lire les cours, sections, ressources, leçons, paquets SCORM et métadonnées LTI utilisés pour construire et organiser les tuteurs.';
+$string['disclosuregroupenrolment'] = 'Lectures des inscriptions, participants et rôles';
+$string['disclosuregroupenrolmentdesc'] = 'Lire les membres, participants, capacités et rôles Moodle servant à définir l’accès aux tuteurs.';
+$string['disclosuregroupexamplacement'] = 'Écritures de placement d’examen et d’activités';
+$string['disclosuregroupexamplacementdesc'] = 'Écritures propres à la fonctionnalité, utilisées uniquement lorsqu’un administrateur lance le placement d’examen.';
+$string['disclosuregroupidentity'] = 'Lectures du site et des identités';
+$string['disclosuregroupidentitydesc'] = 'Lire l’identité du site Moodle et les profils nécessaires à l’enregistrement, à l’association des comptes et à la personnalisation.';
+$string['disclosuregrouproleassignment'] = 'Écriture d’attribution du rôle formateur';
+$string['disclosuregrouproleassignmentdesc'] = 'Attribuer le rôle Manager Raison lorsqu’une invitation autorisée est initiée depuis Raison.';
+$string['disclosureheading'] = 'Examiner les informations sur l’intégration Raison';
+$string['disclosureintro'] = 'Avant toute activation de service web ou création de jeton, examinez le périmètre d’accès, les fonctions et les finalités ci-dessous.';
+$string['disclosuremissing'] = 'Les informations actuelles sur l’intégration doivent être reconnues par l’administrateur qui lance la configuration.';
+$string['disclosureopensource'] = 'Le code source du plugin est disponible publiquement pour un audit de sécurité :';
+$string['disclosureplanned'] = 'Usage prévu';
+$string['disclosureposttrialagreements'] = 'Si votre organisation choisit de continuer à utiliser Raison après la période d’essai gratuite, la poursuite du service nécessitera la conclusion d’accords formels entre Raison et votre organisation. Ces accords définiront les responsabilités de chaque partie et garantiront leur alignement en matière de protection des données, de confidentialité, de sécurité et d’exigences réglementaires applicables.';
+$string['disclosureprivacycontact'] = 'Pour toute question sur le traitement externe, la conservation ou la suppression, contactez contact@raison.is.';
+$string['disclosurepurpose'] = 'Finalité';
+$string['disclosurerole'] = 'Le rôle Manager Raison est distinct du jeton. Il accorde local/corolair:createtutor et local/corolair:viewroles aux utilisateurs Moodle interactifs.';
+$string['disclosuresecurityheading'] = 'Propriété du jeton et limite de sécurité';
+$string['disclosureserviceaccountbody'] = 'Le jeton appartient à un compte Moodle dédié nommé « {$a} » que ce plugin crée et maintient. Ce compte n’est pas administrateur du site, n’a pas de mot de passe et ne peut pas se connecter ; il ne détient que les capacités listées ci-dessous. La désinstallation du plugin suspend le compte et supprime son rôle ; le compte lui-même est conservé, sans aucune donnée personnelle, afin qu’une réinstallation ne crée pas de doublons.';
+$string['disclosureserviceaccountcontact'] = 'Le compte est enregistré sous {$a} afin que toute personne qui le découvre parmi vos utilisateurs sache à qui il appartient et où poser ses questions. Moodle ne lui envoie jamais de courriel : le compte est créé avec les notifications désactivées et son adresse masquée aux autres utilisateurs. Si cette adresse appartient déjà à un compte réel sur ce site, le compte de service en reçoit une non routable afin que le compte réel ne soit pas affecté.';
+$string['disclosureserviceaccountheading'] = 'Le compte de service dédié';
+$string['disclosurestandardised'] = 'La liste des fonctions est standardisée et identique pour toutes les installations prises en charge ; elle n’est pas étendue dynamiquement par client.';
+$string['disclosuretokenowner'] = 'Le jeton de service web appartient à un compte de service dédié qui n’est pas administrateur, et le service est restreint de sorte qu’aucun autre compte ne peut l’utiliser. Moodle évalue chaque appel avec les capacités de ce compte, listées ci-dessous.';
+$string['disclosuretokenrotationdisabled'] = 'Ce site a désactivé le renouvellement du jeton. Le jeton n’expire pas et Raison ne vérifie plus périodiquement que ce site accorde toujours les fonctions listées ci-dessous.';
+$string['disclosuretokentransfer'] = 'Le jeton est transféré à Raison via HTTPS afin que l’intégration appelle les fonctions Moodle autorisées. Par défaut, il expire après 15 jours et est renouvelé avant son expiration ; un administrateur du site peut désactiver le renouvellement, auquel cas il n’expire pas.';
+$string['disclosureuninstall'] = 'Lors de la désinstallation, le plugin tente jusqu\'à trois fois la désinscription distante avant de révoquer l\'accès au service web Moodle et de supprimer les identifiants locaux de l\'intégration. Si la suppression distante ne peut pas être confirmée, les données précédemment transférées restent soumises au contrat de service ou à l\'accord de traitement des données applicable, et l\'administrateur doit contacter contact@raison.is en indiquant l\'URL du site Moodle afin de terminer la procédure de suppression.';
+$string['disclosureversion'] = 'Version de l’information';
+$string['errortoken'] = 'Erreur lors de la récupération du token';
+$string['eventintegrationdisclosureacknowledged'] = 'Informations sur l’intégration reconnues';
+$string['eventprivacydeletioncompleted'] = 'Suppression des données privées Raison terminée';
+$string['eventremoterequestcompleted'] = 'Requête distante Raison terminée';
+$string['eventwebservicetokenlifecycle'] = 'Cycle de vie du jeton de service web Raison mis à jour';
+$string['excludedmods'] = 'Activités exclues';
+$string['excludedmodsdesc'] = 'Utilisez cette liste pour désactiver les assistants dans certains types d\'activités, par exemple afin d\'empêcher les étudiants de les utiliser pendant une évaluation. Listez les noms courts des activités, séparés par des virgules (ex. : "quiz, assign"). Le nom court correspond au dossier visible dans l\'URL de l\'activité après \'/mod/\' (ex : \'/mod/quiz/\' → \'quiz\'). Cela marche aussi avec des plugins d\'activités externes.';
+$string['false'] = 'Chatbot';
+$string['frontpagenodetitle'] = 'Raison';
+$string['hideonraisonexam'] = 'Masquer le Tuteur IA pendant les examens Raison';
+$string['hideonraisonexamdesc'] = 'Raison propose un outil d’examen IA basé sur LTI, qui n’est peut-être pas encore configuré sur votre site : si vous souhaitez en savoir plus ou l’essayer, contactez l’équipe Raison à l’adresse contact@raison.is. Lorsque ce réglage est activé, le Tuteur IA n’apparaît pas sur les pages affichant une activité d’examen Raison, afin que les apprenants ne puissent pas lui demander de l’aide pendant une épreuve. L’activité est reconnue soit parce que Raison l’a créée, soit parce que l’outil externe qu’elle lance utilise l’hôte défini dans « Hôte de l’outil LTI Raison » ci-dessous. Les autres activités Outil externe ne sont pas concernées : utilisez « Activités exclues » ci-dessus pour celles-ci. Laissez ce réglage activé, sauf si vous souhaitez délibérément que le Tuteur IA reste disponible pendant les examens Raison.';
+$string['installfailed'] = 'Le plugin Raison n\'a pas pu terminer son installation : {$a}';
+$string['installtroubleshoot'] = 'Si vous rencontrez des problèmes lors de l\'installation, veuillez vous référer au <a href="https://troubleshoot-moodle.raison.is" target="_blank"> guide de dépannage manuel</a>';
+$string['invalidredirecturl'] = 'Raison a renvoyé une destination de redirection non fiable.';
+$string['legacycredentialmigrationblockednotice'] = 'Les identifiants Raison hérités n’ont pas encore été remplacés, car aucun administrateur de site ne peut actuellement être propriétaire de l’intégration. Attribuez la capacité « moodle/site:config » à un administrateur actif ; Raison réessaie automatiquement toutes les heures.';
+$string['legacycredentialmigrationdeferred'] = 'Le remplacement des identifiants Raison hérités n’a pas pu être lancé pendant la mise à jour. La mise à jour s’est terminée et Raison réessaiera automatiquement toutes les heures. Consultez Administration du site > Plugins > Plugins locaux > Raison pour connaître l’état actuel.';
+$string['legacycredentialmigrationfailed'] = 'Les identifiants Raison hérités n’ont pas pu être remplacés de manière vérifiable. Moodle réessaiera automatiquement la migration à l’aide de son exécuteur de tâches ad hoc.';
+$string['legacycredentialmigrationpendingnotice'] = 'Les identifiants hérités d’une version antérieure du plugin sont en cours de remplacement. Tant que Raison n’a pas confirmé le remplacement, le jeton de service web hérité reste utilisé, et il cessera de fonctionner dans quelques heures, que le remplacement soit terminé ou non. Moodle réessaie automatiquement ; si cet avis persiste, consultez Administration du site > Serveur > Tâches > Tâches ad hoc pour repérer une tâche de migration Raison en échec.';
+$string['localhosterror'] = 'Impossible d\'enregistrer l\'instance Moodle avec Raison car le site fonctionne en localhost.';
+$string['ltitoolhost'] = 'Hôte de l’outil LTI Raison';
+$string['ltitoolhostdesc'] = 'L’hôte depuis lequel l’outil d’examen Raison est lancé. Raison propose un outil d’examen IA basé sur LTI, qui n’est peut-être pas encore configuré sur votre site : si vous souhaitez en savoir plus ou l’essayer, contactez l’équipe Raison à l’adresse contact@raison.is. Sinon, ne modifiez pas ce réglage. Il doit correspondre à l’URL de l’outil externe « Raison AI Exams », et Raison refuse de placer un examen avec un outil lancé depuis un autre hôte. Ne le modifiez que si l’assistance Raison vous le demande, par exemple après un changement d’adresse de service. Une valeur vide ou invalide revient à la valeur par défaut fournie.';
+$string['messageprovider:setuppending'] = 'Rappel de configuration Raison';
+$string['messageprovider:tokenexpirywarning'] = 'Avertissement concernant le jeton de service web Raison';
+$string['missingcapability'] = 'Vous ne pouvez pas accéder à cette page';
+$string['noapikey'] = 'Aucune Clé API Raison';
+$string['placementnotowned'] = 'Cette activité n’a pas été créée par Raison ; Raison ne peut donc ni la renommer ni la supprimer.';
+$string['placementtoolnotallowed'] = 'Les examens ne peuvent être placés qu’avec l’outil externe Raison. L’outil sélectionné est lancé depuis « {$a->host} », alors que ce site n’accepte que « {$a->allowed} ». Voir le réglage « Hôte de l’outil LTI Raison ».';
+$string['pluginname'] = 'Local Plugin Raison';
+$string['privacy:metadata:config_plugins'] = 'Le plugin conserve, dans sa configuration locale, une trace de l\'administrateur ayant consenti à l\'intégration et pris connaissance de la divulgation.';
+$string['privacy:metadata:config_plugins:serviceaccountid'] = 'L’identifiant du compte de service dédié qui possède le jeton de service web Raison. Ce compte est créé par le plugin et ne représente aucune personne.';
+$string['privacy:metadata:config_plugins:setupconsentedat'] = 'Le moment où l\'administrateur a consenti à activer l\'intégration Raison.';
+$string['privacy:metadata:config_plugins:setupconsentedby'] = 'L\'identifiant de l\'administrateur ayant consenti à activer l\'intégration Raison.';
+$string['privacy:metadata:config_plugins:setupdisclosureacknowledgedat'] = 'Le moment où l\'administrateur a pris connaissance de la divulgation de l\'intégration.';
+$string['privacy:metadata:config_plugins:setupdisclosureacknowledgedby'] = 'L\'identifiant de l\'administrateur ayant pris connaissance de la divulgation de l\'intégration.';
+$string['privacy:metadata:config_plugins:webservicetokenownerid'] = 'L’identifiant de l’utilisateur qui possède le jeton de service web Raison actuel. Il s’agit du compte de service dédié, sauf pendant le transfert depuis une version antérieure, où il s’agit brièvement de l’administrateur ayant configuré l’intégration.';
+$string['privacy:metadata:raison'] = 'Les métadonnées envoyées à Raison permettent un accès transparent à vos données sur le système distant.';
+$string['privacy:metadata:raison:courseid'] = 'L\'identifiant du cours consulté est envoyé pour ouvrir l\'assistant Raison de ce cours.';
+$string['privacy:metadata:raison:currentpageurl'] = 'L\'adresse de la page de cours consultée est envoyée avec votre identité lorsque l\'assistant Raison y est chargé.';
+$string['privacy:metadata:raison:interaction'] = 'Les enregistrements de vos interactions, tels que les tuteurs créés et les conversations, sont envoyés pour améliorer votre expérience';
+$string['privacy:metadata:raison:useremail'] = 'Votre adresse e-mail est envoyée pour vous identifier de manière unique sur Raison et anticiper de potentielles communication ultérieure';
+$string['privacy:metadata:raison:userfirstname'] = 'Votre prénom est envoyé pour personnaliser votre expérience sur Raison et identifier vos conversations pour votre formateur';
+$string['privacy:metadata:raison:userid'] = 'L\'identifiant de l\'utilisateur est envoyé pour vous identifier de manière unique sur Raison';
+$string['privacy:metadata:raison:userlastname'] = 'Votre nom de famille est envoyé pour personnaliser votre expérience sur Raison et identifier vos conversations pour votre formateur';
+$string['privacy:metadata:raison:userrolename'] = 'Votre rôle est envoyé pour gérer vos permissions sur Raison';
+$string['privacy:setupsubcontext'] = 'Configuration de l\'intégration Raison';
+$string['raisontuto'] = 'Apprenez à utiliser Raison en consultant <a href="https://troubleshoot-moodle.raison.is" target="_blank">ce tutoriel</a>.';
+$string['redirectingmessage'] = 'Si vous n\'êtes pas redirigé automatiquement, veuillez cliquer sur le bouton ci-dessous pour continuer vers Raison.';
+$string['reloadpage'] = 'Recharger la page';
+$string['restprotocolenableerror'] = 'Impossible d\'activer le protocole REST.';
+$string['retryregistration'] = 'Réessayer l\'enregistrement Raison';
+$string['retryseparator'] = 'ou';
+$string['roledescription'] = 'Rôle pour la gestion des Tuteurs IA dans Raison';
+$string['rolename'] = 'Manager Raison';
+$string['roleproblem'] = 'Nous avons rencontré un problème lors de la création ou de l\'attribution du nouveau rôle de Manager Raison. Vous pouvez toujours le configurer manuellement en ajoutant la capacité "Raison Local Plugin" à n\'importe quel rôle système. Si vous rencontrez des problèmes, veuillez contacter l\'équipe Raison via contact@raison.is.';
+$string['serviceaccountdescription'] = 'Compte dédié non administrateur utilisé par l’intégration Raison pour appeler le service web Moodle. Il ne peut pas se connecter et ne détient que les capacités nécessaires à l’intégration. Créé et maintenu automatiquement par le plugin Raison.';
+$string['serviceaccountfirstname'] = 'Raison';
+$string['serviceaccountlastname'] = 'Service d’intégration';
+$string['serviceaccountmigrationpendingnotice'] = 'Le jeton de service web Raison est en cours de transfert depuis l’administrateur ayant configuré l’intégration vers un compte de service dédié non administrateur. Les deux restent valides jusqu’à la fin du transfert, donc rien ne cesse de fonctionner entre-temps. Moodle termine l’opération lors de sa prochaine exécution planifiée, puis révoque le jeton de l’administrateur.';
+$string['serviceaccountremovalfailed'] = 'Le compte de service de l’intégration Raison n’a pas pu être suspendu lors de la désinstallation. Vous pouvez suspendre ou supprimer manuellement le compte « {$a->username} » dans Administration du site > Utilisateurs > Comptes. Détails : {$a->error}';
+$string['serviceaccountroledescription'] = 'Capacités détenues par le compte de service de l’intégration Raison. Ce rôle est maintenu automatiquement et n’est pas destiné aux utilisateurs interactifs.';
+$string['serviceaccountrolename'] = 'Service d’intégration Raison';
+$string['servicecreationerror'] = 'Impossible de créer le service REST Raison.';
+$string['setupaction'] = 'Ouvrir la configuration Raison';
+$string['setupchangeregistration'] = 'Un jeton de service web Moodle sera créé et envoyé à Raison afin d\'enregistrer ce site.';
+$string['setupchangerest'] = 'Le protocole REST sera ajouté sans modifier les autres protocoles déjà activés.';
+$string['setupchangetokenlifetime'] = 'Par défaut, le jeton expirera après 15 jours et sera remplacé automatiquement avant son expiration.';
+$string['setupchangewebservices'] = 'Les services web Moodle seront activés s\'ils sont actuellement désactivés.';
+$string['setupconfirmbutton'] = 'Activer les services web et REST';
+$string['setupconfirmquestion'] = 'Acceptez-vous ces modifications globales et le démarrage de l\'enregistrement Raison ?';
+$string['setupconsentdescription'] = 'Raison est actuellement inactif. Son activation apporte les modifications globales suivantes :';
+$string['setupconsentheading'] = 'Vérifier et approuver l\'activation de Raison';
+$string['setupconsentmissing'] = 'L\'enregistrement Raison ne peut pas s\'exécuter sans le consentement enregistré d\'un administrateur.';
+$string['setupcontinuebutton'] = 'Démarrer l\'enregistrement Raison';
+$string['setupcontinuequestion'] = 'Démarrer l\'enregistrement Raison maintenant ?';
+$string['setupcurrentstatus'] = 'État actuel — Services web Moodle : {$a->webservices} ; REST : {$a->rest}.';
+$string['setupdisablerotation'] = 'Ne pas renouveler le jeton de service web';
+$string['setupdisablerotationdesc'] = 'Laissez cette case décochée sauf si le remplacement automatique ne peut pas être garanti ici, par exemple lorsque le cron Moodle ne s\'exécute pas régulièrement ou lorsque l\'accès sortant vers Raison n\'est pas assuré. Si vous la cochez, le jeton créé pour ce site n\'expirera pas et ne sera pas remplacé, et Raison cessera de vérifier périodiquement que ce site accorde toujours les fonctions nécessaires à l\'intégration. Vous pourrez modifier ce choix plus tard dans les paramètres du plugin.';
+$string['setupdisablerotationforcedoff'] = 'Le renouvellement du jeton est imposé par la configuration de ce serveur et ne peut pas être désactivé ici. Le jeton créé pour ce site expirera après 15 jours et sera remplacé automatiquement.';
+$string['setupdisablerotationforcedon'] = 'Le renouvellement du jeton est désactivé par la configuration de ce serveur et ne peut pas être activé ici. Le jeton créé pour ce site n\'expirera pas.';
+$string['setuppagetitle'] = 'Configuration de Raison';
+$string['setuppendingbody'] = 'Raison est installé sur ce site, mais aucun administrateur n’a démarré sa configuration : le site n’a jamais été enregistré auprès de Raison et aucune fonctionnalité Raison n’est disponible. Un administrateur du site doit ouvrir {$a} pour prendre connaissance de la divulgation d’intégration et lancer l’enregistrement. C’est le résultat habituel d’une installation en ligne de commande : l’invitation à ouvrir cette page n’est affichée que pendant l’installation elle-même, et personne ne la voit ensuite. Moodle envoie ce rappel trois fois au maximum.';
+$string['setuppendingsubject'] = 'Raison est installé mais inactif';
+$string['setupqueued'] = 'Votre consentement a été enregistré et l\'enregistrement Raison a été mis en file d\'attente.';
+$string['setupqueuedwithoutconsent'] = 'L\'enregistrement Raison a été mis en file d\'attente. Aucun paramètre global de service web n\'a été modifié.';
+$string['setupreadydescription'] = 'Les services web Moodle et REST sont déjà activés. Aucun consentement d\'activation n\'est requis et ces paramètres ne seront pas modifiés.';
+$string['setupreadyheading'] = 'Les prérequis des services web sont déjà activés';
+$string['setupreadynotification'] = 'Raison a été installé. Les services web Moodle et REST sont déjà activés. Un administrateur doit <a href="{$a}">examiner les informations sur l’intégration et démarrer l’enregistrement</a>.';
+$string['setuprequirednotification'] = 'Raison est installé mais reste inactif. Un administrateur doit <a href="{$a}">examiner les informations sur l’intégration et approuver les modifications requises des services web</a>.';
+$string['setuprequiredtrainer'] = 'Raison n’a pas encore été configuré sur ce site. Aucun enregistrement auprès de Raison n’a été lancé : rien sur cette page ne peut fonctionner tant qu’un administrateur n’a pas terminé la configuration. C’est ce que laisse une installation en ligne de commande : les fichiers du plugin sont en place, mais la page de configuration n’a jamais été ouverte.';
+$string['setuprequiredtrainernoaccess'] = 'Raison n’a pas encore été configuré sur ce site et ne peut donc pas être utilisé. Seul un administrateur du site peut terminer la configuration : demandez-lui d’ouvrir Administration du site > Plugins > Plugins locaux > Raison pour la finaliser. Rien sur cette page ne fonctionnera d’ici là.';
+$string['setupstatus'] = 'État de l\'intégration';
+$string['setupstatuscomplete'] = 'Connecté. Le consentement administrateur est enregistré et l\'enregistrement Raison est terminé.';
+$string['setupstatuspending'] = 'Le consentement administrateur est enregistré et l\'enregistrement est en attente. {$a}';
+$string['setupstatusready'] = 'Les services web et REST sont déjà activés. Examinez les informations sur l’intégration, puis démarrez l’enregistrement sans consentement d’activation. {$a}';
+$string['setupstatusrequired'] = 'La configuration nécessite la reconnaissance des informations sur l’intégration et le consentement administrateur aux modifications des services web. {$a}';
+$string['sidepanel'] = 'Positionnement du Tuteur IA à l\'écran';
+$string['sidepaneldesc'] = 'Choisissez si vous préférez afficher les Tuteurs IA sur le côté droit des cours sous forme de panneau latéral (recommandé) ou dans le coin inférieur droit comme un chatbot classique.';
+$string['taskrotatewebservicetoken'] = 'Renouveler le jeton de service web Moodle de Raison';
+$string['tasksendsetupreminder'] = 'Rappeler aux administrateurs que la configuration de Raison n’est pas terminée';
+$string['tokencreationerror'] = 'Impossible de créer le jeton REST Raison.';
+$string['tokenexpiryunknown'] = 'une date inconnue';
+$string['tokenexpirywarningbody'] = 'Raison n\'a pas pu renouveler son jeton de service web Moodle. Le jeton actuel expire le {$a->expiry}. Code d\'erreur sûr : {$a->error}. Vérifiez le cron et la connectivité dans les paramètres Raison.';
+$string['tokenexpirywarningbodylifetime'] = 'Raison n\'a pas pu appliquer le réglage de renouvellement du jeton : le jeton de service web Moodle conserve donc sa durée de validité précédente. Code d\'erreur sûr : {$a->error}. Vérifiez le cron et la connectivité dans les paramètres Raison.';
+$string['tokenexpirywarningsubject'] = 'Le renouvellement du jeton Raison nécessite votre attention';
+$string['tokenmissing'] = 'Le jeton de service web Raison actuel est introuvable.';
+$string['tokenname'] = 'Jeton REST Raison';
+$string['tokenrotationdisabled'] = 'Le renouvellement du jeton est désactivé. Le jeton de service web Raison n\'expire pas et n\'est pas remplacé automatiquement.';
+$string['tokenrotationdisabledpending'] = 'Le renouvellement du jeton est désactivé, mais le jeton actuel conserve encore sa date d\'expiration d\'origine. Moodle applique le changement lors de la prochaine exécution planifiée, ce qui nécessite le cron et un appel réussi à Raison.';
+$string['tokenrotationrequestfailed'] = 'La demande de renouvellement du jeton Raison a échoué.';
+$string['tokenrotationresponseinvalid'] = 'Raison a renvoyé un accusé de réception de renouvellement invalide.';
+$string['tokenrotationretry'] = 'Réessayer le renouvellement du jeton';
+$string['tokenrotationretryconfirm'] = 'Mettre en file d\'attente une nouvelle tentative immédiate avec le jeton candidat et l\'identifiant de rotation existants ?';
+$string['tokenrotationretryqueued'] = 'La nouvelle tentative de renouvellement du jeton Raison a été mise en file d\'attente.';
+$string['tokenrotationstatusfailed'] = 'Le renouvellement du jeton n\'a pas abouti. Le jeton actuel expire le {$a->expiry}. Code d\'erreur sûr : {$a->error}. Moodle réessaiera automatiquement. <a href="{$a->retryurl}">Réessayer maintenant</a>.';
+$string['tokenrotationstatusfailedlifetime'] = 'Le réglage de renouvellement du jeton n\'a pas encore été appliqué : le jeton actuel conserve donc sa durée de validité précédente. Code d\'erreur sûr : {$a->error}. Cela signifie généralement que Moodle n\'a pas pu joindre Raison, ou que Raison n\'a pas encore été mis à jour pour accepter les jetons sans expiration. Moodle réessaiera automatiquement. <a href="{$a->retryurl}">Appliquer maintenant</a>.';
+$string['trainerpage'] = 'Raison';
+$string['true'] = 'Panneau Latéral';
+$string['unexpectederror'] = 'Une erreur inattendue s\'est produite. Veuillez réessayer. Si l\'erreur persiste, veuillez contacter l\'équipe Raison.';
+$string['uninstallroleremovalfailed'] = 'Le rôle Gestionnaire Raison n\'a pas pu être supprimé lors de la désinstallation et existe peut-être encore dans Administration du site > Utilisateurs > Permissions > Définition des rôles. Vous pouvez le supprimer manuellement. Détails : {$a}';
+$string['uninstallserviceroleremovalfailed'] = 'Le rôle Service d’intégration Raison n’a pas pu être supprimé lors de la désinstallation. Il détient encore des capacités au niveau du système : supprimez-le manuellement dans Administration du site > Utilisateurs > Permissions > Définition des rôles. Détails : {$a}';
+$string['viewrolescapability'] = 'Permet aux utilisateurs de récupérer les rôles Moodle via le service web Raison';
+$string['webservicesenableerror'] = 'Impossible d\'activer les services web.';

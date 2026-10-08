@@ -1,0 +1,133 @@
+/* ------------------------------------------------------------------
+   Bespoke student blog (theme_baz).
+   Journal cards emitted by theme_baz_core_blog_renderer::baz_render_blog_entry
+   for eligible student-only users. Self-scoped via .baz-blog- prefixes; local
+   hex so it is scope-independent (renders inside the shell and elsewhere).
+   The "Add a new entry" link (.addbloglink, from blog_print_entries) is
+   restyled only in the student experience via .baz-student-exp.
+   ------------------------------------------------------------------ */
+
+/* "New entry" call to action (student experience only). */
+.baz-student-exp .addbloglink {
+    margin: 0 0 18px;
+    a {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: linear-gradient(135deg, $bz-accent-hi, $bz-accent-lo);
+        color: $bz-accent-ink !important;
+        font: 800 13px 'Manrope', 'Inter', system-ui, sans-serif;
+        border-radius: 11px;
+        padding: 10px 17px;
+        text-decoration: none !important;
+        box-shadow: 0 8px 20px rgba($bz-accent, .3);
+    }
+    a::before {
+        content: "";
+        width: 15px;
+        height: 15px;
+        background: currentColor;
+        -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center/contain no-repeat;
+                mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center/contain no-repeat;
+    }
+}
+
+.baz-blog-card {
+    --bl-navy: #{$bz-navy};
+    --bl-ink: #0B2034;
+    --bl-muted: #5C7184;
+    --bl-faint: #90A4B5;
+    --bl-line: #E5ECF3;
+    --bl-blue: #2563EB;
+    --bl-green: #1FA37A;
+    --bl-sans: 'Manrope', 'Inter', system-ui, sans-serif;
+    --bl-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    background: #fff;
+    border: 1px solid var(--bl-line);
+    border-radius: 16px;
+    padding: 20px 22px;
+    box-shadow: 0 4px 14px rgba(11, 32, 52, .06);
+    margin: 0 0 14px;
+    font-family: var(--bl-sans);
+    color: var(--bl-ink);
+    transition: box-shadow .14s ease;
+
+    &:hover { box-shadow: 0 14px 30px -16px rgba(11, 32, 52, .28); }
+
+    /* header: avatar + author + dates + state chip */
+    .baz-blog-head { display: flex; align-items: center; gap: 11px; margin-bottom: 12px; }
+    .baz-blog-av {
+        flex: none; width: 42px; height: 42px;
+        img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }
+    }
+    .baz-blog-by { min-width: 0; }
+    .baz-blog-by .nm { font: 800 13px var(--bl-sans); color: var(--bl-ink) !important; text-decoration: none !important; }
+    .baz-blog-by .dt { font: 600 11px var(--bl-mono); color: var(--bl-faint); margin-top: 2px; }
+    .baz-blog-state {
+        margin-left: auto;
+        font: 700 9px var(--bl-mono); letter-spacing: .06em; text-transform: uppercase;
+        border-radius: 999px; padding: 4px 9px; white-space: nowrap;
+    }
+    &.draft .baz-blog-state { color: $bz-accent-text3; background: $bz-accent-bg5; border: 1px solid $bz-accent-bd3; }
+    &.site .baz-blog-state { color: var(--bl-green); background: #E6F6F0; border: 1px solid #cfe9df; }
+    &.public .baz-blog-state { color: var(--bl-blue); background: #eef3ff; border: 1px solid #dbe6ff; }
+
+    /* title */
+    .baz-blog-title {
+        display: block; font: 800 18px/1.3 var(--bl-sans); color: var(--bl-navy) !important;
+        letter-spacing: -.01em; margin: 0 0 8px; text-decoration: none !important;
+        &:hover { text-decoration: underline !important; }
+    }
+
+    /* body */
+    .baz-blog-body { font-size: 14px; line-height: 1.65; color: #3a4d5c; margin: 0 0 4px; }
+    .baz-blog-body img { max-width: 100%; height: auto; border-radius: 10px; }
+    .baz-blog-body p:last-child { margin-bottom: 0; }
+
+    /* attachments */
+    .baz-blog-attachments { display: flex; flex-wrap: wrap; gap: 9px; margin: 12px 0 4px; }
+    .baz-blog-attachments a {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: #f7f9fc; border: 1px solid var(--bl-line); border-radius: 11px;
+        padding: 9px 13px; font: 700 13px var(--bl-sans); color: var(--bl-navy) !important; text-decoration: none !important;
+    }
+    .baz-blog-attachments img { max-width: 100%; height: auto; border-radius: 12px; }
+
+    .baz-blog-external { margin: 8px 0; }
+    .baz-blog-external a { font: 700 12px var(--bl-sans); color: var(--bl-blue); }
+
+    /* tags */
+    .baz-blog-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0 0; list-style: none; padding: 0; }
+    .baz-blog-tags .taglist { display: contents; }
+    .baz-blog-tags a, .baz-blog-tags .tag {
+        font: 700 11px var(--bl-sans); color: var(--bl-blue) !important; background: #eef3ff;
+        border: 1px solid #dbe6ff; border-radius: 999px; padding: 4px 10px; text-decoration: none !important;
+    }
+
+    .baz-blog-assoc { margin-top: 10px; font-size: 13px; color: var(--bl-muted); }
+    .baz-blog-notice {
+        margin-top: 10px; font-size: 12.5px; color: $bz-accent-text3;
+        background: $bz-accent-bg5; border: 1px solid $bz-accent-bd3; border-radius: 10px; padding: 8px 12px;
+    }
+
+    /* footer commands */
+    .baz-blog-foot { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--bl-line); }
+    .baz-blog-act {
+        display: inline-flex; align-items: center; gap: 6px;
+        font: 800 12px var(--bl-sans); color: var(--bl-navy) !important;
+        border: 1.5px solid var(--bl-line); border-radius: 9px; padding: 7px 13px; text-decoration: none !important;
+        transition: border-color .12s, background .12s;
+        &:hover { border-color: $bz-accent; background: rgba($bz-accent, .08); }
+        svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
+    }
+
+    .baz-blog-comments { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--bl-line); }
+
+    /* single-entry (permalink) view — larger type */
+    &.is-single {
+        padding: 26px 28px;
+        .baz-blog-title { font-size: 26px; margin-bottom: 14px; }
+        .baz-blog-body { font-size: 15px; }
+    }
+}

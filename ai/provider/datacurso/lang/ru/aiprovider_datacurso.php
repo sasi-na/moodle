@@ -1,0 +1,261 @@
+<?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ * Plugin strings are defined here.
+ *
+ * @package     aiprovider_datacurso
+ * @category    string
+ * @copyright   Josue <josue@datacurso.com>
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['action'] = 'Действие';
+$string['action:generate_image:endpoint'] = 'Конечная точка API';
+$string['action:generate_image:endpoint_desc'] = 'Конечная точка для генерации изображений';
+$string['action:generate_text:endpoint'] = 'Конечная точка API';
+$string['action:generate_text:endpoint_desc'] = 'Конечная точка для генерации текста';
+$string['action:generate_text:instruction'] = 'Системная инструкция';
+$string['action:generate_text:instruction_desc'] = 'Эта инструкция отправляется модели ИИ вместе с запросом пользователя. Не рекомендуется редактировать эту инструкцию, если это не является абсолютно необходимым.';
+$string['action:summarise_text:endpoint'] = 'Конечная точка API';
+$string['action:summarise_text:endpoint_desc'] = 'Конечная точка для генерации текста';
+$string['action:summarise_text:instruction'] = 'Системная инструкция';
+$string['action:summarise_text:instruction_desc'] = 'Эта инструкция отправляется модели ИИ вместе с запросом пользователя. Не рекомендуется редактировать эту инструкцию, если это не является абсолютно необходимым.';
+$string['all'] = 'Все';
+$string['alt_datacurso_icon'] = 'Иконка Datacurso';
+$string['apikey'] = 'Ключ API';
+$string['apikey_desc'] = 'Введите ключ API из вашего сервиса Datacurso для подключения ИИ.';
+$string['apiurl'] = 'Базовый URL API';
+$string['apiurl_desc'] = 'Введите базовый URL сервиса для подключения к API Datacurso.';
+$string['assigned'] = 'Назначено';
+$string['chart_actions'] = 'Распределение кредитов по сервисам';
+$string['chart_tokens_by_day'] = 'Потребление кредитов по дням';
+$string['chart_tokens_by_month'] = 'Количество потребленных кредитов в месяц';
+$string['configured'] = 'Настроено';
+$string['confirm_delete_message'] = 'Вы действительно хотите удалить лимит кредитов для "{$a}"?';
+$string['confirm_delete_title'] = 'Удалить лимит кредитов';
+$string['confirm_reset_usage_message'] = 'Это сбросит счетчик использования для "{$a}". Продолжить?';
+$string['create_activity_assign_image'] = 'Создать задание с помощью ИИ (с изображениями)';
+$string['create_activity_assign_noimage'] = 'Создать задание с помощью ИИ (без изображений)';
+$string['create_activity_book_image'] = 'Создать книгу с помощью ИИ (с изображениями)';
+$string['create_activity_book_noimage'] = 'Создать книгу с помощью ИИ (без изображений)';
+$string['create_activity_choice_image'] = 'Создать голосование с помощью ИИ (с изображениями)';
+$string['create_activity_choice_noimage'] = 'Создать голосование с помощью ИИ (без изображений)';
+$string['create_activity_data_image'] = 'Создать базу данных с помощью ИИ (с изображениями)';
+$string['create_activity_data_noimage'] = 'Создать базу данных с помощью ИИ (без изображений)';
+$string['create_activity_feedback_image'] = 'Создать опрос с помощью ИИ (с изображениями)';
+$string['create_activity_feedback_noimage'] = 'Создать опрос с помощью ИИ (без изображений)';
+$string['create_activity_folder_image'] = 'Создать папку с помощью ИИ (с изображениями)';
+$string['create_activity_folder_noimage'] = 'Создать папку с помощью ИИ (без изображений)';
+$string['create_activity_forum_image'] = 'Создать форум с помощью ИИ (с изображениями)';
+$string['create_activity_forum_noimage'] = 'Создать форум с помощью ИИ (без изображений)';
+$string['create_activity_glossary_image'] = 'Создать глоссарий с помощью ИИ (с изображениями)';
+$string['create_activity_glossary_noimage'] = 'Создать глоссарий с помощью ИИ (без изображений)';
+$string['create_activity_h5pactivity_image'] = 'Создать H5P активность с помощью ИИ (с изображениями)';
+$string['create_activity_h5pactivity_noimage'] = 'Создать H5P активность с помощью ИИ (без изображений)';
+$string['create_activity_imscp_image'] = 'Создать IMS пакет с помощью ИИ (с изображениями)';
+$string['create_activity_imscp_noimage'] = 'Создать IMS пакет с помощью ИИ (без изображений)';
+$string['create_activity_label_image'] = 'Создать метку с помощью ИИ (с изображениями)';
+$string['create_activity_label_noimage'] = 'Создать метку с помощью ИИ (без изображений)';
+$string['create_activity_lesson_image'] = 'Создать урок с помощью ИИ (с изображениями)';
+$string['create_activity_lesson_noimage'] = 'Создать урок с помощью ИИ (без изображений)';
+$string['create_activity_page_image'] = 'Создать страницу с помощью ИИ (с изображениями)';
+$string['create_activity_page_noimage'] = 'Создать страницу с помощью ИИ (без изображений)';
+$string['create_activity_quiz_image'] = 'Создать тест с помощью ИИ (с изображениями)';
+$string['create_activity_quiz_noimage'] = 'Создать тест с помощью ИИ (без изображений)';
+$string['create_activity_resource_image'] = 'Создать файл/ресурс с помощью ИИ (с изображениями)';
+$string['create_activity_resource_noimage'] = 'Создать файл/ресурс с помощью ИИ (без изображений)';
+$string['create_activity_scorm_image'] = 'Создать SCORM пакет с помощью ИИ (с изображениями)';
+$string['create_activity_scorm_noimage'] = 'Создать SCORM пакет с помощью ИИ (без изображений)';
+$string['create_activity_url_image'] = 'Создать URL с помощью ИИ (с изображениями)';
+$string['create_activity_url_noimage'] = 'Создать URL с помощью ИИ (без изображений)';
+$string['create_activity_wiki_image'] = 'Создать вики с помощью ИИ (с изображениями)';
+$string['create_activity_wiki_noimage'] = 'Создать вики с помощью ИИ (без изображений)';
+$string['create_activity_workshop_image'] = 'Создать семинар с помощью ИИ (с изображениями)';
+$string['create_activity_workshop_noimage'] = 'Создать семинар с помощью ИИ (без изображений)';
+$string['created'] = 'Создано';
+$string['curlerror'] = 'Ошибка cURL API Datacurso: {$a}';
+$string['datacurso:manage'] = 'Управление настройками провайдера ИИ';
+$string['datacurso:use'] = 'Использование сервисов ИИ Datacurso';
+$string['datacurso:viewreports'] = 'Просмотр отчетов об использовании ИИ';
+$string['day'] = 'день';
+$string['description'] = 'Описание';
+$string['descriptionpagelistplugins'] = 'Здесь вы можете найти список плагинов, совместимых с провайдером Datacurso';
+$string['disabled'] = 'Отключено';
+$string['emptyprompt'] = 'Пустой запрос';
+$string['emptyresponse'] = 'Нет ответа от API Datacurso.';
+$string['enabled'] = 'Включено';
+$string['enableglobalratelimit'] = 'Включить глобальное ограничение';
+$string['enableglobalratelimit_desc'] = 'Если включено, будет применяться глобальное ограничение запросов в час для всех пользователей.';
+$string['enableuserratelimit'] = 'Включить ограничение для пользователя';
+$string['enableuserratelimit_desc'] = 'Если включено, каждый пользователь будет иметь почасовое ограничение запросов.';
+$string['errorgetbalancecredits'] = 'Не удалось получить баланс кредитов из внешнего API';
+$string['exists'] = 'Существует';
+$string['forbidden'] = 'Вам не разрешено выполнять это действие с текущей лицензией. Пожалуйста, проверьте вашу лицензию и доступные кредиты в <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Управление кредитами</a> в магазине Datacurso.';
+$string['generate_activitie'] = 'Создать активность или ресурс с помощью ИИ';
+$string['generate_ai_reinforcement_activity'] = 'Создать активность для закрепления с ИИ';
+$string['generate_analysis_comments'] = 'Создать анализ оценки активности/ресурса с помощью ИИ';
+$string['generate_analysis_course'] = 'Создать анализ оценки курса с помощью ИИ';
+$string['generate_analysis_general'] = 'Создать общий анализ оценки с помощью ИИ';
+$string['generate_analysis_story_student'] = 'Создать анализ истории студента с помощью ИИ';
+$string['generate_assign_answer'] = 'Создать проверку задания с помощью ИИ';
+$string['generate_certificate_answer'] = 'Создать сообщение сертификата с помощью ИИ';
+$string['generate_chat_embeddings'] = 'История разговора с ИИ';
+$string['generate_chat_stream'] = 'Ответ ИИ';
+$string['generate_creation_course'] = 'Создать полный курс с помощью ИИ';
+$string['generate_creation_course_image'] = 'Создать полный курс с помощью ИИ (с изображениями)';
+$string['generate_creation_course_noimage'] = 'Создать полный курс с помощью ИИ (без изображений)';
+$string['generate_forum_chat'] = 'Создать ответ на форуме с помощью ИИ';
+$string['generate_forum_grade'] = 'Оценить форум с помощью ИИ';
+$string['generate_image'] = 'Создать изображение с помощью ИИ';
+$string['generate_plan_course'] = 'Создать план создания курса с помощью ИИ';
+$string['generate_summary'] = 'Создать резюме с помощью ИИ';
+$string['generate_text'] = 'Создать текст с помощью ИИ';
+$string['globalratelimit'] = 'Глобальное ограничение запросов';
+$string['globalratelimit_desc'] = 'Максимальное количество запросов, разрешенных в час для всей системы.';
+$string['goto'] = 'Перейти к отчету';
+$string['hour'] = 'час';
+$string['httperror'] = 'Неожиданная ошибка при обработке вашего запроса (HTTP {$a}). Пожалуйста, попробуйте позже. Если проблема сохраняется, свяжитесь с администратором сайта.';
+$string['id'] = 'ID';
+$string['installed'] = 'Установлено';
+$string['invalidlicensekey'] = 'Ключ лицензии истек или недействителен. Пожалуйста, перейдите в <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Управление кредитами</a> в магазине Datacurso для обновления или покупки новой лицензии.';
+$string['json_encode_failed'] = 'Ошибка кодирования JSON';
+$string['jsondecodeerror'] = 'Ошибка обработки ответа от API Datacurso: {$a}';
+$string['last_sent'] = 'Последняя отправка';
+$string['license_not_allowed'] = 'Ваша лицензия не позволяет выполнить этот запрос. Пожалуйста, управляйте своими лицензиями и кредитами в <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Управление кредитами</a> в магазине Datacurso.';
+$string['licensekey'] = 'Ключ лицензии';
+$string['licensekey_desc'] = 'Введите ключ лицензии из клиентской области магазина Datacurso.';
+$string['link_consumptionhistory'] = 'История потребления кредитов';
+$string['link_generalreport'] = 'Общий отчет';
+$string['link_generalreport_datacurso'] = 'Общий отчет Datacurso ИИ';
+$string['link_listplugings'] = 'Список плагинов Datacurso';
+$string['link_plugin'] = 'Ссылка';
+$string['link_report_statistic'] = 'Отчет общей статистики';
+$string['live_log'] = 'Журнал в реальном времени';
+$string['message_no_there_plugins'] = 'Нет доступных плагинов';
+$string['missing'] = 'Отсутствует';
+$string['month'] = 'месяц';
+$string['needs_repair'] = 'Требуется ремонт';
+$string['not_assigned'] = 'Не назначено';
+$string['not_configured'] = 'Не настроено';
+$string['not_created'] = 'Не создано';
+$string['notenoughtokens'] = 'Недостаточно кредитов ИИ. Пожалуйста, посетите <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Управление кредитами</a> в магазине Datacurso, чтобы выделить или купить больше кредитов. Или свяжитесь с вашим администратором.';
+$string['of'] = 'из';
+$string['orgid'] = 'ID организации';
+$string['orgid_desc'] = 'Введите идентификатор вашей организации в сервисе Datacurso.';
+$string['pending'] = 'В ожидании';
+$string['plugin'] = 'Плагин';
+$string['plugindesc_assign_ai'] = 'Проверка заданий с помощью ИИ.';
+$string['plugindesc_coursegen'] = 'Создание полных курсов, активностей и ресурсов с помощью ИИ.';
+$string['plugindesc_datacurso_ratings'] = 'Позволяет студентам оценивать активности и ресурсы; преподаватели и администраторы могут затем генерировать анализ курсов на основе ИИ.';
+$string['plugindesc_dttutor'] = 'Общение с ИИ-тьютором внутри курса.';
+$string['plugindesc_forum_ai'] = 'Расширение форумов с помощью анализа на основе ИИ для автоматического создания резюме.';
+$string['plugindesc_lifestory'] = 'Отчет и анализ академического прогресса студента на основе ИИ.';
+$string['plugindesc_smartrules'] = 'Создание автоматизированных активностей на основе предыдущих условий студентов.';
+$string['plugindesc_socialcert'] = 'Автоматическое создание персонализированных сертификатов при завершении курса.';
+$string['pluginname'] = 'Провайдер ИИ Datacurso';
+$string['pluginname_assign_ai'] = 'Задание ИИ';
+$string['pluginname_coursegen'] = 'Создатель курсов ИИ';
+$string['pluginname_datacurso_ratings'] = 'Рейтинг активностей ИИ';
+$string['pluginname_dttutor'] = 'Тьютор ИИ';
+$string['pluginname_forum_ai'] = 'Форум ИИ';
+$string['pluginname_lifestory'] = 'История жизни студента ИИ';
+$string['pluginname_smartrules'] = 'SmartRules ИИ';
+$string['pluginname_socialcert'] = 'Поделиться сертификатом ИИ';
+$string['privacy:metadata'] = 'Плагин Провайдер ИИ Datacurso не хранит никаких персональных данных локально. Все данные обрабатываются внешними сервисами ИИ Datacurso.';
+$string['privacy:metadata:aiprovider_datacurso'] = 'Полезные нагрузки запросов ИИ Datacurso, отправляемые во внешний сервис.';
+$string['ratelimit_enable'] = 'Включить лимит';
+$string['ratelimit_enable_desc'] = 'Если включено, для этого плагина будет применяться лимит кредитов на пользователя.';
+$string['ratelimit_limit'] = 'Кредиты за окно';
+$string['ratelimit_limit_desc'] = 'Максимальное количество кредитов, которое пользователь может израсходовать в выбранном временном окне. 0 — без ограничений.';
+$string['ratelimit_window'] = 'Временное окно';
+$string['ratelimit_window_desc'] = 'Выберите длительность и единицу измерения для окна лимита.';
+$string['ratelimits_heading'] = 'Лимиты по плагинам';
+$string['ratelimits_heading_desc'] = 'Настройте лимиты на пользователя для каждого плагина, использующего провайдера Datacurso.';
+$string['read_context_course'] = 'Чтение контекста для создания курса с ИИ';
+$string['read_context_course_model'] = 'Загрузка академической модели для создания курса с ИИ';
+$string['registers'] = 'Записи';
+$string['registration_error'] = 'Последняя ошибка';
+$string['registration_last'] = 'Регистрация';
+$string['registration_lastsent'] = 'Последняя отправка';
+$string['registration_notverified'] = 'Регистрация не подтверждена';
+$string['registration_status'] = 'Последний статус';
+$string['registration_verified'] = 'Регистрация подтверждена';
+$string['registrationsettings'] = 'API регистрации';
+$string['remainingtokens'] = 'Остаток баланса';
+$string['responseinvalidai'] = 'Недопустимый ответ от сервиса ИИ.';
+$string['responseinvalidaimage'] = 'Недопустимый ответ от сервиса ИИ (нет изображения).';
+$string['responseinvalidaimagecreate'] = 'Не удалось создать файл изображения.';
+$string['rest_enabled'] = 'Протокол REST включен';
+$string['service'] = 'Сервис';
+$string['tokens'] = 'Кредиты';
+$string['tokens_available'] = 'Доступные кредиты';
+$string['tokensconsumed'] = 'Потребленные кредиты';
+$string['tokensconsumedday'] = 'Кредиты, потребленные за день';
+$string['tokensconsumedmonth'] = 'Кредиты, потребленные за месяц';
+$string['tokensnotsufficient'] = 'Недостаточно кредитов ИИ. Текущий баланс: {$a->current}. Минимально необходимо: {$a->required}. Пожалуйста, посетите <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Управление кредитами</a> в магазине Datacurso, чтобы выделить или купить больше кредитов. Или свяжитесь с вашим администратором.';
+$string['tokensused'] = 'Использованные кредиты';
+$string['tokenthreshold'] = 'Порог кредитов';
+$string['tokenthreshold_desc'] = 'Количество кредитов, при котором будет показано уведомление о необходимости покупки дополнительных кредитов.';
+$string['total_consumed'] = 'Потребленные кредиты';
+$string['userid'] = 'Пользователь';
+$string['userratelimit'] = 'Ограничение запросов на пользователя';
+$string['userratelimit_desc'] = 'Максимальное количество запросов, разрешенных в час для каждого отдельного пользователя.';
+$string['usertokenlimit_add'] = 'Добавить лимит кредитов';
+$string['usertokenlimit_add_title'] = 'Добавить лимит кредитов пользователя';
+$string['usertokenlimit_assignedtotal'] = 'Всего назначенных кредитов';
+$string['usertokenlimit_delete_failed'] = 'Не удалось удалить лимит кредитов пользователя.';
+$string['usertokenlimit_deleted'] = 'Лимит кредитов пользователя удален.';
+$string['usertokenlimit_edit_title'] = 'Редактировать лимит: {$a}';
+$string['usertokenlimit_licensebalance'] = 'Общий баланс кредитов лицензии';
+$string['usertokenlimit_limit'] = 'Лимит кредитов';
+$string['usertokenlimit_limit_help'] = 'Введите максимальное количество кредитов, которое пользователь может израсходовать. Используйте 0, чтобы заблокировать доступ к ИИ для этого пользователя.';
+$string['usertokenlimit_limit_invalid'] = 'Лимит должен быть равен нулю или быть положительным числом.';
+$string['usertokenlimit_limit_invalid_nonnegative'] = 'Лимит должен быть равен нулю или быть положительным числом.';
+$string['usertokenlimit_recurringenabled'] = 'Включить периодический интервал';
+$string['usertokenlimit_recurringenabled_help'] = 'Включает автоматический периодический сброс квоты для этого пользователя.';
+$string['usertokenlimit_recurringinterval'] = 'Периодический интервал';
+$string['usertokenlimit_recurringinterval_help'] = 'Количество дней, после которых квота пользователя сбрасывается и назначается заново. Используйте 0, чтобы отключить периодический сброс.';
+$string['usertokenlimit_recurringinterval_invalid'] = 'Периодический интервал должен быть равен нулю или быть положительным числом дней.';
+$string['usertokenlimit_recurringunit'] = 'Единица времени';
+$string['usertokenlimit_recurringunit_day'] = 'Дни';
+$string['usertokenlimit_recurringunit_help'] = 'Единица времени для периодического интервала (часы, дни, недели, месяцы, годы).';
+$string['usertokenlimit_recurringunit_hour'] = 'Часы';
+$string['usertokenlimit_recurringunit_invalid'] = 'Недопустимая единица периодического интервала.';
+$string['usertokenlimit_recurringunit_month'] = 'Месяцы';
+$string['usertokenlimit_recurringunit_week'] = 'Недели';
+$string['usertokenlimit_recurringunit_year'] = 'Годы';
+$string['usertokenlimit_recurringvalue'] = 'Значение интервала';
+$string['usertokenlimit_recurringvalue_help'] = 'Числовое значение для выбранной единицы времени. Должно быть больше 0 при включении.';
+$string['usertokenlimit_recurringvalue_invalid_positive'] = 'Значение интервала должно быть больше 0, когда периодический интервал включен.';
+$string['usertokenlimit_reset'] = 'Сбросить счетчик использования';
+$string['usertokenlimit_reset_done'] = 'Счетчик использования сброшен.';
+$string['usertokenlimit_reset_failed'] = 'Не удалось сбросить счетчик использования.';
+$string['usertokenlimit_reset_help'] = 'Если включено, текущий счетчик использования для этого пользователя будет сброшен сразу после сохранения.';
+$string['usertokenlimit_reset_usage'] = 'Сбросить использование';
+$string['usertokenlimit_saved'] = 'Лимит кредитов пользователя сохранен';
+$string['usertokenlimit_used'] = 'Использованные кредиты';
+$string['usertokenlimit_user'] = 'Пользователь';
+$string['usertokenlimit_user_help'] = 'Выберите пользователя, к которому будет применяться лимит кредитов.';
+$string['usertokenlimit_user_readonly'] = 'Пользователь';
+$string['usertokenlimit_user_readonly_help'] = 'Для существующих записей пользователь фиксирован и не может быть изменен.';
+$string['verified'] = 'Проверено';
+$string['week'] = 'неделя';
+$string['workplace'] = 'Это Moodle Workplace?';
+$string['workplace_desc'] = 'Определяет, следует ли отправлять заголовок X-Workplace со значением true (Workplace) или false (стандартный Moodle).';
+$string['year'] = 'год';

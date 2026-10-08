@@ -1,0 +1,50 @@
+# Tenant-agnostic Moodle workload.
+#
+# Everything here is identical for every LMS instance built from this repo.
+# Anything that differs per tenant (namespace, hostname, database, NFS path,
+# image tag, TLS) lives in deploy/overlays/<tenant>/ and is applied as a patch.
+#
+# Deliberately NOT in base yet -- see deploy/README.md for the reasoning:
+#   * ConfigMap moodle-config   (git<->live drift; needs a deliberate reconcile)
+#   * CronJobs cron/adhoc       (plaintext DB password inline in the manifests)
+#   * Secret moodle-secrets     (plaintext credentials committed to git)
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - deployment.yaml
+  - service.yaml
+  - hpa.yaml
+  - gcp-backend-policy.yaml
+  - cronjob-moodle-cron.yaml
+  - cronjob-moodle-adhoc.yaml
+  - redis.yaml
+
+# The shared half of the moodle-config ConfigMap. These six keys are identical
+# for every tenant; each overlay merges in its own moodle_config.php, which is
+# the only genuinely tenant-specific key.
+#
+# Content was taken from the LIVE jo-moodle-prod ConfigMap and each file verified
+# byte-for-byte by md5 against it. Deployment-files/prod/configmap.yml has
+# drifted on six of its seven keys and was NOT used as the source.
+configMapGenerator:
+  - name: moodle-config
+    files:
+      - config/healthz.php
+      - config/my.cnf
+      - config/nginx.conf
+      - config/php.ini
+      - config/redis.conf
+      - config/www.conf
+
+# Without this, kustomize appends a content hash to the name (moodle-config-abc123).
+# The Deployment and both CronJobs reference `moodle-config` by name, so the hash
+# would leave them pointing at a ConfigMap that no longer exists.
+generatorOptions:
+  disableNameSuffixHash: true
+
+# NOTE: do NOT add `commonLabels` here. Kustomize folds them into
+# Deployment.spec.selector.matchLabels, which is immutable on an existing
+# Deployment -- applying it to the live jain-prod Deployment would be rejected
+# (and would require deleting/recreating the Deployment to fix). If shared
+# labels are ever wanted, use `labels:` with `includeSelectors: false`.

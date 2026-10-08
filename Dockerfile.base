@@ -1,0 +1,70 @@
+# =============================================================================
+# Moodle Base Image
+# =============================================================================
+# This image contains all PHP extensions and system dependencies pre-compiled.
+# Rebuild this image when:
+#   - PHP version upgrade needed
+#   - New PHP extension required
+#   - System dependency changes
+#
+# Build command:
+#   gcloud builds submit --tag asia-south1-docker.pkg.dev/org-dev-infra/services/moodle-base:php8.2 --file Dockerfile.base
+# =============================================================================
+
+FROM php:8.2-fpm
+
+# Install system dependencies and PHP extensions in a single layer
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libicu-dev \
+    libpq-dev \
+    libxslt-dev \
+    libmemcached-dev \
+    # ghostscript: assignfeedback_editpdf cannot render annotated PDFs without it.
+    # It was absent, so PDF annotation was silently broken on every tenant using
+    # this image. IIITD alone has 224 assignments with editpdf enabled and 2,082
+    # existing annotations.
+    ghostscript \
+    # Install PHP extensions
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install mysqli \
+    && docker-php-ext-install zip \
+    && docker-php-ext-install xml \
+    && docker-php-ext-install mbstring \
+    && docker-php-ext-install intl \
+    && docker-php-ext-install xsl \
+    && docker-php-ext-install soap \
+    && docker-php-ext-install opcache \
+    # Clean up to reduce image size
+    && apt-get -qq autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Configure PHP for Moodle
+RUN echo "memory_limit = 512M" > /usr/local/etc/php/conf.d/memory-limit.ini \
+    && echo "max_execution_time = 300" > /usr/local/etc/php/conf.d/max-execution-time.ini \
+    && echo "post_max_size = 100M" > /usr/local/etc/php/conf.d/post-max-size.ini \
+    && echo "upload_max_filesize = 100M" > /usr/local/etc/php/conf.d/upload-max-filesize.ini \
+    && echo "max_input_vars = 5000" > /usr/local/etc/php/conf.d/max-input-vars.ini
+
+# Create Moodle directories with correct permissions
+RUN mkdir -p /var/www/html /var/moodledata \
+    && chown -R www-data:www-data /var/www/html /var/moodledata \
+    && chmod -R 755 /var/www/html \
+    && chmod -R 777 /var/moodledata
+
+# Default PHP-FPM port
+EXPOSE 9000

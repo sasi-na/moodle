@@ -1,0 +1,258 @@
+/* ==========================================================================
+   theme_baz — bespoke per-course grade report (gradebook table, student-only)
+   Scoped to #sgr-root. Navy / gold, matching the other bespoke pages.
+   Light + dark. scssphp-safe: block comments only.
+   ========================================================================== */
+
+#sgr-root {
+    --sgr-navy: #{$bz-navy};
+    /* Label on an accent surface. Derived from the accent's contrast in
+       theme_baz_brand_palette(), so a dark accent gets white and a light
+       one keeps the navy. */
+    --sgr-on-accent: #{$bz-accent-on};
+    --sgr-ground: #F4F7FB;
+    --sgr-surface: #fff;
+    --sgr-ink: #0B2034;
+    --sgr-muted: #5C7184;
+    --sgr-faint: #90A4B5;
+    --sgr-line: #E5ECF3;
+    --sgr-accent: #{$bz-accent};
+    --sgr-green: #1FA37A;
+    --sgr-blue: #2563EB;
+    --sgr-gnavy: linear-gradient(135deg, #{$bz-navy-hi}, #{$bz-navy-lo});
+    --sgr-gaccent: linear-gradient(135deg, #{$bz-accent-hi}, #{$bz-accent-lo});
+    --sgr-sans: 'Manrope', 'Inter', system-ui, sans-serif;
+    --sgr-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --sgr-sh-sm: 0 1px 2px rgba(11, 32, 52, .06), 0 1px 3px rgba(11, 32, 52, .04);
+    --sgr-sh: 0 4px 14px rgba(11, 32, 52, .07);
+    --sgr-sh-lg: 0 18px 50px rgba(11, 32, 52, .12);
+
+    font-family: var(--sgr-sans);
+    color: var(--sgr-ink);
+    background: var(--sgr-ground);
+    min-height: 100vh;
+
+    *, *::before, *::after { box-sizing: border-box; }
+    svg { display: block; }
+    .muted { color: var(--sgr-faint) !important; }
+
+    /* ---- shell ---- */
+    &.sgr-app { display: grid; grid-template-columns: 248px 1fr; }
+
+    .sgr-side {
+        background: linear-gradient(180deg, var(--sgr-navy), $bz-navy-deep);
+        color: #cfe0ec; padding: 20px 16px; display: flex; flex-direction: column; gap: 3px;
+        position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    }
+    .sgr-brand { display: block; padding: 4px 8px 18px; }
+    .sgr-brand img { max-height: 38px; width: auto; }
+    .sgr-brand-txt { color: #fff; font-weight: 800; font-size: 18px; }
+    .sgr-nav a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 11px; color: #aec4d4; font-weight: 600; font-size: 14px; text-decoration: none; }
+    .sgr-nav a svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .sgr-nav a:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+    .sgr-nav a.on { background: rgba($bz-accent, .2); color: var(--sgr-accent); font-weight: 700; }
+    .sgr-nav a.on svg { stroke: var(--sgr-accent); }
+    .sgr-navlbl { font: 600 11px/1 var(--sgr-mono); letter-spacing: .12em; text-transform: uppercase; color: #5d7e95; padding: 16px 12px 8px; }
+
+    .sgr-main-col { min-width: 0; display: flex; flex-direction: column; }
+
+    /* ---- topbar ---- */
+    .sgr-topbar { position: sticky; top: 0; z-index: 30; background: rgba(244, 247, 251, .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--sgr-line); }
+    .sgr-topbar-inner { display: flex; align-items: center; gap: 14px; padding: 12px 28px; }
+    .sgr-tb-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .sgr-burger { display: none; border: 0; background: none; padding: 0; cursor: pointer; }
+    .sgr-burger svg { width: 24px; height: 24px; stroke: var(--sgr-ink); fill: none; stroke-width: 1.9; }
+    .sgr-crumb { font-weight: 600; color: var(--sgr-muted); font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sgr-crumb a { color: var(--sgr-muted); text-decoration: none; }
+    .sgr-crumb .sep { margin: 0 7px; color: var(--sgr-faint); }
+    .sgr-crumb .cur { color: var(--sgr-ink); font-weight: 700; }
+    .sgr-search-wrap { flex: 1; display: flex; justify-content: center; }
+    .sgr-search { display: flex; align-items: center; gap: 9px; width: 100%; max-width: 460px; background: var(--sgr-surface); border: 1px solid #CBD8E6; border-radius: 12px; padding: 9px 14px; box-shadow: var(--sgr-sh-sm); }
+    .sgr-search svg { width: 17px; height: 17px; stroke: var(--sgr-faint); fill: none; stroke-width: 2; flex: 0 0 auto; }
+    .sgr-search input { border: 0; background: none; outline: none; width: 100%; font: 600 13px var(--sgr-sans); color: var(--sgr-ink); }
+    .sgr-top-actions { display: flex; align-items: center; gap: 10px; }
+    .sgr-askjo { display: inline-flex; align-items: center; gap: 8px; background: var(--sgr-gnavy); color: #fff; font-weight: 700; font-size: 13.5px; padding: 9px 15px; border: 0; border-radius: 12px; cursor: pointer; }
+    .sgr-askjo svg { width: 16px; height: 16px; }
+    .sgr-askjo[disabled] { opacity: .5; cursor: default; }
+    .sgr-iconbtn { width: 42px; height: 42px; border-radius: 12px; background: var(--sgr-surface); border: 1px solid var(--sgr-line); display: grid; place-items: center; color: var(--sgr-muted); box-shadow: var(--sgr-sh-sm); cursor: pointer; }
+    .sgr-iconbtn svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .sgr-navbar-plugin { display: flex; align-items: center; gap: 10px; }
+    .sgr-navbar-plugin .popover-region-toggle, .sgr-navbar-plugin .nav-link { width: 42px; height: 42px; border-radius: 12px; background: var(--sgr-surface); border: 1px solid var(--sgr-line); display: grid; place-items: center; color: var(--sgr-muted); box-shadow: var(--sgr-sh-sm); position: relative; }
+    .sgr-navbar-plugin .count-container { top: 4px; right: 4px; }
+    .sgr-usermenu .dropdown-toggle { text-decoration: none; }
+
+    /* ---- content ---- */
+    .sgr-content { padding: 22px 28px 70px; max-width: 1180px; width: 100%; }
+
+    .sgr-hero { background: var(--sgr-gnavy); color: #fff; border-radius: 22px; padding: 24px 28px; box-shadow: var(--sgr-sh); display: flex; gap: 24px; align-items: center; justify-content: space-between; }
+    .sgr-hero-l { min-width: 0; }
+    .sgr-eyebrow { font: 700 11px/1 var(--sgr-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--sgr-accent); }
+    .sgr-hero h1 { font-size: 27px; font-weight: 800; letter-spacing: -.02em; margin: 8px 0 0; color: #fff; }
+    .sgr-herostats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px; }
+    .sgr-hchip { display: inline-flex; align-items: center; background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .14); border-radius: 20px; padding: 6px 13px; font-size: 12px; font-weight: 600; color: #dcebff; }
+    .sgr-total { text-align: right; flex: 0 0 auto; }
+    .sgr-total > span { display: block; font: 600 11px var(--sgr-mono); color: #9fc0d8; text-transform: uppercase; letter-spacing: .08em; }
+    /* Grade on its own line, % pill on the next — right-aligned, clean stack. */
+    .sgr-total b { font: 800 36px/1 var(--sgr-mono); color: #fff; display: flex; justify-content: flex-end; align-items: baseline; margin-top: 4px; }
+    .sgr-total small { font-size: 16px; color: #9fc0d8; margin-left: 2px; }
+    /* Specificity must beat `.sgr-total > span` (which sets the label colour). */
+    .sgr-total .sgr-totpct { display: inline-block; margin-top: 12px; background: var(--sgr-accent); color: $bz-accent-ink4; font: 800 15px/1 var(--sgr-mono); letter-spacing: 0; text-transform: none; padding: 7px 13px; border-radius: 9px; box-shadow: 0 4px 12px rgba($bz-accent, .35); }
+
+    .sgr-tabs { display: flex; gap: 4px; margin: 18px 0 0; border-bottom: 1px solid var(--sgr-line); }
+    .sgr-tabs a { padding: 12px 16px; font-weight: 700; font-size: 13.5px; color: var(--sgr-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; text-decoration: none; }
+    .sgr-tabs a:hover { color: var(--sgr-ink); }
+    .sgr-tabs a.on { color: var(--sgr-navy); border-bottom-color: var(--sgr-accent); }
+
+    /* ---- gradebook table ---- */
+    /* No overflow:hidden here — it would break the sticky header on page scroll.
+       Corners are rounded on the header/footer cells instead. */
+    .sgr-wrap { margin-top: 18px; background: var(--sgr-surface); border: 1px solid var(--sgr-line); border-radius: 16px; box-shadow: var(--sgr-sh-sm); }
+    .sgr-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 13.5px; }
+    .sgr-table th, .sgr-table td { text-align: left; }
+    .sgr-table .num { text-align: right; }
+    /* Sticky header: stays put just below the sticky topbar while the body scrolls. */
+    .sgr-table thead th { position: sticky; top: 64px; z-index: 6; background: var(--sgr-navy); color: #cfe0ec; font: 700 10.5px var(--sgr-mono); text-transform: uppercase; letter-spacing: .06em; padding: 12px 16px; }
+    .sgr-table thead th:first-child { border-top-left-radius: 15px; }
+    .sgr-table thead th:last-child { border-top-right-radius: 15px; }
+    .sgr-table tfoot td:first-child { border-bottom-left-radius: 15px; }
+    .sgr-table tfoot td:last-child { border-bottom-right-radius: 15px; }
+    .sgr-cat td { background: #F8FAFD; padding: 10px 16px; border-top: 1px solid var(--sgr-line); }
+    .sgr-cat span { font-weight: 800; font-size: 13px; }
+    .sgr-cat em { font: 700 11px var(--sgr-mono); color: var(--sgr-muted); margin-left: 10px; font-style: normal; }
+    .sgr-table tbody td { padding: 12px 16px; border-top: 1px solid var(--sgr-line); vertical-align: middle; }
+
+    /* Grade-category subtotal, e.g. "Continuous Assessment total 29/30" — the group's own
+       aggregate, so it closes the group rather than sitting among its assessments. Needs the full
+       ".sgr-table tbody" prefix to outweigh the generic cell padding above. */
+    .sgr-table tbody .sgr-sub td { background: #F3F7FC; border-top: 1px solid var(--sgr-navy); }
+    .sgr-table tbody .sgr-sub td.sgr-item { font-weight: 800; padding-left: 56px; }
+    .sgr-item { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .sgr-ic { width: 30px; height: 30px; flex: 0 0 30px; border-radius: 8px; display: grid; place-items: center; background: rgba($bz-accent, .14); color: $bz-accent-text; }
+    .sgr-ic.t-lesson { background: rgba(37, 99, 235, .12); color: var(--sgr-blue); }
+    .sgr-ic.t-assign { background: rgba(31, 163, 122, .13); color: var(--sgr-green); }
+    .sgr-ic.t-forum { background: rgba(229, 85, 110, .1); color: #E5556E; }
+    .sgr-ic.t-manual, .sgr-ic.t-other { background: var(--sgr-ground); color: var(--sgr-muted); }
+    .sgr-ic svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.9; }
+    .sgr-type { color: var(--sgr-muted); font-weight: 600; }
+    .sgr-table .num { font: 600 13px var(--sgr-mono); }
+    .sgr-grade b { font-weight: 700; color: var(--sgr-ink); }
+    .sgr-grade span { color: var(--sgr-faint); }
+    .sgr-range { color: var(--sgr-muted); }
+    .sgr-pct { white-space: nowrap; }
+    .sgr-mini { display: inline-block; width: 54px; height: 6px; background: #EDF1F6; border-radius: 5px; overflow: hidden; vertical-align: middle; margin-right: 8px; }
+    .sgr-mini i { display: block; height: 100%; background: var(--sgr-gaccent); }
+    .sgr-pct b { font: 700 12px var(--sgr-mono); }
+    .sgr-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #D6DEE7; }
+    .sgr-status .sgr-tag { font: 800 9.5px var(--sgr-mono); text-transform: uppercase; letter-spacing: .05em; padding: 4px 8px; border-radius: 6px; background: #EDF1F6; color: var(--sgr-muted); }
+    .sgr-status .sgr-tag.on { background: rgba(31, 163, 122, .14); color: var(--sgr-green); }
+    tr.pending .sgr-grade b { color: var(--sgr-faint); }
+    .sgr-table tfoot td { padding: 14px 16px; border-top: 2px solid var(--sgr-navy); background: #F8FAFD; font-size: 14px; }
+
+    /* Deep-linked assessment name. */
+    .sgr-link { color: var(--sgr-ink); text-decoration: none; }
+    .sgr-link:hover { color: var(--sgr-blue); text-decoration: underline; }
+
+    /* Actions column + 3-dots grade-analysis menu. */
+    .sgr-actcol { width: 44px; text-align: center; }
+    .sgr-menu { position: relative; display: inline-block; }
+    .sgr-dots { width: 30px; height: 30px; border: 0; background: none; border-radius: 8px; display: grid; place-items: center; cursor: pointer; color: var(--sgr-faint); }
+    .sgr-dots:hover { background: var(--sgr-ground); color: var(--sgr-ink); }
+    .sgr-dots svg { width: 18px; height: 18px; fill: currentColor; stroke: none; }
+    .sgr-menu-pop { position: absolute; right: 0; top: 34px; z-index: 20; min-width: 178px; background: var(--sgr-surface); border: 1px solid var(--sgr-line); border-radius: 11px; box-shadow: var(--sgr-sh-lg); padding: 6px; }
+    .sgr-menu-pop a { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--sgr-ink); text-decoration: none; white-space: nowrap; }
+    .sgr-menu-pop a:hover { background: var(--sgr-ground); }
+    .sgr-menu-pop a svg { width: 16px; height: 16px; stroke: var(--sgr-blue); fill: none; stroke-width: 1.9; flex: 0 0 auto; }
+
+    /* Feedback sub-row. */
+    .sgr-fbrow td { padding: 0 16px 14px 56px; border-top: 0; }
+    .sgr-fb { background: rgba($bz-accent, .08); border: 1px solid rgba($bz-accent, .25); border-radius: 11px; padding: 11px 14px; }
+    .sgr-fb-lbl { display: block; font: 800 9.5px var(--sgr-mono); text-transform: uppercase; letter-spacing: .06em; color: $bz-accent-text; margin-bottom: 5px; }
+    .sgr-fb-txt { font-size: 13px; color: var(--sgr-ink); line-height: 1.5; }
+    .sgr-fb-txt p { margin: 0 0 6px; }
+    .sgr-fb-txt p:last-child { margin-bottom: 0; }
+
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+
+    /* Report toggle (User report <-> Overview report). */
+    .sgr-segment { display: inline-flex; gap: 4px; margin: 16px 0 0; background: var(--sgr-surface); border: 1px solid var(--sgr-line); border-radius: 12px; padding: 4px; box-shadow: var(--sgr-sh-sm); }
+    .sgr-seg { padding: 8px 16px; border-radius: 9px; font: 700 13px var(--sgr-sans); color: var(--sgr-muted); text-decoration: none; white-space: nowrap; }
+    .sgr-seg:hover { color: var(--sgr-ink); }
+    .sgr-seg.on { background: var(--sgr-gnavy); color: #fff; }
+
+    .sgr-empty { background: var(--sgr-surface); border: 1px solid var(--sgr-line); border-radius: 16px; padding: 40px; text-align: center; color: var(--sgr-muted); margin-top: 18px; }
+
+    /* Classic report rendered into region-main for header/footer wiring; hidden. */
+    .sgr-region-main { display: none; }
+
+    .sgr-backdrop { display: none; }
+
+    /* ---- floating help (gold FAB, bottom-left to mirror the course page) ---- */
+    .sgr-help { position: fixed; left: 22px; bottom: 22px; z-index: 1050; }
+    .sgr-help-fab { display: inline-flex; align-items: center; gap: 9px; background: var(--sgr-gaccent); color: var(--sgr-on-accent); font-weight: 800; font-size: 13.5px; border: 0; border-radius: 30px; padding: 13px 19px; cursor: pointer; box-shadow: 0 12px 30px rgba($bz-accent, .42); }
+    .sgr-help-fab svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .sgr-help-panel { position: absolute; left: 0; bottom: 62px; width: 320px; background: var(--sgr-surface); border: 1px solid var(--sgr-line); border-radius: 16px; box-shadow: var(--sgr-sh-lg); overflow: hidden; }
+    .sgr-help-head { display: flex; align-items: center; gap: 11px; padding: 14px 16px; border-bottom: 1px solid var(--sgr-line); }
+    .sgr-help-ic { width: 34px; height: 34px; border-radius: 10px; background: rgba($bz-accent, .16); color: $bz-accent-text; display: grid; place-items: center; }
+    .sgr-help-ic svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.9; }
+    .sgr-help-t b { display: block; font-size: 13.5px; font-weight: 800; }
+    .sgr-help-t small { color: var(--sgr-faint); font-size: 11px; }
+    .sgr-help-close { margin-left: auto; border: 0; background: none; font-size: 22px; line-height: 1; color: var(--sgr-faint); cursor: pointer; }
+    /* Support block buttons (LSM / ticket / SOP) as clean rows — match the
+       dashboard's help panel, since the markup reuses .sd-support. */
+    .sgr-help-panel .sd-support { padding: 6px 16px 14px; }
+    .sgr-help-panel .sd-support .support-block-button { display: flex; flex-direction: column; }
+    .sgr-help-panel .sd-support .btn { display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%; text-align: left; padding: 13px 0; margin: 0; border: 0; border-bottom: 1px solid var(--sgr-line); border-radius: 0; background: none; box-shadow: none; color: var(--sgr-ink); font: 600 13px/1.3 var(--sgr-sans); cursor: pointer; }
+    .sgr-help-panel .sd-support .btn::before { content: ""; flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--sgr-accent); }
+    .sgr-help-panel .sd-support .btn:last-child { border-bottom: 0; }
+    .sgr-help-panel .sd-support .btn:hover { color: var(--sgr-blue); }
+
+    /* ---- Ask JO panel ---- */
+    .sgr-askjo-panel { position: fixed; right: 22px; bottom: 22px; z-index: 1060; width: 380px; max-width: calc(100vw - 32px); background: var(--sgr-surface); border: 1px solid var(--sgr-line); border-radius: 16px; box-shadow: var(--sgr-sh-lg); overflow: hidden; display: flex; flex-direction: column; max-height: 72vh; }
+    .sgr-askjo-head { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; background: var(--sgr-gnavy); color: #fff; font-weight: 800; }
+    .sgr-askjo-close { border: 0; background: none; color: #fff; font-size: 22px; line-height: 1; cursor: pointer; }
+    .sgr-askjo-body { flex: 1; overflow-y: auto; padding: 12px 14px; min-height: 220px; }
+    .sgr-askjo-control { border-top: 1px solid var(--sgr-line); padding: 10px 12px; }
+
+    @media (max-width: 920px) {
+        &.sgr-app { grid-template-columns: 1fr; }
+        .sgr-side { position: fixed; left: 0; top: 0; bottom: 0; width: 248px; z-index: 1080; transform: translateX(-100%); transition: transform .25s ease; }
+        &.sgr-nav-open .sgr-side { transform: translateX(0); }
+        &.sgr-nav-open .sgr-backdrop { display: block; position: fixed; inset: 0; background: rgba(11, 32, 52, .45); z-index: 1070; }
+        .sgr-burger { display: block; }
+        .sgr-hero { flex-direction: column; align-items: flex-start; }
+        .sgr-total { text-align: left; }
+        .sgr-wrap { overflow-x: auto; }
+        .sgr-table { min-width: 720px; }
+    }
+
+    @media (max-width: 560px) {
+        .sgr-search-wrap { display: none; }
+        .sgr-askjo span { display: none; }
+        .sgr-content { padding: 16px 14px 80px; }
+    }
+}
+
+/* ==========================================================================
+   Dark mode
+   ========================================================================== */
+body.sd-dark #sgr-root,
+body.theme-dark #sgr-root {
+    --sgr-ground: #0A1722;
+    --sgr-surface: #0F2230;
+    --sgr-ink: #EAF2F9;
+    --sgr-muted: #9DB2C3;
+    --sgr-faint: #6F8597;
+    --sgr-line: #1E3445;
+    --sgr-navy: #{$bz-navy-dm};
+    --sgr-gnavy: linear-gradient(135deg, #{$bz-navy-dm-hi}, #{$bz-navy-dm-lo});
+
+    .sgr-topbar { background: rgba(10, 23, 34, .92); }
+    .sgr-mini { background: #1A2D3C; }
+    .sgr-search { border-color: #294056; }
+    .sgr-cat td, .sgr-table tfoot td { background: #14293A; }
+    .sgr-table tbody .sgr-sub td { background: #14293A; }
+    .sgr-ic.t-manual, .sgr-ic.t-other { background: #14293A; }
+    .sgr-status .sgr-tag { background: #1A2D3C; }
+    .sgr-dot { background: #2A4255; }
+    .sgr-tabs a.on { color: var(--sgr-ink); }
+}

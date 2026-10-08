@@ -1,0 +1,19 @@
+.block-weather .bw-now {display: flex; align-items: center; gap: .75rem; margin: .5rem 0;}
+.block-weather .bw-icon {font-size: 2.5rem; color: #f98012;}
+.block-weather .bw-temp {font-size: 2rem; font-weight: 700; line-height: 1;}
+.block-weather .bw-details {display: flex; flex-wrap: wrap; gap: .25rem .75rem; margin-bottom: .75rem;}
+.block-weather .bw-days {display: flex; justify-content: space-between; gap: .5rem; border-top: 1px solid rgba(0,0,0,.1); padding-top: .5rem;}
+.block-weather .bw-day {flex: 1; text-align: center;}
+.block-weather .bw-day .fa {font-size: 1.25rem; color: #f98012; margin: .25rem 0;}
+.block-weather .bw-foot {font-size: .7rem; margin-top: .5rem;}
+/* Dashboard weather card */
+.bw-widget {display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 2rem; padding: 1rem 1.25rem; margin-bottom: 1.25rem;
+    background: var(--bs-body-bg, #fff); border: 1px solid rgba(0,0,0,.08); border-radius: 1rem; box-shadow: 0 1px 3px rgba(0,0,0,.05);}
+.bw-widget .bw-w-now {display: flex; align-items: center; gap: .75rem;}
+.bw-widget .bw-icon {font-size: 2.25rem; color: #f98012;}
+.bw-widget .bw-w-temp {font-size: 1.6rem; font-weight: 700; line-height: 1.1;}
+.bw-widget .bw-w-label {font-size: 1rem; font-weight: 500;}
+.bw-widget .bw-w-meta {display: flex; flex-wrap: wrap; gap: .25rem 1rem;}
+.bw-widget .bw-w-days {display: flex; gap: 1.25rem; margin-left: auto;}
+.bw-widget .bw-day {text-align: center;}
+.bw-widget .bw-day .fa {font-size: 1.2rem; color: #f98012; margin: .2rem 0;}

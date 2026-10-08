@@ -1,0 +1,48 @@
+.block_zoomonline .live_join_class_conn {
+    border: 1px solid #717171; /* Dark gray border */
+    padding: 6px; /* Padding around the content */
+    margin-bottom: 10px; /* Add spacing between elements */
+    display: inline-block; /* Keep elements inline */
+    width: 100%; /* Full width container */
+}
+
+.block_zoomonline .live_join_class_conn.eye_disabled {
+    border-color: #989898; /* Lighter gray border for disabled items */
+    color: #989898; /* Lighter text color for disabled items */
+}
+
+.block_zoomonline .live_join_class_eye:not(.eye_disabled) .icon.fa {
+    cursor: pointer; /* Change cursor to pointer when clickable */
+}
+
+.block_zoomonline .live_join_class_eye {
+    display: inline-block;
+    margin-right: 10px; /* Add spacing between the eye icon and text */
+}
+
+.block_zoomonline .btn-primary {
+    background-color: #007bff; /* Default primary button color */
+    border-color: #007bff; /* Default border color */
+    color: #fff; /* Text color for buttons */
+}
+
+.block_zoomonline .btn-primary:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    border-color: #0056b3; /* Darker border on hover */
+}
+
+.block_zoomonline .float-right {
+    float: right; /* Align the button or element to the right */
+}
+
+.block_zoomonline .mb-3 {
+    margin-bottom: 1rem; /* Add a consistent bottom margin */
+}
+
+.block_zoomonline .d-inline-block {
+    display: inline-block; /* Ensure inline block layout */
+}
+
+.block_zoomonline .w-100 {
+    width: 100%; /* Full width container */
+}

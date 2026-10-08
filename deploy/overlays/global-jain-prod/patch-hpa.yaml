@@ -1,0 +1,13 @@
+# minReplicas tracks patch-scale.yaml.
+#
+# maxReplicas drops from base's 26 to 6. The ceiling is not a reservation, but it
+# is the blast radius of a runaway: 26 pods would be scheduled on a shared node
+# pool for a site whose measured peak is ~0.5 requests/second. Six is 3x the
+# steady state.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: moodle-hpa
+spec:
+  minReplicas: 2
+  maxReplicas: 6

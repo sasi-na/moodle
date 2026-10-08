@@ -1,0 +1,72 @@
+// Brand colours for theme_baz.
+//
+// Every value here is a !default, and theme_baz_get_pre_scss() prepends a
+// tenant's own SCSS before this file is reached -- so a tenant overrides any
+// of these by assigning it, and assigning nothing keeps the values below.
+//
+// These were hardcoded hex literals repeated across the student SCSS, which is
+// why the two brand colours could not be changed for one tenant without also
+// changing them for every other tenant on this codebase.
+
+// ---- navy ----------------------------------------------------------------
+$bz-navy: #002D47 !default;
+$bz-navy-deep: #012137 !default;
+$bz-navy-hi: #01486E !default;
+$bz-navy-lo: #002235 !default;
+$bz-navy-dm: #06283C !default;
+$bz-navy-dm-hi: #0A3854 !default;
+$bz-navy-dm-lo: #061B2A !default;
+$bz-navy-a: #013256 !default;
+$bz-navy-b: #01243B !default;
+$bz-navy-c: #0A3A63 !default;
+$bz-navy-d: #01314E !default;
+$bz-navy-e: #073E5F !default;
+$bz-navy-f: #013556 !default;
+$bz-navy-g: #002236 !default;
+$bz-navy-h: #001A2B !default;
+$bz-navy-i: #01121F !default;
+
+// Text on a solid accent surface. One value for every accent button so the
+// label never differs from one button to the next. Navy rather than white:
+// against both shipped accents the dark tone has the higher contrast.
+$bz-accent-on: #002D47 !default;
+
+// ---- accent --------------------------------------------------------------
+$bz-accent: #F7B742 !default;
+$bz-accent-hi: #F9C45A !default;
+$bz-accent-lo: #E89A2C !default;
+$bz-accent-lo2: #E0892F !default;
+$bz-accent-text: #B07A12 !default;
+$bz-accent-text2: #9A6B11 !default;
+$bz-accent-text3: #9B7414 !default;
+$bz-accent-ink: #241A04 !default;
+$bz-accent-ink2: #1D1809 !default;
+$bz-accent-ink3: #3D2A00 !default;
+$bz-accent-ink4: #3A2602 !default;
+$bz-accent-ink5: #4A3D18 !default;
+$bz-accent-bg: #FFF6E5 !default;
+$bz-accent-bg2: #FFF6E0 !default;
+$bz-accent-bg3: #FFEFD0 !default;
+$bz-accent-bg4: #FFFDF7 !default;
+$bz-accent-bg5: #FBEECB !default;
+$bz-accent-bg6: #FCE9BE !default;
+$bz-accent-bd: #F3DCA6 !default;
+$bz-accent-bd2: #F1D48C !default;
+$bz-accent-bd3: #F0DCA0 !default;
+$bz-accent-bd4: #F0D9A6 !default;
+$bz-accent-bd5: #E7C277 !default;
+$bz-accent-bd6: #F7D08A !default;
+
+
+// Exposed to markup.
+//
+// Templates and the renderers emit a few of these straight into inline
+// styles and SVG attributes, which SCSS variables cannot reach. Publishing
+// them as custom properties means those call sites follow the tenant too.
+:root {
+    --bz-navy: #{$bz-navy};
+    --bz-accent: #{$bz-accent};
+    --bz-accent-lo2: #{$bz-accent-lo2};
+    --bz-accent-bg: #{$bz-accent-bg};
+    --bz-accent-text2: #{$bz-accent-text2};
+}

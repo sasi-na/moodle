@@ -1,0 +1,407 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+  labels:
+    app: moodle
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: moodle
+  template:
+    metadata:
+      labels:
+        app: moodle
+    spec:
+      securityContext:
+        fsGroup: 33
+      initContainers:
+      - name: setup-logs-and-code
+        image: moodle-lms
+        command:
+          - /bin/sh
+          - -c
+          - |
+            set -ex
+            echo "=== Setting up directories ==="
+
+            mkdir -p /tmp/moodle-cache
+            rm -f /var/moodledata/muc/config.php
+
+            chown -R 33:33 /tmp/moodle-cache
+            chmod 775 /tmp/moodle-cache
+
+            echo "=== Copying Moodle code to shared volume ==="
+            cp -R /var/www/html/. /var/www/html-shared/
+
+            # Tenant-scoped plugins and assets.
+            #
+            # The image ships these OUTSIDE the tree Moodle scans and the web
+            # root it serves, so no tenant gets another tenant's content by
+            # default. A tenant opts in by naming them in TENANT_PLUGINS /
+            # TENANT_ASSETS in its own overlay.
+            #
+            # This lives in the base rather than in a per-tenant patch on
+            # purpose. When IIITD's overlay replaced this whole command to copy
+            # one plugin, the CronJobs -- which run the same code from the same
+            # image -- were left without it, decided an upgrade was pending
+            # because a plugin was in the database with no code on disk, and
+            # suspended themselves. Cron was dead for a day. Anything that has
+            # to be true of the code must be expressed once, here.
+            for p in $(echo "${TENANT_PLUGINS:-}" | tr ',' ' '); do
+              [ -z "$p" ] && continue
+              if [ -d "/var/www/html/tenant-plugins/$p" ]; then
+                echo "=== Installing tenant plugin: mod/$p ==="
+                rm -rf "/var/www/html-shared/mod/$p"
+                cp -R "/var/www/html/tenant-plugins/$p" "/var/www/html-shared/mod/$p"
+              else
+                echo "WARN: tenant-plugins/$p not in image; skipping"
+              fi
+            done
+
+            for a in $(echo "${TENANT_ASSETS:-}" | tr ',' ' '); do
+              [ -z "$a" ] && continue
+              if [ -d "/var/www/html/tenant-assets/$a" ]; then
+                echo "=== Installing tenant assets: /$a ==="
+                rm -rf "/var/www/html-shared/$a"
+                cp -R "/var/www/html/tenant-assets/$a" "/var/www/html-shared/$a"
+              else
+                echo "WARN: tenant-assets/$a not in image; skipping"
+              fi
+            done
+
+            chown -R 33:33 /var/www/html-shared
+
+            echo "=== Setup complete ==="
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: moodle-code-storage
+          mountPath: /var/www/html-shared
+        - name: local-cache
+          mountPath: /tmp/moodle-cache
+
+      # Pre-compiles the theme CSS into the pod-local cache before traffic arrives.
+      #
+      # Must stay AFTER setup-logs-and-code: it reads the Moodle code from
+      # moodle-code-storage, which that container populates.
+      #
+      # Why this exists. $CFG->localcachedir is /tmp/moodle-cache, an emptyDir, so
+      # it is empty on every pod start. theme/styles.php then finds no
+      # all_<subrev>.css, falls back to $CFG->tempdir/theme/<name>/all.css on NFS,
+      # and serves it via css_send_temporary_css() -- which sets
+      # `Cache-Control: no-cache, no-store, must-revalidate`. It tries to
+      # regenerate in the background while holding a 1-second lock, loses that
+      # race under production load, and so never populates the cache. The result
+      # is ~2.3MB of CSS re-downloaded on EVERY page view for the life of the pod;
+      # on jo-moodle-prod that was ~31% of all egress.
+      #
+      # Deliberately exits 0 on failure. A pre-warm that crash-looped would take
+      # the site down; failing here just lands us back on the uncached fallback,
+      # which is the pre-existing behaviour.
+      #
+      # The logic lives in local/useraudit/cli/warm_theme_css.php (which explains
+      # why build_theme_css.php must not be used) so that this one-shot pre-warm
+      # and the theme-css-warmer sidecar below cannot drift apart.
+      - name: warm-theme-css
+        image: moodle-lms
+        command:
+          - /bin/sh
+          - -c
+          - |
+            php /var/www/html/local/useraudit/cli/warm_theme_css.php --verbose \
+              || echo "WARN: theme CSS pre-warm failed -- styles.php will serve the uncached fallback"
+        # uid 33 so the generated files are owned by www-data and need no chown.
+        securityContext:
+          runAsUser: 33
+        env:
+        # Declared here rather than in the overlay on purpose. The overlay owns
+        # php-fpm's `env` (see the note on that container), but kustomize floats
+        # patched list entries to the front of a list -- and for initContainers
+        # that is order-critical, since this one must run after
+        # setup-logs-and-code. A secretKeyRef resolves per namespace, so it is
+        # tenant-agnostic and safe to keep in base.
+        - name: MOODLE_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: database-password
+        volumeMounts:
+        - name: moodle-code-storage
+          mountPath: /var/www/html
+        - name: moodle-data-storage
+          mountPath: /var/moodledata
+        - name: config-volume
+          mountPath: /var/www/html/config.php
+          subPath: moodle_config.php
+        - name: local-cache
+          mountPath: /tmp/moodle-cache
+        - name: temp-dir
+          mountPath: /tmp
+
+      # Keeps the theme CSS warm for the life of the pod.
+      #
+      # A native sidecar (an initContainer with restartPolicy: Always, supported
+      # since k8s 1.29; this cluster is 1.35): it starts in order after the
+      # one-shot pre-warm and then runs alongside the app containers.
+      #
+      # The initContainer above only covers pod STARTUP. Anything that bumps
+      # themerev mid-life -- an admin saving a theme setting, purge_caches --
+      # calls theme_reset_all_caches(), which bumps the revision AND deletes the
+      # theme localcache. Running pods then serve 2.3MB with `no-store` until
+      # somebody restarts them, and nobody clicking Save in the admin UI knows to
+      # run kubectl. Observed live on jain-prod 2026-08-11.
+      #
+      # This CANNOT be a Moodle scheduled task: cron runs in its own pod with its
+      # own `tmp-cache` emptyDir, so a task would warm a cache no user ever reads.
+      # It has to run inside each web pod.
+      #
+      # The loop can never exit -- `|| true` plus an unconditional sleep -- because
+      # a sidecar that dies repeatedly would CrashLoopBackOff and take the pod out
+      # of service over what is only a performance optimisation.
+      - name: theme-css-warmer
+        image: moodle-lms
+        restartPolicy: Always
+        command:
+          - /bin/sh
+          - -c
+          - |
+            echo "theme-css-warmer: checking every 30s"
+            while true; do
+              php /var/www/html/local/useraudit/cli/warm_theme_css.php || true
+              sleep 30
+            done
+        securityContext:
+          runAsUser: 33
+        env:
+        - name: MOODLE_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: database-password
+        # Tiny: the steady-state check is one config read plus a file_exists, and
+        # it only compiles (~4s) when the sheet is genuinely missing. No limits,
+        # matching the rest of this pod spec.
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "128Mi"
+        volumeMounts:
+        - name: moodle-code-storage
+          mountPath: /var/www/html
+        - name: moodle-data-storage
+          mountPath: /var/moodledata
+        - name: config-volume
+          mountPath: /var/www/html/config.php
+          subPath: moodle_config.php
+        - name: local-cache
+          mountPath: /tmp/moodle-cache
+        - name: temp-dir
+          mountPath: /tmp
+
+      # Drain before dying. Deleting a pod sends SIGTERM immediately, but this Service uses
+      # container-native load balancing (cloud.google.com/neg), and removing an endpoint from
+      # the NEG plus propagating that through the load balancer is asynchronous -- it keeps
+      # sending requests to a pod Kubernetes has already told to stop.
+      #
+      # Measured on the 2026-08-12 09:16 rollout, using the LB logging enabled the same day:
+      # 23 x 503 `backend_connection_closed_before_data_sent_to_client` between 09:17:29 and
+      # 09:17:34, against pods that started 09:16:25-09:16:55. Real user requests -- a quiz
+      # attempt, forum views, a mod/page view, several AJAX calls. These were invisible before,
+      # because nginx never logs a request it did not live long enough to handle.
+      #
+      # 120s covers the preStop hooks below (up to ~80s) with room for the last responses to
+      # finish. The default 30 could not: it was shorter than deregistration alone.
+      terminationGracePeriodSeconds: 120
+
+      containers:
+      # ====== CONTAINER 1: PHP-FPM ======
+      - name: php-fpm
+        image: moodle-lms
+        # `env` is deliberately NOT declared here -- each overlay supplies the
+        # whole list via patch-deployment-env.yaml.
+        #
+        # Two reasons. First, almost every variable is tenant-scoped anyway (site
+        # URL, DB host/name/user, admin email). Second, kustomize's strategic
+        # merge floats patched list entries to the front of the list, so a base
+        # list plus a partial patch reorders `env` -- and a reorder is a spec
+        # change that triggers a rolling restart of every pod. Owning the full
+        # list in the overlay keeps the rendered order exactly as the overlay
+        # writes it, which is what makes adoption on a live site a no-op.
+
+        volumeMounts:
+        - name: moodle-code-storage
+          mountPath: /var/www/html
+        - name: moodle-data-storage
+          mountPath: /var/moodledata
+        - name: config-volume
+          mountPath: /var/www/html/config.php
+          subPath: moodle_config.php
+        - name: php-config
+          mountPath: /usr/local/etc/php/conf.d/99-moodle.ini
+          subPath: php.ini
+        - name: php-fpm-config
+          mountPath: /usr/local/etc/php-fpm.d/www.conf
+          subPath: www.conf
+        - name: local-cache
+          mountPath: /tmp/moodle-cache
+        - name: temp-dir
+          mountPath: /tmp
+
+        # Outlive nginx's drain. preStop hooks run in parallel across containers, so if this
+        # one were shorter -- or absent -- php-fpm would take SIGTERM while nginx was still
+        # finishing requests, and those responses would die at the FastCGI end instead. 80s
+        # deliberately exceeds nginx's ~75s (60 + quit + 15).
+        #
+        # A plain sleep is enough: nginx stops forwarding once it quits, so php-fpm simply
+        # runs out of work rather than needing its own graceful signal.
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 80"]
+
+        # Sized from the live jo-moodle-prod Deployment, NOT from the values in
+        # Deployment-files/prod/moodle-deployment.yml -- that committed file is
+        # stale (it still says 1 CPU / 3Gi with a 2-CPU limit) and applying it
+        # would cut production from six cores to one.
+        #
+        # 24 FPM workers need real CPU and memory, otherwise CFS throttling under
+        # node contention produces the classic "slow PHP on K8s". Memory must also
+        # cover ~512MB OPcache plus workers. Deliberately no limits: a CPU limit
+        # reintroduces the throttling this sizing exists to avoid, and HPA scales
+        # on 65% of the request.
+        # The CPU request is a reservation, and HPA measures against it -- so asking for 6
+        # cores while actually using ~0.4 made the autoscaler read 8-10% and never scale.
+        # Measured repeatedly: 370-390m per pod under normal load, against a 65% target of
+        # 3.9 cores that nothing short of a catastrophe would reach. The autoscaler was
+        # effectively decorative.
+        #
+        # 2 cores puts the 65% target at 1.3 cores -- roughly 3x current load, so pods scale
+        # out before saturating rather than after. It also frees ~16 cores of reservation
+        # across the fleet, which is what lets HPA actually add pods when it decides to.
+        #
+        # Still deliberately no CPU *limit*: a limit reintroduces the CFS throttling this
+        # sizing exists to avoid, and bursting above the request is exactly what we want a
+        # busy pod to do. Memory is unchanged -- it must still cover OPcache plus workers,
+        # and observed usage is 2.2-5.5Gi.
+        resources:
+          requests:
+            memory: "12Gi"
+            cpu: "2"
+            # Ephemeral storage was unset until 2026-09-17, which meant these pods
+            # were FIRST to be evicted whenever a node ran low on disk -- a pod that
+            # requests none is ranked worst regardless of how little it uses. Two
+            # learningshala pods were evicted that way inside 24 hours, both on spot
+            # nodes, both reported as "Container php-fpm was using 64Ki, request is 0".
+            #
+            # The 64Ki in that message is only the container's writable layer; the real
+            # consumption is the emptyDirs. Measured on 2026-09-17: /var/www/html is
+            # 553-554Mi on every tenant (it is the same image), /tmp/moodle-cache is
+            # 7Mi on a fresh site and 85Mi on jain, tempdir is negligible. 1Gi covers
+            # the code plus the busiest observed cache with room to spare.
+            ephemeral-storage: "1Gi"
+          limits:
+            # Below the combined emptyDir sizeLimits (4Gi local-cache + 2Gi temp-dir)
+            # on purpose: a runaway cache should get this pod evicted predictably
+            # rather than filling the node and taking its neighbours down with it.
+            ephemeral-storage: "4Gi"
+
+      # ====== CONTAINER 2: NGINX SIDECAR ======
+      - name: nginx
+        image: nginx:1.25-alpine
+        ports:
+        - containerPort: 80
+          name: http
+          protocol: TCP
+
+        # Keep serving while the load balancer stops sending, THEN drain gracefully.
+        #
+        # preStop runs before SIGTERM, so during the sleep nginx is fully alive and answers
+        # normally -- that sleep is what covers NEG deregistration. Only afterwards do we ask
+        # nginx to finish: `nginx -s quit` is the graceful stop that waits for in-flight
+        # requests, whereas the SIGTERM Kubernetes would otherwise send is nginx's FAST
+        # shutdown and drops live connections. The trailing sleep gives that drain time to
+        # complete before SIGTERM arrives on an already-exiting master.
+        #
+        # 60s is a starting point for deregistration, not a measured constant. It is now
+        # verifiable: count 503s per rollout in Cloud Logging with
+        #   resource.labels.backend_service_name:"jo-moodle-prod" AND httpRequest.status=503
+        # If any remain, raise this sleep (and terminationGracePeriodSeconds with it).
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/bin/sh", "-c", "sleep 60; nginx -s quit; sleep 15"]
+
+        readinessProbe:
+          httpGet:
+            path: /healthz.php
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 5
+
+        livenessProbe:
+          httpGet:
+            path: /healthz.php
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 20
+          timeoutSeconds: 30
+          failureThreshold: 5
+
+        volumeMounts:
+        - name: moodle-code-storage
+          mountPath: /var/www/html
+
+        - name: moodle-data-storage
+          mountPath: /var/moodledata
+          readOnly: true
+
+        # Mount ONLY nginx.conf using subPath
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: nginx.conf
+
+        - name: config-volume
+          mountPath: /var/www/html/healthz.php
+          subPath: healthz.php
+          readOnly: true
+
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+            # nginx writes only access and error logs, both to /proc/self/fd, but a
+            # container with no ephemeral-storage request drags the whole pod's
+            # eviction ranking down -- the score is computed per pod from the sum of
+            # its containers' requests.
+            ephemeral-storage: "128Mi"
+          limits:
+            ephemeral-storage: "512Mi"
+
+      volumes:
+      - name: moodle-code-storage
+        emptyDir: {}
+      - name: moodle-data-storage
+        persistentVolumeClaim:
+          claimName: moodle-nfs-pvc
+      - name: config-volume
+        configMap:
+          name: moodle-config
+      - name: nginx-config
+        configMap:
+          name: moodle-config
+      - name: php-config
+        configMap:
+          name: moodle-config
+      - name: php-fpm-config
+        configMap:
+          name: moodle-config
+      - name: local-cache
+        emptyDir:
+          sizeLimit: 4Gi
+      - name: temp-dir
+        emptyDir:
+          sizeLimit: 2Gi

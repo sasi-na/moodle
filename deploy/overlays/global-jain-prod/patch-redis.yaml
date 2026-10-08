@@ -1,0 +1,27 @@
+# Redis measures 11m CPU and 7Mi.
+#
+# Base reserves 3Gi (limit 4Gi) for jain's ~45,000 sessions; live here was
+# 200m/256Mi with no limit. The limit is new and is deliberately coherent with
+# config/redis.conf's `maxmemory 256mb` -- LRU trims keys long before the
+# container ceiling, so Redis is never OOM-killed.
+#
+# Any change to this pod template restarts Redis, and Redis here has no
+# persistence, so a restart drops every session and signs users out. That is
+# acceptable during this migration because the deploy restarts the workload
+# anyway and the session prefix changes in the same step -- but it IS
+# user-visible, and this tenant has 429 active accounts, unlike usdc's three.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  template:
+    spec:
+      containers:
+      - name: redis
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi

@@ -1,0 +1,17 @@
+# IIITD sizing. 763 users, 94 courses -- comparable to other mid-size tenants, far smaller than
+# jain. The 300-simultaneous-login requirement (exam start) is the sizing driver,
+# not steady-state load; see the migration plan's capacity notes.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: php-fpm
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2"

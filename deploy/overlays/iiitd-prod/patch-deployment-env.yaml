@@ -1,0 +1,105 @@
+# Tenant environment for learning.iiitdwd.ac.in.
+#
+# Same list and same order as jain-prod; only the tenant values differ.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  template:
+    spec:
+      # The tenant-plugins / tenant-assets copy loop runs in the INIT container,
+      # not in php-fpm -- it writes into the shared code volume before any app
+      # container starts. Naming TENANT_PLUGINS only on php-fpm left the loop
+      # with an empty variable, so it silently copied nothing and
+      # mod/pdfannotator never reached the web pods. The CronJobs, which set it
+      # correctly, then disagreed with the web pods about what was on disk;
+      # get_all_versions_hash() differed, moodle_needs_upgrading() returned
+      # true, and cron suspended itself. Keep this in step with the CronJob
+      # patches -- all three run the same loop from the same image.
+      #
+      # setup-logs-and-code is already FIRST in the base list, so kustomize
+      # floating a patched entry to the front cannot reorder anything here.
+      initContainers:
+      - name: setup-logs-and-code
+        env:
+        - name: TENANT_PLUGINS
+          value: "pdfannotator"
+      containers:
+      - name: php-fpm
+        env:
+        # Tenant-scoped plugin: the image ships mod/pdfannotator under
+        # tenant-plugins/ so the other four tenants never install it. The
+        # base init container copies it into mod/ at pod start.
+        - name: TENANT_PLUGINS
+          value: "pdfannotator"
+        - name: MOODLE_SITE_URL
+          # Must match $CFG->wwwroot in config/moodle_config.php. Both moved to
+          # learning.iiitdwd.ac.in at the 2026-09-14 cutover; keep them in step.
+          value: "https://learning.iiitdwd.ac.in"
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        - name: MOODLE_DATABASE_TYPE
+          value: "mysqli"
+        # IIITD gets its OWN PXC cluster in this namespace, so this is the short
+        # in-namespace service name -- no cross-namespace FQDN.
+        #
+        # Decided rather than sharing jain's cluster: a shared cluster puts both
+        # sites in one failure domain, and the PXC FullClusterCrash on
+        # 2026-06-30 took jain down for ~14 minutes. Shared, it would have taken
+        # both sites down together.
+        #
+        # The cluster itself is NOT created by this kustomization -- it is a Helm
+        # release, matching every other tenant.
+        - name: MOODLE_DATABASE_HOST
+          value: "mysql-db-pxc-db-haproxy"
+        - name: MOODLE_DATABASE_PORT_NUMBER
+          value: "3306"
+        - name: MOODLE_DATABASE_NAME
+          value: "jaincfs"
+        - name: MOODLE_DATABASE_USER
+          value: "jaincfs"
+        - name: MOODLE_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: database-password
+        # Key for IIITD's helpdesk (I-dost) API, read by
+        # blocks/support/support_api.php via the overlay's forced settings.
+        # optional: true so the pod still starts before the key is added --
+        # support_api.php fails closed with a clear message rather than
+        # falling back to another tenant's helpdesk.
+        - name: BLOCK_SUPPORT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: block-support-api-key
+              optional: true
+        # Basic-auth pair for IIITD's exam provider (Gianveshana), read by
+        # block_endsemesterexam via the overlay's forced settings. Same posture
+        # as the helpdesk key above: optional, so the pod starts before they are
+        # set, and the block fails closed with "not set up yet" rather than
+        # falling back to another tenant's exam portal.
+        - name: EXAM_API_USER
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: exam-api-user
+              optional: true
+        - name: EXAM_API_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: exam-api-password
+              optional: true
+        - name: MOODLE_USERNAME
+          value: "admin"
+        - name: MOODLE_EMAIL
+          value: "admin@example.com"
+        - name: MOODLE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: admin-password
+        - name: PHP_MEMORY_LIMIT
+          value: "4G"

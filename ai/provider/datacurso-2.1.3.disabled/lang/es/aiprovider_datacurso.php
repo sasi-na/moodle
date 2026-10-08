@@ -1,0 +1,264 @@
+<?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ * Plugin strings are defined here.
+ *
+ * @package     aiprovider_datacurso
+ * @category    string
+ * @copyright   Josue <josue@datacurso.com>
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['action'] = 'Acción';
+$string['action:explain_text:endpoint'] = 'Endpoint para explicación de texto';
+$string['action:explain_text:model'] = 'Modelo para la explicación';
+$string['action:explain_text:model_help'] = 'Seleccione el modelo que generará las explicaciones.';
+$string['action:explain_text:systeminstruction'] = 'Instrucción de sistema para la explicación';
+$string['action:explain_text:systeminstruction_help'] = 'Proporcione contexto para guiar el proceso de explicación.';
+$string['action:generate_image:endpoint'] = 'Punto final de API';
+$string['action:generate_image:endpoint_desc'] = 'El punto final para generar imágenes';
+$string['action:generate_image:model'] = 'Modelo para generación de imagen';
+$string['action:generate_image:model_help'] = 'Seleccione el modelo de IA para generar imágenes.';
+$string['action:generate_image:systeminstruction'] = 'Prompt de sistema para generación de imagen';
+$string['action:generate_image:systeminstruction_help'] = 'Instrucciones adicionales que guían a la IA en la generación de la imagen deseada.';
+$string['action:generate_text:endpoint'] = 'Punto final de API';
+$string['action:generate_text:endpoint_desc'] = 'El punto final para generar texto';
+$string['action:generate_text:instruction'] = 'Instrucción del sistema';
+$string['action:generate_text:instruction_desc'] = 'Esta instrucción se envía al modelo de IA junto con la solicitud del usuario. No se recomienda editar esta instrucción a menos que sea absolutamente necesario.';
+$string['action:generate_text:model'] = 'Modelo para generación de texto';
+$string['action:generate_text:model_help'] = 'Seleccione qué modelo de IA se utilizará para generar el texto.';
+$string['action:generate_text:systeminstruction'] = 'Instrucción de sistema';
+$string['action:generate_text:systeminstruction_help'] = 'Instrucción o contexto dado a la IA antes de generar el texto. Útil para controlar el tono, la estructura o el propósito de la respuesta.';
+$string['action:summarise_text:endpoint'] = 'Punto final de API';
+$string['action:summarise_text:endpoint_desc'] = 'El punto final para generar texto';
+$string['action:summarise_text:instruction'] = 'Instrucción del sistema';
+$string['action:summarise_text:instruction_desc'] = 'Esta instrucción se envía al modelo de IA junto con la solicitud del usuario. No se recomienda editar esta instrucción a menos que sea absolutamente necesario.';
+$string['action:summarise_text:model'] = 'Modelo para resumen';
+$string['action:summarise_text:model_help'] = 'Seleccione qué modelo de IA se utilizará para resumir el texto.';
+$string['action:summarise_text:systeminstruction'] = 'Instrucción de sistema para el resumen';
+$string['action:summarise_text:systeminstruction_help'] = 'Contexto opcional para influir en cómo se genera el resumen.';
+$string['action_activity_image'] = 'Actividad con imagen';
+$string['action_activity_noimage'] = 'Actividad sin imagen';
+$string['action_course_image'] = 'Curso con imagen';
+$string['action_course_noimage'] = 'Curso sin imagen';
+$string['action_default'] = 'Créditos por acción';
+$string['action_image'] = 'Generar imagen';
+$string['action_text'] = 'Generar texto / resumen';
+$string['all'] = 'Todos';
+$string['alt_datacurso_icon'] = 'Icono de Datacurso';
+$string['chart_actions'] = 'Distribución de créditos por servicio';
+$string['chart_tokens_by_day'] = 'Consumo de créditos por día';
+$string['chart_tokens_by_month'] = 'Número de créditos consumidos por mes';
+$string['chart_user_consumption'] = 'Créditos consumidos por usuario por servicio';
+$string['connection'] = 'Configuración de conexión';
+$string['create_activity_assign_image'] = 'Crear tarea con IA (con imágenes)';
+$string['create_activity_assign_noimage'] = 'Crear tarea con IA (sin imágenes)';
+$string['create_activity_book_image'] = 'Crear libro con IA (con imágenes)';
+$string['create_activity_book_noimage'] = 'Crear libro con IA (sin imágenes)';
+$string['create_activity_choice_image'] = 'Crear consulta con IA (con imágenes)';
+$string['create_activity_choice_noimage'] = 'Crear consulta con IA (sin imágenes)';
+$string['create_activity_data_image'] = 'Crear base de datos con IA (con imágenes)';
+$string['create_activity_data_noimage'] = 'Crear base de datos con IA (sin imágenes)';
+$string['create_activity_feedback_image'] = 'Crear encuesta con IA (con imágenes)';
+$string['create_activity_feedback_noimage'] = 'Crear encuesta con IA (sin imágenes)';
+$string['create_activity_folder_image'] = 'Crear carpeta con IA (con imágenes)';
+$string['create_activity_folder_noimage'] = 'Crear carpeta con IA (sin imágenes)';
+$string['create_activity_forum_image'] = 'Crear foro con IA (con imágenes)';
+$string['create_activity_forum_noimage'] = 'Crear foro con IA (sin imágenes)';
+$string['create_activity_glossary_image'] = 'Crear glosario con IA (con imágenes)';
+$string['create_activity_glossary_noimage'] = 'Crear glosario con IA (sin imágenes)';
+$string['create_activity_h5pactivity_image'] = 'Crear actividad H5P con IA (con imágenes)';
+$string['create_activity_h5pactivity_noimage'] = 'Crear actividad H5P con IA (sin imágenes)';
+$string['create_activity_imscp_image'] = 'Crear paquete IMS con IA (con imágenes)';
+$string['create_activity_imscp_noimage'] = 'Crear paquete IMS con IA (sin imágenes)';
+$string['create_activity_label_image'] = 'Crear etiqueta con IA (con imágenes)';
+$string['create_activity_label_noimage'] = 'Crear etiqueta con IA (sin imágenes)';
+$string['create_activity_lesson_image'] = 'Crear lección con IA (con imágenes)';
+$string['create_activity_lesson_noimage'] = 'Crear lección con IA (sin imágenes)';
+$string['create_activity_page_image'] = 'Crear página con IA (con imágenes)';
+$string['create_activity_page_noimage'] = 'Crear página con IA (sin imágenes)';
+$string['create_activity_quiz_image'] = 'Crear cuestionario con IA (con imágenes)';
+$string['create_activity_quiz_noimage'] = 'Crear cuestionario con IA (sin imágenes)';
+$string['create_activity_resource_image'] = 'Crear archivo/recurso con IA (con imágenes)';
+$string['create_activity_resource_noimage'] = 'Crear archivo/recurso con IA (sin imágenes)';
+$string['create_activity_scorm_image'] = 'Crear paquete SCORM con IA (con imágenes)';
+$string['create_activity_scorm_noimage'] = 'Crear paquete SCORM con IA (sin imágenes)';
+$string['create_activity_url_image'] = 'Crear URL con IA (con imágenes)';
+$string['create_activity_url_noimage'] = 'Crear URL con IA (sin imágenes)';
+$string['create_activity_wiki_image'] = 'Crear wiki con IA (con imágenes)';
+$string['create_activity_wiki_noimage'] = 'Crear wiki con IA (sin imágenes)';
+$string['create_activity_workshop_image'] = 'Crear taller con IA (con imágenes)';
+$string['create_activity_workshop_noimage'] = 'Crear taller con IA (sin imágenes)';
+$string['curlerror'] = 'Error cURL de la API de Datacurso: {$a}';
+$string['custom_model_name'] = 'Nombre de modelo personalizado';
+$string['custom_model_name_help'] = 'Nombre opcional para identificar esta configuración de modelo de IA específica.';
+$string['datacurso:manage'] = 'Gestionar configuración del proveedor de IA';
+$string['datacurso:use'] = 'Usar servicios de IA de Datacurso';
+$string['datacurso:viewreports'] = 'Ver informes de uso de IA';
+$string['day'] = 'día';
+$string['days'] = 'Días';
+$string['description'] = 'Descripción';
+$string['descriptionpagelistplugins'] = 'Aquí puede encontrar la lista de plugins compatibles con el proveedor Datacurso';
+$string['emptyprompt'] = 'Indicación vacía';
+$string['emptyresponse'] = 'Sin respuesta de la API de Datacurso.';
+$string['endpointurl'] = 'URL del Endpoint';
+$string['endpointurl_help'] = 'URL del endpoint base de la API del Proveedor de IA de Datacurso. Generalmente algo como https://api.datacurso.ai/v1/.';
+$string['entity_consumption'] = 'Consumo';
+$string['error_ratelimit_exceeded'] = 'Se ha superado el límite de consumos permitidos. Por favor, inténtalo de nuevo el {$a}.';
+$string['errorgetbalancecredits'] = 'No se pudo recuperar el saldo de créditos de la API externa';
+$string['errorgetusers'] = 'No se pudo recuperar la lista de usuarios. Por favor, inténtelo de nuevo más tarde.';
+$string['filter_year'] = 'Año';
+$string['forbidden'] = 'No tiene permiso para realizar esta acción con la licencia actual. Por favor, verifique su licencia y créditos disponibles en <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Gestionar Créditos</a> en la Tienda Datacurso.';
+$string['generate_activitie'] = 'Generar actividad o recurso con IA';
+$string['generate_ai_reinforcement_activity'] = 'Crear actividad de refuerzo con IA';
+$string['generate_analysis_comments'] = 'Generar análisis de calificación de una actividad/recurso con IA';
+$string['generate_analysis_course'] = 'Generar análisis de calificación del curso con IA';
+$string['generate_analysis_general'] = 'Generar análisis de calificación general con IA';
+$string['generate_analysis_story_student'] = 'Generar análisis de historia del estudiante con IA';
+$string['generate_assign_answer'] = 'Generar revisión de tarea con IA';
+$string['generate_certificate_answer'] = 'Generar mensaje de certificado con IA';
+$string['generate_chat_embeddings'] = 'Historial de conversación IA';
+$string['generate_chat_message'] = 'Generar mensaje de tutor IA';
+$string['generate_chat_stream'] = 'Respuesta IA';
+$string['generate_creation_course'] = 'Crear curso completo con IA';
+$string['generate_creation_course_image'] = 'Crear curso completo con IA (con imágenes)';
+$string['generate_creation_course_noimage'] = 'Crear curso completo con IA (sin imágenes)';
+$string['generate_forum_chat'] = 'Generar respuesta de foro con IA';
+$string['generate_forum_grade'] = 'Calificar foro con IA';
+$string['generate_image'] = 'Generar imagen con IA';
+$string['generate_plan_course'] = 'Generar plan de creación de curso con IA';
+$string['generate_summary'] = 'Generar resumen con IA';
+$string['generate_text'] = 'Generar texto con IA';
+$string['goto'] = 'Ir al Informe';
+$string['hour'] = 'hora';
+$string['hours'] = 'Horas';
+$string['httperror'] = 'Error inesperado al procesar su solicitud (HTTP {$a}). Por favor, inténtelo de nuevo más tarde. Si el problema persiste, contacte a su administrador del sitio.';
+$string['id'] = 'ID';
+$string['installed'] = 'Instalado';
+$string['instance_disabled'] = 'La instancia del proveedor Datacurso está desactivada';
+$string['invalidjson'] = 'JSON inválido';
+$string['invalidlicensekey'] = 'La clave de licencia ha caducado o no es válida. Por favor, vaya a <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Gestionar Créditos</a> en la Tienda Datacurso para renovar o comprar una nueva licencia.';
+$string['jsondecodeerror'] = 'Error al procesar la respuesta de la API de Datacurso: {$a}';
+$string['license_not_allowed'] = 'Su licencia no permite realizar esta solicitud. Por favor, gestione sus licencias y créditos en <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Gestionar Créditos</a> en la Tienda Datacurso.';
+$string['licensekey'] = 'Clave de licencia';
+$string['licensekey_help'] = 'Ingrese su clave de licencia del proveedor de IA Datacurso.';
+$string['licensekey_missing'] = 'La clave de licencia no está configurada';
+$string['link_consumptionhistory'] = 'Historial de consumo de créditos';
+$string['link_generalreport'] = 'Informe general';
+$string['link_generalreport_datacurso'] = 'Informe general Datacurso IA';
+$string['link_listplugings'] = 'Lista de plugins Datacurso';
+$string['link_plugin'] = 'Enlace';
+$string['link_provider_config'] = 'Configuración del proveedor';
+$string['link_report_statistic'] = 'Informe de estadísticas generales';
+$string['message_no_there_plugins'] = 'No hay plugins disponibles';
+$string['minute'] = 'minuto';
+$string['minutes'] = 'Minutos';
+$string['month'] = 'mes';
+$string['months'] = 'Meses';
+$string['notenoughtokens'] = 'Créditos de IA insuficientes. Por favor, visite <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Gestionar Créditos</a> en la Tienda Datacurso para asignar o comprar más créditos. O contacte a su administrador.';
+$string['of'] = 'de';
+$string['plugin'] = 'Plugin';
+$string['plugindesc_assign_ai'] = 'Revisar tareas con asistencia de IA.';
+$string['plugindesc_coursegen'] = 'Crear cursos completos, actividades y recursos con IA.';
+$string['plugindesc_datacurso_ratings'] = 'Permite a los estudiantes calificar actividades y recursos; los profesores y administradores pueden generar análisis de cursos basados en IA.';
+$string['plugindesc_dttutor'] = 'Chatear con un tutor de IA dentro del curso.';
+$string['plugindesc_forum_ai'] = 'Extender foros con análisis impulsado por IA para generar resúmenes automáticamente.';
+$string['plugindesc_lifestory'] = 'Informe y análisis impulsado por IA del progreso académico del estudiante.';
+$string['plugindesc_smartrules'] = 'Crear actividades automatizadas basadas en condiciones previas de los estudiantes.';
+$string['plugindesc_socialcert'] = 'Generar automáticamente certificados personalizados al completar el curso.';
+$string['pluginname'] = 'Proveedor de IA Datacurso';
+$string['pluginname_assign_ai'] = 'Tareas IA';
+$string['pluginname_coursegen'] = 'Creador de Cursos IA';
+$string['pluginname_datacurso_ratings'] = 'Calificación de Actividades IA';
+$string['pluginname_dttutor'] = 'Tutor IA';
+$string['pluginname_forum_ai'] = 'Foro IA';
+$string['pluginname_lifestory'] = 'Historia de Vida del Estudiante IA';
+$string['pluginname_smartrules'] = 'SmartRules IA';
+$string['pluginname_socialcert'] = 'Compartir Certificado IA';
+$string['privacy:metadata'] = 'El plugin Proveedor de IA Datacurso almacena una copia local del historial de consumo de créditos de cada usuario para los informes del administrador, y envía a los servicios externos de Datacurso los datos de solicitud necesarios para ejecutar cada acción de IA. Datacurso conserva los datos enviados bajo sus términos de tratamiento de datos; las solicitudes de borrado de datos remotos se tramitan actualmente a través del soporte de Datacurso.';
+$string['privacy:metadata:aiprovider_datacurso'] = 'Proveedor de IA Datacurso';
+$string['privacy:metadata:aiprovider_datacurso_consumption'] = 'Copia local del historial externo de consumo de créditos, sincronizada bajo demanda para los informes.';
+$string['privacy:metadata:aiprovider_datacurso_consumption:action'] = 'Identificador de la acción.';
+$string['privacy:metadata:aiprovider_datacurso_consumption:balance'] = 'Saldo restante tras el consumo.';
+$string['privacy:metadata:aiprovider_datacurso_consumption:credits'] = 'Créditos consumidos.';
+$string['privacy:metadata:aiprovider_datacurso_consumption:externalid'] = 'El identificador del registro de consumo en la tienda Datacurso.';
+$string['privacy:metadata:aiprovider_datacurso_consumption:service'] = 'Identificador del servicio (p. ej. local_coursegen).';
+$string['privacy:metadata:aiprovider_datacurso_consumption:timecreated'] = 'Marca de tiempo del consumo.';
+$string['privacy:metadata:aiprovider_datacurso_consumption:userid'] = 'El usuario de Moodle que originó el consumo.';
+$string['privacy:metadata:datacurso_ai_services'] = 'Servicios de IA de Datacurso (plugins-ai / eu.plugins-ai): reciben los datos de solicitud necesarios para generar texto, resúmenes e imágenes, y para ofrecer las funciones de IA de los plugins de Datacurso. Datacurso conserva estos datos bajo sus términos de tratamiento de datos; las solicitudes de borrado se tramitan actualmente a través del soporte de Datacurso.';
+$string['privacy:metadata:datacurso_ai_services:file'] = 'El contenido, el nombre y el tipo MIME de los archivos subidos al servicio de IA en nombre del usuario.';
+$string['privacy:metadata:datacurso_ai_services:lang'] = 'El idioma del usuario que realiza la solicitud.';
+$string['privacy:metadata:datacurso_ai_services:licensekey'] = 'La clave de licencia del sitio, enviada como cabecera de la solicitud para autenticar el sitio.';
+$string['privacy:metadata:datacurso_ai_services:messages'] = 'La conversación enviada al modelo: la instrucción del sistema y la indicación del usuario.';
+$string['privacy:metadata:datacurso_ai_services:model'] = 'El modelo de IA solicitado.';
+$string['privacy:metadata:datacurso_ai_services:n'] = 'El número de imágenes solicitadas.';
+$string['privacy:metadata:datacurso_ai_services:prompt'] = 'El texto de la indicación proporcionado por el usuario para generar imágenes.';
+$string['privacy:metadata:datacurso_ai_services:ratelimit'] = 'El límite de créditos por usuario configurado para el servicio, enviado como cabeceras de la solicitud para que el servicio pueda aplicarlo.';
+$string['privacy:metadata:datacurso_ai_services:site_id'] = 'Un identificador aleatorio de este sitio Moodle, usado para mantener separados los contadores por usuario entre sitios.';
+$string['privacy:metadata:datacurso_ai_services:site_url'] = 'La URL de este sitio Moodle.';
+$string['privacy:metadata:datacurso_ai_services:size'] = 'El tamaño de imagen solicitado.';
+$string['privacy:metadata:datacurso_ai_services:timezone'] = 'La zona horaria del usuario que realiza la solicitud.';
+$string['privacy:metadata:datacurso_ai_services:userid'] = 'El ID del usuario de Moodle que realiza la solicitud de IA.';
+$string['privacy:metadata:datacurso_course_service'] = 'Servicio de creación de cursos de Datacurso (course-ai-v2): recibe los datos necesarios para generar cursos, actividades y recursos con IA. Datacurso conserva estos datos bajo sus términos de tratamiento de datos; las solicitudes de borrado se tramitan actualmente a través del soporte de Datacurso.';
+$string['privacy:metadata:datacurso_course_service:file'] = 'El contenido, el nombre y el tipo MIME de los archivos (por ejemplo, un programa de curso) subidos al servicio de cursos en nombre del usuario.';
+$string['privacy:metadata:datacurso_course_service:lang'] = 'El idioma del usuario que realiza la solicitud.';
+$string['privacy:metadata:datacurso_course_service:licensekey'] = 'La clave de licencia del sitio, enviada como cabecera de la solicitud para autenticar el sitio.';
+$string['privacy:metadata:datacurso_course_service:payload'] = 'Los datos de la solicitud de generación de cursos proporcionados por el usuario (instrucciones, contexto del curso y opciones).';
+$string['privacy:metadata:datacurso_course_service:ratelimit'] = 'Las cabeceras del límite de créditos configurado por el administrador (indicador de activación, límite, ventana y coste estimado); no son datos personales.';
+$string['privacy:metadata:datacurso_course_service:site_id'] = 'Un identificador aleatorio de este sitio Moodle, usado para mantener separados los contadores por usuario entre sitios.';
+$string['privacy:metadata:datacurso_course_service:site_url'] = 'La URL de este sitio Moodle.';
+$string['privacy:metadata:datacurso_course_service:timezone'] = 'La zona horaria del usuario que realiza la solicitud.';
+$string['privacy:metadata:datacurso_course_service:userid'] = 'El ID del usuario de Moodle que realiza la solicitud.';
+$string['privacy:metadata:datacurso_shop'] = 'Tienda Datacurso (shop.datacurso.com): valida la licencia y mantiene el libro de consumo de créditos por usuario (ID de usuario, servicio, acción, créditos, saldo y fecha), que devuelve a este sitio para el informe local de consumo.';
+$string['privacy:metadata:datacurso_shop:licensekey'] = 'La clave de licencia del sitio, enviada como cabecera de la solicitud para autenticar el sitio.';
+$string['ratelimit_creditperaction'] = 'Créditos por acción';
+$string['ratelimit_creditperaction_desc'] = 'Créditos máximos estimados que puede costar una sola acción de este plugin. La solicitud se bloquea de antemano cuando los créditos restantes en la ventana son menos que este valor.';
+$string['ratelimit_creditperaction_help'] = 'Créditos máximos estimados que puede costar una sola acción de este plugin. La solicitud se bloquea de antemano cuando los créditos restantes en la ventana son menos que este valor.';
+$string['ratelimit_enable'] = 'Habilitar límite';
+$string['ratelimit_enable_desc'] = 'Si está habilitado, se aplicará el límite de créditos por usuario para este plugin.';
+$string['ratelimit_limit'] = 'Créditos por ventana';
+$string['ratelimit_limit_help'] = 'Número máximo de créditos que un usuario puede consumir dentro de la ventana de tiempo seleccionada. 0 para ilimitado.';
+$string['ratelimit_window'] = 'Ventana de tiempo';
+$string['ratelimit_window_help'] = 'Seleccione la duración y unidad para la ventana del límite.';
+$string['ratelimit_window_unit'] = 'Unidad de ventana';
+$string['ratelimit_window_value'] = 'Valor de ventana';
+$string['read_context_course'] = 'Leer contexto para creación de curso con IA';
+$string['read_context_course_model'] = 'Cargar modelo académico para creación de curso con IA';
+$string['remainingtokens'] = 'Saldo restante';
+$string['responseinvalidai'] = 'Respuesta inválida del servicio de IA.';
+$string['responseinvalidaimage'] = 'Respuesta inválida del servicio de IA (sin imagen).';
+$string['responseinvalidaimagecreate'] = 'No se pudo crear el archivo de imagen.';
+$string['second'] = 'segundo';
+$string['seconds'] = 'Segundos';
+$string['service'] = 'Servicio';
+$string['serviceunavailable'] = 'El servicio de IA no está disponible temporalmente. Por favor, inténtelo de nuevo más tarde. Si el problema persiste, contacte a su administrador del sitio.';
+$string['tokens'] = 'Créditos';
+$string['tokens_available'] = 'Créditos disponibles';
+$string['tokensconsumed'] = 'Créditos consumidos';
+$string['tokensconsumedday'] = 'Créditos consumidos por día';
+$string['tokensconsumedmonth'] = 'Créditos consumidos por mes';
+$string['tokensused'] = 'Créditos utilizados';
+$string['total_consumed'] = 'Créditos consumidos';
+$string['total_user_consumed'] = 'Créditos totales consumidos por el usuario';
+$string['userid'] = 'Usuario';
+$string['warningconfig_instance'] = 'Advertencia: Solo se debe crear una instancia con este proveedor para un uso adecuado.';
+$string['week'] = 'semana';
+$string['weeks'] = 'Semanas';
+$string['year'] = 'año';
+$string['years'] = 'Años';

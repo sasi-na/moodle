@@ -1,0 +1,336 @@
+{{!
+    @template theme_baz/student-activity
+
+    Bespoke activity shell for student-only users — a fork of theme_baz/tmpl-incourse
+    that keeps ALL the drawer/region markup and JS (course-index, blocks/quiz-nav
+    drawer, activity navigation) intact, and adds the bespoke navy global sidebar
+    (Dashboard / My Courses / …) plus the Need-help + Ask JO panels. The page
+    content shifts right of the sidebar via scss/moodle/student-activity.scss.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    {{! Focus mode: the site left-nav is gone; module navigation lives in a
+        collapsible overlay toggled by the topbar ☰, built from the same course
+        section/activity data as the bespoke course view. }}
+    {{#baz_modnav}}
+    <div class="ba-mnav-backdrop" id="ba-mnav-backdrop" hidden></div>
+    <aside class="ba-mnav" id="ba-mnav" aria-hidden="true" aria-label="{{#str}}sd_modules, theme_baz{{/str}}">
+        <div class="ba-mnav-head">
+            <a class="ba-mnav-course" href="{{baz_modnav.courseurl}}">
+                <svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M9 11h6M9 15h4"/></svg>
+                <span>{{baz_modnav.coursename}}</span>
+            </a>
+            <button type="button" class="ba-mnav-close" id="ba-mnav-close" aria-label="{{#str}}closebuttontitle, moodle{{/str}}">&times;</button>
+        </div>
+        <div class="ba-mnav-body">
+            {{#baz_modnav.sections}}
+            <div class="ba-mnav-sec{{#current}} current{{/current}}">
+                <div class="ba-mnav-secname">{{name}}</div>
+                {{#acts}}
+                <a class="ba-mnav-act{{#current}} current{{/current}}{{#done}} done{{/done}}" href="{{url}}"{{#current}} aria-current="page"{{/current}}>
+                    <span class="ba-mnav-ic"><svg viewBox="0 0 24 24">{{{iconsvg}}}</svg></span>
+                    <span class="ba-mnav-name">{{name}}</span>
+                    {{#tracked}}<span class="ba-mnav-check{{#done}} on{{/done}}">{{#done}}<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 6"/></svg>{{/done}}</span>{{/tracked}}
+                </a>
+                {{/acts}}
+            </div>
+            {{/baz_modnav.sections}}
+        </div>
+    {{> theme_baz/sidebar-support }}
+    </aside>
+    {{/baz_modnav}}
+
+    {{#hasblocks}}
+        {{< theme_baz/drawer }}
+            {{$id}}baz-drawers-blocks{{/id}}
+            {{$drawerclasses}}drawer drawer-right{{/drawerclasses}}
+            {{$drawercontent}}
+                <section class="d-print-none" aria-label="{{#str}}blocks{{/str}}">
+                    {{{ addblockbutton }}}
+                    {{{ sidepreblocks }}}
+                </section>
+            {{/drawercontent}}
+            {{$drawerpreferencename}}drawer-open-block{{/drawerpreferencename}}
+            {{$forceopen}}{{#forceblockdraweropen}}1{{/forceblockdraweropen}}{{/forceopen}}
+            {{$drawerstate}}show-drawer-right{{/drawerstate}}
+            {{$tooltipplacement}}left{{/tooltipplacement}}
+            {{$drawercloseonresize}}1{{/drawercloseonresize}}
+            {{$closebuttontext}}{{#str}}closeblockdrawer, core{{/str}}{{/closebuttontext}}
+        {{/ theme_baz/drawer}}
+    {{/hasblocks}}
+
+    <div id="page-wrapper" class="d-print-block {{#output.courseheadermenu}}rui--course-with-nav{{/output.courseheadermenu}} {{^output.courseheadermenu}}rui--course-witout-nav{{/output.courseheadermenu}}">
+
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="page" data-region="mainpage" data-usertour="scroller" class="drawers {{#topbarcustomhtml}}topbar--ext{{/topbarcustomhtml}} {{#courseindexopen}}show-drawer-left{{/courseindexopen}} {{#blockdraweropen}}show-hidden-drawer show-drawer-right{{/blockdraweropen}} {{#blockdraweropen}}show-drawer-right{{/blockdraweropen}}  drag-container">
+
+            <div class="drawer-toggles d-flex">
+                {{#courseindex}}
+                    <div id="btnCourseIndex" class="drawer-toggler drawer-left-toggle open-nav d-print-none">
+                        <button
+                            class="btn-drawer btn-drawer--left drawertoggle"
+                            data-toggler="drawers"
+                            data-action="toggle"
+                            data-target="baz-drawers-courseindex"
+                            data-toggle="tooltip"
+                            data-placement="right"
+                            title="{{#str}}opendrawerindex, core{{/str}}"
+                        >
+                            <span class="sr-only">{{#str}}opendrawerindex, core{{/str}}</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 5.99519C2 5.44556 2.44556 5 2.99519 5H11.0048C11.5544 5 12 5.44556 12 5.99519C12 6.54482 11.5544 6.99039 11.0048 6.99039H2.99519C2.44556 6.99039 2 6.54482 2 5.99519Z" fill="currentColor" /><path d="M2 11.9998C2 11.4501 2.44556 11.0046 2.99519 11.0046H21.0048C21.5544 11.0046 22 11.4501 22 11.9998C22 12.5494 21.5544 12.9949 21.0048 12.9949H2.99519C2.44556 12.9949 2 12.5494 2 11.9998Z" fill="currentColor" /><path d="M2.99519 17.0096C2.44556 17.0096 2 17.4552 2 18.0048C2 18.5544 2.44556 19 2.99519 19H15.0048C15.5544 19 16 18.5544 16 18.0048C16 17.4552 15.5544 17.0096 15.0048 17.0096H2.99519Z" fill="currentColor" /></svg>
+                        </button>
+                    </div>
+                {{/courseindex}}
+                {{#hasblocks}}
+                    <div id="sidepreopen-control" class="drawer-toggler drawer-right-toggle ml-auto d-print-none">
+                        <button
+                            class="drawertoggle btn-close-drawer--right"
+                            data-toggler="drawers"
+                            data-action="toggle"
+                            data-target="baz-drawers-blocks"
+                            data-toggle="tooltip"
+                            data-placement="right"
+                            title="{{#str}}opendrawerblocks, core{{/str}}"
+                        >
+                            <span class="sr-only">{{#str}}opendrawerblocks, core{{/str}}</span>
+                            <span class="dir-rtl-hide">
+                                <svg width="20" height="20" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;"><g transform="matrix(1,0,0,1,-2,0)"><path d="M18.333,15L18.333,5C18.333,3.629 17.205,2.5 15.833,2.5L14.167,2.5C12.795,2.5 11.667,3.629 11.667,5L11.667,15C11.667,16.371 12.795,17.5 14.167,17.5L15.833,17.5C17.205,17.5 18.333,16.371 18.333,15Z" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:1.67px;" /></g><g transform="matrix(1,0,0,1,-2,0)"><path d="M11.667,10L5,10M5,10L7.5,7.5M5,10L7.5,12.5" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:1.25px;stroke-linecap:round;stroke-linejoin:round;" /></g></svg>
+                            </span>
+                        </button>
+                    </div>
+                {{/hasblocks}}
+            </div>
+
+            <header class="ba-topbar">
+                <div class="ba-topbar-inner">
+                    <div class="ba-tb-left">
+                        <a class="ba-tb-logo" href="{{baz_dashboardurl}}" aria-label="{{sitename}}">
+                            {{! This logo sits in a navy pill, unlike the classic topbar that
+                                customlogo also feeds, so prefer the sidebar logo. }}
+                            {{#customsidebarlogo}}<img src="{{customsidebarlogo}}" alt="{{sitename}}">{{/customsidebarlogo}}
+                            {{^customsidebarlogo}}
+                                {{#customlogo}}<img src="{{customlogo}}" alt="{{sitename}}">{{/customlogo}}
+                                {{^customlogo}}<span class="ba-tb-logo-txt">{{{ sitename }}}</span>{{/customlogo}}
+                            {{/customsidebarlogo}}
+                        </a>
+                    </div>
+                    <nav class="ba-crumb">
+                        <a href="{{baz_courseurl}}">{{baz_coursename}}</a><span class="sep">/</span>
+                        <span class="cur">{{baz_activityname}}</span>
+                    </nav>
+                    <div class="ba-tb-right">
+                        {{#baz_hasaskjo}}<button type="button" class="ba-iconbtn ba-tb-askjo" id="sw-askjo-btn" title="{{#str}}sd_askjo, theme_baz{{/str}}"><svg viewBox="0 0 24 24" fill="var(--bz-accent)" stroke="none"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg></button>{{/baz_hasaskjo}}
+                        <button type="button" class="ba-iconbtn" id="sw-themebtn" title="{{#str}}sd_toggletheme, theme_baz{{/str}}"><svg id="sw-themeicon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+                        <div class="ba-navbar-plugin">{{{ output.navbar_plugin_output }}}</div>
+                        <div class="ba-usermenu">{{{ output.user_menu }}}</div>
+                    </div>
+                </div>
+            </header>
+
+            <div id="topofscroll" class="main-inner">
+
+                {{^hidecourseindexnav}}
+                {{#courseindex}}
+                    {{< theme_baz/drawer }}
+                        {{$id}}baz-drawers-courseindex{{/id}}
+                        {{$drawerheadercontent}}
+                            {{> theme_baz/courseindexdrawercontrols}}
+                        {{/drawerheadercontent}}
+                        {{$drawerclasses}}drawer drawer-course-index drawer-left {{#courseindexopen}}show{{/courseindexopen}}{{/drawerclasses}}
+                        {{$drawercontent}}
+                            {{{ output.display_course_progress }}}
+                            {{{courseindex}}}
+                        {{/drawercontent}}
+                        {{$drawerpreferencename}}drawer-open-index{{/drawerpreferencename}}
+                        {{$drawerstate}}show-drawer-left{{/drawerstate}}
+                        {{$tooltipplacement}}right{{/tooltipplacement}}
+                        {{$closebuttontext}}{{#str}}closecourseindex, core{{/str}}{{/closebuttontext}}
+                    {{/ theme_baz/drawer}}
+                {{/courseindex}}
+                {{/hidecourseindexnav}}
+
+                <div id="page-content" class="page-course-content">
+
+                    <div class="rui-breadcrumbs-wrapper wrapper-xl mb-2">{{{ output.breadcrumbs }}}</div>
+
+                    <div class="wrapper-xl">
+                        {{{coursepageinformationbanners}}}
+                        {{#secondarymoremenu}}
+                            <div class="secondary-navigation d-print-none">
+                                {{> core/moremenu}}
+                            </div>
+                        {{/secondarymoremenu}}
+                    </div>
+
+                    <div id="region-main-box" class="region-main-wrapper mt-4">
+                        {{#hasregionmainsettingsmenu}}
+                            <div id="region-main-settings-menu" class="rui-blocks-area">
+                                <div> {{{ output.region_main_settings_menu }}} </div>
+                            </div>
+                        {{/hasregionmainsettingsmenu}}
+
+                        <section id="region-main" class="has-sidecourseblocks wrapper-has-blocks" aria-label="{{#str}}content{{/str}}">
+                            <div>
+                                <div>
+                                    {{#hasregionmainsettingsmenu}}
+                                        <div class="region_main_settings_menu_proxy"></div>
+                                    {{/hasregionmainsettingsmenu}}
+                                    {{! course controls sit above the activity title: back-to-course + module menu }}
+                                    <div class="ba-actionbar">
+                                        {{#baz_modnav}}<button type="button" class="ba-ab-menu" id="ba-tb-menu" aria-expanded="false" aria-controls="ba-mnav">
+                                            <svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                                            <span>{{#str}}sd_modules, theme_baz{{/str}}</span>
+                                        </button>{{/baz_modnav}}
+                                        <a class="ba-ab-back" href="{{baz_courseurl}}">
+                                            <svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+                                            <span>{{#str}}sd_backtocourse, theme_baz{{/str}}</span>
+                                        </a>
+                                    </div>
+                                    {{{ output.course_content_header }}}
+
+                                    {{#overflow}}
+                                        {{> core/url_select}}
+                                    {{/overflow}}
+
+                                    {{{ output.simple_header }}}
+
+                                    {{#headercontent}}
+                                        {{> core/activity_header }}
+                                    {{/headercontent}}
+                                    <div class="wrapper-fw">
+                                    {{#baz_forumpost}}
+                                        {{#backurl}}<a class="baz-fp-back" href="{{backurl}}">&#8592; Back to discussion</a>{{/backurl}}
+                                        <div class="baz-fp-ctx">
+                                            <span class="baz-fp-label">{{label}}</span>
+                                            <div class="baz-fp-title">{{title}}</div>
+                                            {{#hasauthor}}<div class="baz-fp-by"><span class="baz-fp-av">{{authorinitials}}</span> {{authorname}} · {{date}}</div>{{/hasauthor}}
+                                        </div>
+                                    {{/baz_forumpost}}
+                                    {{#baz_forumlist}}
+                                        <div class="baz-forum-hero">
+                                            <div class="baz-fh-ic">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                                            </div>
+                                            <div class="baz-fh-meta">
+                                                <div class="baz-fh-title">{{title}}</div>
+                                                <div class="baz-fh-stats"><span class="baz-fh-dot"></span><b>{{total}}</b>&nbsp;topics{{#hasunread}} · <b>{{unread}}</b>&nbsp;unread{{/hasunread}} · your posts&nbsp;<b>{{myposts}}</b></div>
+                                            </div>
+                                            {{#cancreate}}<a class="baz-fh-cta" href="{{createurl}}">＋ Start a discussion</a>{{/cancreate}}
+                                        </div>
+                                        {{#hasintro}}<div class="sa-adesc"><div class="sa-desc-label">{{#str}}sd_instructions, theme_baz{{/str}}</div><div class="no-overflow">{{{intro}}}</div></div>{{/hasintro}}
+                                        <div class="baz-fl-toolbar">
+                                            <div class="baz-fl-seg">
+                                                <a class="baz-fl-tab active" href="{{tab_latest}}">Latest activity</a>
+                                                <a class="baz-fl-tab" href="{{tab_unread}}">Unread</a>
+                                                <a class="baz-fl-tab" href="{{mypostsurl}}">My posts</a>
+                                            </div>
+                                            <div class="baz-fl-right">
+                                                <a class="baz-fl-sort" href="{{sort_newest}}">↕ Newest</a>
+                                                <span class="baz-fl-sub{{#subscribed}} on{{/subscribed}}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>{{#subscribed}}Subscribed{{/subscribed}}{{^subscribed}}Subscribe{{/subscribed}}<span class="baz-fl-sw{{#subscribed}} on{{/subscribed}}"></span></span>
+                                            </div>
+                                        </div>
+                                    {{/baz_forumlist}}
+                                    {{#baz_forumthread}}
+                                        {{#forumurl}}<a class="baz-ft-back" href="{{forumurl}}">&#8592; All discussions</a>{{/forumurl}}
+                                        <div class="baz-ft-hero">
+                                            <div class="baz-ft-top">
+                                                <h2 class="baz-ft-title">{{title}}</h2>
+                                                <div class="baz-ft-acts">
+                                                    <button type="button" class="baz-ft-btn{{#favourited}} on{{/favourited}}" data-action="toggle" data-type="favourite-toggle" data-discussionid="{{discussionid}}" data-forumid="{{forumid}}">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>{{#favourited}}Bookmarked{{/favourited}}{{^favourited}}Bookmark{{/favourited}}
+                                                    </button>
+                                                    <button type="button" class="baz-ft-btn{{#subscribed}} on{{/subscribed}}" data-action="toggle" data-type="subscription-toggle" data-discussionid="{{discussionid}}" data-forumid="{{forumid}}">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>{{#subscribed}}Subscribed{{/subscribed}}{{^subscribed}}Subscribe{{/subscribed}}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="baz-ft-meta">
+                                                <span class="baz-ft-av">{{authorinitials}}</span> Started by <b>{{authorname}}</b> · {{created}} · <b>{{postcount}} posts</b>
+                                                {{#partcount}}<span class="baz-ft-parts">{{#participants}}<span class="baz-ft-mini" title="{{name}}">{{initials}}</span>{{/participants}}<span class="baz-ft-pn">{{partcount}} participants</span></span>{{/partcount}}
+                                            </div>
+                                        </div>
+                                        <div class="baz-ft-modebar">
+                                            <div class="baz-ft-modes">{{#modes}}<a class="baz-ft-mode{{#active}} active{{/active}}" href="{{url}}">{{label}}</a>{{/modes}}</div>
+                                            <button type="button" class="baz-ft-collapse" data-baz-collapse-all>&#8622; Collapse all</button>
+                                        </div>
+                                    {{/baz_forumthread}}
+                                    {{{ output.main_content }}}
+                                    {{#baz_forumthread}}{{#replyurl}}
+                                        <a class="baz-ft-composer" href="{{replyurl}}">
+                                            <span class="baz-ft-cprompt">&#9998; Write a reply…</span>
+                                            <span class="baz-ft-cbar" aria-hidden="true"><b>B</b> <i>I</i> &#10077; &#128279; &#128206;</span>
+                                            <span class="baz-ft-cpost">Post reply</span>
+                                        </a>
+                                    {{/replyurl}}{{/baz_forumthread}}
+                                    </div>
+
+                                    {{#baz_nav}}
+                                    <nav class="ba-actnav" aria-label="Activity navigation">
+                                        <div class="ba-actnav-side">
+                                            {{#prev}}
+                                            <a class="ba-actnav-card ba-actnav-prev" href="{{{url}}}">
+                                                <span class="ba-actnav-ar">&#8592;</span>
+                                                <span class="ba-actnav-meta">
+                                                    <span class="ba-actnav-lbl">{{#str}}previous{{/str}}</span>
+                                                    <span class="ba-actnav-name">{{name}}</span>
+                                                </span>
+                                            </a>
+                                            {{/prev}}
+                                        </div>
+                                        <div class="ba-actnav-jump">{{{jump}}}</div>
+                                        <div class="ba-actnav-side ba-actnav-side--r">
+                                            {{#next}}
+                                            <a class="ba-actnav-card ba-actnav-next" href="{{{url}}}">
+                                                <span class="ba-actnav-meta">
+                                                    <span class="ba-actnav-lbl">{{#str}}next{{/str}}</span>
+                                                    <span class="ba-actnav-name">{{name}}</span>
+                                                </span>
+                                                <span class="ba-actnav-ar">&#8594;</span>
+                                            </a>
+                                            {{/next}}
+                                        </div>
+                                    </nav>
+                                    {{/baz_nav}}
+                                    {{^baz_nav}}
+                                    {{{ output.activity_navigation }}}
+                                    {{/baz_nav}}
+                                    {{{ output.course_content_footer }}}
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{> theme_baz/footer }}
+    </div>
+
+    {{! "Need help?" FAB intentionally omitted on focus-mode activity pages. }}
+
+    {{#baz_hasaskjo}}
+    <div class="ba-askjo-panel" id="sw-askjo-panel" hidden>
+        <div class="ba-askjo-head"><span>{{#str}}sd_askjo, theme_baz{{/str}}</span><button type="button" class="ba-askjo-close" id="sw-askjo-close" aria-label="Close">&times;</button></div>
+        <div class="block_openai_chat" data-instance-id="{{baz_askjo.blockid}}">
+            <div class="ba-askjo-body">{{{ baz_askjo.log }}}</div>
+            <div class="ba-askjo-control">{{{ baz_askjo.control }}}</div>
+        </div>
+    </div>
+    {{/baz_hasaskjo}}
+
+</body>
+
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/drawer', 'theme_baz/studentwrap'], function(Loader, Drawer, StudentWrap) {
+        Drawer.init();
+        StudentWrap.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

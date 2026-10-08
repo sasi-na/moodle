@@ -1,0 +1,252 @@
+{{!
+    @template theme_baz/student-coursepage
+
+    Bespoke course-view page for student-only users. Reuses the theme head /
+    session chrome; the body is a custom app shell matching the dashboard,
+    My courses, Calendar and Grades. Course content is built server-side from
+    modinfo by \theme_baz\output\student_coursepage.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="cv-root" class="cv-app">
+
+            <div class="cv-backdrop" id="cv-backdrop"></div>
+            <aside class="cv-side" id="cv-side">
+                <a class="cv-brand" href="{{dashboardurl}}">
+                    {{! The sidebar is always navy, unlike the classic topbar that customlogo
+                        also feeds, so prefer the sidebar logo where a site supplies one. }}
+                    {{#customsidebarlogo}}<img src="{{customsidebarlogo}}" alt="{{sitename}}">{{/customsidebarlogo}}
+                    {{^customsidebarlogo}}
+                        {{#customlogo}}<img src="{{customlogo}}" alt="{{sitename}}">{{/customlogo}}
+                        {{^customlogo}}<span class="cv-brand-txt">{{{ sitename }}}</span>{{/customlogo}}
+                    {{/customsidebarlogo}}
+                </a>
+                <nav class="cv-nav">
+                    <a href="{{dashboardurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg> {{#str}}sd_nav_dashboard, theme_baz{{/str}}</a>
+                    <a href="{{coursesurl}}" class="on"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M9 11h6M9 15h4"/></svg> {{#str}}sd_nav_courses, theme_baz{{/str}}</a>
+                    <a href="{{calendarurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg> {{#str}}sd_nav_calendar, theme_baz{{/str}}</a>
+                    <a href="{{mygradesurl}}"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg> {{#str}}sd_nav_grades, theme_baz{{/str}}</a>
+                    {{#hasinterestzone}}
+                    <a href="{{interestzoneurl}}"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.25"/><circle cx="12" cy="9" r="1" fill="currentColor" stroke="none"/><path d="M12 13V15"/></svg> {{interestzonelabel}}</a>
+                    {{/hasinterestzone}}
+                    <div class="cv-navlbl">{{#str}}sd_nav_resources, theme_baz{{/str}}</div>
+                    {{#showeidcard}}<a href="{{eidcardurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M13 10h5M13.5 14h3M5 16c.4-1.4 1.5-2 3-2s2.6.6 3 2"/></svg> {{#str}}pluginname, local_studentid{{/str}}</a>{{/showeidcard}}
+                    <a href="{{filesurl}}"><svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h6l2 2h6a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> {{#str}}sd_nav_files, theme_baz{{/str}}</a>
+                </nav>
+            {{> theme_baz/sidebar-support }}
+            </aside>
+
+            <div class="cv-main-col">
+                <header class="cv-topbar">
+                    <div class="cv-topbar-inner">
+                        <div class="cv-tb-left">
+                            <button type="button" class="cv-burger" id="cv-burger" aria-label="{{#str}}sd_menu, theme_baz{{/str}}"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                            <nav class="cv-crumb"><a href="{{coursesurl}}">{{#str}}sd_nav_courses, theme_baz{{/str}}</a><span class="sep">/</span><span class="cur">{{coursename}}</span></nav>
+                        </div>
+                        <div class="cv-search-wrap">
+                            <form class="cv-search" action="{{{ config.wwwroot }}}/course/search.php" method="get" role="search">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                                <input type="text" name="search" autocomplete="off" placeholder="{{#str}}cp_searchph, theme_baz{{/str}}" aria-label="{{#str}}search, core{{/str}}">
+                            </form>
+                        </div>
+                        <div class="cv-top-actions">
+                            {{#hasaskjo}}<button type="button" class="cv-askjo" id="cv-askjo-btn"><svg viewBox="0 0 24 24" fill="var(--bz-accent)"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg> {{#str}}sd_askjo, theme_baz{{/str}}</button>{{/hasaskjo}}
+                            <button type="button" class="cv-iconbtn" id="cv-themebtn" title="{{#str}}sd_toggletheme, theme_baz{{/str}}"><svg id="cv-themeicon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+                            <div class="cv-navbar-plugin">{{{ output.navbar_plugin_output }}}</div>
+                            <div class="cv-usermenu">{{{ output.user_menu }}}</div>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="cv-content">
+                    <section class="cv-hero">
+                        <div class="cv-hero-l">
+                            <div class="cv-eyebrow">{{eyebrow}}</div>
+                            <h1>{{coursename}}</h1>
+                            <div class="cv-hmeta">
+                                {{#hasfaculty}}<span class="cv-chip"><span class="cv-av">{{facultyabbr}}</span> {{faculty}}</span>{{/hasfaculty}}
+                                <span class="cv-chip"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/></svg> {{#str}}cp_sections, theme_baz, {{sectioncount}}{{/str}}</span>
+                            </div>
+                        </div>
+                        <div class="cv-hero-r">
+                            <div class="cv-ring" data-pct="{{overallpct}}">
+                                <svg width="118" height="118" viewBox="0 0 140 140"><circle class="cv-ring-bg" cx="70" cy="70" r="58" fill="none" stroke-width="14"/><circle class="cv-ring-fg" cx="70" cy="70" r="58" fill="none" stroke-width="14" stroke-linecap="round"/></svg>
+                                <div class="cv-ring-mid"><b>{{overallpct}}%</b><span>{{#str}}cp_complete, theme_baz{{/str}}</span></div>
+                            </div>
+                            {{#hasresume}}<a class="cv-resume" href="{{resume.url}}">{{#str}}cp_resume, theme_baz{{/str}} <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>{{/hasresume}}
+                        </div>
+                    </section>
+
+                    <nav class="cv-tabs">
+                        <a class="on" href="#">{{#str}}cp_tab_course, theme_baz{{/str}}</a>
+                        <a href="{{gradesurl}}">{{#str}}cp_tab_grades, theme_baz{{/str}}</a>
+                        {{#hascompetencies}}<a href="{{competenciesurl}}">{{#str}}cp_tab_competencies, theme_baz{{/str}}</a>{{/hascompetencies}}
+                        {{#hasbadges}}<a href="{{badgesurl}}">{{#str}}cp_tab_badges, theme_baz{{/str}}</a>{{/hasbadges}}
+                    </nav>
+
+                    {{#hassections}}
+                    <div class="cv-body">
+                        <aside class="cv-toc" id="cv-toc">
+                            <div class="cv-toc-h"><b>{{#str}}cp_contents, theme_baz{{/str}}</b><button type="button" id="cv-collapse" data-collapse="{{#str}}cp_collapseall, theme_baz{{/str}}" data-expand="{{#str}}cp_expandall, theme_baz{{/str}}">{{#str}}cp_collapseall, theme_baz{{/str}}</button></div>
+                            {{#toc}}
+                            <a href="#{{id}}" class="cv-toc-i" data-target="{{id}}"><span class="cv-toc-dot {{tocstate}}"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 6"/></svg></span><span class="cv-toc-n">{{name}}</span><span class="cv-toc-c">{{done}}/{{total}}</span></a>
+                            {{/toc}}
+                        </aside>
+
+                        <div class="cv-secs" id="cv-secs">
+                            {{#sections}}
+                            <div class="cv-sec{{#open}} open{{/open}}" id="{{id}}">
+                                <button type="button" class="cv-sec-h">
+                                    <span class="cv-sec-tog"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+                                    <span class="cv-sec-t">{{name}}</span>
+                                    {{#hastotal}}<span class="cv-sec-prog"><span class="cv-mini"><i style="width:{{pct}}%"></i></span><span class="cv-sec-cnt">{{done}}/{{total}}</span></span>{{/hastotal}}
+                                </button>
+                                <div class="cv-sec-body">
+                                    {{#hassummary}}<div class="cv-sec-summary">{{{summary}}}</div>{{/hassummary}}
+                                    {{#hasrestrict}}<div class="cv-sec-restrict"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> {{restrict}}</div>{{/hasrestrict}}
+                                    {{#acts}}
+                                    {{#islabel}}
+                                    <div class="cv-sec-label">{{{labelhtml}}}</div>
+                                    {{/islabel}}
+                                    {{^islabel}}
+                                    <div class="cv-act-row{{#isdone}} is-done{{/isdone}}">
+                                        <div class="cv-act-head">
+                                        {{#hasurl}}<a class="cv-act" href="{{url}}">{{/hasurl}}{{^hasurl}}<div class="cv-act nolink">{{/hasurl}}
+                                            <span class="cv-ic t-{{type}}"><svg viewBox="0 0 24 24">{{{iconsvg}}}</svg></span>
+                                            <span class="cv-act-main">
+                                                <span class="cv-act-n">{{name}}{{#hasunread}} <span class="cv-act-unread">{{#str}}cp_unread, theme_baz, {{unread}}{{/str}}</span>{{/hasunread}}</span>
+                                                <span class="cv-act-m">{{typelabel}}{{#meta}} &middot; {{meta}}{{/meta}}</span>
+                                                {{#hasdates}}<span class="cv-act-dates">{{#dates}}<span class="cv-date"><b>{{label}}</b> {{text}}</span>{{/dates}}</span>{{/hasdates}}
+                                            </span>
+                                            {{#hasurl}}<span class="cv-cta">{{cta}} <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>{{/hasurl}}
+                                        {{#hasurl}}</a>{{/hasurl}}{{^hasurl}}</div>{{/hasurl}}
+                                        {{#tracked}}
+                                            {{#manual}}
+                                            <form class="cv-comp-form" method="post" action="{{togglecompletionurl}}">
+                                                <input type="hidden" name="id" value="{{cmid}}">
+                                                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                                <input type="hidden" name="completionstate" value="{{manualtarget}}">
+                                                <input type="hidden" name="backto" value="{{courseviewurl}}">
+                                                <button type="submit" class="cv-comp cv-comp-btn {{#isdone}}done{{/isdone}}{{^isdone}}todo{{/isdone}}" title="{{#isdone}}{{#str}}cp_markundone, theme_baz{{/str}}{{/isdone}}{{^isdone}}{{#str}}cp_markdone, theme_baz{{/str}}{{/isdone}}">{{#isdone}}<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 6"/></svg>{{/isdone}}{{^isdone}}<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>{{/isdone}}</button>
+                                            </form>
+                                            {{/manual}}
+                                            {{^manual}}
+                                            <span class="cv-comp cv-comp-auto {{#isdone}}done{{/isdone}}{{^isdone}}todo{{/isdone}}" title="{{#isdone}}{{#str}}cp_auto_done, theme_baz{{/str}}{{/isdone}}{{^isdone}}{{#str}}cp_auto_pending, theme_baz{{/str}}{{/isdone}}" aria-label="{{#isdone}}{{#str}}cp_auto_done, theme_baz{{/str}}{{/isdone}}{{^isdone}}{{#str}}cp_auto_pending, theme_baz{{/str}}{{/isdone}}">{{#isdone}}<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 6"/></svg>{{/isdone}}</span>
+                                            {{/manual}}
+                                        {{/tracked}}
+                                        </div>
+                                    </div>
+                                    {{/islabel}}
+                                    {{/acts}}
+                                </div>
+                            </div>
+                            {{/sections}}
+                        </div>
+
+                        <div class="cv-rail">
+                            {{#hasresume}}
+                            <div class="cv-rc cv-upnext">
+                                <h4><span class="cv-dot"></span>{{#str}}cp_upnext, theme_baz{{/str}}</h4>
+                                <div class="cv-un-n">{{resume.name}}</div>
+                                <div class="cv-un-m">{{resume.type}}</div>
+                                <a class="cv-resume" href="{{resume.url}}">{{#str}}cp_resume, theme_baz{{/str}} <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            </div>
+                            {{/hasresume}}
+
+                            {{#hasfaculty}}
+                            <div class="cv-rc">
+                                <h4><span class="cv-dot"></span>{{#str}}cp_mentor, theme_baz{{/str}}</h4>
+                                <div class="cv-mentor"><span class="cv-mav">{{facultyabbr}}</span><div><div class="cv-mn">{{faculty}}</div><div class="cv-mr">{{#str}}sg_instructor, theme_baz{{/str}}</div></div></div>
+                                {{#hasmessage}}<a class="cv-btn-ghost" href="{{messageurl}}"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> {{#str}}cp_message, theme_baz{{/str}}</a>{{/hasmessage}}
+                                {{#hasbook}}<a class="cv-btn-ghost" href="{{bookurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg> {{#str}}cp_bookslot, theme_baz{{/str}}</a>{{/hasbook}}
+                            </div>
+                            {{/hasfaculty}}
+
+                            {{#showprogresscard}}
+                            <div class="cv-rc">
+                                <h4><span class="cv-dot"></span>{{#str}}cp_yourprogress, theme_baz{{/str}}</h4>
+                                {{#sections}}
+                                {{#hastotal}}<div class="cv-pb"><span class="cv-pbn">{{name}}</span><span class="cv-pbar"><i style="width:{{pct}}%"></i></span><span class="cv-pbv">{{done}}/{{total}}</span></div>{{/hastotal}}
+                                {{/sections}}
+                            </div>
+                            {{/showprogresscard}}
+
+                            {{#haskeydates}}
+                            <div class="cv-rc">
+                                <h4><span class="cv-dot"></span>{{#str}}cp_keydates, theme_baz{{/str}}</h4>
+                                {{#keydates}}
+                                <div class="cv-kd"><div class="cv-kdate"><div class="cv-kdate-d">{{day}}</div><div class="cv-kdate-m">{{mon}}</div></div><div><div class="cv-kdn">{{name}}</div><div class="cv-kdm">{{time}}</div></div></div>
+                                {{/keydates}}
+                            </div>
+                            {{/haskeydates}}
+
+                            {{#hasannounce}}
+                            <div class="cv-rc">
+                                <h4><span class="cv-dot"></span>{{#str}}cp_announcements, theme_baz{{/str}}</h4>
+                                {{#announcements}}
+                                <a class="cv-ann" href="{{url}}"><div class="cv-at">{{title}}</div><div class="cv-ad">{{when}}</div></a>
+                                {{/announcements}}
+                            </div>
+                            {{/hasannounce}}
+
+                            {{! Blocks a site has named for the student rail, each as a
+                                card so they read as part of this design rather than
+                                as transplanted block chrome. Placed after Your
+                                progress, which they sit naturally beside. }}
+                            {{#studentblocks}}
+                            <div class="cv-rc cv-blockcard">
+                                <h4><span class="cv-dot"></span>{{title}}</h4>
+                                <div class="cv-blockbody">{{{ content }}}</div>
+                            </div>
+                            {{/studentblocks}}
+                        </div>
+                    </div>
+                    {{/hassections}}
+                    {{^hassections}}<div class="cv-empty">{{#str}}cp_empty, theme_baz{{/str}}</div>{{/hassections}}
+
+                    <div id="region-main-box" class="cv-region-main"><section id="region-main" aria-label="{{#str}}content{{/str}}">{{{ output.main_content }}}</section></div>
+                </main>
+            </div>
+
+            {{#hassupport}}
+            <div class="cv-help">
+                <div class="cv-help-panel" id="cv-help-panel" hidden>
+                    <div class="cv-help-head"><span class="cv-help-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg></span><div class="cv-help-t"><b>{{#str}}sd_help, theme_baz{{/str}}</b><small>{{#str}}sd_help_sub, theme_baz{{/str}}</small></div><button type="button" class="cv-help-close" id="cv-help-close" aria-label="Close">&times;</button></div>
+                    <div class="sd-blockcontent sd-support">{{{ support_html }}}</div>
+                </div>
+                <button type="button" class="cv-help-fab" id="cv-help-fab" aria-expanded="false">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg>
+                    <span>{{#str}}sd_help, theme_baz{{/str}}</span>
+                </button>
+            </div>
+            {{/hassupport}}
+
+            {{#hasaskjo}}
+            <div class="cv-askjo-panel" id="cv-askjo-panel" hidden>
+                <div class="cv-askjo-head"><span>{{#str}}sd_askjo, theme_baz{{/str}}</span><button type="button" class="cv-askjo-close" id="cv-askjo-close" aria-label="Close">&times;</button></div>
+                <div class="block_openai_chat" data-instance-id="{{askjo.blockid}}">
+                    <div class="cv-askjo-body">{{{ askjo.log }}}</div>
+                    <div class="cv-askjo-control">{{{ askjo.control }}}</div>
+                </div>
+            </div>
+            {{/hasaskjo}}
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+</body>
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/studentcoursepage'], function(Loader, StudentCoursepage) {
+        StudentCoursepage.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

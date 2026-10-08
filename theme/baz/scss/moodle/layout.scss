@@ -1,0 +1,1888 @@
+//---- Layout
+//---- baz Moodle Theme
+.layout {
+    &.fullscreen {
+        height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: $zindex-modal-backdrop;
+        transition: 0.5s;
+        width: 100vw;
+        margin: 0;
+        opacity: 1;
+        background-color: $modal-content-bg;
+
+        .theme-dark & {
+            background-color: $dm-modal-content-bg;
+        }
+
+        >div {
+            height: 100%;
+            width: 100%;
+        }
+
+        .loading-icon {
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            display: inline-block;
+            width: 100%;
+            top: 40%;
+            position: fixed;
+
+            .icon {
+                width: 1em;
+                height: 1em;
+                font-size: 4em;
+            }
+        }
+    }
+}
+
+#page-report {
+    margin: 20px 60px;
+    width: calc(100% - 120px);
+
+    background-color: $container-bg;
+    border-radius: $border-radius;
+
+    .theme-dark & {
+        background-color: $dm-gray-900;
+    }
+}
+
+#page {
+    margin: 20px auto 0;
+    max-width: $page-width;
+    width: 100%;
+
+    background-color: $container-bg;
+    border-radius: $border-radius;
+
+    position: relative;
+
+    .theme-dark & {
+        background-color: $dm-container-bg;
+    }
+
+    @media (max-width: 1359px) {
+        margin: 20px auto;
+        max-width: calc(100% - 30px);
+    }
+
+    @include media-breakpoint-between(xs, sm) {
+        margin: 5px auto;
+        max-width: calc(100% - 10px);
+    }
+
+}
+
+#page-popup {
+    padding: 20px;
+    background-color: $container-bg;
+    border-radius: $border-radius;
+
+    .theme-dark & {
+        background-color: $dm-container-bg;
+    }
+
+    .closewindow {
+        margin: 1rem 0;
+
+        .btn {
+            width: 100%;
+        }
+    }
+}
+
+.pagelayout-embedded #page {
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+.wrapper-xl,
+.wrapper-lg,
+.wrapper-md {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.wrapper-lg {
+    width: $wrapper-lg;
+
+    @include media-breakpoint-between(xs, md) {
+        width: 85%;
+    }
+}
+
+.wrapper-md {
+    width: $wrapper-md;
+
+    @include media-breakpoint-between(xs, md) {
+        width: 80%;
+    }
+
+    .wrapper-md {
+        width: 100%;
+    }
+}
+
+.wrapper-blocks {
+    width: 100%;
+    margin: 0 auto;
+
+    .has-sidecourseblocks & {
+        width: calc(100% - 370px);
+
+        @include media-breakpoint-between(xs, md) {
+            width: 100%;
+        }
+    }
+}
+
+.tmpl-course-blocks {
+    width: 310px;
+
+    @include media-breakpoint-between(xs, md) {
+        width: 100%;
+    }
+}
+
+.rui-btn-show-hide {
+    position: fixed;
+    top: 100px;
+    right: 10px;
+    z-index: $zindex-fixed;
+}
+
+.wrapper--margin {
+    margin-top: 60px;
+    margin-bottom: 60px;
+}
+
+.wrapper-has-blocks,
+.wrapper-dashboard,
+.wrapper-xl {
+    margin: 0 auto;
+    width: 100%;
+   /* max-width: calc(100% - 110px);*/
+     max-width: 100%;
+     padding: 0px 35px;
+
+    @include media-breakpoint-between(xs, sm) {
+       /* max-width: calc(100% - 30px);*/
+      max-width: 100%;
+      padding: 0 20px;
+    }
+
+    [data-flexitour="step-background"] & {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+.wrapper-dashboard {
+    margin-top: 0px;
+}
+
+
+
+.blocks-wrapper {
+    gap: 60px;
+}
+
+.wrapper-fw {
+    width: 100%;
+}
+
+.region-main-content {
+    position: relative;
+}
+
+//---- UI elements
+.sep--left {
+    position: relative;
+
+    &:before {
+        content: '';
+        background-color: $border-color;
+        width: 1px;
+        height: 30px;
+
+        position: absolute;
+        top: calc(50% - 15px);
+        left: -5px;
+
+        .theme-dark & {
+            background-color: $dm-border-color;
+        }
+    }
+}
+
+.sep--right {
+    position: relative;
+
+    &:before {
+        content: '';
+        background-color: $border-color;
+        width: 1px;
+        height: 30px;
+
+        position: absolute;
+        top: calc(50% - 15px);
+        right: -5px;
+
+        .theme-dark & {
+            background-color: $dm-border-color;
+        }
+    }
+}
+
+.pagelayout-secure {
+    #page {
+        @include media-breakpoint-up(md) {
+            padding: 30px;
+        }
+
+        @include media-breakpoint-between(xs,sm) {
+            padding: 10px;
+        }
+    }
+}
+
+#s-page-footer {
+    margin: 0 auto;
+    padding: 15px 0;
+
+    max-width: $page-width;
+    width: 100%;
+
+    display: flex;
+    flex-shrink: 0;
+
+    color: $body-color-secondary;
+
+    @include media-breakpoint-only(md) {
+        padding: 60px;
+    }
+
+    @include media-breakpoint-between(xs, sm) {
+        padding: 30px 0 80px;
+    }
+
+    .theme-dark & {
+        color: $dm-body-color-secondary;
+    }
+
+    @include media-breakpoint-between(xs, md) {
+        .wrapper-md {
+            width: calc(100% - 30px);
+        }
+    }
+
+}
+
+
+.rui-topbar-special-btn-container {
+    cursor: pointer;
+    .notloggedin & {
+        display: none;
+    }
+}
+
+.rui-login-btn {
+    padding: 4px 15px 4px 20px;
+
+    background-color: $topbar-btn;
+    color: $topbar-btn-text;
+    border-radius: $border-radius;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    width: max-content;
+
+    &:hover {
+        color: $topbar-btn-hover-text;
+        background-color: $topbar-btn-hover;
+        text-decoration: none;
+    }
+
+    .theme-dark & {
+        color: $topbar-btn-text;
+    }
+
+    .rui-login-btn-txt {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+    }
+}
+
+.rui-signup-btn {
+    padding: 4px 15px 4px 20px;
+    line-height: 2.25rem;
+
+    background-color: rgba($topbar-btn, .7);
+    color: $topbar-btn-text;
+    border-radius: $border-radius;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    width: max-content;
+
+    &:hover {
+        color: $topbar-btn-hover-text;
+        background-color: $topbar-btn-hover;
+        text-decoration: none;
+    }
+
+    .rui-login-btn-txt {
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+    }
+}
+
+.rui-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; // space out brand from logo
+
+    padding: 8px;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    font-weight: $font-weight-bold;
+
+    background-color: $topbar-bg;
+    min-height: 60px;
+    max-height: 60px;
+
+    font-size: 0.875rem; //14px
+    color: $topbar-text;
+
+    border-radius: $border-radius;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+
+    .theme-dark & {
+        background-color: $dm-topbar-bg;
+        color: $dm-topbar-text;
+    }
+
+    .scrolled & {
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
+    }
+
+    .site-name {
+        margin-left: 10px;
+        margin-right: 10px;
+        width: max-content;
+        font-size: 0.875rem; //14px
+        font-weight: $font-weight-bold;
+        color: $topbar-text;
+
+        .theme-dark & {
+            color: $dm-topbar-text;
+        }
+    }
+
+    .navbar-nav {
+        font-size: 0.875rem; //14px
+        font-weight: $font-weight-bold;
+
+        .nav-link {
+            color: $topbar-text;
+            border-radius: $border-radius;
+
+            .theme-dark & {
+                color: $dm-topbar-text;
+            }
+        }
+    }
+
+}
+
+//---- TODO: sidebar button, variables
+.sidebar-btn {
+    padding: 0;
+    margin-right: 10px;
+    margin-left: -1rem;
+
+    width: 60px;
+    height: 60px;
+    line-height: 1;
+
+    border: 0;
+    color: $topbar-text;
+
+    background-color: transparent;
+    border-right: 1px solid rgba($topbar-text, .15);
+    border-radius: $border-radius 0 0 0;
+
+    &:hover {
+        background-color: $topbar-btn-hover;
+    }
+}
+
+.page-content {
+    margin-bottom: 60px;
+}
+
+.wrapper-header {
+    margin: 20px 0;
+}
+
+.page-course-content {
+    margin: 10px auto 0px;
+}
+
+.show-drawer-left .page-course-content {
+    margin-top: 30px;
+}
+
+//---- Moodle Pages mods */
+.addtagcoll {
+    margin-bottom: 40px;
+}
+
+
+
+
+//---- TODO: Course Index Page
+.course-hero {
+    width: 95%;
+    margin-top: 60px;
+    margin-bottom: $page-padding-global;
+
+    img {
+        border-radius: 5px;
+    }
+}
+
+.course-teachers-box {
+    max-width: $page-main-container-width;
+    margin-bottom: 30px;
+
+    display: inline-flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+    overflow-x: auto;
+
+    .course-contact-title-item {
+        margin-right: .5rem;
+        display: flex;
+
+        .rui-course-list-wrapper & {
+            margin-right: 20px;
+            margin-bottom: 20px;
+            width: calc(50% - 20px);
+        }
+    }
+
+    .course-contact-title {
+        margin-left: .5rem;
+        margin-right: .5rem;
+        margin-bottom: 0;
+
+        font-size: $font-size-md;
+        font-weight: $font-weight-medium;
+        color: $body-color-secondary;
+
+        .theme-dark & {
+            color: $dm-body-color-secondary;
+        }
+    }
+
+    .course-contact {
+        display: flex;
+        align-items: center;
+
+        &:hover {
+            text-decoration: none;
+        }
+
+        .course-teacher-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: $btn-border-radius;
+            position: relative;
+
+            @include media-breakpoint-between(xs, sm) {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        .course-teacher-content {
+            margin: 0 20px;
+
+            .course-teacher-name {
+                line-height: 1.3;
+            }
+
+            .rui-course-list-wrapper & {
+                margin: 0 10px;
+            }
+        }
+
+        .course-teacher-name {
+            margin: 0;
+            font-weight: $font-weight-medium;
+            font-size: $btn-font-size-lg;
+        }
+
+        .course-teacher-role {
+            font-size: $font-size-md;
+            color: $body-color-secondary;
+
+            .theme-dark & {
+                color: $dm-body-color-secondary;
+            }
+        }
+    }
+}
+
+.page-margin-bottom--xl {
+    margin-bottom: 60px;
+}
+
+.course-hero-img {
+    width: 100%;
+    border-radius: $border-radius;
+}
+
+.course-progressbar-wrapper {
+    padding: 15px 20px;
+    border-radius: $border-radius;
+
+    background-color: $gray-100;
+
+    position: relative;
+
+    .theme-dark & {
+        background-color: $dm-gray-100;
+    }
+
+    .drawer-left & {
+        padding: 10px 15px;
+        margin-bottom: 20px;
+        background-color: $container-bg;
+
+        .theme-dark & {
+            background-color: $dm-container-bg;
+        }
+    }
+
+    .rui-progress {
+        width: 100%;
+        height: 7px;
+        border-radius: 7px;
+    }
+
+    .rui-progress-text {
+        width: max-content;
+        padding: 5px 10px 5px 5px;
+        height: 26px;
+        background-color: $primary-color-600;
+        border-radius: 26px;
+
+        font-size: $font-size-xs;
+        font-weight: $font-weight-bold;
+        color: $primary-color-100;
+        line-height: 1;
+
+        position: absolute;
+        top: calc(50% - 13px);
+
+        display: inline-flex;
+        align-items: center;
+
+        .theme-dark & {
+            background-color: $dm-gray-400;
+            color: $dm-gray-800;
+        }
+
+        &.rui-progress--value-0 {
+            left: 6px !important;
+
+            .dir-rtl & {
+                left: auto;
+                right: 6px !important;
+            }
+        }
+
+        &.rui-progress--value-100 {
+            left: auto !important;
+            right: 7px;
+
+            .dir-rtl & {
+                right: auto !important;
+                left: 7px !important;
+            }
+        }
+    }
+
+}
+
+//----  Page Header
+.rui-course-header,
+.rui-course-progresschart {
+    width: $wrapper-md;
+    margin-left: auto;
+    margin-right: auto;
+
+    @include media-breakpoint-down(md) {
+        width: 100%;
+    }
+
+}
+
+@include media-breakpoint-down(sm) {
+    .header-button-group {
+        width: 100%;
+
+        .btn {
+            width: 100%;
+        }
+    }
+}
+
+.page-header-content,
+.header-content {
+    &:empty {
+        display: none;
+    }
+}
+
+.page-header-content {
+    margin-bottom: 0px;
+    width: 100%;
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+
+    #page-course-view-participants &,
+    #page-my-index & {
+        display: flex;
+        margin-bottom: 5px;
+    }
+
+    // & + .rui-course-desc {
+    //     margin-top: 30px;
+    // }
+}
+
+
+/* Top Bar elements */
+.rui-dropdown-course-menu {
+    width: 300px;
+    max-width: 300px;
+    padding: 0;
+
+    .rui-course-menu-list--more {
+        width: 100%;
+        position: sticky;
+        bottom: 0;
+        padding: 10px 20px;
+
+        border-radius: $btn-border-radius;
+
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
+        color: $body-color-light;
+
+        svg {
+            .dir-rtl & {
+                transform: rotate(180deg);
+            }
+        }
+
+        .theme-dark & {
+            color: $dm-body-color-light;
+        }
+
+    }
+
+    .rui-course-menu-list-text {
+        display: inline-flex;
+        max-width: 220px;
+    }
+}
+
+.rui-dropdown-main-menu {
+    padding: 10px;
+    width: 306px;
+}
+
+.rui-course-menu {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    .rui-course-menu-list {
+        margin-bottom: 0;
+        border-bottom: 1px solid $border-color;
+
+        transition: border-color 350ms ease-in-out;
+
+        .theme-dark & {
+            border-bottom: 1px solid $dm-border-color;
+        }
+
+        &:hover {
+            border-color: $link-hover-color;
+        }
+    }
+
+    .active {
+        color: $link-color;
+    }
+}
+
+.rui-course-menu-h {
+    padding: 15px 22px;
+    margin-bottom: 0;
+    align-items: center;
+    display: inline-flex;
+
+    width: 100%;
+    border-bottom: 1px solid $border-color;
+
+    .theme-dark & {
+        border-bottom: 1px solid $dm-border-color;
+    }
+
+    .rui-course-menu-h-l {
+        padding: 0;
+        font-size: 1rem;
+        font-weight: $font-weight-medium;
+    }
+}
+
+/** Navbar logo. */
+.rui-logo img {
+    width: auto;
+   /* height: 35px;
+    padding: 4px;*/
+}
+
+.rui-logo-ml {
+    margin-left: 10px;
+}
+
+.rui-logo-box {
+   /* padding: 4px;
+    border-radius: $btn-border-radius - 4px;
+    background-color: $white; */
+}
+
+.rui-navbar-nav {
+    list-style: none;
+
+    .nav-item {
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+
+        .nav-link {
+            position: relative;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 44px;
+            height: 44px;
+            border-radius: $border-radius;
+            background-color: transparent;
+            color: $topbar-btn-text;
+
+            .theme-dark & {
+                color: $dm-topbar-btn-text;
+            }
+
+            @include media-breakpoint-down(sm) {
+                margin-right: 0;
+                padding: 0;
+                width: 100%;
+                min-width: 40px;
+                max-width: 40px;
+                height: 40px;
+            }
+
+            &[aria-expanded="true"],
+            &:hover {
+                background-color: $topbar-btn-hover;
+                color: $topbar-btn-hover-text;
+
+                .theme-dark & {
+                    background-color: $dm-topbar-btn-hover;
+                    color: $dm-topbar-btn-hover-text;
+                }
+            }
+        }
+
+    }
+}
+
+@include media-breakpoint-up(md) {
+    .rui-navbar-nav--sep {
+        position: relative;
+
+
+
+        &:before {
+            content: '';
+            background-color: rgba($white, .35);
+            width: 1px;
+            height: 16px;
+
+            position: absolute;
+            top: calc(50% - 8px);
+            left: 7px;
+        }
+    }
+}
+
+.popover-region-notifications:not(.collapsed) {
+    .nav-link {
+        background-color: $secondary-color-700;
+    }
+}
+
+.rui-main-menu-btn,
+.rui-topbar-special-btn,
+.rui-lang-btn,
+.rui-moremenu-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: $btn-border-radius - 4px;
+    font-size: $font-size-xs;
+
+    @include media-breakpoint-down(sm) {
+        padding: 8px;
+    }
+
+    &[aria-expanded="true"],
+    &:hover {
+        background-color: $topbar-btn-hover;
+        color: $topbar-btn-hover-text;
+        text-decoration: none;
+
+        .theme-dark & {
+            background-color: $dm-topbar-btn-hover;
+            color: $dm-topbar-btn-hover-text;
+        }
+    }
+}
+
+.rui-main-menu-btn {
+    background: transparent;
+    color: $topbar-btn-text;
+
+    .theme-dark & {
+        color: $dm-topbar-btn-text;
+    }
+}
+
+.rui-lang-btn {
+    width: max-content;
+    background-color: transparent;
+    color: $topbar-btn-text;
+
+    .theme-dark & {
+        background-color: transparent;
+        color: $dm-topbar-btn-text;
+    }
+}
+
+@include media-breakpoint-down(sm) {
+    .rui-lang-btn .rui-lang-btn-text {
+        display: none;
+    }
+}
+
+.rui-topbar-special-btn {
+    background: $topbar-btn;
+    color: $topbar-btn-text;
+
+    .theme-dark & {
+        color: $topbar-btn-text;
+    }
+}
+
+.rui-nav-tabs+* {
+    margin-top: $page-padding-global;
+}
+
+
+.rui-navbar-brand,
+body:not(#page-login-index).rui-navbar-lang {
+    position: relative;
+
+    @include media-breakpoint-down(sm) {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+.rui-navbar-lang {
+    margin-right: 5px;
+}
+
+.rui-navbar-brand {
+    margin-right: 7px;
+}
+
+.rui-navbar-brand--img {
+    margin-left: 0;
+}
+
+.rui-navbar-brand:hover {
+    text-decoration: none;
+    opacity: .6;
+}
+
+.rui-navbar-nav-wrapper {
+    width: calc(100% - 100px);
+}
+
+@include media-breakpoint-between(xs, md) {
+    .rui-navbar-collapse {
+        padding: 20px;
+
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+
+        background-color: $primary-color-700;
+
+        border-radius: 0 0 $border-radius $border-radius;
+
+        display: inline-flex;
+        flex-wrap: wrap;
+
+        @include media-breakpoint-down(sm) {
+            top: 95px;
+        }
+    }
+
+    // TODO: Remove after added More menu
+    // .rui-btn-mobile {
+    //     padding: 0;
+    //     width: 44px;
+    //     height: 44px;
+    //     color: $white;
+
+    //     @include media-breakpoint-down(sm) {
+    //         border-top: 1px solid rgba($white, .15);
+    //         border-radius: 0;
+
+    //         min-width: 100%;
+    //         height: 40px;
+
+    //         position: absolute;
+    //         top: 55px;
+    //         right: 0;
+    //     }
+    // }
+
+    .rui-navbar-nav {
+        width: 100%;
+    }
+
+    .rui-navbar-nav-wrapper {
+        @include media-breakpoint-down(sm) {
+            .dropdown-menu {
+                width: 100%;
+            }
+        }
+
+        .nav-link {
+            text-align: left;
+            border-bottom: 1px solid rgba($white, .15);
+        }
+
+        &.rui-navbar-nav--sep {
+            &::before {
+                display: none;
+            }
+        }
+    }
+}
+
+
+
+/* Footer */
+.rui-footer-content {
+    font-size: $font-size-xs;
+    color: #fff;
+
+    @include media-breakpoint-down(sm) {
+        text-align: center;
+    }
+}
+
+.rui-footer-copy {
+    p {
+        margin-bottom: .25rem;
+
+        &:last-of-type {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.rui-footer-nav-title {
+    font-size: $font-size-sm;
+    color: $body-color;
+
+    .theme-dark & {
+        color: $dm-body-color;
+    }
+}
+
+.rui-footer-nav-items {
+    font-size: $font-size-sm;
+    color: $body-color-secondary;
+
+    @include media-breakpoint-between(xs, sm) {
+        text-align: center;
+    }
+
+    .theme-dark & {
+        color: $dm-body-color-secondary;
+    }
+
+    li {
+        margin: .65rem 0;
+
+        a {
+            color: $body-color-secondary;
+
+            .theme-dark & {
+                color: $dm-body-color-secondary;
+            }
+
+            &:hover {
+                color: $link-hover-color;
+            }
+        }
+    }
+}
+
+/* Scroll bar */
+.simplebar-track {
+    &:before {
+        content: '';
+        background-color: $gray-100;
+        width: calc(100% - 4px);
+        height: 100%;
+        border-radius: 10px;
+
+        position: absolute;
+        top: 0;
+        left: 2px;
+
+        .theme-dark & {
+            background-color: $dm-gray-100;
+        }
+    }
+}
+
+// Dark Mode
+.theme-dark .rui-dark-mode-status--on {
+    display: block;
+}
+
+body:not(.theme-dark) .rui-dark-mode-status--on,
+.theme-dark .rui-dark-mode-status--off {
+    display: none;
+}
+
+// Not logged in users
+.notloggedin {
+    .hidefornotloggedin {
+        display: none !important;
+    }
+}
+
+body:not(.notloggedin):not(#page-admin-setting-themesettingbaz) {
+    .hideforloggedin {
+        display: none !important;
+    }
+}
+
+.theme-dark {
+    .hide-on-darkmode {
+        display: none;
+    }
+}
+
+body:not(.theme-dark) {
+    .hide-on-lightmode {
+        display: none;
+    }
+}
+
+// Custom alerts (BAZ 1.3)
+.rui-custom-alert {
+    padding: 14px 60px 14px 24px;
+    max-width: 600px;
+
+    @include media-breakpoint-between(xs, sm) {
+        width: calc(100% - 20px);
+        max-width: calc(100% - 20px);
+        left: 10px;
+        bottom: -10px;
+    }
+
+    display: inline-flex;
+    justify-content: flex-start;
+    align-content: flex-start;
+
+    position: fixed;
+    z-index: 10001;
+    bottom: 0;
+    left: 15px;
+
+    background-color: $container-bg;
+    color: $body-color-secondary;
+    box-shadow: $box-shadow-lg;
+
+    &.fade:not(.show) {
+        z-index: -1;
+    }
+
+    .theme-dark & {
+        background-color: $dm-container-bg;
+        color: $dm-body-color-secondary;
+    }
+
+    .rui-custom-alert-close {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+
+        padding: 10px;
+
+        display: flex;
+        justify-content: center;
+        align-content: center;
+
+        background-color: transparent;
+        border: none;
+        border-radius: 40px;
+
+        background-color: $gray-100;
+        color: $gray-600;
+
+        width: 40px;
+        height: 40px;
+
+        transition: $transition-base;
+
+        .theme-dark & {
+            background-color: $dm-gray-100;
+            color: $dm-gray-600;
+        }
+
+        &:hover {
+            background-color: $red-100;
+            color: $red-600;
+        }
+    }
+}
+
+
+// More menu
+.greedy {
+    position: relative;
+    display: flex;
+    align-items: center;
+    opacity: 0;
+
+    @include media-breakpoint-down(md) {
+        width: 50px;
+    }
+}
+
+.rui-moremenu-btn {
+    border: 0;
+    position: relative;
+
+    background-color: rgba($white, .5);
+    color: $topbar-btn-text;
+
+    @include media-breakpoint-down(md) {
+        margin-left: 5px;
+    }
+
+    svg {
+        pointer-events: none;
+    }
+
+    &.hidden {
+        display: none !important;
+    }
+}
+
+.rui-moremenu-btn::after {
+    content: attr(count);
+    position: absolute;
+    top: -5px;
+    right: -5px;
+
+    width: 16px;
+    height: 16px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    background: $primary-color-200;
+    color: $primary-color-600;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: $font-weight-bold;
+}
+
+ul.links {
+    display: inline-block;
+}
+
+ul.hidden-links {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    max-width: 280px;
+    z-index: $zindex-fixed + 1;
+    min-width: 210px;
+    padding: $dropdown-padding-y $dropdown-padding-x;
+    margin: $dropdown-spacer 0 0; // override default ul
+    @include font-size($dropdown-font-size);
+    color: $dropdown-color;
+    text-align: left; // Ensures proper alignment if parent has it changed (e.g., modal footer)
+    list-style: none;
+    background-color: $dropdown-bg;
+    background-clip: padding-box;
+    @include border-radius($dropdown-border-radius);
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+
+    @include media-breakpoint-down(md) {
+        left: 5px;
+    }
+
+    .theme-dark & {
+        color: $dm-dropdown-color;
+        background-color: $dm-dropdown-bg;
+    }
+
+    .dropdown-menu {
+        position: relative !important;
+        top: 0 !important;
+        transform: translate3d(0px, 0px, 0px) !important;
+        width: 100%;
+        max-width: 100%;
+
+        padding: 0;
+        overflow-x: hidden;
+
+        background-color: $gray-100;
+        box-shadow: none;
+    }
+
+    li a {
+        display: flex;
+        align-items: center;
+        width: 100%; // For `<button>`s
+        min-width: 200px;
+
+        margin-bottom: 0.25rem;
+        padding: $dropdown-item-padding-y $dropdown-item-padding-x;
+        clear: both;
+
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: $dropdown-color;
+
+        text-align: inherit; // For `<button>`s
+        text-decoration: if($link-decoration ==none, null, none);
+        /*word-break: normal;
+        white-space: break-spaces;*/
+
+        white-space: normal;
+
+        border: 0; // For `<button>`s
+        border-radius: $border-radius;
+
+        .theme-dark & {
+            color: $dm-dropdown-color;
+        }
+    }
+
+    &.hidden {
+        display: none;
+    }
+
+}
+
+
+// Moodle 4.0
+.rui-hamburger-menu .rui-pageheadingbutton {
+    padding: 1px;
+    border-radius: $border-radius;
+    background-color: $container-bg;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 26%), 0 14px 44px 0 rgb(0 0 0 / 20%);
+    position: fixed;
+    top: 100px;
+    right: 60px;
+    z-index: $zindex-tooltip;
+}
+
+.theme-dark.rui-hamburger-menu .rui-pageheadingbutton {
+    background-color: $dm-gray-100;
+}
+
+// Scrollbar
+.drawercontent,
+.filemanager .fp-content,
+.rui-card-course-contacts,
+.rui-column-mh,
+.rui-nav--admin,
+.rui-content-message-container,
+.rui-course-card-text,
+.rui-right-drawer .rui-sidebar-blocks-wrapper,
+.rui-course-wrapper,
+.gradeparent,
+.gradingform_rubric .criteria,
+.path-mod-assign [data-region="grade-panel"],
+.notification-area .control-area,
+.categoryquestionscontainer,
+#page-question-edit .main-content,
+#page-question-bank-history-history .main-content,
+.description-content,
+.form-autocomplete-suggestions,
+.jschooser .choosercontainer #chooseform .alloptions,
+.main-nav-container-overflow,
+.cb-toolbar-container .dropdown-scrollable,
+[data-region="blocks-column"] .rui-sidebar-blocks-wrapper,
+.calendar-event-description,
+.rui-course-card-fields,
+.table-overflow {
+    @include thin-scrolls($scroll-bg-track);
+
+    .theme-dark & {
+        @include thin-scrolls($dm-drawer-scroll-bg-track);
+    }
+}
+
+.cb-toolbar-container .dropdown-scrollable {
+    .icon {
+        background: $white;
+        opacity: 1;
+        border-radius: 30px;
+    }
+
+    .dropdown-item:hover .icon:hover {
+        filter: invert(0);
+    }
+}
+
+.dark-mode:root {
+    color-scheme: dark;
+}
+
+@include media-breakpoint-down(md) {
+    .mobile-sticky-nav {
+        position: fixed;
+        bottom: 70px;
+        right: 10px;
+        z-index: 10001;
+        display: block !important;
+        padding: 1px;
+        background-color: $container-bg;
+        box-shadow: $box-shadow-sm;
+        border-radius: $border-radius;
+
+        .theme-dark & {
+            background-color: $dm-container-bg;
+        }
+
+        .nav-item,
+        .nav-link {
+            display: block;
+            margin: 1px !important;
+        }
+
+        .notloggedin & {
+            display: none;
+        }
+    }
+
+    .rui-navbar-nav .mobile-sticky-nav .nav-item .nav-link {
+        color: $body-color;
+
+        .theme-dark & {
+            color: $dm-body-color;
+        }
+    }
+
+}
+
+.rui-custom-dmlogo {
+    display: none;
+
+    .theme-dark & {
+        display: inline-flex;
+    }
+}
+
+.theme-dark .rui-login-logo {
+    display: none;
+}
+
+.rui-footer--contact,
+.rui-footer--social {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    list-style: none;
+
+    padding: 0;
+    font-size: $font-size-xs;
+    color: #ffffff;
+
+    @include media-breakpoint-between(xs, sm) {
+        justify-content: center;
+    }
+
+    li {
+        display: inline-flex;
+        align-items: center;
+
+        margin-top: .35rem;
+        margin-right: 1rem;
+        margin-bottom: .35rem;
+
+        &:last-of-type {
+            margin-right: 0;
+        }
+    }
+
+    .theme-dark & {
+        color: $dm-body-color-light;
+    }
+
+    a {
+       /* color: $dm-body-color-light;*/
+        color: #fff;
+
+        .theme-dark & {
+            color: $dm-body-color-light;
+        }
+
+        &:hover {
+            opacity: .6;
+        }
+
+    }
+}
+
+.rui-social-list {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    color: #ffffff;
+
+    list-style: none;
+
+    padding: 0;
+    font-size: $font-size-xs;
+   /* color: $body-color-secondary;*/
+
+    li {
+        display: inline-flex;
+        align-items: center;
+
+        margin-top: .35rem;
+        margin-right: 1rem;
+        margin-bottom: .35rem;
+
+        &:last-of-type {
+            margin-right: 0;
+        }
+    }
+
+    .theme-dark & {
+        color: $dm-body-color-light;
+    }
+
+    a {
+        color: $body-color;
+
+        .theme-dark & {
+            color: $dm-body-color-light;
+        }
+
+        &:hover {
+            opacity: .6;
+        }
+
+    }
+}
+
+.rui-editbtn--top .custom-switch .custom-control-label::after {
+    background-color: $white;
+
+    @include media-breakpoint-between(xs,md) {
+        background-color: $gray-600;
+    }
+}
+
+.rui-editbtn--top .custom-switch.custom-control--xs .custom-control-label::before {
+    background-color: transparent;
+    border-color: $white;
+
+    @include media-breakpoint-between(xs,md) {
+        border-color: $gray-600;
+    }
+}
+
+.rui-editbtn--top .custom-switch .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: $green-600;
+    border-color: $white;
+
+    @include media-breakpoint-between(xs,md) {
+        border-color: $green-600;
+    }
+}
+
+.rui-editmode--top .editmode-switch-form {
+
+    @include media-breakpoint-up(lg) {
+        margin-left: 20px;
+        position: relative;
+        padding: 5px 10px;
+        background-color: $container-bg;
+        border: none;
+        border-radius: $btn-border-radius;
+
+        &:before {
+            content: '';
+            background-color: rgba($black, .15);
+            width: 1px;
+            height: 16px;
+
+            position: absolute;
+            top: calc(50% - 8px);
+            left: -10px;
+        }
+
+        .dir-rtl & {
+            margin-right: 20px;
+            margin-left: 0;
+        }
+    }
+
+    @include media-breakpoint-down(md) {
+        padding: 5px 10px;
+        background-color: $container-bg;
+        border: none;
+        border-radius: $btn-border-radius;
+
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .26), 0 14px 44px 0 rgba(0, 0, 0, .2);
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        z-index: $zindex-tooltip;
+
+        .theme-dark & {
+            background-color: $black;
+        }
+    }
+}
+
+.rui-editmode--footer .editmode-switch-form {
+
+    transition: $transition-base;
+
+    .rui-editmode--top & {}
+
+    .rui-editmode--bottom & {
+        padding: 5px;
+        background-color: $container-bg;
+        border: none;
+        border-radius: $btn-border-radius;
+
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .26), 0 14px 44px 0 rgba(0, 0, 0, .2);
+        position: fixed;
+        right: 20px;
+        bottom: 13px;
+        z-index: $zindex-tooltip;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .rui-editmode--footer.scrolled.back-to-top-on .editmode-switch-form {
+        right: 70px;
+    }
+}
+
+.theme-dark.rui-editmode--footer .editmode-switch-form {
+    background-color: $dm-gray-100;
+}
+
+#back-to-top {
+    display: none;
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+
+    z-index: 9999;
+    transition: $transition-base;
+
+    box-shadow: $box-shadow;
+    background-color: $gray-900;
+    color: $gray-100;
+    border: 0;
+    border-radius: $btn-border-radius-xl;
+
+    .theme-dark & {
+        background-color: $dm-gray-100;
+        color: $dm-gray-900;
+    }
+
+    .scrolled & {
+        display: flex;
+    }
+}
+
+.rui-edit-switch-box {
+    &:empty {
+        padding: 0;
+        margin: 0;
+        display: none !important;
+        visibility: hidden;
+    }
+
+    .rui-editbtn--top & {
+        margin-right: 10px;
+        margin-left: 10px;
+        height: 41px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        @include media-breakpoint-up(lg) {
+            .custom-control--xs .custom-control-label {
+                color: $topbar-text;
+            }
+        }
+
+        @include media-breakpoint-between(xs, md) {
+            padding: 10px;
+            position: fixed;
+            bottom: 10px;
+            right: 0;
+            height: 41px;
+            border-radius: $border-radius;
+            background-color: $container-bg;
+            box-shadow: $box-shadow-sm;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .theme-dark & {
+                background-color: $dm-container-bg;
+            }
+        }
+
+    }
+
+    .rui-editbtn--bottom & {
+        padding: 10px;
+        position: fixed;
+        bottom: 16px;
+        right: 20px;
+        height: 41px;
+        border-radius: $border-radius;
+        background-color: $container-bg;
+        box-shadow: $box-shadow-sm;
+
+        transition: $transition-base;
+
+        @include media-breakpoint-between(xs, md) {
+            right: 10px;
+        }
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        .theme-dark & {
+            background-color: $dm-container-bg;
+        }
+    }
+
+    .scrolled .rui-editbtn--bottom & {
+        right: 70px;
+    }
+
+    .theme-dark & {
+        background-color: $dm-gray-100;
+    }
+}
+
+#showBlockArea {
+    display: none;
+    background-color: $container-bg;
+    color: $primary-color-800;
+
+    margin: 0 5px;
+    padding: 7px;
+    line-height: 1;
+
+    .editing & {
+        display: block;
+    }
+
+    &.active {
+        background-color: $secondary-color-600;
+        color: $secondary-color-100;
+    }
+
+    .theme-dark & {
+        background-color: $dm-gray-300;
+        color: $dm-gray-900;
+    }
+}
+
+.rui-title-container+.singleselect,
+.rui-title-container+.mform,
+.rui-title-container+form {
+    margin-top: 30px;
+}
+
+.main-nav-container {
+    position: sticky;
+    background-color: $container-bg;
+    top: $navbar-height + 10px;
+    z-index: 1029;
+
+    .format-tiles-tile-open & {
+        display: none;
+    }
+
+    .theme-dark & {
+        background-color: $dm-container-bg;
+    }
+}
+
+.drawer-toggles {
+    position: fixed;
+    z-index: 1300;
+    width: 100%;
+    left: 0;
+    right: 0;
+}
+
+.drawer-left-toggle {
+    .show-drawer-left & {
+        display: none;
+    }
+}
+
+@include media-breakpoint-down(sm) {
+
+    //the scroll to top button
+    .drawer-toggles {
+        z-index: 100;
+
+        .drawer-right-toggle,
+        .drawer-left-toggle {
+            top: calc(99vh - (#{$navbar-height} * 2.5));
+        }
+    }
+
+    #page.drawers.scroll-down {
+        .drawer-right-toggle {
+            transform: translateX(150%);
+            pointer-events: auto;
+            visibility: hidden;
+        }
+
+        .drawer-left-toggle {
+            transform: translateX(-150%);
+            pointer-events: auto;
+            visibility: hidden;
+        }
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .drawer-left,
+    .drawer-right {
+        // top: $navbar-height + 10px;
+        height: calc(100% - 62px);
+    }
+}
+
+.drawercontent {
+    padding: 0 10px 0 0;
+    margin-right: 4px;
+    height: calc(100% - 80px);
+
+    position: relative;
+    z-index: -1;
+
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    overflow-y: auto;
+
+    .drawer-right & {
+        margin: 0 10px 0 0;
+        padding: 0 6px 10px 20px;
+
+        @include media-breakpoint-between(xs, sm) {
+        padding-bottom: 100px;
+        }
+    }
+
+    .drawer-left & {
+        padding: 0 10px 10px 10px;
+    }
+
+    .dropdown-menu .dropdown-item {
+        width: 220px;
+        white-space: normal;
+    }
+}
+
+.path-mod {
+    .page-header-content + .wrapper-fw {
+        margin-top: 30px;
+    }
+}
+
+.pagelayout-secure .rui-custom-logo {
+    height: $navbar-height;
+}
+
+.activity-header:empty {
+    display: none;
+}

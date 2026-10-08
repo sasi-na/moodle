@@ -1,0 +1,284 @@
+{{!
+  @template local_studentid/verifier_dashboard
+  Verifier dashboard showing all ID card requests.
+
+  Context variables:
+  * stats - object with count fields
+  * rows - array of request rows
+  * has_rows - bool
+  * total - int
+  * pagingbar - html
+  * statustabs - array
+  * search - string
+  * search_url - string
+}}
+<div class="local-studentid-verifier container-fluid py-4">
+
+  <div class="d-flex align-items-center mb-4">
+    <span class="fa fa-tasks fa-2x text-primary mr-3"></span>
+    <h2 class="mb-0">{{#str}}verifierdashboard, local_studentid{{/str}}</h2>
+  </div>
+
+  {{! Stats cards — grouped into Queue / Today / All-time }}
+  <div class="sid-stat-group mb-2">
+    <div class="sid-stat-group-label text-uppercase text-muted small font-weight-bold mb-2">
+      <span class="fa fa-inbox mr-1"></span>{{#str}}pendingrequests, local_studentid{{/str}}
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-3 mb-3">
+        <div class="card border-0 shadow-sm text-center h-100">
+          <div class="card-body">
+            <div class="display-4 font-weight-bold text-primary">{{stats.total_pending}}</div>
+            <div class="text-muted small mt-1">{{#str}}pendingrequests, local_studentid{{/str}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3 mb-3">
+        <div class="card border-0 shadow-sm text-center h-100">
+          <div class="card-body">
+            <div class="display-4 font-weight-bold text-warning">{{stats.under_review}}</div>
+            <div class="text-muted small mt-1">{{#str}}underreviewrequests, local_studentid{{/str}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sid-stat-group mb-2">
+    <div class="sid-stat-group-label text-uppercase text-muted small font-weight-bold mb-2">
+      <span class="fa fa-calendar-check-o mr-1"></span>{{#str}}approvedtoday, local_studentid{{/str}}
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-3 mb-3">
+        <div class="card border-0 shadow-sm text-center h-100">
+          <div class="card-body">
+            <div class="display-4 font-weight-bold text-success">{{stats.approved_today}}</div>
+            <div class="text-muted small mt-1">{{#str}}approvedtoday, local_studentid{{/str}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3 mb-3">
+        <div class="card border-0 shadow-sm text-center h-100">
+          <div class="card-body">
+            <div class="display-4 font-weight-bold text-danger">{{stats.rejected_today}}</div>
+            <div class="text-muted small mt-1">{{#str}}rejectedtoday, local_studentid{{/str}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3 mb-3">
+        <div class="card border-0 shadow-sm text-center h-100">
+          <div class="card-body">
+            <div class="display-4 font-weight-bold text-secondary">{{stats.ids_downloaded_today}}</div>
+            <div class="text-muted small mt-1">
+              <span class="fa fa-calendar-check-o mr-1"></span>{{#str}}idsdownloadedtoday, local_studentid{{/str}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sid-stat-group mb-4">
+    <div class="sid-stat-group-label text-uppercase text-muted small font-weight-bold mb-2">
+      <span class="fa fa-database mr-1"></span>{{#str}}status, local_studentid{{/str}}
+    </div>
+    <div class="row">
+      <div class="col-6 col-md-3 mb-3">
+        <div class="card border-0 shadow-sm text-center h-100">
+          <div class="card-body">
+            <div class="display-4 font-weight-bold text-success">{{stats.total_approved}}</div>
+            <div class="text-muted small mt-1">{{#str}}approvedrequests, local_studentid{{/str}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3 mb-3">
+        <div class="card border-0 shadow-sm text-center h-100">
+          <div class="card-body">
+            <div class="display-4 font-weight-bold text-danger">{{stats.total_rejected}}</div>
+            <div class="text-muted small mt-1">{{#str}}rejectedrequests, local_studentid{{/str}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3 mb-3">
+        <div class="card border-0 shadow-sm text-center h-100">
+          <div class="card-body">
+            <div class="display-4 font-weight-bold text-info">{{stats.ids_downloaded_total}}</div>
+            <div class="text-muted small mt-1">
+              <span class="fa fa-download mr-1"></span>{{#str}}idsdownloadedtotal, local_studentid{{/str}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{! Search + filter bar }}
+  <div class="card shadow-sm mb-3">
+    <div class="card-body py-2">
+      <form method="get" action="{{search_url}}" class="form-inline flex-wrap">
+        <input type="text" name="search" value="{{search}}"
+               class="form-control mr-2 mb-2" style="min-width:220px"
+               placeholder="{{#str}}search_placeholder, local_studentid{{/str}}">
+        <input type="hidden" name="status" value="{{current_status}}">
+        <button type="submit" class="btn btn-outline-primary mr-2 mb-2">
+          <span class="fa fa-search mr-1"></span>{{#str}}search, moodle{{/str}}
+        </button>
+        {{#search}}
+        <a href="{{search_url}}" class="btn btn-outline-secondary mb-2">
+          <span class="fa fa-times mr-1"></span>{{#str}}clear, local_studentid{{/str}}
+        </a>
+        {{/search}}
+      </form>
+    </div>
+  </div>
+
+  {{! Download report }}
+  <div class="card shadow-sm mb-3">
+    <div class="card-body py-2">
+      <form method="get" action="{{report_url}}" class="form-inline flex-wrap align-items-end">
+        <span class="font-weight-bold mr-3 mb-2"><span class="fa fa-file-excel-o mr-1 text-success"></span>{{#str}}report_download, local_studentid{{/str}}</span>
+        <div class="mr-2 mb-2">
+          <label class="d-block small text-muted mb-0">{{#str}}status, local_studentid{{/str}}</label>
+          <select name="status" class="form-control">
+            {{#report_status_options}}
+            <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+            {{/report_status_options}}
+          </select>
+        </div>
+        <div class="mr-2 mb-2">
+          <label class="d-block small text-muted mb-0">{{#str}}report_submitted_from, local_studentid{{/str}}</label>
+          <input type="date" name="subfrom" class="form-control">
+        </div>
+        <div class="mr-2 mb-2">
+          <label class="d-block small text-muted mb-0">{{#str}}report_submitted_to, local_studentid{{/str}}</label>
+          <input type="date" name="subto" class="form-control">
+        </div>
+        <div class="mr-2 mb-2">
+          <label class="d-block small text-muted mb-0">{{#str}}report_verified_from, local_studentid{{/str}}</label>
+          <input type="date" name="verfrom" class="form-control">
+        </div>
+        <div class="mr-2 mb-2">
+          <label class="d-block small text-muted mb-0">{{#str}}report_verified_to, local_studentid{{/str}}</label>
+          <input type="date" name="verto" class="form-control">
+        </div>
+        <div class="mr-2 mb-2">
+          <label class="d-block small text-muted mb-0">{{#str}}report_format, local_studentid{{/str}}</label>
+          <select name="dataformat" class="form-control">
+            <option value="excel">Excel (.xlsx)</option>
+            <option value="csv">CSV</option>
+            <option value="ods">ODS</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-success mb-2">
+          <span class="fa fa-download mr-1"></span>{{#str}}report_download_btn, local_studentid{{/str}}
+        </button>
+      </form>
+    </div>
+  </div>
+
+  {{! Status tabs }}
+  <ul class="nav nav-tabs mb-3">
+    {{#statustabs}}
+    <li class="nav-item">
+      <a class="nav-link {{#active}}active{{/active}}" href="{{url}}">{{label}}</a>
+    </li>
+    {{/statustabs}}
+  </ul>
+
+  {{! Requests table }}
+  {{#has_rows}}
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover mb-0" id="sid-requests-table">
+        <thead class="thead-light">
+          <tr>
+            <th>{{#str}}student_name, local_studentid{{/str}}</th>
+            <th class="sid-sortable">
+              <a href="{{sorts.usn.url}}" class="text-reset text-decoration-none d-inline-flex align-items-center">
+                {{#str}}usn, local_studentid{{/str}}
+                {{#sorts.usn.asc}}<span class="fa fa-sort-up ml-1"></span>{{/sorts.usn.asc}}
+                {{#sorts.usn.desc}}<span class="fa fa-sort-down ml-1"></span>{{/sorts.usn.desc}}
+                {{^sorts.usn.active}}<span class="fa fa-sort ml-1 text-muted"></span>{{/sorts.usn.active}}
+              </a>
+            </th>
+            <th class="sid-sortable">
+              <a href="{{sorts.status.url}}" class="text-reset text-decoration-none d-inline-flex align-items-center">
+                {{#str}}status, local_studentid{{/str}}
+                {{#sorts.status.asc}}<span class="fa fa-sort-up ml-1"></span>{{/sorts.status.asc}}
+                {{#sorts.status.desc}}<span class="fa fa-sort-down ml-1"></span>{{/sorts.status.desc}}
+                {{^sorts.status.active}}<span class="fa fa-sort ml-1 text-muted"></span>{{/sorts.status.active}}
+              </a>
+            </th>
+            <th class="sid-sortable">
+              <a href="{{sorts.timesubmitted.url}}" class="text-reset text-decoration-none d-inline-flex align-items-center">
+                {{#str}}timesubmitted, local_studentid{{/str}}
+                {{#sorts.timesubmitted.asc}}<span class="fa fa-sort-up ml-1"></span>{{/sorts.timesubmitted.asc}}
+                {{#sorts.timesubmitted.desc}}<span class="fa fa-sort-down ml-1"></span>{{/sorts.timesubmitted.desc}}
+                {{^sorts.timesubmitted.active}}<span class="fa fa-sort ml-1 text-muted"></span>{{/sorts.timesubmitted.active}}
+              </a>
+            </th>
+            <th class="sid-sortable">
+              <a href="{{sorts.timemodified.url}}" class="text-reset text-decoration-none d-inline-flex align-items-center">
+                {{#str}}timemodified, local_studentid{{/str}}
+                {{#sorts.timemodified.asc}}<span class="fa fa-sort-up ml-1"></span>{{/sorts.timemodified.asc}}
+                {{#sorts.timemodified.desc}}<span class="fa fa-sort-down ml-1"></span>{{/sorts.timemodified.desc}}
+                {{^sorts.timemodified.active}}<span class="fa fa-sort ml-1 text-muted"></span>{{/sorts.timemodified.active}}
+              </a>
+            </th>
+            <th class="sid-sortable">
+              <a href="{{sorts.timecreated.url}}" class="text-reset text-decoration-none d-inline-flex align-items-center">
+                {{#str}}days_in_queue, local_studentid{{/str}}
+                {{#sorts.timecreated.asc}}<span class="fa fa-sort-up ml-1"></span>{{/sorts.timecreated.asc}}
+                {{#sorts.timecreated.desc}}<span class="fa fa-sort-down ml-1"></span>{{/sorts.timecreated.desc}}
+                {{^sorts.timecreated.active}}<span class="fa fa-sort ml-1 text-muted"></span>{{/sorts.timecreated.active}}
+              </a>
+            </th>
+            <th>{{#str}}actions, local_studentid{{/str}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#rows}}
+          <tr>
+            <td class="align-middle">{{fullname}}</td>
+            <td class="align-middle"><code>{{usn}}</code></td>
+            <td class="align-middle"><span class="{{statusclass}}">{{statuslabel}}</span></td>
+            <td class="align-middle"><small>{{timesubmitted}}</small></td>
+            <td class="align-middle"><small>{{timemodified}}</small></td>
+            <td class="align-middle">
+              <small class="{{#days_queued}}{{/days_queued}}">{{days_queued}}d</small>
+            </td>
+            <td class="align-middle">
+              <a href="{{review_url}}" class="btn btn-sm btn-outline-primary mr-1">
+                <span class="fa fa-eye mr-1"></span>{{#str}}review, local_studentid{{/str}}
+              </a>
+              {{#can_generate}}
+              <a href="{{generate_url}}" class="btn btn-sm btn-success mr-1"
+                 data-sid-confirm="{{#str}}confirm_generate, local_studentid{{/str}}">
+                <span class="fa fa-id-card mr-1"></span>{{#str}}generatecard, local_studentid{{/str}}
+              </a>
+              {{/can_generate}}
+              {{#has_card}}
+              <a href="{{card_url}}" target="_blank" class="btn btn-sm btn-info">
+                <span class="fa fa-download mr-1"></span>{{#str}}downloadid, local_studentid{{/str}}
+              </a>
+              {{/has_card}}
+            </td>
+          </tr>
+          {{/rows}}
+        </tbody>
+      </table>
+    </div>
+    {{#pagingbar}}
+    <div class="card-footer">{{{pagingbar}}}</div>
+    {{/pagingbar}}
+  </div>
+  {{/has_rows}}
+
+  {{^has_rows}}
+  <div class="alert alert-info">
+    <span class="fa fa-info-circle mr-1"></span>
+    {{#str}}no_requests_found, local_studentid{{/str}}
+  </div>
+  {{/has_rows}}
+
+</div>

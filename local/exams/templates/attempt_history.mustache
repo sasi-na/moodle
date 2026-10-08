@@ -1,0 +1,40 @@
+{{!
+    @template local_exams/attempt_history
+
+    A user's attempts at a single quiz, linking to the deep result page.
+}}
+<div class="exui" id="local-exams-attempts">
+  <div class="exui-root">
+    <div class="exui-header">
+      <div>
+        <h1>{{#str}}attemptstitle, local_exams{{/str}}</h1>
+        <div class="exui-sub">{{quizname}}</div>
+      </div>
+    </div>
+
+    {{^hasdata}}
+      <div class="exui-card"><div class="exui-empty">No attempts found.</div></div>
+    {{/hasdata}}
+
+    {{#hasdata}}
+      <div class="exui-card">
+        <table class="exui-table">
+          <thead><tr><th>Attempt</th><th>Started</th><th>Duration</th><th class="num">Grade</th><th class="num">%</th><th>State</th><th></th></tr></thead>
+          <tbody>
+            {{#attempts}}
+              <tr>
+                <td>#{{attempt}}</td>
+                <td>{{timestart}}</td>
+                <td>{{duration}}</td>
+                <td class="num">{{#grade}}{{grade}}{{/grade}}{{^grade}}&ndash;{{/grade}} / {{grademax}}</td>
+                <td class="num">{{pctlabel}}</td>
+                <td>{{state}}</td>
+                <td>{{#finished}}<a class="exui-btn" href="{{resulturl}}">View result</a>{{/finished}}</td>
+              </tr>
+            {{/attempts}}
+          </tbody>
+        </table>
+      </div>
+    {{/hasdata}}
+  </div>
+</div>

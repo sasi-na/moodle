@@ -1,0 +1,445 @@
+/* Local Zoom Attendance — review UI. All rules scoped under .lzs-wrap.
+ *
+ * Colours, radii, shadows and type come from theme_baz's design tokens
+ * (--sd-*) so these pages track the shared palette, including its dark mode,
+ * instead of the hardcoded Boost blues this file used to carry. Every token
+ * has a light-mode fallback so the plugin still renders on a plain Boost site.
+ *
+ * Font is deliberately inherited: whatever the surrounding shell sets is the
+ * right answer, and hardcoding a family here is how these pages drifted from
+ * the rest of the UI in the first place. Numeric columns opt into tabular
+ * figures so counts line up.
+ */
+
+.lzs-wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 4px 2px 28px;
+    color: var(--sd-text, #0B2034);
+}
+
+/* ---- Tabs ---- */
+.lzs-wrap .lzs-tabbar {
+    display: flex;
+    gap: 6px;
+    border-bottom: 1px solid var(--sd-line, #E5ECF3);
+    margin-bottom: 20px;
+}
+.lzs-wrap .lzs-tabbar a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 12px 12px 0 0;
+    font-weight: 600;
+    color: var(--sd-muted, #5C7184);
+    text-decoration: none;
+    transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.lzs-wrap .lzs-tabbar a:hover {
+    background: var(--sd-ground, #F4F7FB);
+    color: var(--sd-text, #0B2034);
+}
+.lzs-wrap .lzs-tabbar a.active {
+    color: var(--sd-navy, #022758);
+    background: var(--sd-surface, #fff);
+    box-shadow: inset 0 -2px 0 var(--sd-accent, #0075ed);
+}
+
+/* ---- Section header ---- */
+.lzs-wrap .lzs-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 6px 0 18px;
+}
+.lzs-wrap .lzs-head .lzs-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: var(--sd-grad-navy, linear-gradient(135deg, #022758, #0b3f86));
+    color: #fff;
+    font-size: 17px;
+    flex: 0 0 auto;
+}
+.lzs-wrap .lzs-head h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    color: var(--sd-text, #0B2034);
+}
+.lzs-wrap .lzs-head .lzs-sub {
+    color: var(--sd-muted, #5C7184);
+    font-size: .85rem;
+    margin-top: 2px;
+}
+
+/* ---- Toolbar / filters ---- */
+.lzs-wrap .lzs-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: flex-end;
+    background: var(--sd-ground, #F4F7FB);
+    border: 1px solid var(--sd-line, #E5ECF3);
+    border-radius: var(--sd-r, 18px);
+    padding: 14px 16px;
+    margin-bottom: 20px;
+}
+.lzs-wrap .lzs-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.lzs-wrap .lzs-field label {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--sd-muted, #5C7184);
+    font-weight: 700;
+    margin: 0;
+}
+.lzs-wrap .lzs-toolbar .form-control {
+    border-radius: 10px;
+    border-color: var(--sd-line, #E5ECF3);
+    background: var(--sd-surface, #fff);
+    color: var(--sd-text, #0B2034);
+}
+
+/* ---- Stat cards ----
+ * Tinted surfaces rather than saturated gradients: the redesign keeps large
+ * colour fills for navy hero areas, not for inline metrics.
+ */
+.lzs-wrap .lzs-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 4px 0 20px;
+}
+.lzs-wrap .lzs-stat {
+    flex: 1 1 130px;
+    border-radius: var(--sd-r, 18px);
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+    background: var(--sd-surface, #fff);
+    border: 1px solid var(--sd-line, #E5ECF3);
+    box-shadow: var(--sd-sh-sm, 0 1px 2px rgba(11, 32, 52, .06));
+}
+.lzs-wrap .lzs-stat .n {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -.03em;
+    font-variant-numeric: tabular-nums;
+}
+.lzs-wrap .lzs-stat .l {
+    font-size: .74rem;
+    color: var(--sd-muted, #5C7184);
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 700;
+}
+.lzs-wrap .lzs-stat i {
+    position: absolute;
+    right: 14px;
+    top: 14px;
+    font-size: 1.4rem;
+    opacity: .28;
+}
+/* One accent stripe per card carries the meaning, so the number stays legible. */
+.lzs-wrap .lzs-stat::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+}
+.lzs-wrap .lzs-stat--total::before    { background: var(--sd-navy, #022758); }
+.lzs-wrap .lzs-stat--approved::before { background: var(--sd-green, #1FA37A); }
+.lzs-wrap .lzs-stat--rejected::before { background: var(--sd-rose, #E5556E); }
+.lzs-wrap .lzs-stat--pending::before  { background: #C98A00; }
+.lzs-wrap .lzs-stat--total .n    { color: var(--sd-navy, #022758); }
+.lzs-wrap .lzs-stat--approved .n { color: var(--sd-green, #1FA37A); }
+.lzs-wrap .lzs-stat--rejected .n { color: var(--sd-rose, #E5556E); }
+.lzs-wrap .lzs-stat--pending .n  { color: #C98A00; }
+
+/* ---- Table ---- */
+.lzs-wrap .lzs-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--sd-surface, #fff);
+    border: 1px solid var(--sd-line, #E5ECF3);
+    border-radius: var(--sd-r, 18px);
+    overflow: hidden;
+    box-shadow: var(--sd-sh-sm, 0 1px 2px rgba(11, 32, 52, .06));
+}
+.lzs-wrap .lzs-table thead th {
+    background: var(--sd-ground, #F4F7FB);
+    color: var(--sd-muted, #5C7184);
+    font-weight: 700;
+    font-size: .74rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    padding: 13px 16px;
+    border: 0;
+}
+.lzs-wrap .lzs-table tbody td {
+    padding: 13px 16px;
+    border-top: 1px solid var(--sd-line, #E5ECF3);
+    vertical-align: middle;
+    color: var(--sd-text, #0B2034);
+}
+.lzs-wrap .lzs-table tbody tr:hover {
+    background: var(--sd-ground, #F4F7FB);
+}
+
+/* ---- Per-row action buttons ---- */
+.lzs-wrap .lzs-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.lzs-wrap .lzs-actions form {
+    margin: 0;
+}
+
+/* theme_baz wraps non-bespoke pages in #sd-root.sd-adminpage .aw-wrap, which
+ * sets `a { color: var(--sd-blue) }`. That out-specifies Bootstrap's
+ * .btn-primary white, so link-styled buttons render blue-on-blue and the label
+ * disappears. Restore a readable label for buttons inside this plugin. */
+.lzs-wrap a.btn-primary,
+.lzs-wrap a.btn-primary:hover,
+.lzs-wrap a.btn-primary:focus,
+.lzs-wrap a.btn-secondary,
+.lzs-wrap a.btn-secondary:hover,
+.lzs-wrap a.btn-secondary:focus,
+.lzs-wrap a.btn-success,
+.lzs-wrap a.btn-success:hover,
+.lzs-wrap a.btn-danger,
+.lzs-wrap a.btn-danger:hover {
+    color: #fff;
+}
+/* Outline buttons carry their meaning in the text colour, and the same wrapper
+ * rule flattens all of them to one blue. Put the semantics back. */
+.lzs-wrap a.btn-outline-primary,
+.lzs-wrap a.btn-outline-secondary {
+    color: var(--sd-navy, #022758);
+}
+.lzs-wrap a.btn-outline-success {
+    color: #14795A;
+}
+.lzs-wrap a.btn-outline-danger {
+    color: #B23349;
+}
+.lzs-wrap a.btn-outline-primary:hover,
+.lzs-wrap a.btn-outline-secondary:hover,
+.lzs-wrap a.btn-outline-success:hover,
+.lzs-wrap a.btn-outline-danger:hover {
+    color: #fff;
+}
+
+/* ---- Pills ---- */
+.lzs-wrap .lzs-pill {
+    display: inline-block;
+    min-width: 26px;
+    text-align: center;
+    padding: 3px 11px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: .78rem;
+    font-variant-numeric: tabular-nums;
+}
+.lzs-wrap .lzs-pill--muted { background: var(--sd-ground, #F4F7FB); color: var(--sd-muted, #5C7184); }
+.lzs-wrap .lzs-pill--info  { background: rgba(0, 117, 237, .10); color: var(--sd-navy, #022758); }
+.lzs-wrap .lzs-pill--green { background: rgba(31, 163, 122, .12); color: var(--sd-green, #1FA37A); }
+.lzs-wrap .lzs-pill--red   { background: rgba(229, 85, 110, .12); color: var(--sd-rose, #E5556E); }
+.lzs-wrap .lzs-pill--amber { background: rgba(201, 138, 0, .14); color: #8A5F00; }
+
+/* ---- Status badge ----
+ * Also used by My Attendance, which previously borrowed Bootstrap's .bg-success
+ * / .bg-secondary. baz maps those to navy and green respectively, so "Absent"
+ * rendered green and "Attended" navy — the meanings inverted. Owning the
+ * classes here keeps the semantics independent of the theme's palette roles.
+ */
+.lzs-wrap .lzs-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: .78rem;
+    white-space: nowrap;
+}
+.lzs-wrap .lzs-status--pending  { background: rgba(201, 138, 0, .14); color: #8A5F00; }
+.lzs-wrap .lzs-status--approved { background: rgba(31, 163, 122, .12); color: #14795A; }
+.lzs-wrap .lzs-status--rejected { background: rgba(229, 85, 110, .12); color: #B23349; }
+.lzs-wrap .lzs-status--present  { background: rgba(31, 163, 122, .12); color: #14795A; }
+.lzs-wrap .lzs-status--absent   { background: var(--sd-ground, #F4F7FB); color: var(--sd-muted, #5C7184); }
+
+/* ---- Overall tally banner on My Attendance ---- */
+.lzs-wrap .lzs-tally {
+    background: var(--sd-surface, #fff);
+    border: 1px solid var(--sd-line, #E5ECF3);
+    border-left: 3px solid var(--sd-green, #1FA37A);
+    border-radius: var(--sd-r, 18px);
+    box-shadow: var(--sd-sh-sm, 0 1px 2px rgba(11, 32, 52, .06));
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    font-weight: 600;
+    color: var(--sd-text, #0B2034);
+}
+
+/* ---- Empty state ---- */
+.lzs-wrap .lzs-empty {
+    text-align: center;
+    padding: 44px 18px;
+    color: var(--sd-muted, #5C7184);
+    background: var(--sd-ground, #F4F7FB);
+    border: 1px dashed var(--sd-line, #E5ECF3);
+    border-radius: var(--sd-r, 18px);
+}
+.lzs-wrap .lzs-empty i {
+    font-size: 2.1rem;
+    display: block;
+    margin-bottom: 10px;
+    opacity: .5;
+}
+
+/* ---- Summary text + review actions ---- */
+.lzs-wrap .lzs-summary-text {
+    max-width: 560px;
+    white-space: pre-wrap;
+    background: var(--sd-ground, #F4F7FB);
+    border: 1px solid var(--sd-line, #E5ECF3);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-top: 10px;
+    font-size: .9rem;
+    color: var(--sd-text, #0B2034);
+}
+.lzs-wrap .lzs-actions {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 440px;
+}
+.lzs-wrap .lzs-actions textarea {
+    border-radius: 10px;
+    border-color: var(--sd-line, #E5ECF3);
+}
+.lzs-wrap .lzs-actions .lzs-actions-row {
+    display: flex;
+    gap: 8px;
+}
+.lzs-wrap .lzs-feednote {
+    font-size: .8rem;
+    color: var(--sd-muted, #5C7184);
+    margin-top: 6px;
+}
+
+/* ---- Back link ---- */
+.lzs-wrap .lzs-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--sd-navy, #022758);
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 12px;
+}
+.lzs-wrap .lzs-back:hover {
+    text-decoration: underline;
+}
+
+/* ---- View-summary disclosure ---- */
+.lzs-wrap .lzs-table details > summary {
+    cursor: pointer;
+    list-style: none;
+}
+.lzs-wrap .lzs-table details > summary::-webkit-details-marker {
+    display: none;
+}
+
+/* ---- Direct-join waiting page ---- */
+.lzs-wait {
+    display: flex;
+    justify-content: center;
+    padding: 48px 16px 64px;
+}
+.lzs-wait-card {
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+    background: var(--sd-surface, #fff);
+    border: 1px solid var(--sd-line, #E5ECF3);
+    border-radius: var(--sd-r, 18px);
+    padding: 40px 32px 36px;
+    box-shadow: var(--sd-sh-lg, 0 18px 50px rgba(11, 32, 52, .12));
+}
+.lzs-wait-icon {
+    color: var(--sd-accent, #0075ed);
+    margin-bottom: 14px;
+    animation: lzs-wait-pulse 2.4s ease-in-out infinite;
+}
+@keyframes lzs-wait-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .55; transform: scale(.94); }
+}
+.lzs-wait-heading {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    color: var(--sd-text, #0B2034);
+    margin-bottom: 6px;
+}
+.lzs-wait-session {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--sd-navy, #022758);
+    margin-bottom: 4px;
+}
+.lzs-wait-time {
+    color: var(--sd-muted, #5C7184);
+    margin-bottom: 16px;
+}
+.lzs-wait-countdown {
+    font-variant-numeric: tabular-nums;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--sd-text, #0B2034);
+    background: var(--sd-ground, #F4F7FB);
+    border-radius: 12px;
+    display: inline-block;
+    padding: 8px 22px;
+    margin-bottom: 18px;
+    min-height: 1em;
+}
+.lzs-wait-countdown:empty {
+    display: none;
+}
+.lzs-wait-countdown-soon {
+    font-size: 1.05rem;
+    color: var(--sd-accent, #0075ed);
+    background: rgba(0, 117, 237, .10);
+}
+.lzs-wait-note {
+    color: var(--sd-muted, #5C7184);
+    font-size: .92rem;
+    margin-bottom: 22px;
+}
+.lzs-wait-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}

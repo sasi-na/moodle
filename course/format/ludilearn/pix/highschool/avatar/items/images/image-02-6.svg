@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 300">
+  <defs>
+    <filter id="b" data-name="drop-shadow-3" x="53.477" y="46.652" width="155.311" height="144.069" filterUnits="userSpaceOnUse">
+      <feOffset dx="-1.219" dy="0"/>
+      <feGaussianBlur result="c" stdDeviation="0"/>
+      <feFlood flood-color="#42496f" flood-opacity="1"/>
+      <feComposite in2="c" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g isolation="isolate">
+    <g id="a" data-name="bateau 06">
+      <g filter="url(#b)">
+        <path d="M121.564,73.979s-31.313,58.063-61.244,83.701h70.617l-9.373-83.701Z" fill="#e86170"/>
+        <path d="M121.564,73.979s-14.342,62.126-41.711,82.418l51.084,1.284-9.373-83.701Z" fill="#a384bb" mix-blend-mode="multiply" opacity=".25"/>
+        <path d="M56.494,155.882h73.378v3.596H56.494c-.992,0-1.798-.806-1.798-1.798h0c0-.992.806-1.798,1.798-1.798Z" fill="#ffd66e"/>
+        <path d="M135.324,181.684s-5.916-81.718-16.385-133.877c-.136-.677-.731-1.156-1.421-1.156h0c-.872,0-1.547.758-1.437,1.623,1.595,12.536,12.023,94.466,12.023,133.409h7.221Z" fill="#ffd66e"/>
+        <line x1="116.088" y1="159.474" x2="93.387" y2="190.541" fill="none" stroke="#336a9b" stroke-miterlimit="10" stroke-width=".61"/>
+        <path d="M121.097,71.011s45.488,44.948,83.509,88.462c0,0-40.535-4.561-94.657,7.971,0,0,17.981-57.594,11.148-96.433Z" fill="#e86170"/>
+        <path d="M204.606,159.474s-56.919-39.447-94.657,7.971c0,0,41.83-12.932,94.657-7.971Z" fill="#a384bb" mix-blend-mode="multiply" opacity=".25"/>
+        <rect x="106.983" y="168.429" width="2.202" height="3.731" rx="1.101" ry="1.101" transform="translate(120.449 -31.025) rotate(35.918)" fill="#f4af13"/>
+        <line x1="204.646" y1="159.47" x2="208.55" y2="164.352" fill="none" stroke="#9bc8ec" stroke-miterlimit="10" stroke-width=".61"/>
+      </g>
+    </g>
+  </g>
+</svg>

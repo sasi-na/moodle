@@ -1,0 +1,489 @@
+/* ============================================
+   TUTOR-IA DRAWER (based on aiplacement_courseassist)
+   ============================================ */
+
+/* Toggle Button */
+.tutor-ia-toggle-button {
+    position: fixed;
+    /* Position (left/right and bottom/top) is set inline via template */
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    z-index: 1015;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, left 0.3s ease, right 0.3s ease, top 0.3s ease, bottom 0.3s ease;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Position classes for preset identification */
+.tutor-ia-position-right,
+.tutor-ia-position-left,
+.tutor-ia-position-custom {
+    /* Actual positioning is done via inline style */
+    /* These classes are for JavaScript identification and drawer positioning */
+}
+
+.tutor-ia-toggle-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.tutor-ia-avatar-toggle {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Drawer Container */
+.tutor-ia-drawer {
+    position: fixed;
+    top: var(--tutor-ia-drawer-top, 60px); /* Default 60px, adjusted by JavaScript */
+    bottom: 0;
+    width: 380px;
+    background-color: #f8f9fa;
+    z-index: 1016;
+    visibility: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Drawer Position: Right (default) */
+.tutor-ia-drawer-right {
+    right: calc(-380px - 10px);
+    transition: right 0.2s ease, visibility 0.2s ease;
+}
+
+.tutor-ia-drawer-right.show {
+    right: 0;
+    visibility: visible;
+}
+
+/* Drawer Position: Left */
+.tutor-ia-drawer-left {
+    left: calc(-380px - 10px);
+    transition: left 0.2s ease, visibility 0.2s ease;
+}
+
+.tutor-ia-drawer-left.show {
+    left: 0;
+    visibility: visible;
+}
+
+/* ============================================
+   Footer Popover Positioning
+   Move footer-popover when Tutor-IA drawer is open
+   ============================================ */
+
+/* When Tutor-IA drawer is open on the RIGHT */
+body.tutor-ia-drawer-open-right .btn-footer-popover,
+body.tutor-ia-drawer-open-right .btn-footer-communication,
+body.tutor-ia-drawer-open-right .popover-process-monitor {
+    /* Drawer width: 380px + spacing: 2rem */
+    /* stylelint-disable-next-line declaration-no-important */
+    right: calc(380px + 2rem) !important;
+    transition: right 0.2s ease;
+}
+
+body.tutor-ia-drawer-open-right .maintenancewarning {
+    /* stylelint-disable-next-line declaration-no-important */
+    right: calc(380px + 5rem) !important;
+    transition: right 0.2s ease;
+}
+
+/* When Tutor-IA drawer is open on the LEFT */
+body.tutor-ia-drawer-open-left .btn-footer-popover,
+body.tutor-ia-drawer-open-left .btn-footer-communication,
+body.tutor-ia-drawer-open-left .popover-process-monitor {
+    /* Keep normal right position, don't move */
+    /* stylelint-disable-next-line declaration-no-important */
+    right: 2rem !important;
+}
+
+/* Drawer Header */
+.tutor-ia-drawer-header {
+    padding: 1rem;
+    background: #fff;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 60px;
+}
+
+.tutor-ia-header-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.tutor-ia-avatar-small {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.tutor-ia-title h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.tutor-ia-role {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.tutor-ia-close-button {
+    margin-left: auto;
+}
+
+/* Drawer Body */
+.tutor-ia-drawer-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 0;
+}
+
+/* Messages Container */
+.tutor-ia-messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    scrollbar-width: thin;
+    scrollbar-color: #6a737b #f8f9fa;
+}
+
+.tutor-ia-message {
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    max-width: 85%;
+    word-wrap: break-word;
+}
+
+.tutor-ia-message .message-content {
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.tutor-ia-message.user .message-content {
+    white-space: pre-wrap;
+}
+
+.tutor-ia-message.ai .message-content p {
+    margin: 0 0 0.5rem;
+}
+
+.tutor-ia-message.ai .message-content p:last-child {
+    margin-bottom: 0;
+}
+
+.tutor-ia-message.ai .message-content ul,
+.tutor-ia-message.ai .message-content ol {
+    margin: 0.5rem 0 0.5rem 1.25rem;
+    padding-left: 1rem;
+}
+
+.tutor-ia-message.ai .message-content li {
+    margin-bottom: 0.35rem;
+}
+
+.tutor-ia-message.ai .message-content li:last-child {
+    margin-bottom: 0;
+}
+
+.tutor-ia-message.ai .message-content code {
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 4px;
+    padding: 0.1rem 0.35rem;
+    font-size: 0.9em;
+}
+
+.tutor-ia-message.ai .message-content a {
+    color: var(--bs-primary, var(--primary, #0b5ed7));
+    text-decoration: underline;
+}
+
+.tutor-ia-message.user .message-content a {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.tutor-ia-message.ai {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    align-self: flex-start;
+}
+
+.tutor-ia-message.user {
+    background: #0d6efd;
+    color: #fff;
+    margin-left: auto;
+    align-self: flex-end;
+    position: relative;
+}
+
+.tutor-ia-message.user.editing {
+    outline: 2px solid rgba(255, 193, 7, 0.95);
+    outline-offset: 2px;
+}
+
+.tutor-ia-edit-message {
+    position: absolute;
+    top: 0.25rem;
+    right: 0.25rem;
+    border: 0;
+    border-radius: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease-in-out, background 0.15s ease-in-out;
+}
+
+.tutor-ia-message.user:hover .tutor-ia-edit-message,
+.tutor-ia-message.user:focus-within .tutor-ia-edit-message,
+.tutor-ia-message.user.editing .tutor-ia-edit-message {
+    opacity: 1;
+}
+
+.tutor-ia-edit-message:hover,
+.tutor-ia-edit-message:focus {
+    background: rgba(255, 255, 255, 0.32);
+}
+
+/* Inline Edit Container */
+.edit-wrapper {
+    margin-left: auto;
+    max-width: 85%;
+}
+
+.edit-wrapper .tutor-ia-message {
+    max-width: 100%;
+}
+
+.edit-inline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.25rem 0;
+}
+
+.edit-inline-textarea {
+    resize: none;
+    overflow: hidden;
+    min-height: 3rem;
+    font-size: 0.875rem;
+    color: #1d2125;
+}
+
+.edit-inline-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-start;
+    padding-top: 0.25rem;
+    padding-left: 0.75rem;
+    padding-bottom: 0.5rem;
+}
+
+.edit-inline-save,
+.edit-inline-cancel {
+    font-size: 0.8125rem;
+    line-height: 1.2;
+}
+
+/* Typing Indicator */
+.tutor-ia-typing {
+    display: flex;
+    gap: 4px;
+    /* stylelint-disable-next-line declaration-no-important */
+    padding: 0.75rem !important;
+}
+
+.tutor-ia-typing .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #6c757d;
+    animation: typing 1.4s infinite;
+}
+
+.tutor-ia-typing .dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.tutor-ia-typing .dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%,
+    60%,
+    100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translateY(-8px);
+    }
+}
+
+/* History Loading Indicator */
+.history-loading {
+    text-align: center;
+    padding: 0.5rem;
+    color: #6c757d;
+    font-size: 0.875rem;
+    font-style: italic;
+}
+
+/* Message Timestamp */
+.message-timestamp {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+    opacity: 0.7;
+}
+
+.tutor-ia-message.user .message-timestamp {
+    color: rgba(255, 255, 255, 0.8);
+    text-align: right;
+}
+
+/* Footer */
+.tutor-ia-footer {
+    padding: 1rem;
+    background: #fff;
+    border-top: 1px solid #dee2e6;
+}
+
+.tutor-ia-input-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+
+.tutor-ia-input {
+    flex: 1;
+    resize: none;
+    min-height: 38px;
+    max-height: 120px;
+}
+
+.tutor-ia-send {
+    flex-shrink: 0;
+    padding: 0.5rem 0.75rem;
+}
+
+.tutor-ia-send svg {
+    display: block;
+}
+
+/* Text Selection Indicator */
+.tutor-ia-selection-indicator {
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    background: #e7f3ff;
+    border-left: 3px solid #0d6efd;
+    border-radius: 4px;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.selection-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #0d6efd;
+}
+
+.selection-badge i.fa-i-cursor {
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.selection-count {
+    flex: 1;
+    font-weight: 500;
+    color: #495057;
+}
+
+.btn-clear-selection {
+    background: transparent;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    color: #6c757d;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-clear-selection:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #dc3545;
+}
+
+.btn-clear-selection i {
+    font-size: 0.875rem;
+}
+
+/* Error Modal Styles */
+.tutor-ia-error-modal {
+    padding: 1rem;
+}
+
+.tutor-ia-error-modal .alert {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 0.375rem;
+}
+
+.tutor-ia-error-modal .alert i {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.tutor-ia-error-modal .alert span {
+    flex: 1;
+    line-height: 1.5;
+}
+
+.tutor-ia-error-modal .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}

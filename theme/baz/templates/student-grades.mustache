@@ -1,0 +1,154 @@
+{{!
+    @template theme_baz/student-grades
+
+    Bespoke Grades overview (row design) for student-only users. Every enrolled
+    course grouped by semester with its running total grade; each course links to
+    its per-course report. Reuses the shared navy/gold app shell.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="sg-root" class="sg-app">
+
+            <div class="sg-backdrop" id="sg-backdrop"></div>
+            <aside class="sg-side" id="sg-side">
+                <a class="sg-brand" href="{{dashboardurl}}">
+                    {{! The sidebar is always navy, unlike the classic topbar that customlogo
+                        also feeds, so prefer the sidebar logo where a site supplies one. }}
+                    {{#customsidebarlogo}}<img src="{{customsidebarlogo}}" alt="{{sitename}}">{{/customsidebarlogo}}
+                    {{^customsidebarlogo}}
+                        {{#customlogo}}<img src="{{customlogo}}" alt="{{sitename}}">{{/customlogo}}
+                        {{^customlogo}}<span class="sg-brand-txt">{{{ sitename }}}</span>{{/customlogo}}
+                    {{/customsidebarlogo}}
+                </a>
+                <nav class="sg-nav">
+                    <a href="{{dashboardurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg> {{#str}}sd_nav_dashboard, theme_baz{{/str}}</a>
+                    <a href="{{coursesurl}}"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M9 11h6M9 15h4"/></svg> {{#str}}sd_nav_courses, theme_baz{{/str}}</a>
+                    <a href="{{calendarurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg> {{#str}}sd_nav_calendar, theme_baz{{/str}}</a>
+                    <a href="{{gradesurl}}" class="on"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg> {{#str}}sd_nav_grades, theme_baz{{/str}}</a>
+                    {{#hasinterestzone}}
+                    <a href="{{interestzoneurl}}"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.25"/><circle cx="12" cy="9" r="1" fill="currentColor" stroke="none"/><path d="M12 13V15"/></svg> {{interestzonelabel}}</a>
+                    {{/hasinterestzone}}
+                    <div class="sg-navlbl">{{#str}}sd_nav_resources, theme_baz{{/str}}</div>
+                    {{#showeidcard}}<a href="{{eidcardurl}}"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M13 10h5M13.5 14h3M5 16c.4-1.4 1.5-2 3-2s2.6.6 3 2"/></svg> {{#str}}pluginname, local_studentid{{/str}}</a>{{/showeidcard}}
+                    <a href="{{filesurl}}"><svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h6l2 2h6a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg> {{#str}}sd_nav_files, theme_baz{{/str}}</a>
+                </nav>
+            {{> theme_baz/sidebar-support }}
+            </aside>
+
+            <div class="sg-main-col">
+                <header class="sg-topbar">
+                    <div class="sg-topbar-inner">
+                        <div class="sg-tb-left">
+                            <button type="button" class="sg-burger" id="sg-burger" aria-label="{{#str}}sd_menu, theme_baz{{/str}}"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                            <nav class="sg-crumb">{{#incourse}}<a href="{{courseviewurl}}">{{coursename}}</a><span class="sep">/</span>{{/incourse}}{{^incourse}}<a href="{{dashboardurl}}">{{#str}}sd_nav_dashboard, theme_baz{{/str}}</a><span class="sep">/</span>{{/incourse}}<span class="cur">{{#str}}sd_nav_grades, theme_baz{{/str}}</span></nav>
+                        </div>
+                        <div class="sg-search-wrap">
+                            <form class="sg-search" action="{{{ config.wwwroot }}}/course/search.php" method="get" role="search">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                                <input type="text" name="search" autocomplete="off" placeholder="{{#str}}cp_searchph, theme_baz{{/str}}" aria-label="{{#str}}search, core{{/str}}">
+                            </form>
+                        </div>
+                        <div class="sg-top-actions">
+                            {{#hasaskjo}}<button type="button" class="sg-askjo" id="sg-askjo-btn"><svg viewBox="0 0 24 24" fill="var(--bz-accent)"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg> {{#str}}sd_askjo, theme_baz{{/str}}</button>{{/hasaskjo}}
+                            <button type="button" class="sg-iconbtn" id="sg-themebtn" title="{{#str}}sd_toggletheme, theme_baz{{/str}}"><svg id="sg-themeicon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+                            <div class="sg-navbar-plugin">{{{ output.navbar_plugin_output }}}</div>
+                            <div class="sg-usermenu">{{{ output.user_menu }}}</div>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="sg-content">
+                    <section class="sg-hero">
+                        <div class="sg-hero-l">
+                            <div class="sg-eyebrow">{{#str}}gv_eyebrow, theme_baz{{/str}}</div>
+                            <h1>{{#str}}gv_title, theme_baz{{/str}}</h1>
+                            <p>{{#str}}gv_sub, theme_baz{{/str}}</p>
+                        </div>
+                        <div class="sg-stats">
+                            <div class="sg-stat acc"><b>{{gradedcount}}</b><span>{{#str}}gv_graded, theme_baz{{/str}}</span></div>
+                            <div class="sg-stat"><b>{{pendingcount}}</b><span>{{#str}}gv_inprogress, theme_baz{{/str}}</span></div>
+                            <div class="sg-stat"><b>{{highest}}</b><span>{{#str}}gv_highest, theme_baz{{/str}}</span></div>
+                        </div>
+                    </section>
+
+                    {{#incourse}}
+                    <nav class="sg-tabs">
+                        <a href="{{courseviewurl}}">{{#str}}cp_tab_course, theme_baz{{/str}}</a>
+                        <a class="on" href="#">{{#str}}cp_tab_grades, theme_baz{{/str}}</a>
+                    </nav>
+                    {{/incourse}}
+
+                    {{#hasreports}}
+                    <div class="sg-segment" role="tablist">
+                        {{#reports}}<a class="sg-seg{{#active}} on{{/active}}" href="{{url}}"{{#active}} aria-current="page"{{/active}}>{{label}}</a>{{/reports}}
+                    </div>
+                    {{/hasreports}}
+
+                    {{#hascourses}}
+                    {{#groups}}
+                    <section class="sg-sem{{#isother}} sg-other{{/isother}}">
+                        <div class="sg-sem-h"><h2>{{name}}</h2><span class="sg-sem-meta">{{meta}}</span></div>
+                        <div class="sg-list">
+                            {{#courses}}
+                            <a class="sg-row{{^graded}} ng{{/graded}}" href="{{url}}">
+                                <span class="sg-ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg></span>
+                                <span class="sg-name">{{name}}</span>
+                                <span class="sg-perf">{{#haspct}}<span class="sg-mini"><i style="width:{{barwidth}}%"></i></span>{{/haspct}}{{^graded}}<span class="sg-ngl">{{#str}}gv_notgradedyet, theme_baz{{/str}}</span>{{/graded}}</span>
+                                <span class="sg-grade">{{#graded}}<b>{{gradedisplay}}</b>{{#showmax}}<span class="sg-den">/ {{grademax}}</span>{{/showmax}}{{/graded}}{{^graded}}<span class="sg-dash">&mdash;</span>{{/graded}}</span>
+                                <span class="sg-pct">{{#haspct}}<span class="sg-pctchip">{{pctlabel}}%</span>{{/haspct}}</span>
+                                <span class="sg-status">{{#graded}}<span class="sg-tag on">{{#str}}gv_gradedtag, theme_baz{{/str}}</span>{{/graded}}{{^graded}}<span class="sg-tag">{{#str}}gv_pendingtag, theme_baz{{/str}}</span>{{/graded}}</span>
+                                <span class="sg-go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                            </a>
+                            {{/courses}}
+                        </div>
+                    </section>
+                    {{/groups}}
+                    {{/hascourses}}
+                    {{^hascourses}}<div class="sg-empty">{{#str}}gv_empty, theme_baz{{/str}}</div>{{/hascourses}}
+
+                    <div id="region-main-box" class="sg-region-main"><section id="region-main" aria-label="{{#str}}content{{/str}}">{{{ output.main_content }}}</section></div>
+                </main>
+            </div>
+
+            {{#hassupport}}
+            <div class="sg-help">
+                <div class="sg-help-panel" id="sg-help-panel" hidden>
+                    <div class="sg-help-head"><span class="sg-help-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg></span><div class="sg-help-t"><b>{{#str}}sd_help, theme_baz{{/str}}</b><small>{{#str}}sd_help_sub, theme_baz{{/str}}</small></div><button type="button" class="sg-help-close" id="sg-help-close" aria-label="Close">&times;</button></div>
+                    <div class="sd-blockcontent sd-support">{{{ support_html }}}</div>
+                </div>
+                <button type="button" class="sg-help-fab" id="sg-help-fab" aria-expanded="false">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg>
+                    <span>{{#str}}sd_help, theme_baz{{/str}}</span>
+                </button>
+            </div>
+            {{/hassupport}}
+
+            {{#hasaskjo}}
+            <div class="sg-askjo-panel" id="sg-askjo-panel" hidden>
+                <div class="sg-askjo-head"><span>{{#str}}sd_askjo, theme_baz{{/str}}</span><button type="button" class="sg-askjo-close" id="sg-askjo-close" aria-label="Close">&times;</button></div>
+                <div class="block_openai_chat" data-instance-id="{{askjo.blockid}}">
+                    <div class="sg-askjo-body">{{{ askjo.log }}}</div>
+                    <div class="sg-askjo-control">{{{ askjo.control }}}</div>
+                </div>
+            </div>
+            {{/hasaskjo}}
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+</body>
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/studentgrades'], function(Loader, StudentGrades) {
+        StudentGrades.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

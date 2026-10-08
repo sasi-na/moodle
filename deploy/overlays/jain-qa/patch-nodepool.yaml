@@ -1,0 +1,43 @@
+# Keep QA on spot nodes.
+#
+# Both QA workloads run on the `spot` pool today, which is the right call for a
+# test environment -- interruptions are tolerable and the nodes are far cheaper.
+#
+# Base reflects production: its Redis pins `pool-type: ondemand`, and its moodle
+# Deployment sets no affinity at all. Without this patch, adopting the overlay
+# would flip QA's Redis onto on-demand nodes and let the moodle pod schedule
+# anywhere -- a silent cost increase, and exactly the kind of thing an
+# infrastructure refactor should not do by accident.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pool-type
+                operator: In
+                values:
+                - spot
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pool-type
+                operator: In
+                values:
+                - spot

@@ -1,0 +1,48 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_baz/mycourses-header
+
+    Greeting banner with course stats for the My Courses page. All three
+    tiles are filled by theme_baz/mycourses from the myoverview block's own
+    course data, so the numbers always describe the same course set.
+
+    Example context (json):
+    {
+        "userfirstname": "Aisha"
+    }
+}}
+<div class="rui-mycourses-header" data-region="mycourses-header">
+    <div class="rui-mycourses-header-greeting">
+        <h2 class="rui-mycourses-header-title">{{#str}} welcomeback, theme_baz, {{userfirstname}} {{/str}}</h2>
+        <p class="rui-mycourses-header-subtitle">{{#str}} mycoursesheadersub, theme_baz {{/str}}</p>
+    </div>
+    <div class="rui-mycourses-stats" data-region="mycourses-stats">
+        <div class="rui-mycourses-stat">
+            <span class="rui-mycourses-stat-value rui-skeleton" data-region="mycourses-stat-total">&nbsp;</span>
+            <span class="rui-mycourses-stat-label">{{#str}} totalcourses, theme_baz {{/str}}</span>
+        </div>
+        <div class="rui-mycourses-stat">
+            <span class="rui-mycourses-stat-value rui-skeleton" data-region="mycourses-stat-inprogress">&nbsp;</span>
+            <span class="rui-mycourses-stat-label">{{#str}} inprogress, block_myoverview {{/str}}</span>
+        </div>
+        <div class="rui-mycourses-stat">
+            <span class="rui-mycourses-stat-value rui-skeleton" data-region="mycourses-stat-completed">&nbsp;</span>
+            <span class="rui-mycourses-stat-label">{{#str}} completed, completion {{/str}}</span>
+        </div>
+    </div>
+</div>

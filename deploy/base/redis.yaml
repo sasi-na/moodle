@@ -1,0 +1,124 @@
+# Redis: Moodle sessions (db 0) and MUC cache (db 1).
+#
+# One instance per tenant namespace, never shared. Sessions and cache are keyed
+# per site, and the service name `redis-service` resolves in-namespace, so each
+# tenant gets its own without any name juggling.
+#
+# Sourced from the live jo-moodle-prod Deployment. Deployment-files/prod/redis.yml
+# has drifted (it claims 4000m CPU / 6Gi memory; live runs 250m / 1Gi) and was
+# not used.
+#
+# redis.conf comes from the moodle-config ConfigMap, whose shared half lives in
+# base/config/redis.conf.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pool-type
+                operator: In
+                values:
+                - ondemand
+      initContainers:
+      - name: redis-init
+        image: redis:7-alpine
+        command:
+        - sh
+        - -c
+        - mkdir -p /var/log/redis && touch /var/log/redis/redis-server.log && chown -R redis:redis /var/log/redis && chmod 644 /var/log/redis/*.log
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+        - name: redis-logs
+          mountPath: /var/log/redis
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        command:
+        - redis-server
+        - /usr/local/etc/redis/redis.conf
+        ports:
+        - containerPort: 6379
+          name: redis
+        # Sizing now matches what redis.conf permits. Previously redis.conf allowed
+        # `maxmemory 5gb` while this reserved 1Gi with no limit, so Redis was free to grow
+        # to five times its reservation on borrowed node headroom -- and the node hosting it
+        # has been observed at 102% memory. redis.conf drops to 3gb in step with this.
+        #
+        # Measured before the change: 473MB in use (about 385MB of sessions across ~45,000
+        # keys, plus ~90MB of MUC), so 3gb leaves roughly 6x headroom. The headroom matters
+        # more than the saving: eviction is instance-wide under `allkeys-lru`, so filling
+        # Redis would start discarding SESSION keys and logging people out.
+        #
+        # The memory limit is set above maxmemory, not equal to it, because Redis needs room
+        # for client buffers and allocator fragmentation on top of the dataset. Hitting the
+        # limit means an OOMKill, which costs every session -- hence the margin.
+        # Still no CPU limit: Redis is single-threaded and latency-sensitive, so throttling
+        # it is worse than letting it burst past 250m.
+        resources:
+          requests:
+            cpu: 250m
+            memory: 3Gi
+          limits:
+            memory: 4Gi
+        livenessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        - name: redis-logs
+          mountPath: /var/log/redis
+        - name: redis-config
+          mountPath: /usr/local/etc/redis/redis.conf
+          subPath: redis.conf
+      volumes:
+      - name: redis-data
+        emptyDir:
+          sizeLimit: 2Gi
+      - name: redis-logs
+        emptyDir:
+          sizeLimit: 1Gi
+      - name: redis-config
+        configMap:
+          name: moodle-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+spec:
+  type: ClusterIP
+  selector:
+    app: redis
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP

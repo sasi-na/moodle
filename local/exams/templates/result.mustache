@@ -1,0 +1,116 @@
+{{!
+    @template local_exams/result
+
+    Single-exam deep result. Self-contained .exui markup; charts drawn by
+    local_exams/result from the embedded JSON island.
+}}
+<div class="exui exui-light" id="local-exams-result">
+  <div class="exui-root">
+
+    <div class="exui-header">
+      <div>
+        <h1>{{quizname}}</h1>
+        <div class="exui-sub">{{#str}}resulttitle, local_exams{{/str}}</div>
+      </div>
+    </div>
+
+    <div class="exui-grid">
+      <div class="exui-col-3">
+        <div class="exui-card exui-tile">
+          <div class="exui-tile-value">{{#haspercent}}{{percentage}}%{{/haspercent}}{{^haspercent}}&ndash;{{/haspercent}}</div>
+          <div class="exui-tile-label">Score &middot; {{#usergrade}}{{usergrade}}{{/usergrade}}{{^usergrade}}0{{/usergrade}}/{{grademax}}</div>
+          {{#haspass}}
+            {{#passed}}<span class="exui-badge exui-badge-success" style="margin-top:8px;">Passed</span>{{/passed}}
+            {{^passed}}<span class="exui-badge exui-badge-danger" style="margin-top:8px;">Failed</span>{{/passed}}
+          {{/haspass}}
+        </div>
+      </div>
+      <div class="exui-col-3">
+        <div class="exui-card" style="display:flex;justify-content:center;">
+          <div class="exui-chart" style="min-height:160px;width:100%;"><canvas id="exui-percentile"></canvas></div>
+        </div>
+      </div>
+      <div class="exui-col-3">
+        <div class="exui-card exui-tile">
+          <div class="exui-tile-value">{{#rank}}#{{rank}}{{/rank}}{{^rank}}&ndash;{{/rank}}</div>
+          <div class="exui-tile-label">Rank{{#ranktotal}} of {{ranktotal}}{{/ranktotal}}</div>
+        </div>
+      </div>
+      <div class="exui-col-3">
+        <div class="exui-card exui-tile">
+          <div class="exui-tile-value">{{#accuracy}}{{accuracy}}%{{/accuracy}}{{^accuracy}}&ndash;{{/accuracy}}</div>
+          <div class="exui-tile-label">Accuracy &middot; {{timetaken}}</div>
+        </div>
+      </div>
+
+      <div class="exui-col-6">
+        <div class="exui-card">
+          <p class="exui-card-title">You vs cohort</p>
+          <div class="exui-chart"><canvas id="exui-comparison"></canvas></div>
+        </div>
+      </div>
+      <div class="exui-col-6">
+        <div class="exui-card">
+          <p class="exui-card-title">Outcome breakdown</p>
+          <div class="exui-chart"><canvas id="exui-outcome"></canvas></div>
+          <div style="margin-top:10px;">
+            <span class="exui-badge exui-badge-success">{{counts.correct}} correct</span>
+            <span class="exui-badge exui-badge-warn">{{counts.partial}} partial</span>
+            <span class="exui-badge exui-badge-danger">{{counts.incorrect}} incorrect</span>
+            <span class="exui-badge">{{counts.unanswered}} unanswered</span>
+            {{#counts.pending}}<span class="exui-badge exui-badge-primary">{{counts.pending}} pending grading</span>{{/counts.pending}}
+          </div>
+        </div>
+      </div>
+
+      {{#hastopics}}
+      <div class="exui-col-6">
+        <div class="exui-card">
+          <p class="exui-card-title">Strengths by topic</p>
+          <div class="exui-chart"><canvas id="exui-topics"></canvas></div>
+        </div>
+      </div>
+      {{/hastopics}}
+      <div class="exui-col-6">
+        <div class="exui-card">
+          <p class="exui-card-title">Time per question</p>
+          <div class="exui-chart"><canvas id="exui-qtime"></canvas></div>
+        </div>
+      </div>
+      <div class="exui-col-6">
+        <div class="exui-card">
+          <p class="exui-card-title">Speed vs accuracy</p>
+          <div class="exui-chart"><canvas id="exui-scatter"></canvas></div>
+        </div>
+      </div>
+      <div class="exui-col-6">
+        <div class="exui-card">
+          <p class="exui-card-title">Cohort score distribution</p>
+          <div class="exui-chart"><canvas id="exui-distribution"></canvas></div>
+        </div>
+      </div>
+
+      <div class="exui-col-12">
+        <div class="exui-card">
+          <p class="exui-card-title">Question-by-question</p>
+          <table class="exui-table">
+            <thead><tr><th>#</th><th>Question</th><th class="num">Mark</th><th class="num">Max</th><th>Outcome</th></tr></thead>
+            <tbody>
+              {{#perquestion}}
+                <tr>
+                  <td>{{slot}}</td>
+                  <td>{{name}}</td>
+                  <td class="num">{{#mark}}{{mark}}{{/mark}}{{^mark}}&ndash;{{/mark}}</td>
+                  <td class="num">{{maxmark}}</td>
+                  <td><span class="exui-badge exui-badge-{{outcome}}">{{outcome}}</span></td>
+                </tr>
+              {{/perquestion}}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script type="application/json" id="local-exams-data">{{{datajson}}}</script>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+/* local_eventreg */
+
+/* Give dynamically-built submission forms and the responses report a little
+   breathing room; the field label wraps for long questions. */
+.path-local-eventreg .mform .fitem .fitemtitle {
+    width: 100%;
+    max-width: 32rem;
+}
+
+.path-local-eventreg .generaltable td,
+.path-local-eventreg .generaltable th {
+    vertical-align: top;
+}
+
+/* Wide response tables (one column per question) scroll rather than overflow. */
+.path-local-eventreg .generaltable {
+    display: block;
+    overflow-x: auto;
+}
+
+/* Description field: a block of copy between questions, not a form row. Sits in an
+   mform static element, whose empty label column would otherwise leave it indented
+   as if it were an answer to something. */
+.path-local-eventreg .eventreg-fielddesc {
+    border-left: 3px solid #d0d7de;
+    padding: 2px 0 2px 14px;
+    margin: 4px 0;
+}
+
+.path-local-eventreg .eventreg-fielddesc > :last-child {
+    margin-bottom: 0;
+}

@@ -1,0 +1,99 @@
+/* ==========================================================================
+   theme_baz — bespoke wrapper + restyle for the e-ID request form.
+   The form markup/JS is the local_studentid plugin's own (uploads preserved);
+   these rules only restyle it navy/gold inside the #sid-root shell.
+   scssphp-safe: block comments only. Shell chrome lives in student-idcard.scss.
+   ========================================================================== */
+
+#sid-root {
+    .sid-back { display: inline-flex; align-items: center; gap: 8px; background: var(--sid-surface); border: 1px solid var(--sid-line); border-radius: 12px; padding: 10px 16px; font: 700 13px var(--sid-sans); color: var(--sid-navy); text-decoration: none; box-shadow: var(--sid-sh-sm); white-space: nowrap; }
+    .sid-back svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+
+    /* form wrapper */
+    .sif-formwrap { max-width: 960px; }
+    .sif-formwrap #sid-request-form-wrap { padding: 0; }
+    .sif-formwrap .row { margin: 0; }
+    .sif-formwrap [class^="col-"], .sif-formwrap [class*=" col-"] { padding-left: 9px; padding-right: 9px; }
+
+    /* section card */
+    .sif-formwrap .sid-section { background: var(--sid-surface); border: 1px solid var(--sid-line); border-radius: 16px; box-shadow: var(--sid-sh-sm); margin-bottom: 18px; overflow: hidden; }
+    .sif-formwrap .sid-section-header { display: flex; align-items: center; gap: 11px; padding: 16px 20px; border-bottom: 1px solid var(--sid-line); }
+    .sif-formwrap .sid-section-header .icon { width: 32px; height: 32px; border-radius: 9px; background: rgba($bz-accent, .14); color: $bz-accent-text; display: grid; place-items: center; font-size: 15px; }
+    .sif-formwrap .sid-section-header h5 { font-size: 15px; font-weight: 800; margin: 0; flex: 1; color: var(--sid-ink); }
+    .sif-formwrap .sid-section-body { padding: 20px; }
+    .sif-formwrap .badge-auto { font: 700 10px var(--sid-mono); text-transform: uppercase; letter-spacing: .05em; background: rgba(31, 163, 122, .12); color: var(--sid-green); padding: 6px 10px; border-radius: 8px; white-space: nowrap; }
+
+    /* auto-filled info fields */
+    .sif-formwrap .info-field label, .sif-formwrap .sid-info-label, .sif-formwrap label.font-weight-bold { display: block; font: 700 10px/1 var(--sid-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--sid-faint); margin-bottom: 7px; }
+    .sif-formwrap .info-field .value { font-size: 14px; font-weight: 700; color: var(--sid-ink); }
+    .sif-formwrap .info-field .value.empty { color: var(--sid-faint); font-weight: 600; }
+    .sif-formwrap .text-danger { color: var(--sid-rose); }
+
+    /* inputs + selects */
+    .sif-formwrap .form-control, .sif-formwrap select.form-control, .sif-formwrap input.form-control {
+        width: 100%; background: var(--sid-surface); border: 1px solid #CBD8E6; border-radius: 11px;
+        padding: 11px 14px; font: 600 13.5px var(--sid-sans); color: var(--sid-ink); box-shadow: var(--sid-sh-sm); height: auto;
+    }
+    .sif-formwrap select.form-control { appearance: none; -webkit-appearance: none;
+        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235C7184' stroke-width='2.4'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+        background-repeat: no-repeat; background-position: right 12px center; background-size: 15px; padding-right: 36px; }
+    .sif-formwrap .form-control:focus { outline: none; border-color: var(--sid-accent); box-shadow: 0 0 0 3px rgba($bz-accent, .2); }
+    .sif-formwrap .field-error { color: var(--sid-rose); font-size: 12px; font-weight: 600; }
+
+    /* photo preview + guidelines */
+    .sif-formwrap .photo-preview-frame { width: 124px; height: 150px; border-radius: 12px; overflow: hidden; background: var(--sid-ground); border: 1px solid var(--sid-line); display: grid; place-items: center; }
+    .sif-formwrap .photo-preview-frame img { width: 100%; height: 100%; object-fit: cover; }
+    .sif-formwrap .pp-placeholder { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--sid-faint); font-size: 22px; }
+    .sif-formwrap .photo-dim-badge { display: inline-block; font: 700 10px var(--sid-mono); color: var(--sid-muted); background: var(--sid-ground); border-radius: 7px; padding: 4px 9px; }
+    .sif-formwrap .guidelines-list { background: rgba($bz-accent, .08); border: 1px solid rgba($bz-accent, .25); border-radius: 13px; padding: 14px 16px; }
+    .sif-formwrap .guidelines-list .gl-title { font-size: 12px; font-weight: 800; color: $bz-accent-text; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
+    .sif-formwrap .guidelines-list ul { margin: 0; padding-left: 18px; }
+    .sif-formwrap .guidelines-list li { font-size: 12.5px; color: var(--sid-ink); line-height: 1.6; }
+
+    /* photo dropzone */
+    .sif-formwrap .upload-zone { position: relative; border: 1.5px dashed #CBD8E6; border-radius: 13px; padding: 22px; text-align: center; background: #FAFCFE; cursor: pointer; transition: border-color .15s, background .15s; }
+    .sif-formwrap .upload-zone:hover { border-color: var(--sid-accent); background: rgba($bz-accent, .06); }
+    .sif-formwrap .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .sif-formwrap .upload-zone .uz-icon { font-size: 26px; color: $bz-accent-text; }
+    .sif-formwrap .upload-zone .uz-title { font-size: 13.5px; font-weight: 700; margin-top: 8px; color: var(--sid-ink); }
+    .sif-formwrap .upload-zone .uz-title u { color: var(--sid-blue); }
+    .sif-formwrap .upload-zone .uz-sub { font: 600 11px var(--sid-mono); color: var(--sid-faint); text-transform: uppercase; letter-spacing: .03em; margin-top: 4px; }
+
+    /* document (aadhaar/abc/tenth/olevel) cards — show uploaded file inline */
+    .sif-formwrap .aadhaar-card { border: 1px solid var(--sid-line); border-radius: 13px; overflow: hidden; background: var(--sid-surface); }
+    .sif-formwrap .aadhaar-card-header { display: flex; align-items: center; gap: 8px; padding: 11px 14px; background: var(--sid-ground); border-bottom: 1px solid var(--sid-line); font-size: 13px; font-weight: 700; color: var(--sid-ink); }
+    .sif-formwrap .aadhaar-preview-frame { height: 150px; display: grid; place-items: center; background: var(--sid-ground); border-bottom: 1px solid var(--sid-line); overflow: hidden; }
+    .sif-formwrap .aadhaar-preview-frame img { width: 100%; height: 100%; object-fit: cover; }
+    .sif-formwrap .ap-placeholder { display: flex; flex-direction: column; align-items: center; gap: 7px; color: var(--sid-faint); font-size: 13px; }
+    .sif-formwrap .ap-placeholder .fa { font-size: 26px; }
+    .sif-formwrap .aadhaar-pdf-badge { display: flex; flex-direction: column; align-items: center; gap: 7px; color: var(--sid-rose); font-size: 24px; }
+    .sif-formwrap .aadhaar-pdf-badge .pdf-name { font-size: 12px; color: var(--sid-muted); font-weight: 600; }
+    .sif-formwrap .aadhaar-card-footer { padding: 12px 14px; }
+    .sif-formwrap .aadhaar-upload-btn { position: relative; display: inline-flex; align-items: center; gap: 7px; background: var(--sid-gnavy); color: #fff; border: 0; border-radius: 10px; padding: 9px 15px; font: 800 12.5px var(--sid-sans); cursor: pointer; }
+    .sif-formwrap .aadhaar-upload-btn input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .sif-formwrap .aadhaar-filename { font: 600 11.5px var(--sid-mono); color: var(--sid-muted); margin-top: 8px; word-break: break-all; }
+
+    /* submit bar */
+    .sif-formwrap .sid-submit-bar { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 6px; padding: 18px 0 0; }
+    .sif-formwrap .sid-submit-bar .btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 12px; padding: 13px 22px; font: 800 13.5px var(--sid-sans); cursor: pointer; text-decoration: none; border: 0; }
+    .sif-formwrap .btn-primary, .sif-formwrap .sid-submit-bar .btn-primary { background: var(--sid-gaccent); color: var(--sid-on-accent); box-shadow: 0 8px 22px rgba($bz-accent, .4); }
+    .sif-formwrap .btn-outline-secondary:not(.aadhaar-upload-btn), .sif-formwrap .sid-submit-bar .btn-outline-secondary { background: var(--sid-ground); border: 1px solid var(--sid-line); color: var(--sid-navy); }
+    .sif-formwrap .btn .fa { font-size: 13px; }
+
+    @media (max-width: 760px) {
+        .sif-formwrap .sid-submit-bar { flex-direction: column-reverse; }
+        .sif-formwrap .sid-submit-bar .btn { width: 100%; justify-content: center; }
+    }
+}
+
+/* ==========================================================================
+   Dark mode (vars come from student-idcard.scss; restyle form surfaces here)
+   ========================================================================== */
+body.sd-dark #sid-root,
+body.theme-dark #sid-root {
+    .sif-formwrap .upload-zone { background: #14293A; border-color: #294056; }
+    .sif-formwrap .upload-zone:hover { background: rgba($bz-accent, .08); }
+    .sif-formwrap .aadhaar-preview-frame, .sif-formwrap .aadhaar-card-header, .sif-formwrap .photo-preview-frame, .sif-formwrap .photo-dim-badge { background: #14293A; }
+    .sif-formwrap .form-control { border-color: #294056; }
+    .sid-back { background: #14293A; }
+}

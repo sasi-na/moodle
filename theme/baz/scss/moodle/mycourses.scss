@@ -1,0 +1,529 @@
+/* -------------------------------------------------------------------------
+   My Courses page (/my/courses.php) — "elevated modern" revamp.
+   Everything page-specific is scoped under .page-mycourses (a body class) so
+   the Dashboard course blocks, which share the same card templates, keep
+   their original look. Dark mode pairs with the body class, so overrides use
+   the compound selector .theme-dark.page-mycourses.
+   ------------------------------------------------------------------------- */
+
+// The card CTA exists in shared card markup; only this page reveals it.
+.rui-course-card-cta {
+    display: none;
+}
+
+// Generic shimmer used by the header stat tiles and loading placeholders.
+@keyframes rui-skeleton-shimmer {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+.rui-skeleton {
+    color: transparent !important;
+    background: linear-gradient(90deg, $gray-100 25%, $gray-200 50%, $gray-100 75%);
+    background-size: 200% 100%;
+    border-radius: $border-radius;
+    animation: rui-skeleton-shimmer 1.4s ease-in-out infinite;
+    user-select: none;
+    pointer-events: none;
+
+    .theme-dark & {
+        background: linear-gradient(90deg, $dm-gray-200 25%, $dm-gray-300 50%, $dm-gray-200 75%);
+        background-size: 200% 100%;
+    }
+}
+
+// Loading placeholders: the skeleton deck replaces the spinner only on the
+// My Courses page; everywhere else (Dashboard blocks) the spinner remains.
+[data-region="loading-placeholder-content"] .rui-skeleton-deck {
+    display: none;
+}
+
+.page-mycourses {
+
+    /* ---- Greeting + stats header ---- */
+    .rui-mycourses-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.25rem;
+        padding: 1.75rem 2rem;
+        margin: .5rem 0 .75rem;
+        border-radius: 18px;
+        background: linear-gradient(120deg, $primary-color-600 0%, shade($primary-color-600, 30%) 55%, $blue-700 130%);
+        color: $white;
+    }
+
+    .rui-mycourses-header-title {
+        margin-bottom: .25rem;
+        font-size: 1.5rem;
+        font-weight: $font-weight-bold;
+        color: $white;
+    }
+
+    .rui-mycourses-header-subtitle {
+        margin-bottom: 0;
+        font-size: $font-size-sm;
+        color: rgba($white, .75);
+    }
+
+    .rui-mycourses-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .75rem;
+    }
+
+    .rui-mycourses-stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-width: 110px;
+        padding: .75rem 1.1rem;
+        border-radius: 14px;
+        background-color: rgba($white, .1);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba($white, .15);
+        text-align: center;
+    }
+
+    .rui-mycourses-stat-value {
+        font-size: 1.45rem;
+        font-weight: $font-weight-bold;
+        line-height: 1.2;
+        color: $white;
+
+        &.rui-skeleton {
+            display: inline-block;
+            min-width: 2.25rem;
+            min-height: 1.6rem;
+            background: linear-gradient(90deg, rgba($white, .15) 25%, rgba($white, .3) 50%, rgba($white, .15) 75%);
+            background-size: 200% 100%;
+        }
+    }
+
+    .rui-mycourses-stat-label {
+        margin-top: .15rem;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
+        color: rgba($white, .75);
+        white-space: nowrap;
+    }
+
+    .rui-mycourses-stats--hidden {
+        display: none;
+    }
+
+    /* ---- Course card deck ---- */
+    .block-myoverview .rui-course-card-deck {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+    }
+
+    /* ---- Elevated card ---- */
+    .rui-course-card {
+        position: relative;
+        border: 0;
+        border-radius: 14px;
+        background-color: $card-bg;
+        box-shadow: 0 1px 3px rgba($primary-color-600, .08), 0 8px 24px rgba($primary-color-600, .06);
+        transition: transform .2s ease, box-shadow .2s ease;
+
+        &:hover,
+        &:focus-within {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba($primary-color-600, .12), 0 16px 36px rgba($primary-color-600, .16);
+        }
+    }
+
+    .rui-course-card-media {
+        position: relative;
+        overflow: hidden;
+        border-radius: 14px 14px 0 0;
+    }
+
+    .rui-course-card-img-top {
+        border-radius: 0;
+        transition: transform .35s ease;
+    }
+
+    .rui-course-card:hover .rui-course-card-img-top,
+    .rui-course-card:focus-within .rui-course-card-img-top {
+        transform: scale(1.06);
+    }
+
+    // Favourite star overlay (globally display: none in course.scss). Scoped
+    // to the media wrapper so the summary/list display modes — which share
+    // the card classes but have no media wrapper — keep their original look.
+    // Bottom-right of the image: the action-menu kebab owns the card's
+    // top-right corner.
+    .rui-course-card-media .rui-course-card-icons {
+        display: inline-flex;
+        top: auto;
+        bottom: 12px;
+        right: 12px;
+        left: auto;
+        z-index: 2;
+    }
+
+    // Category (semester) chip over the image. Visibility follows the block's
+    // showcoursecategory flag via the rui-course-card--cat modifier, so the
+    // accordion (which names the semester in its header) hides it.
+    .rui-course-card-media .rui-course-cat {
+        display: none;
+    }
+
+    .rui-course-card--cat .rui-course-card-media .rui-course-cat {
+        display: flex;
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        z-index: 2;
+        margin: 0;
+        max-width: calc(100% - 64px);
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            max-width: 100%;
+            padding: .3rem .7rem;
+            border-radius: 50rem;
+            background-color: rgba($primary-color-600, .75);
+            color: $white;
+            font-size: $font-size-xs;
+            font-weight: $font-weight-medium;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+    }
+
+    /* ---- Progress label ---- */
+    .rui-mo-progress-text {
+        font-size: $font-size-xs;
+        font-weight: $font-weight-medium;
+        color: $body-color-secondary;
+    }
+
+    /* ---- Continue learning CTA ---- */
+    .rui-course-card-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: .45rem;
+        margin: 0 20px 16px;
+        padding: .55rem 1rem;
+        border-radius: 10px;
+        background-color: $blue-700;
+        color: $white;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        text-decoration: none;
+        transition: background-color .15s ease, opacity .2s ease, transform .2s ease;
+
+        &:hover,
+        &:focus {
+            background-color: shade($blue-700, 15%);
+            color: $white;
+            text-decoration: none;
+        }
+
+        svg {
+            flex: 0 0 auto;
+        }
+    }
+
+    // Desktop with a fine pointer: reveal the CTA on hover/keyboard focus.
+    // Touch devices skip this block, so the CTA is always visible there.
+    @media (hover: hover) and (pointer: fine) {
+        .rui-course-card-cta {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+
+        .rui-course-card:hover .rui-course-card-cta,
+        .rui-course-card:focus-within .rui-course-card-cta {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* ---- Filter / search bar ---- */
+    .block-myoverview [data-region="filter"] {
+        .dropdown-toggle {
+            padding: .45rem 1rem;
+            border: 1px solid $border-color;
+            border-radius: 50rem;
+            background-color: $card-bg;
+            font-size: $font-size-sm;
+            font-weight: $font-weight-medium;
+            transition: border-color .15s ease, box-shadow .15s ease;
+
+            &:hover,
+            &:focus {
+                border-color: rgba($blue-700, .45);
+                box-shadow: 0 0 0 3px rgba($blue-700, .12);
+            }
+        }
+
+        input {
+            border-radius: 12px;
+            transition: border-color .15s ease, box-shadow .15s ease;
+
+            &:focus {
+                border-color: rgba($blue-700, .45);
+                box-shadow: 0 0 0 3px rgba($blue-700, .12);
+            }
+        }
+    }
+
+    /* ---- Semester accordion (migrated from view-accordion.mustache) ---- */
+    .rui-mycourses-accordion {
+        margin-top: 1rem;
+    }
+
+    .rui-mycourses-semester {
+        border-radius: .6rem;
+        overflow: hidden;
+        transition: box-shadow .15s ease;
+
+        + .rui-mycourses-semester {
+            margin-top: .85rem;
+        }
+
+        &:hover {
+            box-shadow: 0 .25rem .9rem rgba($black, .08);
+        }
+    }
+
+    .rui-mycourses-semester-header {
+        padding: 0;
+    }
+
+    .rui-mycourses-semester-toggle {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: .95rem 1.15rem;
+        margin: 0;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        font-size: 1.05rem;
+        font-weight: $font-weight-bold;
+        line-height: 1.3;
+        color: inherit;
+        text-align: left;
+        cursor: pointer;
+        transition: background-color .15s ease, color .15s ease;
+
+        &:hover,
+        &:focus {
+            background-color: rgba($gray-500, .12);
+            outline: none;
+        }
+
+        &:focus-visible {
+            box-shadow: inset 0 0 0 2px $blue-700;
+        }
+
+        &:not(.collapsed) {
+            color: $primary-color-600;
+        }
+
+        .rui-mycourses-chevron {
+            flex: 0 0 auto;
+            margin-right: .8rem;
+            opacity: .65;
+            transition: transform .2s ease;
+        }
+
+        &:not(.collapsed) .rui-mycourses-chevron {
+            transform: rotate(90deg);
+            opacity: 1;
+        }
+    }
+
+    .rui-mycourses-semester-name {
+        flex: 1 1 auto;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .rui-mycourses-semester-count {
+        flex: 0 0 auto;
+        margin-left: .85rem;
+        font-weight: $font-weight-bold;
+        font-size: .8rem;
+    }
+
+    .rui-mycourses-semester-body {
+        padding: .25rem 1.15rem 1.35rem;
+
+        > .rui-course-card-deck {
+            margin-top: .5rem !important;
+        }
+    }
+
+    /* ---- Empty state ---- */
+    .rui-mycourses-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 3.5rem 1.5rem;
+        text-align: center;
+
+        svg {
+            margin-bottom: 1.25rem;
+            color: $primary-color-400;
+        }
+    }
+
+    .rui-mycourses-empty-title {
+        margin-bottom: .35rem;
+        font-size: 1.15rem;
+        font-weight: $font-weight-bold;
+    }
+
+    .rui-mycourses-empty-body {
+        max-width: 420px;
+        margin-bottom: 1.25rem;
+        font-size: $font-size-sm;
+        color: $body-color-secondary;
+    }
+
+    /* ---- Loading skeleton deck ---- */
+    [data-region="loading-placeholder-content"] {
+        .spinner {
+            display: none;
+        }
+
+        .rui-skeleton-deck {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 1rem;
+        }
+    }
+
+    .rui-skeleton-card {
+        border-radius: 14px;
+        overflow: hidden;
+        background-color: $card-bg;
+        box-shadow: 0 1px 3px rgba($primary-color-600, .08);
+
+        .rui-skeleton-card-img {
+            height: 150px;
+            border-radius: 0;
+        }
+
+        .rui-skeleton-card-line {
+            height: .8rem;
+            margin: .9rem 20px 0;
+
+            &:last-child {
+                margin-bottom: 1.1rem;
+            }
+
+            &--short {
+                width: 55%;
+            }
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .rui-course-card,
+        .rui-course-card-img-top,
+        .rui-course-card-cta,
+        .rui-mycourses-chevron {
+            transition: none;
+        }
+
+        .rui-course-card:hover,
+        .rui-course-card:focus-within {
+            transform: none;
+        }
+
+        .rui-course-card:hover .rui-course-card-img-top,
+        .rui-course-card:focus-within .rui-course-card-img-top {
+            transform: none;
+        }
+
+        .rui-skeleton {
+            animation: none;
+        }
+    }
+}
+
+/* ---- Dark mode (both classes sit on <body>, hence the compound selector) ---- */
+.theme-dark.page-mycourses {
+    .rui-mycourses-header {
+        background: linear-gradient(120deg, shade($primary-color-600, 55%) 0%, shade($primary-color-600, 35%) 55%, shade($blue-700, 35%) 130%);
+    }
+
+    .rui-course-card {
+        background-color: $dm-card-bg;
+        box-shadow: 0 1px 3px rgba($black, .45), 0 8px 24px rgba($black, .35);
+
+        &:hover,
+        &:focus-within {
+            box-shadow: 0 6px 16px rgba($black, .5), 0 16px 36px rgba($black, .55);
+        }
+    }
+
+    .rui-course-card--cat .rui-course-cat .badge {
+        background-color: rgba($black, .6);
+        color: $dm-gray-900;
+    }
+
+    .rui-mo-progress-text {
+        color: $dm-body-color-secondary;
+    }
+
+    .block-myoverview [data-region="filter"] {
+        .dropdown-toggle {
+            background-color: $dm-card-bg;
+            border-color: $dm-border-color;
+            color: $dm-body-color;
+        }
+    }
+
+    .rui-mycourses-semester {
+        &:hover {
+            box-shadow: 0 .25rem .9rem rgba($black, .4);
+        }
+    }
+
+    .rui-mycourses-semester-toggle {
+        &:hover,
+        &:focus {
+            background-color: rgba($white, .06);
+        }
+
+        &:not(.collapsed) {
+            color: $primary-color-300;
+        }
+    }
+
+    .rui-mycourses-empty {
+        svg {
+            color: $primary-color-300;
+        }
+    }
+
+    .rui-mycourses-empty-body {
+        color: $dm-body-color-secondary;
+    }
+
+    .rui-skeleton-card {
+        background-color: $dm-card-bg;
+        box-shadow: 0 1px 3px rgba($black, .45);
+    }
+}

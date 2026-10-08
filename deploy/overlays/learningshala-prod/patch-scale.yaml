@@ -1,0 +1,38 @@
+# LearningShala sizing. Fewer than 100 users at launch -- smaller than usdc,
+# which is the smallest live tenant and measured 1m CPU / 47-61Mi per pod after
+# right-sizing.
+#
+# replicas 2 rather than 1 so a rolling deploy never leaves the site with zero
+# serving pods. The HPA owns spec.replicas once it exists, so this value is only
+# a seed -- `kubectl diff -k` will show a replicas difference and that is normal,
+# not a failed patch.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: php-fpm
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "100m"
+      - name: nginx
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "50m"
+      # theme-css-warmer is deliberately NOT patched, though base's 50m/128Mi is
+      # more than it needs.
+      #
+      # It is a native sidecar -- an initContainer carrying restartPolicy: Always
+      # -- so a patch for it has to go in the initContainers list. Doing that with
+      # a single-entry list makes kustomize's strategic merge treat it as the HEAD
+      # of that list and hoist it in front of setup-logs-and-code, the container
+      # that copies Moodle into the shared emptyDir the warmer then reads. Running
+      # first it would find /var/www/html empty and loop forever -- and because a
+      # sidecar only has to START for the pod to proceed, the pod would come up
+      # healthy with the CSS pre-warm permanently dead.

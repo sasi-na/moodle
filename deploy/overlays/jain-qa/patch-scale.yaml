@@ -1,0 +1,20 @@
+# QA runs a single pod.
+#
+# Base carries production's sizing (6 CPU / 12Gi per pod). QA's live Deployment
+# currently sets NO resource requests at all, which means it schedules as
+# BestEffort and is first in line to be evicted under node pressure. Modest
+# explicit requests are better than none.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: php-fpm
+        resources:
+          requests:
+            memory: "3Gi"
+            cpu: "1"

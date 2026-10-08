@@ -1,0 +1,80 @@
+{{!
+    @template theme_baz/student-login
+
+    Bespoke pre-auth layout (login + forgot-password). The REAL core form renders
+    into the main content region, so logintoken / CSRF / errors are untouched;
+    this only supplies the split navy/gold shell and is restyled via
+    scss/moodle/student-login.scss. Used for the login pagelayout.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    {{{ output.standard_top_of_body_html }}}
+
+    {{#logincentered}}
+    <div id="lp-root" class="lp-centered"{{#loginbg}} style="--lpc-shot: url('{{{ loginbg }}}')"{{/loginbg}}>
+        <div class="lpc-scrim"></div>
+        <main class="lpc-mid">
+            {{! The card itself is rendered by core/loginform.mustache, which has
+                core's logintoken and error. This supplies only the surround. }}
+            {{{ output.main_content }}}
+        </main>
+        <footer class="lpc-foot"><span>{{brandcopyright}}</span></footer>
+    </div>
+    {{/logincentered}}
+
+    {{^logincentered}}
+    <div id="lp-root">
+        <section class="lp-brand">
+            <div class="lp-glow"></div>
+            <figure class="lp-art">
+                {{#loginbg}}<img src="{{loginbg}}" alt="{{sitename}}">{{/loginbg}}
+                {{^loginbg}}{{#logourl}}<img src="{{logourl}}" alt="{{sitename}}">{{/logourl}}{{/loginbg}}
+            </figure>
+        </section>
+
+        <section class="lp-form-col">
+            <div class="lp-card">
+                {{#output.render_lang_menu_login}}<div class="lp-langmenu">{{{ output.render_lang_menu_login }}}</div>{{/output.render_lang_menu_login}}
+                {{#phead}}<h1 class="lp-phead">{{phead}}</h1>{{/phead}}
+                {{{ output.main_content }}}
+            </div>
+            <div class="lp-form-foot">{{#str}}lp_foot, theme_baz, {{brandname}}{{/str}}</div>
+        </section>
+    </div>
+    {{/logincentered}}
+
+    {{#blockmessage}}
+    <div id="lp-blockoverlay" role="dialog" aria-modal="true" aria-labelledby="lp-block-title">
+        <div class="lp-block-modal">
+            <div class="lp-block-body">
+                <span class="lp-block-badge">{{#str}}lp_blocked_badge, theme_baz{{/str}}</span>
+                <div class="lp-block-shield" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--bz-accent)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3l7 3v5c0 4.4-3 7.6-7 9-4-1.4-7-4.6-7-9V6l7-3z"></path>
+                        <path d="M9.2 12.2l1.9 1.9 3.7-3.9"></path>
+                    </svg>
+                </div>
+                <h1 class="lp-block-title" id="lp-block-title">{{#str}}lp_blocked_head, theme_baz{{/str}}</h1>
+                <div class="lp-block-msg">{{{ blockmessage }}}</div>
+                <div class="lp-block-actions">
+                    <a class="lp-block-btn" href="{{loginurl}}">{{#str}}lp_blocked_back, theme_baz{{/str}}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/blockmessage}}
+
+    {{{ output.standard_after_main_region_html }}}
+    {{{ output.standard_end_of_body_html }}}
+</body>
+
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader'], function() {
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

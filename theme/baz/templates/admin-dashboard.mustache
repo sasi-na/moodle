@@ -1,0 +1,208 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_baz/admin-dashboard
+
+    Bespoke admin dashboard for site administrators. Reuses the student #sd-root
+    shell (sidebar / topbar / search / theme toggle) so the shared
+    theme_baz/studentdashboard JS drives it too. Every link routes into an
+    existing admin screen — this is a summary + navigation layer only.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="sd-root" class="sd-app sd-admin">
+
+            <div class="sd-backdrop" id="sd-backdrop"></div>
+            <aside class="sd-side" id="sd-side">
+                <a class="sd-brand" href="{{{ config.wwwroot }}}/my/">
+                    {{! This sidebar is navy, like the student one, so prefer the sidebar
+                        logo a site supplies for exactly that background. customlogo also
+                        feeds the light classic topbar, where a white mark would vanish. }}
+                    {{#customsidebarlogo}}<img src="{{customsidebarlogo}}" alt="{{sitename}}">{{/customsidebarlogo}}
+                    {{^customsidebarlogo}}
+                        {{#customlogo}}<img src="{{customlogo}}" alt="{{sitename}}">{{/customlogo}}
+                        {{^customlogo}}<span class="sd-brand-txt">{{{ sitename }}}</span>{{/customlogo}}
+                    {{/customsidebarlogo}}
+                </a>
+                <span class="ad-rolebadge">{{#str}}ad_admin, theme_baz{{/str}}</span>
+
+                <nav class="sd-nav">
+                    {{> theme_baz/homenav }}
+                </nav>
+            {{> theme_baz/sidebar-support }}
+            </aside>
+
+            <div class="sd-main">
+                <header class="sd-topbar">
+                    <div class="sd-topbar-inner">
+                        <div class="sd-tb-left">
+                            <button type="button" class="sd-burger" id="sd-burger" aria-label="{{#str}}sd_menu, theme_baz{{/str}}" aria-expanded="false" aria-controls="sd-side">
+                                <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            </button>
+                            <span class="sd-tb-title">{{#str}}sd_nav_dashboard, theme_baz{{/str}}</span>
+                            <span class="sd-tb-chip">{{#str}}ad_admin, theme_baz{{/str}}</span>
+                        </div>
+                        <div class="sd-search-wrap">
+                            <form class="sd-search" action="{{settingsurl}}" method="get" role="search">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                                <input type="text" name="query" id="sd-search-input" autocomplete="off" placeholder="{{#str}}search, admin{{/str}}" aria-label="{{#str}}search, core{{/str}}">
+                                <span class="sd-search-kbd">/</span>
+                            </form>
+                        </div>
+                        <div class="sd-top-actions">
+                            <button type="button" class="sd-iconbtn" id="sd-themebtn" title="{{#str}}sd_toggletheme, theme_baz{{/str}}">
+                                <svg id="sd-themeicon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+                            </button>
+                            <div class="sd-navbar-plugin">{{{ output.navbar_plugin_output }}}</div>
+                            <div class="sd-usermenu">{{{ output.user_menu }}}</div>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="sd-content">
+                    {{{weatherwidget}}}
+
+                    <!-- HERO -->
+                    <section class="sd-hero ad-hero">
+                        <div class="sd-hero-l">
+                            <div class="sd-glow"></div>
+                            <div class="sd-eyebrow">{{datelabel}}</div>
+                            <h1>{{herotext}}</h1>
+                            <p class="sd-sub">{{#str}}ad_overview, theme_baz{{/str}}</p>
+                            <div class="sd-qa">
+                                <a class="sd-qa-primary" href="{{adduserurl}}"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M18 8v6M15 11h6"/></svg> {{#str}}ad_adduser, theme_baz{{/str}}</a>
+                                <a href="{{createcourseurl}}"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM12 9v6M9 12h6"/></svg> {{#str}}ad_createcourse, theme_baz{{/str}}</a>
+                                <a href="{{reportsurl}}"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg> {{#str}}ad_reports, theme_baz{{/str}}</a>
+                            </div>
+                        </div>
+                        <div class="sd-hero-r ad-health">
+                            <div class="ad-health-h">
+                                <span>{{#str}}ad_health, theme_baz{{/str}}</span>
+                                <span class="ad-health-pill{{^healthok}} warn{{/healthok}}">
+                                    {{#healthok}}{{#str}}ad_health_ok, theme_baz{{/str}}{{/healthok}}
+                                    {{^healthok}}{{attentioncount}} {{#str}}ad_health_attention, theme_baz{{/str}}{{/healthok}}
+                                </span>
+                            </div>
+                            <div class="ad-health-list">
+                                {{#health}}
+                                <div class="ad-health-row">
+                                    <span class="ad-dot {{state}}"></span>
+                                    <span class="ad-hl-label">{{label}}</span>
+                                    <span class="ad-hl-value">{{value}}</span>
+                                </div>
+                                {{/health}}
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- KPI STRIP -->
+                    <section class="ad-kpis">
+                        <div class="ad-kpi"><span class="ic b"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M16 4a3 3 0 0 1 0 5.8M21 20a5.5 5.5 0 0 0-4-5.3"/></svg></span><div><div class="k">{{kpi_users}}</div><div class="l">{{#str}}ad_kpi_users, theme_baz{{/str}}</div></div></div>
+                        <div class="ad-kpi"><span class="ic g"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><div class="k">{{kpi_activetoday}}</div><div class="l">{{#str}}ad_kpi_activetoday, theme_baz{{/str}}</div></div></div>
+                        <div class="ad-kpi"><span class="ic n"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14h16V5"/><path d="M9 11h6"/></svg></span><div><div class="k">{{kpi_courses}}</div><div class="l">{{#str}}ad_kpi_courses, theme_baz{{/str}}</div></div></div>
+                        <div class="ad-kpi"><span class="ic p"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg></span><div><div class="k">{{kpi_enrolments}}</div><div class="l">{{#str}}ad_kpi_enrolments, theme_baz{{/str}}</div></div></div>
+                        <div class="ad-kpi"><span class="ic r"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/></svg></span><div><div class="k">{{kpi_blocked}}</div><div class="l">{{#str}}ad_kpi_blocked, theme_baz{{/str}}</div></div></div>
+                    </section>
+
+                    <!-- ENGAGEMENT -->
+                    <section class="ad-engage-sec">
+                        <div class="ad-card">
+                            <div class="ad-card-h"><h2>{{#str}}ad_engagement, theme_baz{{/str}}</h2></div>
+                            <div class="ad-card-b">
+                                <div class="ad-eng-grid">
+                                    <div class="ad-mini"><div class="k">{{eng_activetoday}}</div><div class="l">{{#str}}ad_activetoday, theme_baz{{/str}}</div></div>
+                                    <div class="ad-mini"><div class="k">{{eng_wau}}</div><div class="l">{{#str}}ad_wau, theme_baz{{/str}}</div></div>
+                                    <div class="ad-mini"><div class="k">{{eng_mau}}</div><div class="l">{{#str}}ad_mau, theme_baz{{/str}}</div></div>
+                                    <div class="ad-mini accent"><div class="k">{{eng_stickiness}}</div><div class="l">{{#str}}ad_stickiness, theme_baz{{/str}}</div></div>
+                                </div>
+                                {{#chartok}}
+                                <div class="ad-chart-cap">{{#str}}ad_dau_caption, theme_baz{{/str}}</div>
+                                <div class="ad-chart-wrap">
+                                    <svg viewBox="0 0 620 132" class="ad-chart" preserveAspectRatio="none" role="img" aria-label="{{#str}}ad_dau_caption, theme_baz{{/str}}">
+                                        <defs>
+                                            <linearGradient id="ad-fill" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0" stop-color="var(--sd-blue)" stop-opacity=".26"/>
+                                                <stop offset="1" stop-color="var(--sd-blue)" stop-opacity="0"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <path d="{{chartarea}}" fill="url(#ad-fill)"/>
+                                        <path d="{{chartline}}" fill="none" stroke="var(--sd-blue)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+                                    </svg>
+                                    <div class="ad-chart-x">{{#chartlabels}}<span>{{text}}</span>{{/chartlabels}}</div>
+                                </div>
+                                {{/chartok}}
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- QUICK ACTIONS -->
+                    <section class="ad-actions">
+                        <a class="ad-act" href="{{usersurl}}">
+                            <span class="ad-act-ic b"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M16 4a3 3 0 0 1 0 5.8M21 20a5.5 5.5 0 0 0-4-5.3"/></svg></span>
+                            <span class="ad-act-t">{{#str}}ad_manageusers, theme_baz{{/str}}</span>
+                            <span class="ad-act-s">{{#str}}ad_manageusers_s, theme_baz{{/str}}</span>
+                        </a>
+                        <a class="ad-act" href="{{coursesurl}}">
+                            <span class="ad-act-ic n"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 5l2-2h12l2 2M9 11h6"/></svg></span>
+                            <span class="ad-act-t">{{#str}}ad_managecourses, theme_baz{{/str}}</span>
+                            <span class="ad-act-s">{{#str}}ad_managecourses_s, theme_baz{{/str}}</span>
+                        </a>
+                        <a class="ad-act" href="{{reportsurl}}">
+                            <span class="ad-act-ic g"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>
+                            <span class="ad-act-t">{{#str}}ad_reports, theme_baz{{/str}}</span>
+                            <span class="ad-act-s">{{#str}}ad_reports_s, theme_baz{{/str}}</span>
+                        </a>
+                        <a class="ad-act" href="{{securityurl}}">
+                            <span class="ad-act-ic r"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg></span>
+                            <span class="ad-act-t">{{#str}}ad_security, theme_baz{{/str}}</span>
+                            <span class="ad-act-s">{{#str}}ad_security_s, theme_baz{{/str}}</span>
+                        </a>
+                    </section>
+
+                    {{! Required Moodle main-content placeholder (empty on this bespoke
+                        dashboard, but every layout MUST output it or core throws a
+                        coding exception). }}
+                    <div id="region-main-box" class="sd-region-main">
+                        <section id="region-main" aria-label="{{#str}}content{{/str}}">
+                            {{{ output.main_content }}}
+                        </section>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+
+</body>
+
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/studentdashboard'], function(Loader, StudentDashboard) {
+        StudentDashboard.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

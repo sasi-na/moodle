@@ -1,0 +1,62 @@
+{{!
+    @template local_helpdesk/forwarded
+
+    A specialist's view: what is waiting on them, and what they have already answered.
+
+    Example context (json):
+    {
+        "hasany": true, "haswaiting": true, "hasanswered": false, "hours": 12,
+        "waiting": [{"reference": "NITK-00001", "subject": "Rubric mismatch", "url": "#",
+                     "student": "Ananya Rao", "category": "Academic", "status": "Escalated",
+                     "urgency": "warning", "timeleft": "Response due in 2 hours", "hastimeleft": true,
+                     "isbreached": false, "flags": [], "hasflags": false}],
+        "answered": []
+    }
+}}
+<div class="hd-page hd-forwarded">
+    <div class="hd-head">
+        <h2 class="hd-title">{{#str}}forwardedtome, local_helpdesk{{/str}}</h2>
+    </div>
+
+    {{^hasany}}
+    <div class="hd-card hd-empty">
+        <p>{{#str}}nothingforwarded, local_helpdesk{{/str}}</p>
+    </div>
+    {{/hasany}}
+
+    {{#haswaiting}}
+    <p class="hd-sub">{{#str}}forwardedintro, local_helpdesk, {{hours}}{{/str}}</p>
+    <ul class="hd-list">
+        {{#waiting}}
+        <li class="hd-row {{#isbreached}}hd-row-bad{{/isbreached}}">
+            <a class="hd-row-main" href="{{url}}">
+                <span class="hd-ref">{{reference}}</span>
+                <span class="hd-subject">{{subject}}</span>
+                <span class="hd-meta">{{student}} · {{category}}</span>
+                {{#hasflags}}
+                <span class="hd-flags">{{#flags}}<span class="hd-tag">{{.}}</span>{{/flags}}</span>
+                {{/hasflags}}
+            </a>
+            {{#hastimeleft}}<span class="hd-left {{#isbreached}}hd-breached{{/isbreached}}">{{timeleft}}</span>{{/hastimeleft}}
+            <a class="hd-btn hd-btn-sm" href="{{url}}">{{#str}}respond, local_helpdesk{{/str}}</a>
+        </li>
+        {{/waiting}}
+    </ul>
+    {{/haswaiting}}
+
+    {{#hasanswered}}
+    <h3 class="hd-h3">{{#str}}alreadyanswered, local_helpdesk{{/str}}</h3>
+    <ul class="hd-list hd-muted">
+        {{#answered}}
+        <li class="hd-row">
+            <a class="hd-row-main" href="{{url}}">
+                <span class="hd-ref">{{reference}}</span>
+                <span class="hd-subject">{{subject}}</span>
+                <span class="hd-meta">{{student}} · {{category}}</span>
+            </a>
+            <span class="hd-state">{{status}}</span>
+        </li>
+        {{/answered}}
+    </ul>
+    {{/hasanswered}}
+</div>

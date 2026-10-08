@@ -1,0 +1,53 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template core_course/no-courses
+
+    This template renders the no courses message.
+
+    Example context (json):
+    {
+        "nocoursesimgurl": "https://moodlesite/theme/image.php/baz/block_recentlyaccessedcourses/1535727318/courses",
+        "newcourseurl": "https://moodlesite/course/edit.php"
+    }
+}}
+<div class="text-xs-center text-center mt-3 rui-mycourses-empty" data-region="empty-message">
+    <span class="text-light">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="56" height="56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            <path d="M9 7h6"></path>
+            <path d="M9 11h4"></path>
+        </svg>
+    </span>
+    {{!
+        zerocourses is set by blocks/myoverview view.js only when the user has
+        no enrolments at all; an empty filter/search result, or a block that
+        extends this template (e.g. starred courses), keeps the neutral slot
+        message instead of the "not enrolled yet" copy.
+    }}
+    {{#zerocourses}}
+        <h4 class="rui-mycourses-empty-title mt-3">{{#str}} nocoursesheading, theme_baz {{/str}}</h4>
+        <p class="text-muted rui-mycourses-empty-body">{{#str}} nocoursesbody, theme_baz {{/str}}</p>
+    {{/zerocourses}}
+    {{^zerocourses}}
+        <p class="text-muted mt-3 rui-mycourses-empty-body">{{$nocoursestring}}{{#str}} nocourses, core {{/str}}{{/nocoursestring}}</p>
+    {{/zerocourses}}
+    {{#newcourseurl}}
+        <a href="{{{newcourseurl}}}" class="nocourseslink btn btn-primary mb-5">{{#str}} createnewcourse, core {{/str}}</a>
+    {{/newcourseurl}}
+</div>

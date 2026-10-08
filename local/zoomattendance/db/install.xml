@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XMLDB PATH="local/zoomattendance/db" VERSION="2026061101" COMMENT="Zoom Attendance tables">
+
+<TABLES>
+
+<!-- =========================
+     LOGS TABLE
+========================= -->
+<TABLE NAME="local_zoom_attendance_logs" COMMENT="Stores raw attendance logs">
+
+  <FIELDS>
+    <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+
+    <FIELD NAME="meeting_id" TYPE="char" LENGTH="50" NOTNULL="true"/>
+    <FIELD NAME="uuid" TYPE="char" LENGTH="255" NOTNULL="true"/>
+    <FIELD NAME="topic" TYPE="char" LENGTH="255" NOTNULL="true"/>
+
+    <FIELD NAME="user_email" TYPE="char" LENGTH="255" NOTNULL="true"/>
+    <FIELD NAME="fullname" TYPE="char" LENGTH="255" NOTNULL="true"/>
+
+    <FIELD NAME="join_time" TYPE="char" LENGTH="50" NOTNULL="false"/>
+    <FIELD NAME="leave_time" TYPE="char" LENGTH="50" NOTNULL="false"/>
+    <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+
+    <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+  </FIELDS>
+
+  <KEYS>
+    <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+  </KEYS>
+
+  <INDEXES>
+    <INDEX UNIQUE="false" NAME="meeting_idx" FIELDS="meeting_id"/>
+    <INDEX UNIQUE="false" NAME="uuid_idx" FIELDS="uuid"/>
+  </INDEXES>
+
+</TABLE>
+
+
+<!-- =========================
+     SUMMARY TABLE
+========================= -->
+<TABLE NAME="local_zoom_attendance_summary" COMMENT="Stores attendance summary">
+
+  <FIELDS>
+    <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+
+    <FIELD NAME="meeting_id" TYPE="char" LENGTH="50" NOTNULL="true"/>
+    <FIELD NAME="uuid" TYPE="char" LENGTH="255" NOTNULL="true"/>
+    <FIELD NAME="topic" TYPE="char" LENGTH="255" NOTNULL="true"/>
+
+    <FIELD NAME="user_email" TYPE="char" LENGTH="255" NOTNULL="true"/>
+    <FIELD NAME="fullname" TYPE="char" LENGTH="255" NOTNULL="true"/>
+
+    <FIELD NAME="total_duration" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+
+    <FIELD NAME="start_time" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+    <FIELD NAME="end_time" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+    <FIELD NAME="session_duration" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+
+    <!-- 1 = attended >=90% of the session, 0 = not attended -->
+    <FIELD NAME="attended" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+
+    <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+  </FIELDS>
+
+  <KEYS>
+    <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+  </KEYS>
+
+  <INDEXES>
+    <INDEX UNIQUE="false" NAME="meeting_idx" FIELDS="meeting_id"/>
+    <INDEX UNIQUE="false" NAME="uuid_idx" FIELDS="uuid"/>
+  </INDEXES>
+
+</TABLE>
+
+
+<!-- =========================
+     QUEUE TABLE
+========================= -->
+<TABLE NAME="local_zoom_attendance_queue" COMMENT="Stores attendance queue">
+
+  <FIELDS>
+    <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+
+    <FIELD NAME="meeting_id" TYPE="char" LENGTH="50" NOTNULL="true"/>
+    <FIELD NAME="uuid" TYPE="char" LENGTH="255" NOTNULL="true"/>
+    <FIELD NAME="topic" TYPE="char" LENGTH="255" NOTNULL="true"/>
+
+    <FIELD NAME="start_time" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+    <FIELD NAME="end_time" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+    <FIELD NAME="session_duration" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+
+    <FIELD NAME="processed" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+    <FIELD NAME="retrycount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+
+    <FIELD NAME="email_sent" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+
+    <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+  </FIELDS>
+
+  <KEYS>
+    <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+  </KEYS>
+
+  <INDEXES>
+    <INDEX NAME="uuid_idx" UNIQUE="true" FIELDS="uuid"/>
+    <INDEX UNIQUE="false" NAME="meeting_idx" FIELDS="meeting_id"/>
+    <INDEX UNIQUE="false" NAME="status_idx" FIELDS="processed,email_sent"/>
+  </INDEXES>
+
+</TABLE>
+
+
+<!-- =========================
+     EVENT JOIN MAP
+     Calendar event -> original Zoom URL -> numeric meeting id
+========================= -->
+<TABLE NAME="local_zoom_event_join" COMMENT="Maps calendar events to Zoom meetings for the direct-join flow">
+
+  <FIELDS>
+    <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+
+    <FIELD NAME="event_id" TYPE="int" LENGTH="10" NOTNULL="true"/>
+    <FIELD NAME="zoom_url" TYPE="char" LENGTH="500" NOTNULL="true"/>
+    <FIELD NAME="register_hash" TYPE="char" LENGTH="100" NOTNULL="true"/>
+    <FIELD NAME="meeting_id" TYPE="char" LENGTH="50" NOTNULL="false"/>
+
+    <!-- 1 = meeting was created by the in-LMS scheduler; only these are
+         updated/deleted on Zoom when the calendar event changes -->
+    <FIELD NAME="managed" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+
+    <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+    <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+  </FIELDS>
+
+  <KEYS>
+    <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+  </KEYS>
+
+  <INDEXES>
+    <INDEX NAME="event_idx" UNIQUE="true" FIELDS="event_id"/>
+    <INDEX UNIQUE="false" NAME="hash_idx" FIELDS="register_hash"/>
+  </INDEXES>
+
+</TABLE>
+
+
+<!-- =========================
+     MEETING REGISTRY
+     Synced from Zoom: registration hash -> meeting id
+========================= -->
+<TABLE NAME="local_zoom_meeting_registry" COMMENT="Upcoming Zoom meetings synced from the account">
+
+  <FIELDS>
+    <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+
+    <FIELD NAME="meeting_id" TYPE="char" LENGTH="50" NOTNULL="true"/>
+    <FIELD NAME="topic" TYPE="char" LENGTH="255" NOTNULL="true"/>
+    <FIELD NAME="host_email" TYPE="char" LENGTH="255" NOTNULL="true"/>
+    <FIELD NAME="register_hash" TYPE="char" LENGTH="100" NOTNULL="true"/>
+    <FIELD NAME="start_time" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+
+    <!-- Live state driven by meeting.started / meeting.ended webhooks -->
+    <FIELD NAME="live_status" TYPE="char" LENGTH="10" NOTNULL="true"/>
+    <FIELD NAME="status_time" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+    <FIELD NAME="status_checked_at" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+
+    <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+    <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+  </FIELDS>
+
+  <KEYS>
+    <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+  </KEYS>
+
+  <INDEXES>
+    <INDEX NAME="meeting_idx" UNIQUE="true" FIELDS="meeting_id"/>
+    <INDEX UNIQUE="false" NAME="hash_idx" FIELDS="register_hash"/>
+  </INDEXES>
+
+</TABLE>
+
+
+<!-- =========================
+     PERSONAL JOIN LINKS
+     Cached registrant join_url per user+meeting
+========================= -->
+<TABLE NAME="local_zoom_join_links" COMMENT="Cached per-user registrant join links">
+
+  <FIELDS>
+    <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+
+    <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+    <FIELD NAME="meeting_id" TYPE="char" LENGTH="50" NOTNULL="true"/>
+    <FIELD NAME="join_url" TYPE="text" NOTNULL="true"/>
+
+    <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+  </FIELDS>
+
+  <KEYS>
+    <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+  </KEYS>
+
+  <INDEXES>
+    <INDEX NAME="usermeeting_idx" UNIQUE="true" FIELDS="userid,meeting_id"/>
+  </INDEXES>
+
+</TABLE>
+
+
+<!-- =========================
+     ZOOM MEETING -> CALENDAR EVENT MAP
+     Links a synced Zoom meeting to a Moodle calendar event so the live
+     attendance list can resolve session name/date/course. Predates this
+     schema on existing installs; defined here for fresh installs.
+========================= -->
+<TABLE NAME="local_zoom_event_map" COMMENT="Maps a Zoom meeting id to a Moodle calendar event">
+
+  <FIELDS>
+    <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+
+    <FIELD NAME="meeting_id" TYPE="char" LENGTH="50" NOTNULL="true"/>
+    <FIELD NAME="event_id" TYPE="int" LENGTH="10" NOTNULL="true"/>
+
+    <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+
+    <!-- 1 = dismissed from the live-attendance list -->
+    <FIELD NAME="skipped" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+
+    <!-- Audit note: last moderation action and who performed it -->
+    <FIELD NAME="comments" TYPE="text" NOTNULL="false"/>
+  </FIELDS>
+
+  <KEYS>
+    <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+  </KEYS>
+
+  <INDEXES>
+    <INDEX UNIQUE="false" NAME="meeting_idx" FIELDS="meeting_id"/>
+    <INDEX UNIQUE="false" NAME="event_idx" FIELDS="event_id"/>
+  </INDEXES>
+
+</TABLE>
+
+</TABLES>
+</XMLDB>

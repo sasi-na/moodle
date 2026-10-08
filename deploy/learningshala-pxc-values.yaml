@@ -1,0 +1,144 @@
+# Percona XtraDB Cluster for learningshala-prod.
+#
+# NOT part of the kustomize tree, deliberately -- every tenant's database is a
+# Helm release of the `pxc-db` chart and the Percona operator owns the CR
+# lifecycle. Hand-writing the CR in kustomize would fight both the operator and
+# the house convention.
+#
+# Derived from deploy/nitk-pxc-values.yaml, the other fresh-install tenant, with
+# the sizing taken down for a site expected to carry fewer than 100 users and the
+# storage and backup destination changed so learningshala shares nothing with
+# any other tenant.
+#
+#   helm install mysql-db percona/pxc-db \
+#     -n learningshala-prod \
+#     --version 1.20.0 \
+#     -f deploy/learningshala-pxc-values.yaml
+#
+# Gives the in-namespace service `mysql-db-pxc-db-haproxy`, which is what
+# overlays/learningshala-prod/patch-deployment-env.yaml points at.
+#
+# PRE-REQUISITE: create the S3 credentials Secret
+# `learningshala-moodle-s3-credentials` in learningshala-prod first, or the
+# backup config will not reconcile.
+
+crVersion: 1.20.0
+enableCRValidationWebhook: false
+
+# Required for a single-node cluster. Without these the operator refuses to
+# reconcile at all and the CR sits in `error` with no pods:
+#
+#   PXC size must be at least 3. Set spec.unsafeFlags.pxcSize to true
+#
+# Matches every other tenant; all run size 1 with these same three flags. The
+# name is honest -- size 1 is a "cluster" with no quorum and no redundancy, so
+# durability rests entirely on the S3 backups and PITR configured below.
+unsafeFlags:
+  pxcSize: true
+  proxySize: true
+  backupIfUnhealthy: true
+
+pxc:
+  size: 1
+  # Smaller than nitk's 8Gi/2. usdc -- three accounts -- measured 2851Mi at a 20G
+  # buffer pool and fell well below that once resized; global-jain's 18GB
+  # database runs comfortably in 16Gi/1. A sub-100-user site does not need more
+  # than this, and 8Gi is the smallest reservation in the fleet that is already
+  # proven in production.
+  #
+  # No `configuration:` block on purpose. The operator derives
+  # innodb_buffer_pool_size from the container memory limit, and every hand-set
+  # pool in this fleet has had to be kept in lockstep with a resize by hand --
+  # change one without the other and mysqld will not start.
+  resources:
+    requests:
+      memory: "8Gi"
+      cpu: "1"
+  persistence:
+    enabled: true
+    storageClass: pd-ssd-retain-v1
+    size: 50Gi
+  # Tolerate a transient memory-pressure taint. jain gained this on 2026-08-14
+  # after such a taint stranded its database: with size 1 there is exactly one
+  # node that can host the pod, so a NoSchedule taint appearing on it is an
+  # outage that does not self-resolve.
+  #
+  # This IS a pod-template change: updateStrategy is SmartUpdate, so the operator
+  # deletes and recreates the database pod as soon as it reconciles. On an
+  # established tenant that is a ~3-minute outage, which is why applying this
+  # file later is a planned-outage operation. On a first install it costs
+  # nothing.
+  tolerations:
+    - key: node.kubernetes.io/memory-pressure
+      operator: Exists
+      effect: NoSchedule
+  # Pin to on-demand. With size 1 there is no second node to fail over to, so a
+  # spot preemption is an outage rather than a blip -- global-jain's database was
+  # found on spot for exactly this reason and was only moved off it as a side
+  # effect of a resize.
+  nodeSelector:
+    pool-type: ondemand
+
+haproxy:
+  enabled: true
+  size: 1
+  image: percona/haproxy:2.8.18-1
+  affinity:
+    antiAffinityTopologyKey: kubernetes.io/hostname
+  podDisruptionBudget:
+    maxUnavailable: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  # IIITD's haproxy was preempted on a spot node on 2026-09-08 and the site
+  # returned 500 until it rescheduled. Same reasoning as pxc.nodeSelector above.
+  nodeSelector:
+    pool-type: ondemand
+
+backup:
+  # backup.image is deliberately NOT overridden. The chart wants a MAP here
+  # (repository + tag), not the "repo:tag" string the CR uses, and the chart
+  # default is already the image every tenant runs. haproxy.image above IS a
+  # plain string; the chart is inconsistent between the two.
+  runningDeadlineSeconds: 1200
+  storages:
+    s3-primary:
+      type: s3
+      verifyTLS: true
+      # Keep the backup jobs and the PITR collector OFF spot. A preempted
+      # xtrabackup job is a failed backup, and with size 1 the S3 backups plus
+      # PITR are the only durability this cluster has.
+      #
+      # Applies to backup.* only, so it does not touch the pxc pod template and
+      # cannot restart the database.
+      nodeSelector:
+        pool-type: ondemand
+      s3:
+        # Distinct prefix from every other tenant in the shared vault.
+        bucket: usdc-prod-backup-vault/mysql-backups/learningshala
+        credentialsSecret: learningshala-moodle-s3-credentials
+        region: ap-south-1
+  schedule:
+    - name: daily-backup
+      schedule: "0 1 * * *"
+      keep: 14
+      storageName: s3-primary
+  pitr:
+    enabled: true
+    storageName: s3-primary
+    timeBetweenUploads: 60
+    timeoutSeconds: 60
+
+# After the cluster is ready, create the Moodle schema and user:
+#
+#   CREATE DATABASE learningshala CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+#   CREATE USER 'learningshala'@'%' IDENTIFIED BY '<from moodle-secrets>';
+#   GRANT ALL PRIVILEGES ON learningshala.* TO 'learningshala'@'%';
+#   FLUSH PRIVILEGES;
+#
+# The password must match the `database-password` key of the `moodle-secrets`
+# Secret in learningshala-prod.

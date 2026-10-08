@@ -1,0 +1,261 @@
+<?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ * Plugin strings are defined here.
+ *
+ * @package     aiprovider_datacurso
+ * @category    string
+ * @copyright   Josue <josue@datacurso.com>
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['action'] = 'Tindakan';
+$string['action:generate_image:endpoint'] = 'Titik akhir API';
+$string['action:generate_image:endpoint_desc'] = 'Titik akhir untuk menghasilkan gambar';
+$string['action:generate_text:endpoint'] = 'Titik akhir API';
+$string['action:generate_text:endpoint_desc'] = 'Titik akhir untuk menghasilkan teks';
+$string['action:generate_text:instruction'] = 'Instruksi sistem';
+$string['action:generate_text:instruction_desc'] = 'Instruksi ini dikirim ke model AI bersama dengan permintaan pengguna. Mengedit instruksi ini tidak disarankan kecuali benar-benar diperlukan.';
+$string['action:summarise_text:endpoint'] = 'Titik akhir API';
+$string['action:summarise_text:endpoint_desc'] = 'Titik akhir untuk menghasilkan teks';
+$string['action:summarise_text:instruction'] = 'Instruksi sistem';
+$string['action:summarise_text:instruction_desc'] = 'Instruksi ini dikirim ke model AI bersama dengan permintaan pengguna. Mengedit instruksi ini tidak disarankan kecuali benar-benar diperlukan.';
+$string['all'] = 'Semua';
+$string['alt_datacurso_icon'] = 'Ikon Datacurso';
+$string['apikey'] = 'Kunci API';
+$string['apikey_desc'] = 'Masukkan kunci API dari layanan Datacurso Anda untuk menghubungkan AI.';
+$string['apiurl'] = 'URL dasar API';
+$string['apiurl_desc'] = 'Masukkan URL dasar layanan untuk terhubung ke API Datacurso.';
+$string['assigned'] = 'Ditetapkan';
+$string['chart_actions'] = 'Distribusi kredit berdasarkan layanan';
+$string['chart_tokens_by_day'] = 'Konsumsi kredit per hari';
+$string['chart_tokens_by_month'] = 'Jumlah kredit yang dikonsumsi per bulan';
+$string['configured'] = 'Dikonfigurasi';
+$string['confirm_delete_message'] = 'Apakah Anda yakin ingin menghapus batas kredit untuk "{$a}"?';
+$string['confirm_delete_title'] = 'Hapus batas kredit';
+$string['confirm_reset_usage_message'] = 'Ini akan mengatur ulang penghitung penggunaan untuk "{$a}". Apakah Anda ingin melanjutkan?';
+$string['create_activity_assign_image'] = 'Buat tugas dengan AI (dengan gambar)';
+$string['create_activity_assign_noimage'] = 'Buat tugas dengan AI (tanpa gambar)';
+$string['create_activity_book_image'] = 'Buat buku dengan AI (dengan gambar)';
+$string['create_activity_book_noimage'] = 'Buat buku dengan AI (tanpa gambar)';
+$string['create_activity_choice_image'] = 'Buat pilihan dengan AI (dengan gambar)';
+$string['create_activity_choice_noimage'] = 'Buat pilihan dengan AI (tanpa gambar)';
+$string['create_activity_data_image'] = 'Buat basis data dengan AI (dengan gambar)';
+$string['create_activity_data_noimage'] = 'Buat basis data dengan AI (tanpa gambar)';
+$string['create_activity_feedback_image'] = 'Buat survei dengan AI (dengan gambar)';
+$string['create_activity_feedback_noimage'] = 'Buat survei dengan AI (tanpa gambar)';
+$string['create_activity_folder_image'] = 'Buat folder dengan AI (dengan gambar)';
+$string['create_activity_folder_noimage'] = 'Buat folder dengan AI (tanpa gambar)';
+$string['create_activity_forum_image'] = 'Buat forum dengan AI (dengan gambar)';
+$string['create_activity_forum_noimage'] = 'Buat forum dengan AI (tanpa gambar)';
+$string['create_activity_glossary_image'] = 'Buat glosarium dengan AI (dengan gambar)';
+$string['create_activity_glossary_noimage'] = 'Buat glosarium dengan AI (tanpa gambar)';
+$string['create_activity_h5pactivity_image'] = 'Buat aktivitas H5P dengan AI (dengan gambar)';
+$string['create_activity_h5pactivity_noimage'] = 'Buat aktivitas H5P dengan AI (tanpa gambar)';
+$string['create_activity_imscp_image'] = 'Buat paket IMS dengan AI (dengan gambar)';
+$string['create_activity_imscp_noimage'] = 'Buat paket IMS dengan AI (tanpa gambar)';
+$string['create_activity_label_image'] = 'Buat label dengan AI (dengan gambar)';
+$string['create_activity_label_noimage'] = 'Buat label dengan AI (tanpa gambar)';
+$string['create_activity_lesson_image'] = 'Buat pelajaran dengan AI (dengan gambar)';
+$string['create_activity_lesson_noimage'] = 'Buat pelajaran dengan AI (tanpa gambar)';
+$string['create_activity_page_image'] = 'Buat halaman dengan AI (dengan gambar)';
+$string['create_activity_page_noimage'] = 'Buat halaman dengan AI (tanpa gambar)';
+$string['create_activity_quiz_image'] = 'Buat kuis dengan AI (dengan gambar)';
+$string['create_activity_quiz_noimage'] = 'Buat kuis dengan AI (tanpa gambar)';
+$string['create_activity_resource_image'] = 'Buat file/sumber daya dengan AI (dengan gambar)';
+$string['create_activity_resource_noimage'] = 'Buat file/sumber daya dengan AI (tanpa gambar)';
+$string['create_activity_scorm_image'] = 'Buat paket SCORM dengan AI (dengan gambar)';
+$string['create_activity_scorm_noimage'] = 'Buat paket SCORM dengan AI (tanpa gambar)';
+$string['create_activity_url_image'] = 'Buat URL dengan AI (dengan gambar)';
+$string['create_activity_url_noimage'] = 'Buat URL dengan AI (tanpa gambar)';
+$string['create_activity_wiki_image'] = 'Buat wiki dengan AI (dengan gambar)';
+$string['create_activity_wiki_noimage'] = 'Buat wiki dengan AI (tanpa gambar)';
+$string['create_activity_workshop_image'] = 'Buat lokakarya dengan AI (dengan gambar)';
+$string['create_activity_workshop_noimage'] = 'Buat lokakarya dengan AI (tanpa gambar)';
+$string['created'] = 'Dibuat';
+$string['curlerror'] = 'Kesalahan cURL API Datacurso: {$a}';
+$string['datacurso:manage'] = 'Kelola pengaturan penyedia AI';
+$string['datacurso:use'] = 'Gunakan layanan AI Datacurso';
+$string['datacurso:viewreports'] = 'Lihat laporan penggunaan AI';
+$string['day'] = 'hari';
+$string['description'] = 'Deskripsi';
+$string['descriptionpagelistplugins'] = 'Di sini Anda dapat menemukan daftar plugin yang kompatibel dengan penyedia Datacurso';
+$string['disabled'] = 'Dinonaktifkan';
+$string['emptyprompt'] = 'Prompt kosong';
+$string['emptyresponse'] = 'Tidak ada respons dari API Datacurso.';
+$string['enabled'] = 'Diaktifkan';
+$string['enableglobalratelimit'] = 'Aktifkan batas global';
+$string['enableglobalratelimit_desc'] = 'Jika diaktifkan, batas permintaan global per jam akan diterapkan untuk semua pengguna.';
+$string['enableuserratelimit'] = 'Aktifkan batas per pengguna';
+$string['enableuserratelimit_desc'] = 'Jika diaktifkan, setiap pengguna akan memiliki batas permintaan per jam.';
+$string['errorgetbalancecredits'] = 'Tidak dapat mengambil saldo kredit dari API eksternal';
+$string['exists'] = 'Ada';
+$string['forbidden'] = 'Anda tidak diizinkan untuk melakukan tindakan ini dengan lisensi saat ini. Silakan verifikasi lisensi dan kredit yang tersedia Anda di <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Kelola Kredit</a> di Toko Datacurso.';
+$string['generate_activitie'] = 'Hasilkan aktivitas atau sumber daya dengan AI';
+$string['generate_ai_reinforcement_activity'] = 'Buat aktivitas penguatan AI';
+$string['generate_analysis_comments'] = 'Hasilkan analisis penilaian aktivitas/sumber daya dengan AI';
+$string['generate_analysis_course'] = 'Hasilkan analisis penilaian kursus dengan AI';
+$string['generate_analysis_general'] = 'Hasilkan analisis penilaian umum dengan AI';
+$string['generate_analysis_story_student'] = 'Hasilkan analisis cerita siswa dengan AI';
+$string['generate_assign_answer'] = 'Hasilkan tinjauan tugas dengan AI';
+$string['generate_certificate_answer'] = 'Hasilkan pesan sertifikat dengan AI';
+$string['generate_chat_embeddings'] = 'Riwayat percakapan AI';
+$string['generate_chat_stream'] = 'Respons AI';
+$string['generate_creation_course'] = 'Buat kursus lengkap dengan AI';
+$string['generate_creation_course_image'] = 'Buat kursus lengkap dengan AI (dengan gambar)';
+$string['generate_creation_course_noimage'] = 'Buat kursus lengkap dengan AI (tanpa gambar)';
+$string['generate_forum_chat'] = 'Hasilkan respons forum dengan AI';
+$string['generate_forum_grade'] = 'Nilai forum dengan AI';
+$string['generate_image'] = 'Hasilkan gambar dengan AI';
+$string['generate_plan_course'] = 'Hasilkan rencana pembuatan kursus dengan AI';
+$string['generate_summary'] = 'Hasilkan ringkasan dengan AI';
+$string['generate_text'] = 'Hasilkan teks dengan AI';
+$string['globalratelimit'] = 'Batas permintaan global';
+$string['globalratelimit_desc'] = 'Jumlah maksimum permintaan yang diizinkan per jam untuk seluruh sistem.';
+$string['goto'] = 'Buka Laporan';
+$string['hour'] = 'jam';
+$string['httperror'] = 'Kesalahan tak terduga saat memproses permintaan Anda (HTTP {$a}). Silakan coba lagi nanti. Jika masalah berlanjut, hubungi administrator situs Anda.';
+$string['id'] = 'ID';
+$string['installed'] = 'Terpasang';
+$string['invalidlicensekey'] = 'Kunci lisensi telah kedaluwarsa atau tidak valid. Silakan kunjungi <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Kelola Kredit</a> di Toko Datacurso untuk memperbarui atau membeli lisensi baru.';
+$string['json_encode_failed'] = 'Pengkodean JSON Gagal';
+$string['jsondecodeerror'] = 'Kesalahan memproses respons dari API Datacurso: {$a}';
+$string['last_sent'] = 'Terakhir dikirim';
+$string['license_not_allowed'] = 'Lisensi Anda tidak mengizinkan untuk melakukan permintaan ini. Silakan kelola lisensi dan kredit Anda di <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Kelola Kredit</a> di Toko Datacurso.';
+$string['licensekey'] = 'Kunci lisensi';
+$string['licensekey_desc'] = 'Masukkan kunci lisensi dari area pelanggan Toko Datacurso.';
+$string['link_consumptionhistory'] = 'Riwayat konsumsi kredit';
+$string['link_generalreport'] = 'Laporan umum';
+$string['link_generalreport_datacurso'] = 'Laporan umum Datacurso AI';
+$string['link_listplugings'] = 'Daftar plugin Datacurso';
+$string['link_plugin'] = 'Tautan';
+$string['link_report_statistic'] = 'Laporan statistik umum';
+$string['live_log'] = 'Log langsung';
+$string['message_no_there_plugins'] = 'Tidak ada plugin yang tersedia';
+$string['missing'] = 'Hilang';
+$string['month'] = 'bulan';
+$string['needs_repair'] = 'Perlu perbaikan';
+$string['not_assigned'] = 'Tidak ditetapkan';
+$string['not_configured'] = 'Tidak dikonfigurasi';
+$string['not_created'] = 'Tidak dibuat';
+$string['notenoughtokens'] = 'Kredit AI tidak cukup. Silakan kunjungi <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Kelola Kredit</a> di Toko Datacurso untuk mengalokasikan atau membeli lebih banyak kredit. Atau hubungi administrator Anda.';
+$string['of'] = 'dari';
+$string['orgid'] = 'ID organisasi';
+$string['orgid_desc'] = 'Masukkan pengenal organisasi Anda dalam layanan Datacurso.';
+$string['pending'] = 'Tertunda';
+$string['plugin'] = 'Plugin';
+$string['plugindesc_assign_ai'] = 'Tinjau tugas dengan bantuan AI.';
+$string['plugindesc_coursegen'] = 'Buat kursus lengkap, aktivitas, dan sumber daya dengan AI.';
+$string['plugindesc_datacurso_ratings'] = 'Memungkinkan siswa untuk menilai aktivitas dan sumber daya; guru dan administrator kemudian dapat menghasilkan analisis kursus berbasis AI.';
+$string['plugindesc_dttutor'] = 'Mengobrol dengan tutor AI dalam kursus.';
+$string['plugindesc_forum_ai'] = 'Perluas forum dengan analisis bertenaga AI untuk menghasilkan ringkasan secara otomatis.';
+$string['plugindesc_lifestory'] = 'Laporan dan analisis bertenaga AI tentang kemajuan akademik siswa.';
+$string['plugindesc_smartrules'] = 'Buat aktivitas otomatis berdasarkan kondisi sebelumnya siswa.';
+$string['plugindesc_socialcert'] = 'Hasilkan sertifikat yang dipersonalisasi secara otomatis setelah menyelesaikan kursus.';
+$string['pluginname'] = 'Penyedia AI Datacurso';
+$string['pluginname_assign_ai'] = 'Tugas AI';
+$string['pluginname_coursegen'] = 'Pembuat Kursus AI';
+$string['pluginname_datacurso_ratings'] = 'Pemeringkatan Aktivitas AI';
+$string['pluginname_dttutor'] = 'Tutor AI';
+$string['pluginname_forum_ai'] = 'Forum AI';
+$string['pluginname_lifestory'] = 'Kisah Hidup Siswa AI';
+$string['pluginname_smartrules'] = 'SmartRules AI';
+$string['pluginname_socialcert'] = 'Bagikan Sertifikat AI';
+$string['privacy:metadata'] = 'Plugin Penyedia AI Datacurso tidak menyimpan data pribadi apa pun secara lokal. Semua data diproses oleh layanan AI eksternal Datacurso.';
+$string['privacy:metadata:aiprovider_datacurso'] = 'Muatan permintaan AI Datacurso yang dikirim ke layanan eksternal.';
+$string['ratelimit_enable'] = 'Aktifkan batas kredit';
+$string['ratelimit_enable_desc'] = 'Jika diaktifkan, batas kredit per pengguna akan diberlakukan untuk plugin ini.';
+$string['ratelimit_limit'] = 'Kredit per jendela';
+$string['ratelimit_limit_desc'] = 'Jumlah maksimum kredit yang dapat dikonsumsi pengguna dalam jangka waktu yang dipilih. 0 untuk tanpa batas.';
+$string['ratelimit_window'] = 'Jendela waktu';
+$string['ratelimit_window_desc'] = 'Pilih durasi dan satuan untuk jendela batas.';
+$string['ratelimits_heading'] = 'Batas per plugin';
+$string['ratelimits_heading_desc'] = 'Konfigurasikan batas per pengguna untuk setiap plugin yang menggunakan penyedia Datacurso.';
+$string['read_context_course'] = 'Baca konteks untuk pembuatan kursus AI';
+$string['read_context_course_model'] = 'Unggah model akademik untuk pembuatan kursus AI';
+$string['registers'] = 'Catatan';
+$string['registration_error'] = 'Kesalahan terakhir';
+$string['registration_last'] = 'Pendaftaran';
+$string['registration_lastsent'] = 'Terakhir dikirim';
+$string['registration_notverified'] = 'Pendaftaran tidak diverifikasi';
+$string['registration_status'] = 'Status terakhir';
+$string['registration_verified'] = 'Pendaftaran diverifikasi';
+$string['registrationsettings'] = 'API pendaftaran';
+$string['remainingtokens'] = 'Saldo tersisa';
+$string['responseinvalidai'] = 'Respons tidak valid dari layanan AI.';
+$string['responseinvalidaimage'] = 'Respons tidak valid dari layanan AI (tidak ada gambar).';
+$string['responseinvalidaimagecreate'] = 'Tidak dapat membuat file gambar.';
+$string['rest_enabled'] = 'Protokol REST diaktifkan';
+$string['service'] = 'Layanan';
+$string['tokens'] = 'Kredit';
+$string['tokens_available'] = 'Kredit tersedia';
+$string['tokensconsumed'] = 'Kredit dikonsumsi';
+$string['tokensconsumedday'] = 'Kredit dikonsumsi per hari';
+$string['tokensconsumedmonth'] = 'Kredit dikonsumsi per bulan';
+$string['tokensnotsufficient'] = 'Kredit AI tidak cukup. Saldo saat ini: {$a->current}. Minimum yang diperlukan: {$a->required}. Silakan kunjungi <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Kelola Kredit</a> di Toko Datacurso untuk mengalokasikan atau membeli lebih banyak kredit. Atau hubungi administrator Anda.';
+$string['tokensused'] = 'Kredit digunakan';
+$string['tokenthreshold'] = 'Ambang batas kredit';
+$string['tokenthreshold_desc'] = 'Jumlah kredit dari mana notifikasi akan ditampilkan untuk membeli lebih banyak.';
+$string['total_consumed'] = 'Kredit dikonsumsi';
+$string['userid'] = 'Pengguna';
+$string['userratelimit'] = 'Batas permintaan per pengguna';
+$string['userratelimit_desc'] = 'Jumlah maksimum permintaan yang diizinkan per jam untuk setiap pengguna individual.';
+$string['usertokenlimit_add'] = 'Tambah batas kredit';
+$string['usertokenlimit_add_title'] = 'Tambah batas kredit pengguna';
+$string['usertokenlimit_assignedtotal'] = 'Total kredit yang dialokasikan';
+$string['usertokenlimit_delete_failed'] = 'Tidak dapat menghapus batas kredit pengguna.';
+$string['usertokenlimit_deleted'] = 'Batas kredit pengguna dihapus.';
+$string['usertokenlimit_edit_title'] = 'Edit batas: {$a}';
+$string['usertokenlimit_licensebalance'] = 'Total kredit lisensi';
+$string['usertokenlimit_limit'] = 'Batas kredit';
+$string['usertokenlimit_limit_help'] = 'Masukkan jumlah maksimum kredit yang boleh dikonsumsi pengguna. Gunakan 0 untuk memblokir akses AI bagi pengguna ini.';
+$string['usertokenlimit_limit_invalid'] = 'Batas harus nol atau angka positif.';
+$string['usertokenlimit_limit_invalid_nonnegative'] = 'Batas harus nol atau angka positif.';
+$string['usertokenlimit_recurringenabled'] = 'Aktifkan interval berulang';
+$string['usertokenlimit_recurringenabled_help'] = 'Aktifkan reset kuota otomatis berulang untuk pengguna ini.';
+$string['usertokenlimit_recurringinterval'] = 'Interval berulang';
+$string['usertokenlimit_recurringinterval_help'] = 'Jumlah hari setelah kuota pengguna direset dan dialokasikan ulang. Gunakan 0 untuk menonaktifkan reset berulang.';
+$string['usertokenlimit_recurringinterval_invalid'] = 'Interval berulang harus nol atau jumlah hari positif.';
+$string['usertokenlimit_recurringunit'] = 'Satuan waktu';
+$string['usertokenlimit_recurringunit_day'] = 'Hari';
+$string['usertokenlimit_recurringunit_help'] = 'Satuan untuk interval berulang (jam, hari, minggu, bulan, tahun).';
+$string['usertokenlimit_recurringunit_hour'] = 'Jam';
+$string['usertokenlimit_recurringunit_invalid'] = 'Satuan interval berulang tidak valid.';
+$string['usertokenlimit_recurringunit_month'] = 'Bulan';
+$string['usertokenlimit_recurringunit_week'] = 'Minggu';
+$string['usertokenlimit_recurringunit_year'] = 'Tahun';
+$string['usertokenlimit_recurringvalue'] = 'Nilai interval';
+$string['usertokenlimit_recurringvalue_help'] = 'Nilai numerik untuk satuan waktu yang dipilih. Harus lebih besar dari 0 saat diaktifkan.';
+$string['usertokenlimit_recurringvalue_invalid_positive'] = 'Nilai interval harus lebih besar dari 0 saat interval berulang diaktifkan.';
+$string['usertokenlimit_reset'] = 'Atur ulang penghitung penggunaan';
+$string['usertokenlimit_reset_done'] = 'Penghitung penggunaan telah diatur ulang.';
+$string['usertokenlimit_reset_failed'] = 'Tidak dapat mengatur ulang penghitung penggunaan.';
+$string['usertokenlimit_reset_help'] = 'Jika diaktifkan, penghitung penggunaan saat ini untuk pengguna ini akan diatur ulang segera setelah disimpan.';
+$string['usertokenlimit_reset_usage'] = 'Atur ulang penggunaan';
+$string['usertokenlimit_saved'] = 'Batas kredit pengguna disimpan';
+$string['usertokenlimit_used'] = 'Kredit digunakan';
+$string['usertokenlimit_user'] = 'Pengguna';
+$string['usertokenlimit_user_help'] = 'Pilih pengguna yang akan dikenai batas kredit.';
+$string['usertokenlimit_user_readonly'] = 'Pengguna';
+$string['usertokenlimit_user_readonly_help'] = 'Pengguna ini tetap untuk catatan yang ada dan tidak dapat diubah.';
+$string['verified'] = 'Diverifikasi';
+$string['week'] = 'minggu';
+$string['workplace'] = 'Apakah ini Moodle Workplace?';
+$string['workplace_desc'] = 'Menentukan apakah header X-Workplace harus dikirim dengan nilai true (Workplace) atau false (Moodle Standar).';
+$string['year'] = 'tahun';

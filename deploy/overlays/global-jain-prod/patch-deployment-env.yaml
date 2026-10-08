@@ -1,0 +1,52 @@
+# Tenant environment for global.onlinejain.com.
+#
+# Same list and order as the other overlays; only the tenant values differ. Read
+# back from the live Deployment, so adopting changes nothing about how the app
+# reaches its database.
+#
+# Note the database is `moodledb`/`moodleuser` -- the same names jain uses. That
+# is a fingerprint of this tenant having been built from a copy of jain's
+# database, which is also why it carries jain's residual rows (see the README).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  template:
+    spec:
+      containers:
+      - name: php-fpm
+        env:
+        - name: MOODLE_SITE_URL
+          # Must match $CFG->wwwroot in config/moodle_config.php.
+          value: "https://global.onlinejain.com"
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        - name: MOODLE_DATABASE_TYPE
+          value: "mysqli"
+        - name: MOODLE_DATABASE_HOST
+          value: "mysql-db-pxc-db-haproxy"
+        - name: MOODLE_DATABASE_PORT_NUMBER
+          value: "3306"
+        - name: MOODLE_DATABASE_NAME
+          value: "moodledb"
+        - name: MOODLE_DATABASE_USER
+          value: "moodleuser"
+        - name: MOODLE_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: database-password
+        - name: MOODLE_USERNAME
+          value: "admin"
+        - name: MOODLE_EMAIL
+          value: "admin@example.com"
+        - name: MOODLE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: admin-password
+        - name: PHP_MEMORY_LIMIT
+          # Read by nothing -- no entrypoint consumes it and the official PHP
+          # image does not either. Carried for parity with the other overlays.
+          value: "4G"

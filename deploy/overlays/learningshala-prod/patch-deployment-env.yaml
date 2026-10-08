@@ -1,0 +1,58 @@
+# Tenant environment for learn.learningshala.co.in.
+#
+# Same list and same order as the other tenants; only the values differ.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  template:
+    spec:
+      containers:
+      - name: php-fpm
+        env:
+        - name: MOODLE_SITE_URL
+          # Must match $CFG->wwwroot in config/moodle_config.php. Installed at
+          # the real hostname from the start: installing under a temporary host
+          # and changing wwwroot later means a search-replace across the whole
+          # database (see the nitk config for what that costs).
+          value: "https://learn.learningshala.co.in"
+        - name: ALLOW_EMPTY_PASSWORD
+          value: "yes"
+        - name: MOODLE_DATABASE_TYPE
+          value: "mysqli"
+        # Its OWN PXC cluster in this namespace, so this is the short
+        # in-namespace service name -- no cross-namespace FQDN. Sharing another
+        # tenant's cluster would put both sites in one failure domain.
+        #
+        # The cluster itself is NOT created by this kustomization -- it is a Helm
+        # release (deploy/learningshala-pxc-values.yaml), matching every tenant.
+        - name: MOODLE_DATABASE_HOST
+          value: "mysql-db-pxc-db-haproxy"
+        - name: MOODLE_DATABASE_PORT_NUMBER
+          value: "3306"
+        - name: MOODLE_DATABASE_NAME
+          value: "learningshala"
+        - name: MOODLE_DATABASE_USER
+          value: "learningshala"
+        - name: MOODLE_DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: database-password
+        - name: MOODLE_USERNAME
+          value: "admin"
+        - name: MOODLE_EMAIL
+          value: "admin@learningshala.co.in"
+        - name: MOODLE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: moodle-secrets
+              key: admin-password
+        # Dead on every tenant -- no entrypoint reads it and the official PHP
+        # image does not either. The effective CLI limit comes from the image's
+        # conf.d/memory-limit.ini, then Moodle's $CFG->extramemorylimit; the
+        # effective FPM limit is php_admin_value[memory_limit] in config/www.conf.
+        # Kept only so this list stays diffable against the other tenants.
+        - name: PHP_MEMORY_LIMIT
+          value: "2G"

@@ -1,0 +1,165 @@
+{{!
+    @template local_helpdesk/ticket
+
+    One ticket thread. Staff additionally see internal notes and who really wrote a
+    public reply; students see neither.
+
+    Example context (json):
+    {
+        "isstaff": false, "isnew": false, "canreply": true,
+        "created": "Ticket TKT-00001. We will reply within 6 hours.",
+        "actionurl": "#", "sesskey": "abc", "backurl": "#",
+        "ticket": {"reference": "TKT-00001", "subject": "Video", "status": "Open",
+                   "category": "Technical", "urgency": "ok", "timeleft": "Response due in 5 hours", "hastimeleft": true,
+                   "created": "1 Jan, 10:00", "isbreached": false},
+        "messages": [{"internal": false, "mine": true, "author": "Ananya Rao",
+                      "realauthor": null, "body": "<p>Hello</p>", "time": "1 Jan, 10:00"}]
+    }
+}}
+<div class="hd-page hd-thread-page">
+    {{#isnew}}
+    <div class="hd-banner">
+        <strong>{{#str}}ticketcreated, local_helpdesk{{/str}}</strong>
+        <span>{{created}}</span>
+    </div>
+    {{/isnew}}
+
+    <div class="hd-head">
+        <div>
+            <span class="hd-ref">{{ticket.reference}}</span>
+            <h2 class="hd-title">{{ticket.subject}}</h2>
+            <p class="hd-sub">{{ticket.category}}{{#ticket.hascourse}} · {{ticket.coursename}}{{/ticket.hascourse}} · {{#str}}raisedon, local_helpdesk, {{ticket.created}}{{/str}}</p>
+        </div>
+        <div class="hd-head-right">
+            <span class="hd-state hd-{{ticket.urgency}}">{{ticket.status}}</span>
+            {{#ticket.hastimeleft}}<span class="hd-left {{#ticket.isbreached}}hd-breached{{/ticket.isbreached}}">{{ticket.timeleft}}</span>{{/ticket.hastimeleft}}
+        </div>
+    </div>
+
+    {{#isstaff}}
+    <div class="hd-card hd-actions">
+        <div class="hd-actions-facts">
+            <span><strong>{{#str}}raisedby, local_helpdesk{{/str}}</strong> {{student}}</span>
+            <span><strong>{{#str}}assignedto, local_helpdesk{{/str}}</strong>
+                {{#unassigned}}<em>{{#str}}unassigned, local_helpdesk{{/str}}</em>{{/unassigned}}
+                {{^unassigned}}{{assignee}}{{/unassigned}}
+            </span>
+            {{#isforwarded}}
+            <span><strong>{{#str}}forwardedto, local_helpdesk{{/str}}</strong> {{forwardedto}}</span>
+            {{/isforwarded}}
+            {{#onhold}}<span class="hd-tag">{{#str}}onlegalhold, local_helpdesk{{/str}}</span>{{/onhold}}
+        </div>
+
+        <div class="hd-actions-row">
+            {{#canmanage}}
+                {{#unassigned}}
+                <form method="post" action="{{actionurl}}">
+                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                    <input type="hidden" name="action" value="take">
+                    <button class="hd-btn hd-btn-sm" type="submit">{{#str}}take, local_helpdesk{{/str}}</button>
+                </form>
+                {{/unassigned}}
+            {{/canmanage}}
+
+            {{#isopen}}
+            <form method="post" action="{{actionurl}}">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="hidden" name="action" value="resolve">
+                <button class="hd-btn hd-btn-sm hd-btn-quiet" type="submit">{{#str}}markresolved, local_helpdesk{{/str}}</button>
+            </form>
+            {{/isopen}}
+
+            {{#canmanage}}
+                {{^isopen}}
+                <form method="post" action="{{actionurl}}">
+                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                    <input type="hidden" name="action" value="reopen">
+                    <button class="hd-btn hd-btn-sm hd-btn-quiet" type="submit">{{#str}}reopenticket, local_helpdesk{{/str}}</button>
+                </form>
+                <form method="post" action="{{actionurl}}">
+                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                    <input type="hidden" name="action" value="close">
+                    <button class="hd-btn hd-btn-sm hd-btn-quiet" type="submit">{{#str}}closeticket, local_helpdesk{{/str}}</button>
+                </form>
+                {{/isopen}}
+            {{/canmanage}}
+
+            {{^canmanage}}
+            <form method="post" action="{{actionurl}}">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="hidden" name="action" value="returnqueue">
+                <input class="hd-input" type="text" name="note"
+                       placeholder="{{#str}}returnreason, local_helpdesk{{/str}}">
+                <button class="hd-btn hd-btn-sm hd-btn-quiet" type="submit">{{#str}}returntoqueue, local_helpdesk{{/str}}</button>
+            </form>
+            {{/canmanage}}
+
+            {{#canhold}}
+            <form method="post" action="{{actionurl}}">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="hidden" name="action" value="{{#onhold}}release{{/onhold}}{{^onhold}}hold{{/onhold}}">
+                <button class="hd-btn hd-btn-sm hd-btn-quiet" type="submit">
+                    {{#onhold}}{{#str}}releasehold, local_helpdesk{{/str}}{{/onhold}}
+                    {{^onhold}}{{#str}}setlegalhold, local_helpdesk{{/str}}{{/onhold}}
+                </button>
+            </form>
+            {{/canhold}}
+        </div>
+
+        {{#hasspecialists}}
+        <form class="hd-forward" method="post" action="{{actionurl}}">
+            <input type="hidden" name="sesskey" value="{{sesskey}}">
+            <input type="hidden" name="action" value="forward">
+            <label class="hd-label" for="hd-specialist">{{#str}}forwardfor, local_helpdesk{{/str}}</label>
+            <div class="hd-forward-row">
+                <select class="hd-select" id="hd-specialist" name="specialist">
+                    {{#specialists}}
+                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+                    {{/specialists}}
+                </select>
+                <input class="hd-input" type="text" name="note"
+                       placeholder="{{#str}}forwardnote, local_helpdesk{{/str}}">
+                <button class="hd-btn hd-btn-sm" type="submit">{{#str}}forward, local_helpdesk{{/str}}</button>
+            </div>
+            <p class="hd-note">{{#str}}forwardhint, local_helpdesk{{/str}}</p>
+        </form>
+        {{/hasspecialists}}
+        {{#canmanage}}
+        {{^hasspecialists}}
+        <p class="hd-note">{{#str}}nospecialists, local_helpdesk{{/str}}</p>
+        {{/hasspecialists}}
+        {{/canmanage}}
+    </div>
+    {{/isstaff}}
+
+    <ol class="hd-thread">
+        {{#messages}}
+        <li class="hd-msg {{#mine}}hd-msg-mine{{/mine}} {{#internal}}hd-msg-internal{{/internal}}">
+            <div class="hd-msg-head">
+                <span class="hd-msg-author">{{author}}</span>
+                {{#internal}}<span class="hd-tag">{{#str}}internalnote, local_helpdesk{{/str}}</span>{{/internal}}
+                {{#realauthor}}<span class="hd-tag hd-tag-quiet">{{#str}}writtenby, local_helpdesk, {{realauthor}}{{/str}}</span>{{/realauthor}}
+                <time class="hd-msg-time">{{time}}</time>
+            </div>
+            <div class="hd-msg-body">{{{ body }}}</div>
+        </li>
+        {{/messages}}
+    </ol>
+
+    {{#canreply}}
+    <form class="hd-card hd-composer" method="post" action="{{actionurl}}">
+        <input type="hidden" name="sesskey" value="{{sesskey}}">
+        <label class="hd-label" for="hd-reply">{{#str}}addreply, local_helpdesk{{/str}}</label>
+        <textarea class="hd-textarea" id="hd-reply" name="reply" rows="4" required></textarea>
+        {{#isstaff}}
+        <label class="hd-check">
+            <input type="checkbox" name="internal" value="1">
+            {{#str}}internalnote, local_helpdesk{{/str}}
+        </label>
+        {{/isstaff}}
+        <button class="hd-btn" type="submit">{{#str}}send, local_helpdesk{{/str}}</button>
+    </form>
+    {{/canreply}}
+
+    <p><a class="hd-back" href="{{backurl}}">&larr; {{backlabel}}</a></p>
+</div>

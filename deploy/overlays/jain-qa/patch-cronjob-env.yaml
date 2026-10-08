@@ -1,0 +1,99 @@
+# Cron environment for QA.
+#
+# QA currently has NO moodle-cron and NO moodle-adhoc-tasks CronJob at all --
+# only moodle-nfs-backup. Adopting this overlay creates both, which means QA
+# starts running scheduled and adhoc tasks for the first time. That is the point:
+# without them QA cannot exercise anything that depends on cron -- bulk email,
+# bulk user upload, and every scheduled-task plugin.
+#
+# The NFS claim is repointed here too, for the same reason as patch-storage.yaml.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: moodle-cron
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: moodle-cron
+            env:
+            - name: MOODLE_DOCKER_DBTYPE
+              value: "mysqli"
+            - name: MOODLE_DOCKER_DBHOST
+              value: "moodle-db"
+            - name: MOODLE_DOCKER_DBNAME
+              value: "moodledb"
+            - name: MOODLE_DOCKER_DBUSER
+              value: "moodleuser"
+            - name: MOODLE_DOCKER_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            # QA's config.php reads $CFG->dbpass from this variable.
+            - name: MOODLE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            - name: MOODLE_DOCKER_PREFIX
+              value: "acu_"
+            - name: MOODLE_DOCKER_WWWROOT
+              value: "https://dev.lms.thekaios.com"
+            - name: PHP_MEMORY_LIMIT
+              value: "2G"
+            resources:
+              requests:
+                memory: "2Gi"
+                cpu: "500m"
+          volumes:
+          - name: moodle-data
+            persistentVolumeClaim:
+              claimName: moodle-nfs-pvc-jain-qa
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: moodle-adhoc-tasks
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: moodle-adhoc-tasks
+            env:
+            - name: MOODLE_DOCKER_DBTYPE
+              value: "mysqli"
+            - name: MOODLE_DOCKER_DBHOST
+              value: "moodle-db"
+            - name: MOODLE_DOCKER_DBNAME
+              value: "moodledb"
+            - name: MOODLE_DOCKER_DBUSER
+              value: "moodleuser"
+            - name: MOODLE_DOCKER_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            - name: MOODLE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            - name: MOODLE_DOCKER_PREFIX
+              value: "acu_"
+            - name: MOODLE_DOCKER_WWWROOT
+              value: "https://dev.lms.thekaios.com"
+            - name: PHP_MEMORY_LIMIT
+              value: "3G"
+            resources:
+              requests:
+                memory: "3Gi"
+                cpu: "500m"
+          volumes:
+          - name: moodle-data
+            persistentVolumeClaim:
+              claimName: moodle-nfs-pvc-jain-qa

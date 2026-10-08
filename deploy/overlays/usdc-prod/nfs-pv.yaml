@@ -1,0 +1,29 @@
+# moodledata for learn.usdcglobal.com.
+#
+# Already exists in the cluster and is Bound -- this file adopts it rather than
+# creating it, so every field below was read back from the live object and must
+# keep matching it. A PersistentVolume is cluster-scoped, hence the tenant prefix
+# in the name (jain's is `moodle-nfs-pv`, nitk's `nitk-moodle-nfs-pv`).
+#
+# storageClassName is deliberately absent: the live PV has it unset, and writing
+# "" here would be a change to a bound volume rather than a no-op.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: learn-usdc-nfs-pv
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /moodle_nfs/learn_usdc_data_prod
+    server: 10.185.32.234
+  mountOptions:
+    - nfsvers=3
+    - hard
+    - timeo=600
+    - retrans=2
+    - rsize=1048576
+    - wsize=1048576

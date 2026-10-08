@@ -1,0 +1,26 @@
+# Base reserves 3Gi (limit 4Gi) for jain's ~45,000 sessions. A site with fewer
+# than 100 users needs nothing like that -- usdc measures 11m CPU and 4Mi on the
+# same shape.
+#
+# The 512Mi limit is deliberately coherent with config/redis.conf's
+# `maxmemory 256mb`: eviction trims keys well before the container ceiling, so
+# Redis is never OOM-killed. Raise both together or neither.
+#
+# Any change to this pod template restarts Redis, and Redis here has no
+# persistence, so a restart drops every session and logs the site out. Treat it
+# as user-visible rather than routine once the site is live.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  template:
+    spec:
+      containers:
+      - name: redis
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi

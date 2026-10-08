@@ -1,0 +1,55 @@
+/* ------------------------------------------------------------------
+   Bespoke logged-out front page (gateway) — theme_baz.
+   Rendered by theme_baz/front-landing for not-logged-in / guest visitors
+   (tmpl-frontpage.php, setting theme_baz/bespoke_frontpage). The banner
+   (pix/fp/frontbanner.png) has a transparent background, sitting on the
+   login page's navy gradient so the whole page is one seamless colour.
+   ------------------------------------------------------------------ */
+#fl-root {
+    --fl-gold: #{$bz-accent}; --fl-gold2: #{$bz-accent-lo};
+    --fl-grad: linear-gradient(140deg, #{$bz-navy-hi} 0%, #{$bz-navy-lo} 100%);
+    --fl-sans: 'Manrope', 'Inter', system-ui, sans-serif;
+
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--fl-grad);
+    font-family: var(--fl-sans);
+
+    .fl-top { padding: 16px 32px; }
+    .fl-logo { height: 36px; width: auto; display: block; }
+    .fl-logo-txt { color: #fff; font-weight: 800; font-size: 18px; }
+
+    .fl-hero { flex: 1; display: grid; place-items: center; padding: 8px 32px 44px; }
+    .fl-bannerwrap { position: relative; width: 100%; max-width: 1080px; margin: 0 auto; }
+    .fl-banner { width: 100%; height: auto; display: block; }
+
+    .fl-login {
+        position: absolute; left: 5%; bottom: 12%;
+        display: inline-flex; align-items: center; gap: 10px;
+        font: 800 clamp(13px, 1.4vw, 16px) var(--fl-sans);
+        border-radius: 12px; padding: 14px 26px; text-decoration: none;
+        background: linear-gradient(135deg, var(--fl-gold), var(--fl-gold2));
+        color: $bz-accent-ink; box-shadow: 0 14px 30px rgba(0, 0, 0, .4);
+    }
+    .fl-login:hover { filter: brightness(1.04); color: $bz-accent-ink; }
+    .fl-login svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.4; }
+
+    .fl-foot {
+        text-align: center; padding: 14px 24px;
+        font: 600 12px var(--fl-sans); color: #9fb3c9;
+        border-top: 1px solid rgba(255, 255, 255, .08);
+    }
+
+    /* Required-but-hidden Moodle main-content placeholder (see the template). */
+    .fl-region-main { display: none; }
+
+    @media (max-width: 560px) {
+        .fl-login { left: 50%; transform: translateX(-50%); bottom: -20px; white-space: nowrap; }
+        .fl-bannerwrap { margin-bottom: 34px; }
+    }
+}
+
+/* The bespoke landing owns the whole viewport — drop any inherited page chrome. */
+body.fl-page #page,
+body.fl-page #page-wrapper { padding: 0 !important; margin: 0 !important; background: none !important; }

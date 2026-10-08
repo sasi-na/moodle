@@ -1,0 +1,252 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_baz/student-courses
+
+    Bespoke "My courses" page for student-only users. Reuses the theme head /
+    session chrome; the body is a custom app shell matching the student dashboard.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="sc-root" class="sc-app">
+
+            <!-- ============ SIDEBAR (slide-in drawer on mobile) ============ -->
+            <div class="sc-backdrop" id="sc-backdrop"></div>
+            <aside class="sc-side" id="sc-side">
+                <a class="sc-brand" href="{{{ config.wwwroot }}}/my/">
+                    {{! The sidebar is always navy, unlike the classic topbar that customlogo
+                        also feeds, so prefer the sidebar logo where a site supplies one. }}
+                    {{#customsidebarlogo}}<img src="{{customsidebarlogo}}" alt="{{sitename}}">{{/customsidebarlogo}}
+                    {{^customsidebarlogo}}
+                        {{#customlogo}}<img src="{{customlogo}}" alt="{{sitename}}">{{/customlogo}}
+                        {{^customlogo}}<span class="sc-brand-txt">{{{ sitename }}}</span>{{/customlogo}}
+                    {{/customsidebarlogo}}
+                </a>
+                <nav class="sc-nav">
+                    <a href="{{{ config.wwwroot }}}/my/">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+                        {{#str}}sd_nav_dashboard, theme_baz{{/str}}</a>
+                    <a href="{{coursesurl}}" class="on">
+                        <svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M9 11h6M9 15h4"/></svg>
+                        {{#str}}sd_nav_courses, theme_baz{{/str}}</a>
+                    <a href="{{calendarurl}}">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+                        {{#str}}sd_nav_calendar, theme_baz{{/str}}</a>
+                    <a href="{{{ config.wwwroot }}}/grade/report/overview/index.php">
+                        <svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg>
+                        {{#str}}sd_nav_grades, theme_baz{{/str}}</a>
+                    {{#hasinterestzone}}
+                    <a href="{{interestzoneurl}}">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.25"/><circle cx="12" cy="9" r="1" fill="currentColor" stroke="none"/><path d="M12 13V15"/></svg>
+                        {{interestzonelabel}}</a>
+                    {{/hasinterestzone}}
+                    <div class="sc-navlbl">{{#str}}sd_nav_resources, theme_baz{{/str}}</div>
+                    {{#showeidcard}}
+                    <a href="{{eidcardurl}}">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M13 10h5M13.5 14h3M5 16c.4-1.4 1.5-2 3-2s2.6.6 3 2"/></svg>
+                        {{#str}}pluginname, local_studentid{{/str}}</a>
+                    {{/showeidcard}}
+                    <a href="{{{ config.wwwroot }}}/user/files.php">
+                        <svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h6l2 2h6a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                        {{#str}}sd_nav_files, theme_baz{{/str}}</a>
+                </nav>
+            {{> theme_baz/sidebar-support }}
+            </aside>
+
+            <!-- ============ MAIN ============ -->
+            <div class="sc-main">
+                <header class="sc-topbar">
+                    <div class="sc-topbar-inner">
+                        <div class="sc-tb-left">
+                            <button type="button" class="sc-burger" id="sc-burger" aria-label="{{#str}}sd_menu, theme_baz{{/str}}" aria-expanded="false" aria-controls="sc-side">
+                                <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            </button>
+                            <nav class="sc-crumb"><a href="{{{ config.wwwroot }}}/my/">{{#str}}sd_nav_dashboard, theme_baz{{/str}}</a><span class="sc-sep">/</span><span class="sc-cur">{{#str}}sc_title, theme_baz{{/str}}</span></nav>
+                        </div>
+                        <div class="sc-search-wrap" data-suggest="{{searchitemsjson}}">
+                            <form class="sc-search" action="{{{ config.wwwroot }}}/course/search.php" method="get" role="search">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                                <input type="text" name="search" id="sc-topsearch" autocomplete="off" placeholder="{{#str}}sd_searchph, theme_baz{{/str}}" aria-label="{{#str}}search, core{{/str}}">
+                                <span class="sc-search-kbd">/</span>
+                            </form>
+                            <div class="sc-suggest" id="sc-suggest" hidden></div>
+                        </div>
+                        <div class="sc-top-actions">
+                            {{#hasaskjo}}<button type="button" class="sc-askjo" id="sc-askjo-btn">
+                                <svg viewBox="0 0 24 24" fill="var(--bz-accent)"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/></svg>
+                                {{#str}}sd_askjo, theme_baz{{/str}}</button>{{/hasaskjo}}
+                            <button type="button" class="sc-iconbtn" id="sc-themebtn" title="{{#str}}sd_toggletheme, theme_baz{{/str}}">
+                                <svg id="sc-themeicon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+                            </button>
+                            <div class="sc-navbar-plugin">{{{ output.navbar_plugin_output }}}</div>
+                            <div class="sc-usermenu">{{{ output.user_menu }}}</div>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="sc-content">
+
+                    <!-- HEADER HERO -->
+                    <section class="sc-head">
+                        <div class="sc-glow"></div>
+                        <div class="sc-head-l">
+                            <h1>{{#str}}sc_title, theme_baz{{/str}}</h1>
+                            <p>{{#str}}sc_subtitle, theme_baz{{/str}}</p>
+                        </div>
+                        <div class="sc-hstats">
+                            <div class="sc-hstat"><b>{{kpitotal}}</b><span>{{#str}}sc_kpitotal, theme_baz{{/str}}</span></div>
+                            {{#hassemester}}<div class="sc-hstat"><b>{{kpisemester}}</b><span>{{#str}}sc_kpisemester, theme_baz{{/str}}</span></div>{{/hassemester}}
+                            <div class="sc-hstat"><b>{{kpiinprogress}}</b><span>{{#str}}sc_kpiinprogress, theme_baz{{/str}}</span></div>
+                            <div class="sc-hstat"><b>{{kpicompleted}}</b><span>{{#str}}sc_kpicompleted, theme_baz{{/str}}</span></div>
+                        </div>
+                    </section>
+
+                    <!-- CONTINUE LEARNING -->
+                    {{#hasfeatured}}{{#featured}}
+                    <a class="sc-feat" href="{{url}}">
+                        <div class="sc-feat-cv{{#hasimage}} has-img{{/hasimage}}" style="background:linear-gradient(135deg,{{gradfrom}},{{gradto}})">{{#hasimage}}<img class="sc-cover-img" src="{{imageurl}}" alt="" loading="lazy">{{/hasimage}}{{^hasimage}}<span class="d"></span><span class="m">{{abbr}}</span>{{/hasimage}}</div>
+                        <div class="sc-feat-bd">
+                            <div class="sc-feat-eye"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> {{#str}}sc_continuelearning, theme_baz{{/str}}</div>
+                            <h2>{{name}}</h2>
+                            {{#hasfaculty}}<div class="sc-feat-fac"><span class="a" style="background:linear-gradient(135deg,{{gradfrom}},{{gradto}})">{{facultyabbr}}</span> {{faculty}} · {{#str}}sc_instructor, theme_baz{{/str}}</div>{{/hasfaculty}}
+                            <div class="sc-feat-meta"><span class="bar"><i style="width:{{barwidth}}%"></i></span><b>{{progress}}%</b></div>
+                        </div>
+                        <span class="sc-feat-go">{{cta}} <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                    </a>
+                    {{/featured}}{{/hasfeatured}}
+
+                    <!-- TOOLBAR -->
+                    <section class="sc-bar" data-filter="{{filter}}" data-sort="{{sort}}" data-view="{{view}}">
+                        <span class="sc-count"><b>{{totalcourses}}</b> {{#str}}sd_nav_courses, theme_baz{{/str}}</span>
+                        <div class="sc-bsearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="text" id="sc-filtersearch" autocomplete="off" placeholder="{{#str}}sc_searchph, theme_baz{{/str}}"></div>
+                        <div class="sc-fchips" role="tablist">
+                            <button class="sc-fchip" data-f="all">{{#str}}sc_filter_all, theme_baz{{/str}}</button>
+                            <button class="sc-fchip" data-f="inprogress">{{#str}}sc_filter_inprogress, theme_baz{{/str}}</button>
+                            <button class="sc-fchip" data-f="future">{{#str}}sc_filter_future, theme_baz{{/str}}</button>
+                            <button class="sc-fchip" data-f="past">{{#str}}sc_filter_past, theme_baz{{/str}}</button>
+                            <button class="sc-fchip" data-f="starred">★ {{#str}}sc_filter_starred, theme_baz{{/str}}</button>
+                            {{! "Removed from view" filter intentionally removed — the feature is disabled. }}
+                        </div>
+                        <div class="sc-drop" id="sc-sort" data-sort="{{sort}}" role="button" tabindex="0">
+                            <svg viewBox="0 0 24 24"><path d="M7 4v16m0 0-3-3m3 3 3-3M17 20V4m0 0-3 3m3-3 3 3"/></svg>
+                            <span>{{#str}}sc_sort, theme_baz{{/str}}: <b id="sc-sortlabel">{{#issortlast}}{{#str}}sc_sort_lastaccessed, theme_baz{{/str}}{{/issortlast}}{{^issortlast}}{{#str}}sc_sort_name, theme_baz{{/str}}{{/issortlast}}</b></span>
+                            <svg class="cv" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                            <div class="sc-menu" id="sc-sortmenu" hidden>
+                                <button type="button" data-s="fullname">{{#str}}sc_sort_name, theme_baz{{/str}}</button>
+                                <button type="button" data-s="lastaccessed">{{#str}}sc_sort_lastaccessed, theme_baz{{/str}}</button>
+                            </div>
+                        </div>
+                        <div class="sc-vtoggle">
+                            <button type="button" data-v="card" class="{{#iscard}}on{{/iscard}}" title="{{#str}}sc_view_card, theme_baz{{/str}}"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
+                            <button type="button" data-v="list" class="{{#islist}}on{{/islist}}" title="{{#str}}sc_view_list, theme_baz{{/str}}"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg></button>
+                            <button type="button" data-v="summary" class="{{#issummary}}on{{/issummary}}" title="{{#str}}sc_view_summary, theme_baz{{/str}}"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h7"/></svg></button>
+                        </div>
+                    </section>
+
+                    <!-- GROUPS -->
+                    <div id="sc-groups">
+                    {{#groups}}
+                    <section class="sc-grp" data-group>
+                        <div class="sc-grp-h{{^open}} closed{{/open}}">
+                            <span class="sc-chev"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></span>
+                            <h2>{{name}}</h2>
+                            <span class="sc-gavg">{{#str}}sc_avg, theme_baz, {{avg}}{{/str}}</span>
+                            <span class="sc-gcount">{{#str}}sc_courses_count, theme_baz, {{count}}{{/str}}</span>
+                        </div>
+                        <div class="sc-grp-body"{{^open}} hidden{{/open}}>
+                            <div class="sc-grid">
+                                {{#courses}}
+                                <div class="sc-card" data-course="{{id}}" data-status="{{status}}" data-class="{{classification}}" data-starred="{{#starred}}1{{/starred}}{{^starred}}0{{/starred}}" data-hidden="{{#hidden}}1{{/hidden}}{{^hidden}}0{{/hidden}}" data-name="{{name}}" data-last="{{lastaccess}}">
+                                    <a class="sc-cover{{#hasimage}} has-img{{/hasimage}}" href="{{url}}" style="background:linear-gradient(135deg,{{gradfrom}},{{gradto}})">
+                                        {{#hasimage}}<img class="sc-cover-img" src="{{imageurl}}" alt="" loading="lazy">{{/hasimage}}
+                                        {{^hasimage}}<span class="sc-mono">{{abbr}}</span><span class="sc-deco"></span>{{/hasimage}}
+                                    </a>
+                                    <div class="sc-tools">
+                                        <button type="button" class="sc-t sc-star{{#starred}} on{{/starred}}" data-act="star" title="{{#str}}sc_star, theme_baz{{/str}}"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17.8 6.6 20l1-6.1L3.2 9.5l6.1-.9z"/></svg></button>
+                                        <button type="button" class="sc-t sc-acts" data-act="menu" title="{{#str}}sc_actions, theme_baz{{/str}}"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg></button>
+                                        <div class="sc-cardmenu" hidden>
+                                            <button data-act="star"><svg viewBox="0 0 24 24"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17.8 6.6 20l1-6.1L3.2 9.5l6.1-.9z"/></svg><span class="sc-star-lbl">{{#starred}}{{#str}}sc_unstar, theme_baz{{/str}}{{/starred}}{{^starred}}{{#str}}sc_star, theme_baz{{/str}}{{/starred}}</span></button>
+                                            {{! "Remove from view" action intentionally removed — the feature is disabled. }}
+                                        </div>
+                                    </div>
+                                    <a class="sc-body" href="{{url}}">
+                                        {{#hasfaculty}}<div class="sc-fac"><span class="sc-av" style="background:linear-gradient(135deg,{{gradfrom}},{{gradto}})">{{facultyabbr}}</span><span class="sc-fn">{{faculty}}<small>{{#str}}sc_instructor, theme_baz{{/str}}</small></span></div>{{/hasfaculty}}
+                                        <h3>{{name}}</h3>
+                                        <div class="sc-prog"><span class="sc-pbar"><i style="width:{{barwidth}}%;background:{{barcolor}}"></i></span><span class="sc-p">{{progress}}%</span></div>
+                                        <div class="sc-sub">{{#hasactivities}}<span class="sc-actx">{{#str}}sc_activities, theme_baz, {{done}} / {{total}}{{/str}}</span>{{/hasactivities}}{{^hasactivities}}<span class="sc-actx"></span>{{/hasactivities}}<span class="sc-pill" style="background:{{statusbg}};color:{{statusink}}">{{statuslabel}}</span></div>
+                                        <div class="sc-foot"><span class="sc-last"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> {{lastlabel}}</span><span class="sc-go">{{cta}} <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></div>
+                                    </a>
+                                </div>
+                                {{/courses}}
+                            </div>
+                            <div class="sc-pager" data-pagesize="8" hidden></div>
+                        </div>
+                    </section>
+                    {{/groups}}
+                    </div>
+
+                    <div class="sc-empty" id="sc-empty" hidden>{{#str}}sc_empty, theme_baz{{/str}}</div>
+
+                    {{! Required Moodle main-content placeholder. }}
+                    <div id="region-main-box" class="sc-region-main">
+                        <section id="region-main" aria-label="{{#str}}content{{/str}}">{{{ output.main_content }}}</section>
+                    </div>
+                </main>
+            </div>
+
+            {{#hassupport}}
+            <div class="sc-help">
+                <div class="sc-help-panel" id="sc-help-panel" hidden>
+                    <div class="sc-help-head"><span class="sc-help-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg></span><div class="sc-help-t"><b>{{#str}}sd_help, theme_baz{{/str}}</b><small>{{#str}}sd_help_sub, theme_baz{{/str}}</small></div><button type="button" class="sc-help-close" id="sc-help-close" aria-label="Close">&times;</button></div>
+                    <div class="sd-blockcontent sd-support">{{{ support_html }}}</div>
+                </div>
+                <button type="button" class="sc-help-fab" id="sc-help-fab" aria-expanded="false">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg>
+                    <span>{{#str}}sd_help, theme_baz{{/str}}</span>
+                </button>
+            </div>
+            {{/hassupport}}
+
+            {{#hasaskjo}}
+            <div class="sc-askjo-panel" id="sc-askjo-panel" hidden>
+                <div class="sc-askjo-head"><span>{{#str}}sd_askjo, theme_baz{{/str}}</span><button type="button" class="sc-askjo-close" id="sc-askjo-close" aria-label="Close">&times;</button></div>
+                <div class="block_openai_chat" data-instance-id="{{askjo.blockid}}">
+                    <div class="sc-askjo-body">{{{ askjo.log }}}</div>
+                    <div class="sc-askjo-control">{{{ askjo.control }}}</div>
+                </div>
+            </div>
+            {{/hasaskjo}}
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+</body>
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/studentcourses'], function(Loader, StudentCourses) {
+        StudentCourses.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

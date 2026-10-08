@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/helpdesk/db" VERSION="2026082000" COMMENT="Student support helpdesk"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <TABLES>
+
+        <!-- Deadlines are stamped at creation, not computed: changing the policy must
+             not retrospectively breach a ticket already in flight. -->
+        <TABLE NAME="local_helpdesk_ticket" COMMENT="Support tickets">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="reference" TYPE="char" LENGTH="32" NOTNULL="true" COMMENT="Human-facing ticket number shown to the student"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="The student who raised it"/>
+                <FIELD NAME="category" TYPE="char" LENGTH="64" NOTNULL="true" COMMENT="academic|technical|administrative|other"/>
+                <FIELD NAME="subject" TYPE="char" LENGTH="255" NOTNULL="true"/>
+                <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="new" COMMENT="new|open|inprogress|escalated|resolved|closed|merged"/>
+                <FIELD NAME="priority" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" COMMENT="0=low 1=normal 2=high 3=urgent"/>
+                <FIELD NAME="channel" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="lms" COMMENT="lms|email|slack"/>
+                <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Course the query is about, when the student named one. Drives which TA or faculty member the ticket can be forwarded to."/>
+                <FIELD NAME="assigneeid" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Program manager who owns it, and whose identity every public reply carries"/>
+                <FIELD NAME="forwardedto" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="TA or faculty currently asked to contribute"/>
+                <FIELD NAME="forwardedtime" TYPE="int" LENGTH="10" NOTNULL="false"/>
+                <FIELD NAME="firstresponsedue" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="resolutiondue" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="firstresponsetime" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="First PUBLIC reply. Internal notes do not satisfy the SLA"/>
+                <FIELD NAME="resolvedtime" TYPE="int" LENGTH="10" NOTNULL="false"/>
+                <FIELD NAME="closedtime" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Resolved means answered; closed means nobody objected"/>
+                <FIELD NAME="mergedinto" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Ticket id this was merged into"/>
+                <FIELD NAME="legalhold" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" COMMENT="Exempt from retention purge — appeals and disputes outlive a year"/>
+                <FIELD NAME="csatscore" TYPE="int" LENGTH="2" NOTNULL="false" COMMENT="1-5, survives anonymisation"/>
+                <FIELD NAME="csattime" TYPE="int" LENGTH="10" NOTNULL="false"/>
+                <FIELD NAME="anonymisedtime" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Set when retention stripped the personal data"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="reference" UNIQUE="true" FIELDS="reference"/>
+                <INDEX NAME="status-resolutiondue" UNIQUE="false" FIELDS="status, resolutiondue" COMMENT="Queue sorted by time remaining, and the SLA scan"/>
+                <INDEX NAME="forwardedto-status" UNIQUE="false" FIELDS="forwardedto, status" COMMENT="A specialist's own queue"/>
+                <INDEX NAME="closedtime" UNIQUE="false" FIELDS="closedtime" COMMENT="Retention purge"/>
+                <INDEX NAME="courseid" UNIQUE="false" FIELDS="courseid" COMMENT="Tickets for one course"/>
+            </INDEXES>
+        </TABLE>
+
+        <!-- authorid is who wrote it; presentedas is who the student sees. Always resolve
+             through ticket::presented_author(). -->
+        <TABLE NAME="local_helpdesk_message" COMMENT="Ticket thread messages">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="ticketid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="authorid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Who really wrote it. Internal and audit only"/>
+                <FIELD NAME="authorrole" TYPE="char" LENGTH="20" NOTNULL="true" COMMENT="student|pm|ta|faculty|admin — recorded because role assignments change"/>
+                <FIELD NAME="presentedas" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Identity shown to the student. NULL for the student's own messages"/>
+                <FIELD NAME="visibility" TYPE="char" LENGTH="16" NOTNULL="true" DEFAULT="public" COMMENT="public|internal"/>
+                <FIELD NAME="message" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="messageformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="ticketid" TYPE="foreign" FIELDS="ticketid" REFTABLE="local_helpdesk_ticket" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="ticketid-timecreated" UNIQUE="false" FIELDS="ticketid, timecreated"/>
+            </INDEXES>
+        </TABLE>
+
+        <!-- Append-only. Source for turnaround reporting. -->
+        <TABLE NAME="local_helpdesk_event" COMMENT="Ticket audit trail">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="ticketid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="actorid" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="NULL when the system acted, e.g. an SLA breach"/>
+                <FIELD NAME="action" TYPE="char" LENGTH="40" NOTNULL="true" COMMENT="created|assigned|replied|noted|forwarded|returned|resolved|closed|reopened|merged|flagged|held"/>
+                <FIELD NAME="detail" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="ticketid" TYPE="foreign" FIELDS="ticketid" REFTABLE="local_helpdesk_ticket" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="ticketid-timecreated" UNIQUE="false" FIELDS="ticketid, timecreated"/>
+            </INDEXES>
+        </TABLE>
+
+        <!-- Breach flags for oversight. A flag never reassigns or closes anything. -->
+        <TABLE NAME="local_helpdesk_flag" COMMENT="SLA breach flags for admin oversight">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="ticketid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="flagtype" TYPE="char" LENGTH="32" NOTNULL="true" COMMENT="noresponse|noaction|specialistsilent"/>
+                <FIELD NAME="timeraised" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="acknowledgedby" TYPE="int" LENGTH="10" NOTNULL="false"/>
+                <FIELD NAME="timeacknowledged" TYPE="int" LENGTH="10" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+                <KEY NAME="ticketid" TYPE="foreign" FIELDS="ticketid" REFTABLE="local_helpdesk_ticket" REFFIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="ticket-type" UNIQUE="true" FIELDS="ticketid, flagtype" COMMENT="One live flag of each kind per ticket, so the scan is idempotent"/>
+                <INDEX NAME="timeacknowledged" UNIQUE="false" FIELDS="timeacknowledged" COMMENT="Outstanding flags on the oversight board"/>
+            </INDEXES>
+        </TABLE>
+
+        <!-- Saved replies. -->
+        <TABLE NAME="local_helpdesk_macro" COMMENT="Saved replies">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true"/>
+                <FIELD NAME="category" TYPE="char" LENGTH="64" NOTNULL="false" COMMENT="Offered first on tickets of this category"/>
+                <FIELD NAME="body" TYPE="text" NOTNULL="true" COMMENT="Supports {firstname} {reference} {coursename} substitution"/>
+                <FIELD NAME="bodyformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1"/>
+                <FIELD NAME="usecount" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Most-used float to the top"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
+                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="category" UNIQUE="false" FIELDS="category"/>
+            </INDEXES>
+        </TABLE>
+
+    </TABLES>
+</XMLDB>

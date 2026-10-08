@@ -1,0 +1,78 @@
+# global.onlinejain.com -- namespace global-jain-prod, cluster usdc-prod-cluster-1
+#
+# Fourth tenant on the shared image, and the second ADOPTION after usdc: this
+# namespace was already running, built from `global-jain-moodle`, its own image
+# off a forked copy of this codebase.
+#
+# Every value was read back from the live cluster before it was written, and the
+# sizing comes from measured load rather than from the live requests -- usdc
+# needed a second pass because its overlay reproduced values that were a
+# jain-shaped template rather than a choice.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: global-jain-prod
+
+resources:
+  - ../../base
+  - namespace.yaml
+  - nfs-pv.yaml
+  - nfs-pvc.yaml
+  - cronjob-submission-report.yaml
+
+patches:
+  - path: patch-deployment-env.yaml
+  - path: patch-cronjob-env.yaml
+  - path: patch-scale.yaml
+  - path: patch-hpa.yaml
+  - path: patch-redis.yaml
+
+# Merges this tenant's three keys into the moodle-config ConfigMap base
+# generates. healthz.php, my.cnf, nginx.conf and php.ini come from base unchanged
+# -- which is much of the point: the tenant inherits jain's hardened nginx and
+# php.ini in place of its own drifted copies.
+#
+# The three overridden here are overridden for one reason each:
+# moodle_config.php is genuinely per-tenant; redis.conf's maxmemory must track
+# this tenant's much smaller Redis container; www.conf's pool is jain's (25 at
+# start, 80 max), which is most of what these pods idle at.
+configMapGenerator:
+  - name: moodle-config
+    behavior: merge
+    files:
+      - config/moodle_config.php
+      - config/redis.conf
+      - config/www.conf
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+# Same image as every other tenant, which is the entire point. The transformer
+# also rewrites the bespoke submission-report CronJob above, so this tenant
+# cannot end up split across two codebases.
+#
+# newTag is only a default: the deploy job runs `kustomize edit set image` with
+# the freshly built commit sha before applying, so this is what a manual
+# `kubectl apply -k` would use, not what CI deploys.
+images:
+  - name: moodle-lms
+    newName: asia-south1-docker.pkg.dev/org-dev-infra/services/moodle-lms
+    newTag: f3a61c9a
+
+# Not included, deliberately:
+#   Ingress moodle-ingress -- this tenant does NOT use the shared gateway
+#     HTTPRoute the way jain/nitk/usdc do; it has its own GCE Ingress with a
+#     pre-shared certificate (mcrt-4e188d0a-...) on forwarding rule 34.8.26.232.
+#     Base's Service already matches what it targets (selector app=moodle, port
+#     80), so the adoption needs no routing change at all -- and declaring the
+#     Ingress here would risk churning a live cert binding for no gain.
+#   Secret moodle-secrets -- created out of band, already present with both keys
+#     (database-password verified byte-equal to the plaintext the old ConfigMap
+#     carried, which is what made the switch to getenv() safe).
+#   ConfigMap submission-report-script -- the weekly report's PHP, created out of
+#     band. The CronJob that consumes it IS managed here; the script is not.
+#   PerconaXtraDBCluster + haproxy -- a Helm release, like every other tenant.
+#     See deploy/global-jain-pxc-values.yaml, which is NOT applied by CI.
+#   CronJob moodle-nfs-backup -- runs google/cloud-sdk:slim, mounts only
+#     moodledata, touches neither config.php nor the database. Nothing about the
+#     adoption affects it, so it is left alone.

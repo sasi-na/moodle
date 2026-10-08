@@ -1,0 +1,28 @@
+{{!
+    @template block_weather/widget
+
+    Compact weather card for the Dashboard.
+}}
+<section class="bw-widget" aria-label="{{#str}}pluginname, block_weather{{/str}}">
+    <div class="bw-w-now">
+        <i class="fa {{icon}} bw-icon" aria-hidden="true"></i>
+        <div>
+            <div class="bw-w-temp">{{temp}}{{deg}} <span class="bw-w-label">{{label}}</span></div>
+            <div class="small text-muted"><i class="fa fa-location-dot" aria-hidden="true"></i> {{place}} · {{feels}}</div>
+        </div>
+    </div>
+    <div class="bw-w-meta small">
+        {{#todaymax}}<span>{{#str}}today, block_weather{{/str}} {{todaymax}}° / {{todaymin}}°</span>{{/todaymax}}
+        <span><i class="fa fa-droplet" aria-hidden="true"></i> {{humidity}}</span>
+        <span><i class="fa fa-wind" aria-hidden="true"></i> {{wind}}</span>
+    </div>
+    <div class="bw-w-days">
+        {{#days}}
+        <div class="bw-day" title="{{label}}">
+            <div class="small fw-bold">{{day}}</div>
+            <i class="fa {{icon}}" aria-hidden="true"></i>
+            <div class="small">{{max}}° <span class="text-muted">{{min}}°</span></div>
+        </div>
+        {{/days}}
+    </div>
+</section>

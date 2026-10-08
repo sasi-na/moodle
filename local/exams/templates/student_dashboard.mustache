@@ -1,0 +1,108 @@
+{{!
+    @template local_exams/student_dashboard
+
+    Student exam portal: cross-semester scorecard + trends. Self-contained .exui
+    markup (theme-independent). Charts drawn by local_exams/dashboard from the
+    embedded JSON island.
+}}
+<div class="exui exui-light" id="local-exams-student">
+  <div class="exui-root">
+
+    <div class="exui-header">
+      <div>
+        <h1>{{#str}}mydashboard, local_exams{{/str}}</h1>
+        <div class="exui-sub">{{studentname}}{{#idnumber}} &middot; {{idnumber}}{{/idnumber}}{{#program}} &middot; {{program}}{{/program}}{{#batch}} &middot; {{batch}}{{/batch}}</div>
+      </div>
+      <div>
+        {{^locked}}{{#hasdata}}<a class="exui-btn exui-btn-primary" href="{{downloadurl}}">Download result sheet</a>{{/hasdata}}{{/locked}}
+      </div>
+    </div>
+
+    {{#locked}}
+      <div class="exui-card"><div class="exui-empty">{{lockedmsg}}</div></div>
+    {{/locked}}
+
+    {{^locked}}
+      {{^hasdata}}
+        <div class="exui-card"><div class="exui-empty">{{noresultsmsg}}</div></div>
+      {{/hasdata}}
+
+      {{#hasdata}}
+        <div class="exui-grid">
+          <div class="exui-col-3">
+            <div class="exui-card exui-tile">
+              <div class="exui-tile-value">{{#overall.haspercent}}{{overall.percentage}}%{{/overall.haspercent}}{{^overall.haspercent}}&ndash;{{/overall.haspercent}}</div>
+              <div class="exui-tile-label">Overall percentage</div>
+            </div>
+          </div>
+          <div class="exui-col-3">
+            <div class="exui-card exui-tile">
+              <div class="exui-tile-value">{{overall.totalexams}}</div>
+              <div class="exui-tile-label">Total exams</div>
+            </div>
+          </div>
+          <div class="exui-col-3">
+            <div class="exui-card exui-tile">
+              <div class="exui-tile-value">{{overall.present}}</div>
+              <div class="exui-tile-label">Appeared</div>
+            </div>
+          </div>
+          <div class="exui-col-3">
+            <div class="exui-card exui-tile">
+              <div class="exui-tile-value">{{overall.absent}}</div>
+              <div class="exui-tile-label">Not appeared</div>
+            </div>
+          </div>
+
+          <div class="exui-col-8">
+            <div class="exui-card">
+              <p class="exui-card-title">Performance trend by semester</p>
+              <div class="exui-chart"><canvas id="exui-trend"></canvas></div>
+            </div>
+          </div>
+          <div class="exui-col-4">
+            <div class="exui-card">
+              <p class="exui-card-title">Attendance</p>
+              <div class="exui-chart"><canvas id="exui-attendance"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        {{#semesters}}
+          <div class="exui-card" style="margin-top:18px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <p class="exui-card-title" style="margin:0;">{{name}}{{#program}} &middot; {{program}}{{/program}}</p>
+              <div>
+                {{#haspercent}}<span class="exui-badge exui-badge-primary">{{percentage}}%</span>{{/haspercent}}
+                <span class="exui-badge exui-badge-success">{{present}} appeared</span>
+                {{#absent}}<span class="exui-badge exui-badge-danger">{{absent}} missed</span>{{/absent}}
+              </div>
+            </div>
+            <table class="exui-table" style="margin-top:10px;">
+              <thead>
+                <tr><th>Course</th><th>Exam</th><th class="num">Marks</th><th class="num">Max</th><th class="num">%</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                {{#quizzes}}
+                  <tr>
+                    <td>{{coursename}}</td>
+                    <td>{{quizname}}</td>
+                    <td class="num">{{#present}}{{finalgrade}}{{/present}}{{^present}}&ndash;{{/present}}</td>
+                    <td class="num">{{grademax}}</td>
+                    <td class="num">{{#present}}{{pctlabel}}{{/present}}{{^present}}&ndash;{{/present}}</td>
+                    <td>
+                      {{#present}}<span class="exui-badge exui-badge-success">Appeared</span>{{/present}}
+                      {{^present}}<span class="exui-badge exui-badge-danger">Absent</span>{{/present}}
+                    </td>
+                  </tr>
+                {{/quizzes}}
+              </tbody>
+            </table>
+          </div>
+        {{/semesters}}
+      {{/hasdata}}
+    {{/locked}}
+
+    <script type="application/json" id="local-exams-data">{{{datajson}}}</script>
+  </div>
+</div>

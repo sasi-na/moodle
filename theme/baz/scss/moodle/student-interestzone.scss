@@ -1,0 +1,53 @@
+// Bespoke "Interest Zone" category page (theme_baz). Reuses the My-courses app
+// shell (#sc-root + sc-* chrome); this file adds the club-card grid (iz-*).
+// Scoped under #sc-root so it inherits the --sc-* design tokens. Block comments
+// only (scssphp-safe).
+#sc-root {
+    .iz-hero {
+        position: relative; overflow: hidden;
+        background: linear-gradient(135deg, $bz-navy, $bz-navy-i);
+        color: #fff; border-radius: 18px; padding: 28px 30px; margin: 4px 0 22px;
+    }
+    .iz-orb { position: absolute; right: -50px; top: -50px; width: 200px; height: 200px; border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, rgba($bz-accent,.4), transparent 70%); pointer-events: none; }
+    .iz-kick { font: 800 12px/1 var(--sc-mono, 'JetBrains Mono', monospace); letter-spacing: .2em; text-transform: uppercase; color: $bz-accent; }
+    .iz-hero h1 { font-size: clamp(24px, 3.4vw, 30px); font-weight: 800; letter-spacing: -.02em; margin: 12px 0 8px; color: #fff; }
+    .iz-desc { color: #B9CCDC; font-size: 14.5px; line-height: 1.6; margin: 0; max-width: 68ch; }
+    .iz-desc p { margin: 0 0 8px; } .iz-desc :last-child { margin-bottom: 0; }
+    .iz-count { margin-top: 16px; font: 700 12px/1 var(--sc-mono, 'JetBrains Mono', monospace); color: #dce8f2; letter-spacing: .04em; }
+    .iz-count b { color: $bz-accent; font-size: 14px; }
+
+    .iz-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .iz-club { background: var(--sc-surface, #fff); border: 1px solid var(--sc-line, #E5ECF3); border-radius: 16px;
+        overflow: hidden; box-shadow: 0 6px 20px -14px rgba(11,32,52,.4); display: flex; flex-direction: column; transition: border-color .15s, transform .15s; }
+    .iz-club:hover { border-color: var(--sc-accent, $bz-accent); transform: translateY(-2px); }
+    .iz-cover { position: relative; height: 116px; display: flex; align-items: flex-end; padding: 12px 14px; text-decoration: none; overflow: hidden; background: #0D2150; }
+    .iz-cover-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+    /* legibility scrim over the image so the glyph chip reads on any photo */
+    .iz-cover::after { content: ""; position: absolute; inset: 0; z-index: 1;
+        background: linear-gradient(180deg, rgba(11,33,80,0) 40%, rgba(11,33,80,.45) 100%); pointer-events: none; }
+    .iz-cover .iz-ic { position: relative; z-index: 2; width: 40px; height: 40px; border-radius: 11px; background: rgba(255,255,255,.94);
+        display: grid; place-items: center; box-shadow: 0 4px 10px rgba(0,0,0,.2); }
+    .iz-cover .iz-ic svg { width: 21px; height: 21px; stroke: $bz-navy; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .iz-body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; }
+    .iz-nm { font-size: 15.5px; font-weight: 800; color: var(--sc-ink, #0B2034) !important; letter-spacing: -.01em; text-decoration: none; }
+    .iz-nm:hover { color: var(--sc-navy, $bz-navy) !important; }
+    .iz-cdesc { font-size: 12.5px; line-height: 1.55; color: var(--sc-muted, #5C7184); margin: 7px 0 14px; flex: 1;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .iz-cta { display: inline-flex; align-items: center; gap: 7px; font: 800 12.5px var(--sc-sans, 'Manrope', sans-serif);
+        color: var(--sc-navy, $bz-navy) !important; text-decoration: none !important; margin-top: auto; }
+    .iz-cta svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.4; }
+    .iz-cta:hover { color: var(--sc-accent, $bz-accent-lo) !important; }
+    .iz-club.is-enrolled .iz-cta { color: var(--sc-green, #1FA37A) !important; }
+
+    .iz-empty { background: var(--sc-surface, #fff); border: 1px dashed var(--sc-line, #E5ECF3); border-radius: 14px;
+        padding: 40px; text-align: center; color: var(--sc-muted, #5C7184); font-size: 14px; }
+
+    /* main_content placeholder kept only for header slicing — hidden. */
+    .iz-region-main { display: none; }
+
+    /* Topbar: this page has no centre search, so override the shared 3-column
+       grid (1fr auto 1fr) to a 2-part space-between so the right-hand actions
+       (notifications / messages / user menu) stay right-aligned. */
+    .iz-topbar .sc-topbar-inner { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+}

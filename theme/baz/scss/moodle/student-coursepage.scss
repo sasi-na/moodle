@@ -1,0 +1,441 @@
+/* ==========================================================================
+   theme_baz — bespoke course-view page (student-only)
+   Scoped to #cv-root. Navy / gold, matching dashboard / courses / calendar /
+   grades. Light + dark. scssphp-safe: block comments only.
+   ========================================================================== */
+
+#cv-root {
+    --cv-navy: #{$bz-navy};
+    /* Label on an accent surface. Derived from the accent's contrast in
+       theme_baz_brand_palette(), so a dark accent gets white and a light
+       one keeps the navy. */
+    --cv-on-accent: #{$bz-accent-on};
+    --cv-ground: #F4F7FB;
+    --cv-surface: #fff;
+    --cv-ink: #0B2034;
+    --cv-muted: #5C7184;
+    --cv-faint: #90A4B5;
+    --cv-line: #E5ECF3;
+    --cv-accent: #{$bz-accent};
+    --cv-green: #1FA37A;
+    --cv-blue: #406CD2;
+    --cv-violet: #8B5CF6;
+    --cv-rose: #E5556E;
+    --cv-gnavy: linear-gradient(135deg, #{$bz-navy-hi}, #{$bz-navy-lo});
+    --cv-gaccent: linear-gradient(135deg, #{$bz-accent-hi}, #{$bz-accent-lo});
+    --cv-sans: 'Manrope', 'Inter', system-ui, sans-serif;
+    --cv-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --cv-sh-sm: 0 1px 2px rgba(11, 32, 52, .06), 0 1px 3px rgba(11, 32, 52, .04);
+    --cv-sh: 0 4px 14px rgba(11, 32, 52, .07);
+    --cv-sh-lg: 0 18px 50px rgba(11, 32, 52, .12);
+
+    font-family: var(--cv-sans);
+    color: var(--cv-ink);
+    background: var(--cv-ground);
+    min-height: 100vh;
+
+    *, *::before, *::after { box-sizing: border-box; }
+    svg { display: block; }
+
+    /* ---- shell ---- */
+    &.cv-app { display: grid; grid-template-columns: 248px 1fr; }
+
+    .cv-side {
+        background: linear-gradient(180deg, var(--cv-navy), $bz-navy-deep);
+        color: #cfe0ec;
+        padding: 20px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+    }
+    .cv-brand { display: block; padding: 4px 8px 18px; }
+    .cv-brand img { max-height: 38px; width: auto; }
+    .cv-brand-txt { color: #fff; font-weight: 800; font-size: 18px; }
+    .cv-nav a {
+        display: flex; align-items: center; gap: 12px;
+        padding: 10px 12px; border-radius: 11px;
+        color: #aec4d4; font-weight: 600; font-size: 14px; text-decoration: none;
+    }
+    .cv-nav a svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .cv-nav a:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+    .cv-nav a.on { background: rgba($bz-accent, .2); color: var(--cv-accent); font-weight: 700; }
+    .cv-nav a.on svg { stroke: var(--cv-accent); }
+    .cv-navlbl {
+        font: 600 11px/1 var(--cv-mono); letter-spacing: .12em; text-transform: uppercase;
+        color: #5d7e95; padding: 16px 12px 8px;
+    }
+
+    .cv-main-col { min-width: 0; display: flex; flex-direction: column; }
+
+    /* ---- topbar ---- */
+    .cv-topbar {
+        position: sticky; top: 0; z-index: 30;
+        background: rgba(244, 247, 251, .92); backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--cv-line);
+    }
+    .cv-topbar-inner { display: flex; align-items: center; gap: 14px; padding: 12px 28px; }
+    .cv-tb-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .cv-burger { display: none; border: 0; background: none; padding: 0; cursor: pointer; }
+    .cv-burger svg { width: 24px; height: 24px; stroke: var(--cv-ink); fill: none; stroke-width: 1.9; }
+    .cv-crumb { font-weight: 600; color: var(--cv-muted); font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cv-crumb a { color: var(--cv-muted); text-decoration: none; }
+    .cv-crumb .sep { margin: 0 7px; color: var(--cv-faint); }
+    .cv-crumb .cur { color: var(--cv-ink); font-weight: 700; }
+    .cv-search-wrap { flex: 1; display: flex; justify-content: center; }
+    .cv-search {
+        display: flex; align-items: center; gap: 9px; width: 100%; max-width: 460px;
+        background: var(--cv-surface); border: 1px solid #CBD8E6; border-radius: 12px;
+        padding: 9px 14px; box-shadow: var(--cv-sh-sm);
+    }
+    .cv-search svg { width: 17px; height: 17px; stroke: var(--cv-faint); fill: none; stroke-width: 2; flex: 0 0 auto; }
+    .cv-search input { border: 0; background: none; outline: none; width: 100%; font: 600 13px var(--cv-sans); color: var(--cv-ink); }
+    .cv-top-actions { display: flex; align-items: center; gap: 10px; }
+    .cv-askjo {
+        display: inline-flex; align-items: center; gap: 8px;
+        background: var(--cv-gnavy); color: #fff; font-weight: 700; font-size: 13.5px;
+        padding: 9px 15px; border: 0; border-radius: 12px; cursor: pointer;
+    }
+    .cv-askjo svg { width: 16px; height: 16px; }
+    .cv-askjo[disabled] { opacity: .5; cursor: default; }
+    .cv-iconbtn {
+        width: 42px; height: 42px; border-radius: 12px;
+        background: var(--cv-surface); border: 1px solid var(--cv-line);
+        display: grid; place-items: center; color: var(--cv-muted); box-shadow: var(--cv-sh-sm); cursor: pointer;
+    }
+    .cv-iconbtn svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+
+    /* Native popover toggles (notifications + messages) to match icon buttons. */
+    .cv-navbar-plugin { display: flex; align-items: center; gap: 10px; }
+    .cv-navbar-plugin .popover-region-toggle,
+    .cv-navbar-plugin .nav-link {
+        width: 42px; height: 42px; border-radius: 12px;
+        background: var(--cv-surface); border: 1px solid var(--cv-line);
+        display: grid; place-items: center; color: var(--cv-muted); box-shadow: var(--cv-sh-sm); position: relative;
+    }
+    .cv-navbar-plugin .count-container { top: 4px; right: 4px; }
+    .cv-usermenu .dropdown-toggle { text-decoration: none; }
+
+    /* ---- content ---- */
+    .cv-content { padding: 22px 28px 70px; max-width: 1480px; width: 100%; }
+
+    .cv-hero {
+        background: var(--cv-gnavy); color: #fff; border-radius: 22px;
+        padding: 24px 28px; display: flex; gap: 26px; align-items: center; box-shadow: var(--cv-sh);
+    }
+    .cv-hero-l { min-width: 0; }
+    .cv-eyebrow { font: 700 11px/1 var(--cv-mono); letter-spacing: .14em; text-transform: uppercase; color: var(--cv-accent); }
+    .cv-hero h1 { font-size: 29px; font-weight: 800; letter-spacing: -.02em; margin: 9px 0 13px; color: #fff; max-width: 620px; }
+    .cv-hmeta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .cv-chip {
+        display: inline-flex; align-items: center; gap: 7px;
+        background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .14);
+        border-radius: 20px; padding: 6px 13px; font-size: 12px; font-weight: 600; color: #dcebff;
+    }
+    .cv-chip svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.9; }
+    .cv-av { width: 20px; height: 20px; border-radius: 6px; background: var(--cv-gaccent); color: var(--cv-on-accent); display: grid; place-items: center; font: 800 9px/1 var(--cv-mono); }
+    .cv-hero-r { margin-left: auto; display: flex; flex-direction: column; align-items: center; gap: 14px; flex: 0 0 auto; }
+    .cv-ring { position: relative; width: 118px; height: 118px; }
+    .cv-ring svg { transform: rotate(-90deg); }
+    .cv-ring-bg { stroke: rgba(255, 255, 255, .16); }
+    .cv-ring-fg { stroke: var(--cv-accent); transition: stroke-dasharray .6s ease; }
+    .cv-ring-mid { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+    .cv-ring-mid b { font: 800 26px/1 var(--cv-mono); color: #fff; }
+    .cv-ring-mid span { font: 600 9px/1 var(--cv-mono); color: #9fc0d8; text-transform: uppercase; letter-spacing: .1em; margin-top: 5px; }
+    .cv-resume {
+        display: inline-flex; align-items: center; gap: 9px;
+        background: var(--cv-gaccent); color: var(--cv-on-accent); font-weight: 800; font-size: 13.5px;
+        padding: 11px 18px; border-radius: 12px; text-decoration: none;
+        box-shadow: 0 8px 22px rgba($bz-accent, .4); white-space: nowrap;
+    }
+    .cv-resume svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.4; }
+
+    .cv-tabs { display: flex; gap: 4px; margin: 18px 0 0; border-bottom: 1px solid var(--cv-line); overflow-x: auto; }
+    .cv-tabs a { padding: 12px 16px; font-weight: 700; font-size: 13.5px; color: var(--cv-muted); border-bottom: 2px solid transparent; margin-bottom: -1px; text-decoration: none; white-space: nowrap; }
+    .cv-tabs a:hover { color: var(--cv-ink); }
+    .cv-tabs a.on { color: var(--cv-navy); border-bottom-color: var(--cv-accent); }
+
+    /* ---- 3-col body ---- */
+    .cv-body { display: grid; grid-template-columns: 226px minmax(0, 1fr) 290px; gap: 18px; align-items: start; margin-top: 18px; }
+
+    .cv-toc { position: sticky; top: 80px; background: var(--cv-surface); border: 1px solid var(--cv-line); border-radius: 16px; box-shadow: var(--cv-sh-sm); overflow: hidden; }
+    .cv-toc-h { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-bottom: 1px solid var(--cv-line); }
+    .cv-toc-h b { font-size: 13px; font-weight: 800; }
+    .cv-toc-h button { border: 0; background: none; font: 700 11px var(--cv-sans); color: var(--cv-blue); cursor: pointer; }
+    .cv-toc-i { display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-bottom: 1px solid var(--cv-line); position: relative; text-decoration: none; }
+    .cv-toc-i:last-child { border-bottom: 0; }
+    .cv-toc-i:hover { background: var(--cv-ground); }
+    .cv-toc-i.on { background: rgba($bz-accent, .09); }
+    .cv-toc-i.on::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--cv-accent); }
+    .cv-toc-dot { width: 18px; height: 18px; flex: 0 0 18px; border-radius: 50%; display: grid; place-items: center; }
+    .cv-toc-dot svg { width: 12px; height: 12px; stroke: #fff; fill: none; stroke-width: 3; display: none; }
+    .cv-toc-dot.done { background: var(--cv-green); }
+    .cv-toc-dot.done svg { display: block; }
+    .cv-toc-dot.prog { background: var(--cv-accent); }
+    .cv-toc-dot.todo { background: var(--cv-surface); border: 2px solid var(--cv-line); }
+    .cv-toc-n { flex: 1; min-width: 0; font-size: 12px; font-weight: 700; color: var(--cv-ink); line-height: 1.3; }
+    .cv-toc-c { font: 700 10px/1 var(--cv-mono); color: var(--cv-faint); }
+
+    /* ---- sections ---- */
+    .cv-secs { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+    .cv-sec { background: var(--cv-surface); border: 1px solid var(--cv-line); border-radius: 16px; box-shadow: var(--cv-sh-sm); overflow: hidden; }
+    .cv-sec-h { display: flex; align-items: center; gap: 12px; width: 100%; border: 0; background: none; padding: 16px 18px; cursor: pointer; text-align: left; font-family: var(--cv-sans); }
+    .cv-sec-tog svg { width: 18px; height: 18px; stroke: var(--cv-faint); fill: none; stroke-width: 2.4; transition: transform .2s ease; }
+    .cv-sec:not(.open) .cv-sec-tog svg { transform: rotate(-90deg); }
+    .cv-sec-t { font-size: 15px; font-weight: 800; color: var(--cv-ink); flex: 1; min-width: 0; }
+    .cv-sec-prog { display: flex; align-items: center; gap: 9px; }
+    .cv-mini { width: 80px; height: 7px; background: #EDF1F6; border-radius: 6px; overflow: hidden; }
+    .cv-mini i { display: block; height: 100%; background: var(--cv-gaccent); }
+    .cv-sec-cnt { font: 700 12px var(--cv-mono); color: var(--cv-muted); min-width: 32px; text-align: right; }
+    .cv-sec-body { border-top: 1px solid var(--cv-line); }
+    .cv-sec:not(.open) .cv-sec-body { display: none; }
+
+    /* row = link (icon/main/cta) + completion control sibling (so a manual
+       toggle can be a real form, not nested in the link) */
+    /* Row is a vertical container: a flex "head" (icon+name+meta+cta+completion)
+       with the description rendered as a full-width block BELOW it. The description
+       must NOT live inside the <a>/<span> — Moodle wraps it in a block <div class="no-overflow">
+       and the HTML parser hoists that block out of the inline anchor, collapsing the row. */
+    .cv-act-row { display: block; border-bottom: 1px solid var(--cv-line); }
+    .cv-act-row:last-child { border-bottom: 0; }
+    .cv-act-row:hover { background: var(--cv-ground); }
+    .cv-act-head { display: flex; align-items: stretch; }
+    .cv-act { flex: 1; min-width: 0; display: flex; align-items: center; gap: 13px; padding: 13px 18px; text-decoration: none; }
+    .cv-act.nolink { pointer-events: none; }
+    /* section summary + restriction */
+    .cv-sec-summary { padding: 12px 18px; border-bottom: 1px solid var(--cv-line); font-size: 13px; line-height: 1.55; color: var(--cv-muted); }
+    .cv-sec-summary :last-child { margin-bottom: 0; }
+    .cv-sec-restrict { display: flex; align-items: center; gap: 8px; padding: 10px 18px; border-bottom: 1px solid var(--cv-line); font: 600 12px var(--cv-sans); color: #B23A25; background: rgba(224, 86, 62, .05); }
+    .cv-sec-restrict svg { width: 15px; height: 15px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; }
+    /* Inline label content (section instructions / notes) — a read-only panel, not an activity row */
+    .cv-sec-label { margin: 10px 14px; padding: 14px 16px 14px 18px; background: var(--cv-ground); border: 1px solid var(--cv-line); border-left: 3px solid var(--cv-accent); border-radius: 12px; color: var(--cv-ink); font-size: 13.5px; line-height: 1.6; overflow-wrap: anywhere; }
+    .cv-sec-label > :first-child { margin-top: 0; }
+    .cv-sec-label > :last-child { margin-bottom: 0; }
+    .cv-sec-label p { margin: 0 0 8px; }
+    .cv-sec-label strong, .cv-sec-label b { color: var(--cv-navy); }
+    .cv-sec-label .no-overflow { overflow: visible; }
+    .cv-sec-label img { max-width: 100%; height: auto; }
+    .cv-sec-label a { color: var(--cv-blue); }
+    .cv-sec-label table { max-width: 100%; }
+    /* per-activity dates, description, unread */
+    .cv-act-dates { display: flex; flex-wrap: wrap; gap: 3px 14px; margin-top: 6px; }
+    .cv-date { font: 600 11px var(--cv-sans); color: var(--cv-muted); }
+    .cv-date b { color: var(--cv-ink); font-weight: 800; }
+    /* Description: full-width block under the head, indented to line up with the
+       activity name (icon 38 + row pad 18 + gap 13). Horizontal-scroll guard for
+       any content wider than the card (wide Word tables, big images). */
+    .cv-act-desc { display: block; padding: 0 18px 13px 69px; margin-top: -4px; font-size: 12.5px; line-height: 1.5; color: var(--cv-muted); overflow-wrap: break-word; overflow-x: auto; }
+    .cv-act-desc > :first-child { margin-top: 0; }
+    .cv-act-desc :last-child { margin-bottom: 0; }
+    .cv-act-desc .no-overflow { overflow: visible; }
+    /* Descriptions/section summaries often hold Word-pasted content (fixed-width
+       tables, oversized images) that would overflow the card. Keep tables as real
+       tables (never display:block — that collapses them to min-content), just drop
+       the hard-coded inch/pixel widths and cap at the card width; the .cv-act-desc
+       scroll container handles anything still too wide. */
+    .cv-act-desc table, .cv-sec-label table {
+        width: auto !important; max-width: 100% !important;
+        table-layout: auto; border-collapse: collapse; height: auto !important;
+    }
+    .cv-act-desc td, .cv-act-desc th, .cv-sec-label td, .cv-sec-label th { width: auto !important; height: auto !important; }
+    .cv-act-desc img, .cv-sec-label img { max-width: 100% !important; height: auto; }
+    .cv-act-unread { display: inline-block; vertical-align: middle; background: $bz-accent; color: $bz-accent-ink; font: 800 9px var(--cv-mono); letter-spacing: .04em; padding: 2px 7px; border-radius: 999px; margin-left: 6px; }
+    /* completion control sits at the row's right edge (static span or toggle form) */
+    .cv-act-head > .cv-comp, .cv-act-head > .cv-comp-form { flex: 0 0 auto; align-self: center; margin: 0 16px 0 2px; }
+    .cv-comp-form { display: flex; align-items: center; }
+    /* MANUAL completion = a real button: solid bordered circle, gold on hover, filled green when done */
+    .cv-comp-btn { border: 2px solid var(--cv-line); background: var(--cv-surface); padding: 0; cursor: pointer; color: #C0CBD4; }
+    .cv-comp-btn.todo:hover { border-color: var(--cv-accent); color: var(--cv-accent); }
+    .cv-comp-btn.done { background: var(--cv-green); border-color: var(--cv-green); color: #fff; }
+    .cv-ic { width: 38px; height: 38px; flex: 0 0 38px; border-radius: 11px; display: grid; place-items: center; background: var(--cv-ground); color: var(--cv-muted); }
+    .cv-ic svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .cv-ic.t-quiz { background: rgba($bz-accent, .14); color: $bz-accent-text; }
+    .cv-ic.t-video { background: rgba(139, 92, 246, .13); color: var(--cv-violet); }
+    .cv-ic.t-lesson, .cv-ic.t-page { background: rgba(64, 108, 210, .12); color: var(--cv-blue); }
+    .cv-ic.t-live { background: rgba(229, 85, 110, .12); color: var(--cv-rose); }
+    .cv-ic.t-assign { background: rgba(31, 163, 122, .13); color: var(--cv-green); }
+    .cv-ic.t-scheduler { background: rgba(64, 108, 210, .12); color: var(--cv-blue); }
+    .cv-ic.t-forum { background: rgba(229, 85, 110, .1); color: var(--cv-rose); }
+    .cv-act-main { flex: 1; min-width: 0; }
+    .cv-act-n { display: block; font-size: 14px; font-weight: 700; color: var(--cv-ink); line-height: 1.3; }
+    .cv-act-m { display: block; font: 600 11px/1 var(--cv-mono); color: var(--cv-faint); text-transform: uppercase; letter-spacing: .04em; margin-top: 5px; }
+    .cv-comp { width: 26px; height: 26px; flex: 0 0 26px; display: grid; place-items: center; border-radius: 50%; }
+    .cv-comp svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+    .cv-comp.done { color: var(--cv-green); }
+    .cv-comp.done svg { stroke-width: 2.6; }
+    .cv-comp.todo { color: #CFD8E0; }
+    /* AUTOMATIC completion = read-only STATUS, never a checkbox. Done: soft green check.
+       Pending: faint dashed ring with a small centre dot (no check affordance), default cursor. */
+    .cv-comp-auto { cursor: default; }
+    .cv-comp-auto.done { background: rgba(31, 163, 122, .12); }
+    .cv-comp-auto.todo { width: 22px; height: 22px; flex: 0 0 22px; border: 2px dashed #D3DCE4; background: transparent; }
+    .cv-comp-auto.todo::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #C6D0D9; }
+    .cv-cta { display: inline-flex; align-items: center; gap: 6px; font: 800 11.5px var(--cv-sans); color: var(--cv-navy); white-space: nowrap; }
+    .cv-cta svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2.3; }
+
+    /* ---- rail ---- */
+    .cv-rail { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 80px; }
+    .cv-rc { background: var(--cv-surface); border: 1px solid var(--cv-line); border-radius: 16px; box-shadow: var(--cv-sh-sm); padding: 16px 17px; }
+    .cv-rc h4 { font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px; margin: 0 0 13px; }
+    .cv-rc h4 .cv-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cv-accent); }
+    .cv-upnext { background: var(--cv-navy); color: #fff; border: 0; }
+    .cv-upnext h4 { color: #fff; }
+    .cv-un-n { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+    .cv-un-m { font: 600 11px/1 var(--cv-mono); color: #9fc0d8; text-transform: uppercase; letter-spacing: .06em; }
+    .cv-upnext .cv-resume { margin-top: 14px; width: 100%; justify-content: center; }
+    .cv-mentor { display: flex; align-items: center; gap: 12px; }
+    .cv-mav { width: 44px; height: 44px; border-radius: 12px; background: var(--cv-gnavy); color: #fff; display: grid; place-items: center; font: 800 14px/1 var(--cv-mono); }
+    .cv-mn { font-size: 14px; font-weight: 800; }
+    .cv-mr { font: 600 10px/1 var(--cv-mono); color: var(--cv-faint); text-transform: uppercase; letter-spacing: .06em; margin-top: 3px; }
+    .cv-btn-ghost { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin-top: 13px; background: var(--cv-ground); border: 1px solid var(--cv-line); border-radius: 11px; padding: 10px; font-weight: 800; font-size: 12.5px; color: var(--cv-navy); text-decoration: none; }
+    .cv-btn-ghost svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .cv-kd { display: flex; align-items: flex-start; gap: 11px; padding: 9px 0; border-bottom: 1px solid var(--cv-line); }
+    .cv-kd:last-child { border-bottom: 0; }
+    .cv-kd > div:last-child { min-width: 0; flex: 1; padding-right: 2px; }
+    .cv-kdate { flex: 0 0 44px; text-align: center; background: var(--cv-ground); border-radius: 9px; padding: 5px 0; }
+    .cv-kdate-d { font: 800 15px/1 var(--cv-mono); color: var(--cv-ink); }
+    .cv-kdate-m { font: 700 8px/1 var(--cv-mono); color: var(--cv-rose); text-transform: uppercase; margin-top: 2px; }
+    .cv-kdn { font-size: 12.5px; font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
+    .cv-kdm { font: 600 10px/1 var(--cv-mono); color: var(--cv-faint); margin-top: 4px; line-height: 1.4; overflow-wrap: anywhere; }
+    .cv-ann { display: block; padding: 10px 0; border-bottom: 1px solid var(--cv-line); text-decoration: none; }
+    .cv-ann:last-child { border-bottom: 0; }
+    .cv-at { font-size: 12.5px; font-weight: 700; line-height: 1.35; color: var(--cv-ink); }
+    .cv-ad { font: 600 10px/1 var(--cv-mono); color: var(--cv-faint); margin-top: 5px; }
+    .cv-pb { display: flex; align-items: center; gap: 9px; font-size: 12px; margin-bottom: 9px; }
+    .cv-pb:last-child { margin-bottom: 0; }
+    .cv-pbn { flex: 1; color: var(--cv-muted); font-weight: 600; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cv-pbar { width: 64px; height: 6px; background: #EDF1F6; border-radius: 5px; overflow: hidden; flex: 0 0 64px; }
+    .cv-pbar i { display: block; height: 100%; background: var(--cv-gaccent); }
+    .cv-pbv { font: 700 10px/1 var(--cv-mono); color: var(--cv-muted); width: 30px; text-align: right; }
+
+    .cv-empty { background: var(--cv-surface); border: 1px solid var(--cv-line); border-radius: 16px; padding: 40px; text-align: center; color: var(--cv-muted); margin-top: 18px; }
+
+    /* Classic course content is rendered into region-main for header/footer
+       wiring; the bespoke UI replaces it visually. */
+    .cv-region-main { display: none; }
+
+    /* ---- mobile / backdrop ---- */
+    .cv-backdrop { display: none; }
+
+    /* ---- floating help (gold FAB) — bottom-left so it clears the right rail ---- */
+    .cv-help { position: fixed; left: 22px; bottom: 22px; z-index: 1050; }
+    .cv-help-fab {
+        display: inline-flex; align-items: center; gap: 9px;
+        background: var(--cv-gaccent); color: var(--cv-on-accent); font-weight: 800; font-size: 13.5px;
+        border: 0; border-radius: 30px; padding: 13px 19px; cursor: pointer;
+        box-shadow: 0 12px 30px rgba($bz-accent, .42);
+    }
+    .cv-help-fab svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .cv-help-panel {
+        position: absolute; left: 0; bottom: 62px; width: 320px;
+        background: var(--cv-surface); border: 1px solid var(--cv-line); border-radius: 16px;
+        box-shadow: var(--cv-sh-lg); overflow: hidden;
+    }
+    .cv-help-head { display: flex; align-items: center; gap: 11px; padding: 14px 16px; border-bottom: 1px solid var(--cv-line); }
+    .cv-help-ic { width: 34px; height: 34px; border-radius: 10px; background: rgba($bz-accent, .16); color: $bz-accent-text; display: grid; place-items: center; }
+    .cv-help-ic svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.9; }
+    .cv-help-t b { display: block; font-size: 13.5px; font-weight: 800; }
+    .cv-help-t small { color: var(--cv-faint); font-size: 11px; }
+    .cv-help-close { margin-left: auto; border: 0; background: none; font-size: 22px; line-height: 1; color: var(--cv-faint); cursor: pointer; }
+    /* Support block buttons (LSM / ticket / SOP) as clean rows — match the
+       dashboard's help panel, since the markup reuses .sd-support. */
+    .cv-help-panel .sd-support { padding: 6px 16px 14px; }
+    .cv-help-panel .sd-support .support-block-button { display: flex; flex-direction: column; }
+    .cv-help-panel .sd-support .btn { display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%; text-align: left; padding: 13px 0; margin: 0; border: 0; border-bottom: 1px solid var(--cv-line); border-radius: 0; background: none; box-shadow: none; color: var(--cv-ink); font: 600 13px/1.3 var(--cv-sans); cursor: pointer; }
+    .cv-help-panel .sd-support .btn::before { content: ""; flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--cv-accent); }
+    .cv-help-panel .sd-support .btn:last-child { border-bottom: 0; }
+    .cv-help-panel .sd-support .btn:hover { color: var(--cv-blue); }
+
+    /* ---- Ask JO panel ---- */
+    .cv-askjo-panel {
+        position: fixed; right: 22px; bottom: 22px; z-index: 1060; width: 380px; max-width: calc(100vw - 32px);
+        background: var(--cv-surface); border: 1px solid var(--cv-line); border-radius: 16px;
+        box-shadow: var(--cv-sh-lg); overflow: hidden; display: flex; flex-direction: column; max-height: 72vh;
+    }
+    .cv-askjo-head { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; background: var(--cv-gnavy); color: #fff; font-weight: 800; }
+    .cv-askjo-close { border: 0; background: none; color: #fff; font-size: 22px; line-height: 1; cursor: pointer; }
+    .cv-askjo-body { flex: 1; overflow-y: auto; padding: 12px 14px; min-height: 220px; }
+    .cv-askjo-control { border-top: 1px solid var(--cv-line); padding: 10px 12px; }
+
+    @media (max-width: 1240px) {
+        .cv-body { grid-template-columns: 200px minmax(0, 1fr); }
+        .cv-rail { grid-column: 1 / -1; position: static; flex-direction: row; flex-wrap: wrap; }
+        .cv-rail .cv-rc { flex: 1 1 280px; }
+    }
+
+    @media (max-width: 920px) {
+        &.cv-app { grid-template-columns: 1fr; }
+        .cv-side {
+            position: fixed; left: 0; top: 0; bottom: 0; width: 248px; z-index: 1080;
+            transform: translateX(-100%); transition: transform .25s ease;
+        }
+        &.cv-nav-open .cv-side { transform: translateX(0); }
+        &.cv-nav-open .cv-backdrop { display: block; position: fixed; inset: 0; background: rgba(11, 32, 52, .45); z-index: 1070; }
+        .cv-burger { display: block; }
+        .cv-body { grid-template-columns: 1fr; }
+        .cv-toc { position: static; }
+        .cv-hero { flex-direction: column; align-items: flex-start; }
+        .cv-hero-r { margin-left: 0; flex-direction: row; align-items: center; }
+    }
+
+    @media (max-width: 560px) {
+        .cv-search-wrap { display: none; }
+        .cv-askjo span { display: none; }
+        .cv-content { padding: 16px 14px 80px; }
+    }
+}
+
+/* ==========================================================================
+   Dark mode
+   ========================================================================== */
+body.sd-dark #cv-root,
+body.theme-dark #cv-root {
+    --cv-ground: #0A1722;
+    --cv-surface: #0F2230;
+    --cv-ink: #EAF2F9;
+    --cv-muted: #9DB2C3;
+    --cv-faint: #6F8597;
+    --cv-line: #1E3445;
+    --cv-navy: #{$bz-navy-dm};
+    --cv-gnavy: linear-gradient(135deg, #{$bz-navy-dm-hi}, #{$bz-navy-dm-lo});
+
+    .cv-topbar { background: rgba(10, 23, 34, .92); }
+    .cv-mini, .cv-pbar { background: #1A2D3C; }
+    .cv-search { border-color: #294056; }
+    .cv-toc-dot.todo { background: var(--cv-surface); border-color: #2A4255; }
+    .cv-ic { background: #14293A; }
+    .cv-kdate { background: #14293A; }
+    .cv-btn-ghost { background: #14293A; }
+    .cv-tabs a.on { color: var(--cv-ink); }
+}
+
+/* A named block rendered as a rail card. The block supplies only its inner
+   content here -- the card, heading and dot come from this design -- so the
+   job is to stop the block's own chrome fighting it and to keep a wide table
+   from forcing the rail wider. */
+.cv-blockcard {
+    .cv-blockbody {
+        min-width: 0;
+        overflow-x: auto;
+
+        /* Blocks often ship their own card/panel wrapper. Inside a card it is
+           one border too many. */
+        > .card,
+        > .block,
+        > .box {
+            background: none;
+            border: 0;
+            box-shadow: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            font-size: .82rem;
+        }
+    }
+}

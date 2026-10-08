@@ -1,0 +1,142 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_assign/actionbar/grading/extra_filters_dropdown_body
+
+    Template for the body of the extra filters dropdown menu.
+
+    Context variables required for this template:
+    * actionurl - Form action URL
+    * id - Course module id
+    * filters - Array of filter options
+        * markingworkflow
+            * workflowfilteroptions - Array of workflow filter options
+                * key - The key of the workflow filter option
+                * name - The name of the workflow filter option
+                * active - Whether the workflow filter option is currently active
+        * markingallocation
+            * markingallocationoptions - Array of marking allocation filter options
+                * key - The key of the marking allocation filter option
+                * name - The name of the marking allocation filter option
+                * active - Whether the marking allocation filter option is currently active
+        * suspendedparticipants
+            * active - Whether the suspended participants filter is currently active
+
+    Example context (json):
+    {
+        "actionurl": "http://moodlesite/mod/assign/view.php",
+        "id": 3,
+        "action": "grading",
+        "filters": [
+            {
+                "markingworkflow": {
+                    "workflowfilteroptions": [
+                        {
+                            "key": "notmarked",
+                            "name": "Not marked",
+                            "active": true
+                        }
+                    ]
+                },
+                "markingallocation": {
+                    "markingallocationoptions": [
+                        {
+                            "key": "-1",
+                            "name": "No marker",
+                            "active": true
+                        }
+                    ]
+                },
+                "suspendedparticipants": {
+                    "active": true
+                }
+            }
+        ]
+    }
+}}
+<div class="assign-extrafilters d-flex flex-column h-100 w-100">
+    <div class="assign-extrafilters__header d-flex align-items-center">
+        {{#pix}}i/filter, core{{/pix}}
+        <span class="assign-extrafilters__title">{{#str}}extrafiltersheading, mod_assign{{/str}}</span>
+    </div>
+    <form action="{{{actionurl}}}" method="GET">
+        <input type="hidden" name="id" value="{{id}}">
+        <input type="hidden" name="action" value="{{action}}">
+        <div class="assign-extrafilters__body">
+        {{#filters}}
+            {{#markingworkflow}}
+                <div class="assign-extrafilters__field">
+                    <label class="assign-extrafilters__label" for="filter-workflow-{{uniqid}}">
+                        {{#str}}markingstate, mod_assign{{/str}}
+                    </label>
+                    <select name="workflowfilter" id="filter-workflow-{{uniqid}}" class="form-select">
+                    {{#workflowfilteroptions}}
+                        <option value="{{key}}" {{#active}}selected="selected"{{/active}}>{{name}}</option>
+                    {{/workflowfilteroptions}}
+                    </select>
+                </div>
+            {{/markingworkflow}}
+            {{#markingallocation}}
+                <div class="assign-extrafilters__field">
+                    <label class="assign-extrafilters__label" for="filter-marking-allocation-{{uniqid}}">
+                        {{#str}}marker, mod_assign{{/str}}
+                    </label>
+                    <select name="markingallocationfilter" id="filter-marking-allocation-{{uniqid}}" class="form-select">
+                    {{#markingallocationoptions}}
+                        <option value="{{key}}" {{#active}}selected="selected"{{/active}}>{{name}}</option>
+                    {{/markingallocationoptions}}
+                    </select>
+                </div>
+            {{/markingallocation}}
+            {{#filesubmission}}
+                <div class="assign-extrafilters__field">
+                    <label class="assign-extrafilters__label" for="filter-filesubmission-{{uniqid}}">
+                        {{#str}}filterfilesubmission, mod_assign{{/str}}
+                    </label>
+                    <select name="filesubmissionfilter" id="filter-filesubmission-{{uniqid}}" class="form-select">
+                    {{#filesubmissionoptions}}
+                        <option value="{{key}}" {{#active}}selected="selected"{{/active}}>{{name}}</option>
+                    {{/filesubmissionoptions}}
+                    </select>
+                </div>
+            {{/filesubmission}}
+            {{#submittedrange}}
+                <div class="assign-extrafilters__field">
+                    <label class="assign-extrafilters__label" for="filter-submittedrange-{{uniqid}}">
+                        {{#str}}filterlastmodifiedsubmission, mod_assign{{/str}}
+                    </label>
+                    <select name="submittedrangefilter" id="filter-submittedrange-{{uniqid}}" class="form-select">
+                    {{#submittedrangeoptions}}
+                        <option value="{{key}}" {{#active}}selected="selected"{{/active}}>{{name}}</option>
+                    {{/submittedrangeoptions}}
+                    </select>
+                </div>
+            {{/submittedrange}}
+            {{#suspendedparticipants}}
+                <div class="assign-extrafilters__switch">
+                    <div class="form-check form-switch m-0">
+                        <input type="hidden" name="suspendedparticipantsfilter" value="0" {{#active}}disabled{{/active}}>
+                        <input type="checkbox" role="switch" class="form-check-input" id="filter-suspended-participants-{{uniqid}}" name="suspendedparticipantsfilter" value="1" {{#active}}checked{{/active}}>
+                        <label class="form-check-label" for="filter-suspended-participants-{{uniqid}}">{{#str}}includesuspendedparticipants, mod_assign{{/str}}</label>
+                    </div>
+                </div>
+            {{/suspendedparticipants}}
+        {{/filters}}
+        </div>
+        <div class="assign-extrafilters__footer">
+            <a href="#" class="btn btn-outline-secondary btn-sm" data-action="close">{{#str}}closebuttontitle{{/str}}</a>
+            <button type="submit" class="btn btn-primary btn-sm">{{#str}}apply{{/str}}</button>
+        </div>
+    </form>
+</div>

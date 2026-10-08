@@ -1,0 +1,20 @@
+{{#children}}
+        {{^divider}}
+            {{#url}}
+                  <a href="{{{url}}}" title="{{{title}}}" {{#haschildren}}class="has-arrow w-100 d-block accordion" id="accordionAdditionalNavB-{{title}}" data-toggle="collapse" data-target="#accordionAdditionalNavC-{{title}}" aria-expanded="false" aria-controls="accordionAdditionalNav"{{/haschildren}}>{{{text}}}{{#haschildren}}<i class="icon fas fa-caret-down"></i>{{/haschildren}}</a>
+                  {{#haschildren}}
+                  <div id="accordionAdditionalNavC-{{title}}" class="sub-nav m-0 px-1 pb-2 collapse" data-parent="#accordionAdditionalNavB-{{title}}">
+                      {{> theme_baz/custom_menu }}
+                  </div>
+                  {{/haschildren}}
+            {{/url}}
+            {{^url}}
+                  {{{text}}}
+                  {{#haschildren}}
+                  <div class="sub-nav">
+                      {{> theme_baz/custom_menu }}
+                  </div>
+                  {{/haschildren}}
+            {{/url}}
+        {{/divider}}
+{{/children}}

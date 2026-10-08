@@ -1,0 +1,242 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_baz/teacher-dashboard
+
+    Bespoke teacher dashboard for faculty / TA staff audiences. Reuses the student
+    #sd-root shell (sidebar / topbar / search / theme toggle / Ask JO), so the
+    shared theme_baz/studentdashboard JS drives it too. Every link routes into an
+    existing Moodle screen — this is a summary + navigation layer only.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="sd-root" class="sd-app sd-teacher">
+
+            <div class="sd-backdrop" id="sd-backdrop"></div>
+            <aside class="sd-side" id="sd-side">
+                <a class="sd-brand" href="{{{ config.wwwroot }}}/my/">
+                    {{! This sidebar is navy, like the student one, so prefer the sidebar
+                        logo a site supplies for exactly that background. customlogo also
+                        feeds the light classic topbar, where a white mark would vanish. }}
+                    {{#customsidebarlogo}}<img src="{{customsidebarlogo}}" alt="{{sitename}}">{{/customsidebarlogo}}
+                    {{^customsidebarlogo}}
+                        {{#customlogo}}<img src="{{customlogo}}" alt="{{sitename}}">{{/customlogo}}
+                        {{^customlogo}}<span class="sd-brand-txt">{{{ sitename }}}</span>{{/customlogo}}
+                    {{/customsidebarlogo}}
+                </a>
+                <span class="td-rolebadge">{{#str}}td_teacher, theme_baz{{/str}}</span>
+
+                <nav class="sd-nav">
+                    {{> theme_baz/homenav }}
+                </nav>
+            {{> theme_baz/sidebar-support }}
+            </aside>
+
+            <div class="sd-main">
+                <header class="sd-topbar">
+                    <div class="sd-topbar-inner">
+                        <div class="sd-tb-left">
+                            <button type="button" class="sd-burger" id="sd-burger" aria-label="{{#str}}sd_menu, theme_baz{{/str}}" aria-expanded="false" aria-controls="sd-side">
+                                <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            </button>
+                            <span class="sd-tb-title">{{#str}}sd_nav_dashboard, theme_baz{{/str}}</span>
+                            <span class="sd-tb-chip">{{#str}}td_teacher, theme_baz{{/str}}</span>
+                        </div>
+                        <div class="sd-search-wrap" data-suggest="{{searchitemsjson}}">
+                            <form class="sd-search" action="{{{ config.wwwroot }}}/course/search.php" method="get" role="search">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                                <input type="text" name="search" id="sd-search-input" autocomplete="off" placeholder="{{#str}}td_searchph, theme_baz{{/str}}" aria-label="{{#str}}search, core{{/str}}">
+                                <span class="sd-search-kbd">/</span>
+                            </form>
+                            <div class="sd-suggest" id="sd-suggest" hidden></div>
+                        </div>
+                        <div class="sd-top-actions">
+                            {{#hasaskjo}}<button type="button" class="sd-askjo" id="sd-askjo-btn">
+                                <svg viewBox="0 0 24 24" fill="var(--bz-accent)"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><circle cx="18.5" cy="17.5" r="1.6"/></svg>
+                                {{#str}}sd_askjo, theme_baz{{/str}}</button>{{/hasaskjo}}
+                            <button type="button" class="sd-iconbtn" id="sd-themebtn" title="{{#str}}sd_toggletheme, theme_baz{{/str}}">
+                                <svg id="sd-themeicon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+                            </button>
+                            <div class="sd-navbar-plugin">{{{ output.navbar_plugin_output }}}</div>
+                            <div class="sd-usermenu">{{{ output.user_menu }}}</div>
+                        </div>
+                    </div>
+                </header>
+
+                {{#hasaskjo}}
+                <div class="sd-askjo-panel" id="sd-askjo-panel" hidden>
+                    <div class="sd-askjo-head">
+                        <span>{{#str}}sd_askjo, theme_baz{{/str}}</span>
+                        <button type="button" class="sd-askjo-close" id="sd-askjo-close" aria-label="Close">&times;</button>
+                    </div>
+                    <div class="block_openai_chat" data-instance-id="{{askjo.blockid}}">
+                        <div class="sd-askjo-body">{{{ askjo.log }}}</div>
+                        <div class="sd-askjo-control">{{{ askjo.control }}}</div>
+                    </div>
+                </div>
+                {{/hasaskjo}}
+
+                <main class="sd-content">
+                    {{{weatherwidget}}}
+
+                    {{#hasbanner}}
+                    <div class="sd-banner-wrap{{#bannermulti}} sd-banner-carousel{{/bannermulti}}" data-delay="{{bannerdelay}}">
+                        {{#banners}}
+                        {{#haslink}}<a class="sd-banner" href="{{link}}" target="_blank" rel="noopener"><img src="{{img}}" alt="{{alt}}"></a>{{/haslink}}
+                        {{^haslink}}<div class="sd-banner"><img src="{{img}}" alt="{{alt}}"></div>{{/haslink}}
+                        {{/banners}}
+                    </div>
+                    {{/hasbanner}}
+
+                    <!-- HERO -->
+                    <section class="sd-hero td-hero">
+                        <div class="sd-hero-l">
+                            <div class="sd-glow"></div>
+                            <div class="sd-eyebrow">{{datelabel}}</div>
+                            <h1>{{greetingtime}}, {{firstname}} &#128075;</h1>
+                            <p class="sd-sub">{{#str}}td_herosub, theme_baz, {"grading": "{{kpigrading}}", "classes": "{{liveclasscount}}", "courses": "{{kpicourses}}"}{{/str}}</p>
+                            <div class="sd-qa">
+                                <a class="sd-qa-primary" href="{{gradingurl}}"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg> {{#str}}td_gradenow, theme_baz{{/str}}</a>
+                                <a href="{{messagesurl}}"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-8.5 8.5 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/></svg> {{#str}}td_message, theme_baz{{/str}}</a>
+                            </div>
+                        </div>
+                        <div class="sd-hero-r td-engage">
+                            <div class="td-engage-h"><span>{{#str}}td_thisweek, theme_baz{{/str}}</span></div>
+                            <div class="td-engage-grid">
+                                <div class="td-mini"><div class="k">{{engage.active}}</div><div class="l">{{#str}}td_activelearners, theme_baz{{/str}}</div></div>
+                                <div class="td-mini"><div class="k">{{engage.submissions}}</div><div class="l">{{#str}}td_submissions, theme_baz{{/str}}</div></div>
+                            </div>
+                            {{#engage.hasspark}}
+                            <div class="td-spark">
+                                <div class="td-spark-l"><span>{{#str}}td_submissions, theme_baz{{/str}}</span><span>{{#str}}sd_thisweek, theme_baz{{/str}}</span></div>
+                                <div class="td-bars">{{#engage.sparkbars}}<i style="height:{{height}}%"{{#dim}} class="dim"{{/dim}}></i>{{/engage.sparkbars}}</div>
+                            </div>
+                            {{/engage.hasspark}}
+                        </div>
+                    </section>
+
+                    <!-- KPI STRIP -->
+                    <section class="td-kpis">
+                        <div class="td-kpi"><span class="ic b"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14h16V5"/><path d="M9 11h6"/></svg></span><div><div class="k">{{kpicourses}}</div><div class="l">{{#str}}td_kpicourses, theme_baz{{/str}}</div></div></div>
+                        <div class="td-kpi"><span class="ic g"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/></svg></span><div><div class="k">{{kpistudents}}</div><div class="l">{{#str}}td_kpistudents, theme_baz{{/str}}</div></div></div>
+                        <div class="td-kpi"><span class="ic r"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></span><div><div class="k">{{kpigrading}}</div><div class="l">{{#str}}td_kpigrading, theme_baz{{/str}}</div></div></div>
+                        <div class="td-kpi"><span class="ic n"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg></span><div><div class="k">{{#hascompletion}}{{kpicompletion}}%{{/hascompletion}}{{^hascompletion}}&mdash;{{/hascompletion}}</div><div class="l">{{#str}}td_kpicompletion, theme_baz{{/str}}</div></div></div>
+                    </section>
+
+                    <!-- TWO COLUMNS -->
+                    <section class="td-cols">
+                        <div class="td-card">
+                            <div class="td-card-h"><h2>{{#str}}td_needsattention, theme_baz{{/str}}</h2></div>
+                            <div class="td-card-b">
+                                {{#hasqueue}}
+                                {{#queue}}
+                                <a class="td-row" href="{{url}}">
+                                    <span class="td-rc{{#urgent}} urgent{{/urgent}}"><svg viewBox="0 0 24 24"><path d="M14 3v5h5M8 3h6l5 5v11a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/></svg></span>
+                                    <span class="td-rt"><span class="t">{{title}}</span><span class="s">{{shortname}} &middot; {{coursename}}</span></span>
+                                    <span class="td-badge{{#urgent}} urgent{{/urgent}}">{{#str}}td_tograde, theme_baz, {{count}}{{/str}}</span>
+                                    <span class="td-go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                                </a>
+                                {{/queue}}
+                                {{/hasqueue}}
+                                {{^hasqueue}}
+                                <div class="td-empty"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> {{#str}}td_nogradingpending, theme_baz{{/str}}</div>
+                                {{/hasqueue}}
+                            </div>
+                        </div>
+
+                        <div class="td-card">
+                            <div class="td-card-h"><h2>{{#str}}td_livetoday, theme_baz{{/str}}</h2><a class="td-see" href="{{calendarurl}}">{{#str}}sd_nav_calendar, theme_baz{{/str}} &rarr;</a></div>
+                            <div class="td-card-b">
+                                {{#hasliveclasses}}
+                                {{#liveclasses}}
+                                <div class="td-live">
+                                    <div class="td-time"><div class="h">{{time}}</div><div class="m">{{ampm}}</div></div>
+                                    <div class="td-linfo"><div class="t">{{name}}</div><div class="s">{{meta}}</div></div>
+                                    {{#hasurl}}<a class="td-host" href="{{url}}"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="12" height="12" rx="2"/><path d="m15 10 6-3v10l-6-3z"/></svg> {{#str}}td_host, theme_baz{{/str}}</a>{{/hasurl}}
+                                </div>
+                                {{/liveclasses}}
+                                {{/hasliveclasses}}
+                                {{^hasliveclasses}}
+                                <div class="td-empty"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg> {{#str}}td_nolivetoday, theme_baz{{/str}}</div>
+                                {{/hasliveclasses}}
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- YOUR COURSES -->
+                    {{#hascourses}}
+                    <section>
+                        <div class="td-sec-h"><h2>{{#str}}td_yourcourses, theme_baz{{/str}}</h2><a class="td-see" href="{{coursesurl}}">{{#str}}shell_nav_mycourses, theme_baz{{/str}} &rarr;</a></div>
+                        <div class="td-courses">
+                            {{#courses}}
+                            <div class="td-cc">
+                                <div class="td-cov" style="background:linear-gradient(135deg,{{cov1}},{{cov2}})"><span class="code">{{code}}</span></div>
+                                <div class="td-cb">
+                                    <div class="nm">{{name}}</div>
+                                    <div class="st"><span><b>{{students}}</b> {{#str}}td_students, theme_baz{{/str}}</span>{{#hastograde}}<span><b>{{tograde}}</b> {{#str}}td_tocheck, theme_baz{{/str}}</span>{{/hastograde}}</div>
+                                    {{#hasprog}}<div class="td-prog"><i style="width:{{pct}}%"></i></div><div class="st sub">{{#str}}td_pctcomplete, theme_baz, {{pct}}{{/str}}</div>{{/hasprog}}
+                                    <div class="td-acts">
+                                        <a class="g" href="{{gradeurl}}">{{#str}}td_grade, theme_baz{{/str}}</a>
+                                        <a href="{{contenturl}}">{{#str}}td_content, theme_baz{{/str}}</a>
+                                        <a href="{{peopleurl}}">{{#str}}td_people, theme_baz{{/str}}</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/courses}}
+                        </div>
+                    </section>
+                    {{/hascourses}}
+                    {{^hascourses}}
+                    <section>
+                        <div class="td-sec-h"><h2>{{#str}}td_yourcourses, theme_baz{{/str}}</h2></div>
+                        <div class="td-empty"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M4 5l2-2h12l2 2"/><path d="M9 11h6M9 15h4"/></svg> {{#str}}td_nocourses, theme_baz{{/str}}</div>
+                    </section>
+                    {{/hascourses}}
+
+                    {{! Required Moodle main-content placeholder (empty on this bespoke
+                        dashboard, but every layout MUST output it or core throws a
+                        coding exception). }}
+                    <div id="region-main-box" class="sd-region-main">
+                        <section id="region-main" aria-label="{{#str}}content{{/str}}">
+                            {{{ output.main_content }}}
+                        </section>
+                    </div>
+
+                </main>
+            </div>
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+
+</body>
+
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/studentdashboard'], function(Loader, StudentDashboard) {
+        StudentDashboard.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

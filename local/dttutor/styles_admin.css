@@ -1,0 +1,277 @@
+/**
+ * Admin settings styles for Tutor-IA position configurator
+ *
+ * @package    local_dttutor
+ * @copyright  2025 Datacurso
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+.position-configurator {
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    max-width: 900px;
+}
+
+.position-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.position-control-left {
+    padding-right: 20px;
+    border-right: 1px solid #dee2e6;
+}
+
+.position-control-right {
+    padding-left: 20px;
+}
+
+.position-preset-group {
+    margin-bottom: 20px;
+}
+
+.position-preset-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.drawer-side-group {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.drawer-side-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.drawer-side-group select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.preset-option {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin: 5px 0;
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preset-option:hover {
+    border-color: #0f6cbf;
+    background: #f8f9fa;
+}
+
+.preset-option.selected {
+    border-color: #0066cc;
+    background: #e3f2fd;
+}
+
+.preset-option input[type="radio"] {
+    margin-right: 10px;
+}
+
+.custom-coords {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    display: none;
+}
+
+.custom-coords.active {
+    display: block;
+}
+
+.coord-input-group {
+    margin-bottom: 10px;
+}
+
+.coord-input-group label {
+    display: inline-block;
+    width: 120px;
+    font-weight: 600;
+}
+
+.coord-input-group input {
+    width: 150px;
+    padding: 5px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.coord-help {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+.reference-edge-group {
+    margin-top: 15px;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.reference-edge-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.reference-edge-options {
+    display: flex;
+    gap: 15px;
+}
+
+.reference-edge-options label {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+    margin-bottom: 0;
+}
+
+.reference-edge-options input[type="radio"] {
+    margin-right: 5px;
+}
+
+.position-preview {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.preview-label {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.preview-avatar {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    cursor: move;
+    user-select: none;
+}
+
+.preview-avatar:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
+.preview-avatar.dragging {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    opacity: 0.9;
+    cursor: grabbing;
+    z-index: 1000;
+}
+
+.preview-coordinates {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.preview-grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+}
+
+/* Avatar selector styles */
+.avatar-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+    max-width: 800px;
+}
+
+.avatar-option {
+    position: relative;
+    cursor: pointer;
+    border: 3px solid transparent;
+    border-radius: 8px;
+    padding: 5px;
+    transition: all 0.2s ease;
+    background: #f8f9fa;
+}
+
+.avatar-option:hover {
+    border-color: #0f6cbf;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.avatar-option.selected {
+    border-color: #0066cc;
+    background: #e3f2fd;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+}
+
+.avatar-option img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+}
+
+.avatar-option-label {
+    text-align: center;
+    font-size: 12px;
+    margin-top: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+.avatar-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.avatar-option.selected .avatar-option-label {
+    color: #0066cc;
+}

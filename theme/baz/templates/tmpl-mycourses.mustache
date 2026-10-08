@@ -1,0 +1,205 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_baz/tmpl-mycourses
+
+    Dedicated layout for the My Courses page: columns2 structure plus a
+    greeting/stats header and the mycoursesblock1/2 admin HTML areas.
+
+    Context variables required for this template:
+    * sitename - The name of the site
+    * output - The core renderer for the page
+    * bodyattributes - attributes for the body tag as a string of html attributes
+    * sidepreblocks - HTML for the blocks
+    * hasblocks - true if there are blocks on this page
+    * navdraweropen - true if the nav drawer should be open on page load
+    * regionmainsettingsmenu - HTML for the region main settings menu
+    * hasregionmainsettingsmenu - There is a region main settings menu on this page.
+    * userfirstname - First name of the current user for the greeting
+
+    Example context (json):
+    {
+        "sitename": "Moodle",
+        "output": {
+            "doctype": "<!DOCTYPE html>",
+            "page_title": "Test page",
+            "favicon": "favicon.ico",
+            "main_content": "<h1>Headings make html validators happier</h1>"
+         },
+        "bodyattributes":"",
+        "sidepreblocks": "<h2>Blocks html goes here</h2>",
+        "hasblocks":true,
+        "navdraweropen":true,
+        "regionmainsettingsmenu": "",
+        "hasregionmainsettingsmenu": false,
+        "userfirstname": "Aisha"
+    }
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    {{#hasblocks}}
+        {{< theme_baz/drawer }}
+            {{$id}}baz-drawers-blocks{{/id}}
+            {{$drawerclasses}}drawer drawer-right{{/drawerclasses}}
+            {{$drawercontent}}
+                <section class="d-print-none" aria-label="{{#str}}blocks{{/str}}">
+                    {{{ addblockbutton }}}
+                    {{{ sidepreblocks }}}
+                </section>
+            {{/drawercontent}}
+            {{$drawerpreferencename}}drawer-open-block{{/drawerpreferencename}}
+            {{$forceopen}}{{#forceblockdraweropen}}1{{/forceblockdraweropen}}{{/forceopen}}
+            {{$drawerstate}}show-drawer-right{{/drawerstate}}
+            {{$tooltipplacement}}left{{/tooltipplacement}}
+            {{$drawercloseonresize}}1{{/drawercloseonresize}}
+            {{$closebuttontext}}{{#str}}closeblockdrawer, core{{/str}}{{/closebuttontext}}
+        {{/ theme_baz/drawer}}
+    {{/hasblocks}}
+
+    <div id="page-wrapper" class="d-print-block {{#output.courseheadermenu}}rui--course-with-nav{{/output.courseheadermenu}} {{^output.courseheadermenu}}rui--course-witout-nav{{/output.courseheadermenu}}">
+
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="page" data-region="mainpage" data-usertour="scroller" class="drawers {{#topbarcustomhtml}}topbar--ext{{/topbarcustomhtml}} {{#blockdraweropen}}show-hidden-drawer show-drawer-right{{/blockdraweropen}} {{#blockdraweropen}}show-drawer-right{{/blockdraweropen}}  drag-container">
+
+            <div class="drawer-toggles d-flex">
+                {{#hasblocks}}
+                    <div id="sidepreopen-control" class="drawer-toggler drawer-right-toggle ml-auto d-print-none">
+                        <button
+                            class="drawertoggle btn-close-drawer--right"
+                            data-toggler="drawers"
+                            data-action="toggle"
+                            data-target="baz-drawers-blocks"
+                            data-toggle="tooltip"
+                            data-placement="right"
+                            title="{{#str}}opendrawerblocks, core{{/str}}"
+                        >
+                            <span class="sr-only">{{#str}}opendrawerblocks, core{{/str}}</span>
+                            <span class="dir-rtl-hide">
+                                <svg width="20" height="20" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;">
+                                    <g transform="matrix(1,0,0,1,-2,0)">
+                                        <path d="M18.333,15L18.333,5C18.333,3.629 17.205,2.5 15.833,2.5L14.167,2.5C12.795,2.5 11.667,3.629 11.667,5L11.667,15C11.667,16.371 12.795,17.5 14.167,17.5L15.833,17.5C17.205,17.5 18.333,16.371 18.333,15Z" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:1.67px;" />
+                                    </g>
+                                    <g transform="matrix(1,0,0,1,-2,0)">
+                                        <path d="M11.667,10L5,10M5,10L7.5,7.5M5,10L7.5,12.5" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:1.25px;stroke-linecap:round;stroke-linejoin:round;" />
+                                    </g>
+                                </svg>
+                            </span>
+                            <span class="dir-ltr-hide">
+                                <svg width="20" height="20" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;">
+                                    <g transform="matrix(1,0,0,1,-2,0)">
+                                        <path d="M18.333,15L18.333,5C18.333,3.629 17.205,2.5 15.833,2.5L14.167,2.5C12.795,2.5 11.667,3.629 11.667,5L11.667,15C11.667,16.371 12.795,17.5 14.167,17.5L15.833,17.5C17.205,17.5 18.333,16.371 18.333,15Z" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:1.67px;" />
+                                    </g>
+                                    <g transform="matrix(1,0,0,1,-2,0)">
+                                        <path d="M11.667,10L5,10M5,10L7.5,7.5M5,10L7.5,12.5" style="fill:none;fill-rule:nonzero;stroke:currentColor;stroke-width:1.25px;stroke-linecap:round;stroke-linejoin:round;" />
+                                    </g>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                {{/hasblocks}}
+            </div>
+
+            {{> theme_baz/navbar }}
+            {{> theme_baz/navbar-secondary }}
+
+            <div id="topofscroll" class="main-inner">
+
+                <div id="page-content" class="page-course-content">
+
+                    <div class="rui-breadcrumbs-wrapper wrapper-xl mb-2">{{{ output.breadcrumbs }}}</div>
+
+                    <div class="wrapper-xl">
+                        {{#secondarymoremenu}}
+                            <div class="secondary-navigation d-print-none">
+                                {{> core/moremenu}}
+                            </div>
+                        {{/secondarymoremenu}}
+
+                        {{#hasmycoursesheader}}
+                            {{> theme_baz/mycourses-header }}
+                        {{/hasmycoursesheader}}
+
+                        {{#mycoursesblock1}}
+                            <div class="rui-mycourses-customblock rui-mycourses-customblock--top mb-4">
+                                {{{ mycoursesblock1 }}}
+                            </div>
+                        {{/mycoursesblock1}}
+                    </div>
+
+                    <div id="region-main-box" class="region-main-wrapper mt-4">
+                        <div class="wrapper-xl mt-0 mb-2">
+                            {{{ output.simple_header }}}
+                        </div>
+
+                        {{#hasregionmainsettingsmenu}}
+                            <div id="region-main-settings-menu" class="rui-blocks-area">
+                                <div> {{{ output.region_main_settings_menu }}} </div>
+                            </div>
+                        {{/hasregionmainsettingsmenu}}
+
+                        <section id="region-main" class="has-sidecourseblocks wrapper-has-blocks" aria-label="{{#str}}content{{/str}}">
+                            <div>
+                                <div>
+                                    {{#hasregionmainsettingsmenu}}
+                                        <div class="region_main_settings_menu_proxy"></div>
+                                    {{/hasregionmainsettingsmenu}}
+                                    {{{ output.course_content_header }}}
+
+                                    {{#headercontent}}
+                                        {{> core/activity_header }}
+                                    {{/headercontent}}
+                                    {{#overflow}}
+                                        {{> core/url_select}}
+                                    {{/overflow}}
+
+                                    {{{ output.main_content }}}
+                                    {{{ output.course_content_footer }}}
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+
+                    {{#mycoursesblock2}}
+                        <div class="wrapper-xl">
+                            <div class="rui-mycourses-customblock rui-mycourses-customblock--bottom mt-4">
+                                {{{ mycoursesblock2 }}}
+                            </div>
+                        </div>
+                    {{/mycoursesblock2}}
+                </div>
+            </div>
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{> theme_baz/footer }}
+    </div>
+
+</body>
+
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/drawer'], function(Loader, Drawer) {
+    Drawer.init();
+    M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

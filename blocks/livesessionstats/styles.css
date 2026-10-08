@@ -1,0 +1,407 @@
+/* Live Session Stats — student attendance card and its detail modal.
+ *
+ * Colours, radii and type come from the host theme's design tokens (--sd-*)
+ * with light-mode fallbacks, so this block reads as part of the surrounding
+ * product on a themed site and still renders sensibly on plain Boost.
+ *
+ * The card is built for a narrow sidebar rail: a progress ring carries the
+ * headline number, with the three counts as a legend underneath, rather than
+ * three tiles competing for width.
+ */
+
+.lss-block {
+    --lss-good: var(--sd-green, #1FA37A);
+    --lss-warn: #C98A00;
+    --lss-danger: var(--sd-rose, #E5556E);
+    --lss-line: var(--sd-line, #E5ECF3);
+    --lss-muted: var(--sd-muted, #5C7184);
+    --lss-text: var(--sd-text, #0B2034);
+
+    font-size: .875rem;
+    color: var(--lss-text);
+}
+
+/* ---- Ring ---- */
+.lss-hero {
+    position: relative;
+    display: grid;
+    place-items: center;
+    margin: 2px auto 14px;
+    width: 132px;
+    height: 132px;
+}
+
+.lss-ring {
+    width: 132px;
+    height: 132px;
+    transform: rotate(-90deg);
+}
+
+.lss-ring circle {
+    fill: none;
+    stroke-width: 7;
+    stroke-linecap: round;
+}
+
+.lss-ring-track {
+    stroke: var(--lss-line);
+}
+
+.lss-ring-fill {
+    transition: stroke-dashoffset 1s cubic-bezier(.4, 0, .2, 1);
+}
+
+.lss-ring--good .lss-ring-fill { stroke: var(--lss-good); }
+.lss-ring--warn .lss-ring-fill { stroke: var(--lss-warn); }
+.lss-ring--danger .lss-ring-fill { stroke: var(--lss-danger); }
+
+.lss-hero-txt {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+.lss-hero-pct {
+    font-size: 1.9rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -.03em;
+    font-variant-numeric: tabular-nums;
+}
+
+.lss-hero-pct i {
+    font-style: normal;
+    font-size: .95rem;
+    font-weight: 700;
+    margin-left: 1px;
+}
+
+.lss-hero-lbl {
+    font-size: .62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--lss-muted);
+}
+
+/* ---- Legend ---- */
+.lss-legend {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding-top: 12px;
+    border-top: 1px solid var(--lss-line);
+}
+
+.lss-leg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    min-width: 0;
+}
+
+.lss-leg-n {
+    font-size: 1.15rem;
+    font-weight: 800;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.lss-leg-l {
+    font-size: .6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--lss-muted);
+    white-space: nowrap;
+}
+
+.lss-leg--attended .lss-leg-n { color: var(--lss-good); }
+.lss-leg--missed .lss-leg-n { color: var(--lss-danger); }
+
+/* ---- Footer action ---- */
+.lss-viewmore {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 12px;
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--sd-navy, #022758);
+    text-decoration: none;
+}
+
+.lss-viewmore svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform .15s ease;
+}
+
+.lss-viewmore:hover,
+.lss-viewmore:focus {
+    color: var(--sd-navy, #022758);
+    text-decoration: underline;
+}
+
+.lss-viewmore:hover svg {
+    transform: translateX(2px);
+}
+
+/* ---- Empty state ---- */
+.lss-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 18px 8px;
+    color: var(--lss-muted);
+    font-size: .82rem;
+    text-align: center;
+}
+
+.lss-empty svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    opacity: .6;
+}
+
+/* ===================================================================
+   Detail modal — opened by "View more".
+   Scoped under .lsd-wrap so it cannot leak into other modals.
+   =================================================================== */
+
+.lsd-wrap {
+    --lsd-good: var(--sd-green, #1FA37A);
+    --lsd-warn: #C98A00;
+    --lsd-danger: var(--sd-rose, #E5556E);
+    --lsd-line: var(--sd-line, #E5ECF3);
+    --lsd-muted: var(--sd-muted, #5C7184);
+    --lsd-ground: var(--sd-ground, #F4F7FB);
+
+    color: var(--sd-text, #0B2034);
+}
+
+.lsd-scroll {
+    max-height: 60vh;
+    overflow: auto;
+    border: 1px solid var(--lsd-line);
+    border-radius: var(--sd-r, 18px);
+}
+
+.lsd-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.lsd-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--lsd-ground);
+    color: var(--lsd-muted);
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    text-align: left;
+    padding: 11px 14px;
+    white-space: nowrap;
+}
+
+.lsd-table tbody td {
+    padding: 12px 14px;
+    border-top: 1px solid var(--lsd-line);
+    vertical-align: middle;
+}
+
+.lsd-table tbody tr:hover {
+    background: var(--lsd-ground);
+}
+
+.lsd-name {
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.lsd-date {
+    font-size: .74rem;
+    color: var(--lsd-muted);
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+}
+
+.lsd-num {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.lsd-dash {
+    color: var(--lsd-muted);
+}
+
+/* Percentage as a figure plus a slim bar, so a column of numbers is scannable. */
+.lsd-pctwrap {
+    min-width: 92px;
+}
+
+.lsd-pctval {
+    font-size: .8rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.lsd-pctbar {
+    height: 5px;
+    border-radius: 3px;
+    background: var(--lsd-line);
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.lsd-pctbar i {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background: var(--lsd-good);
+}
+
+.lsd-pctbar--warn i { background: var(--lsd-warn); }
+.lsd-pctbar--danger i { background: var(--lsd-danger); }
+
+/* ---- Status pills ---- */
+.lsd-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.lsd-pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.lsd-pill--live,
+.lsd-pill--summary {
+    background: rgba(31, 163, 122, .12);
+    color: #14795A;
+}
+
+.lsd-pill--pending {
+    background: rgba(201, 138, 0, .14);
+    color: #8A5F00;
+}
+
+.lsd-pill--missed,
+.lsd-pill--rejected {
+    background: rgba(229, 85, 110, .12);
+    color: #B23349;
+}
+
+/* ---- Watch recording ---- */
+.lsd-watch {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: 10px;
+    background: var(--sd-navy, #022758);
+    color: #fff;
+    font-size: .74rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.lsd-watch:hover,
+.lsd-watch:focus {
+    color: #fff;
+    text-decoration: none;
+    opacity: .92;
+}
+
+.lsd-watch svg {
+    width: 13px;
+    height: 13px;
+    fill: currentColor;
+}
+
+/* ---- Pagination ---- */
+.lsd-pager {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 14px;
+}
+
+.lsd-page {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 10px;
+    border: 1px solid var(--lsd-line);
+    background: transparent;
+    color: var(--sd-text, #0B2034);
+    font-size: .8rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+    transition: background .15s ease, border-color .15s ease;
+}
+
+.lsd-page:hover {
+    background: var(--lsd-ground);
+}
+
+.lsd-page[aria-current="page"] {
+    background: var(--sd-navy, #022758);
+    border-color: var(--sd-navy, #022758);
+    color: #fff;
+}
+
+/* ---- Summary strip above the table ---- */
+.lsd-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    align-items: baseline;
+    margin-bottom: 12px;
+    font-size: .8rem;
+    color: var(--lsd-muted);
+}
+
+.lsd-summary b {
+    color: var(--sd-text, #0B2034);
+    font-size: .92rem;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---- Empty ---- */
+.lsd-none {
+    padding: 34px 16px;
+    text-align: center;
+    color: var(--lsd-muted);
+}

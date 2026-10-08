@@ -1,0 +1,44 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ludilearn/filename
+
+    Example context (json):
+    {}
+}}
+
+<div id="ludilearn-score-cm" class="cm-score {{#cm.parameters.restricted }}restricted{{/cm.parameters.restricted }}">
+
+    {{#parameters.gamified }}
+        <img class="ludilearn-img ludilearn-img-bag img-responsive d-block mx-auto" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/score/bag.svg" alt="Image score chest">
+        {{#parameters.bonuscompletion}}
+        <div class="bonuscompletion bonuscompletion-cm">
+            <span class="bonuscompletion-value" data-for="ludilearn-cm-bonuscompletion" data-id="{{id}}">+ {{ parameters.bonuscompletion }}</span>
+            <span class="bonuscompletion-str">{{#str}} settings:bonuscompletion, format_ludilearn {{/str}}</span>
+        </div>
+        {{/parameters.bonuscompletion}}
+        {{^parameters.noscore}}
+        <p class="text-center scoretext">
+            <span class="playerscore" data-for="ludilearn-cm-score">{{ cm.parameters.score }}</span> / <span data-for="ludilearn-cm-score">{{ cm.parameters.maxscore }}</span> pts
+        </p>
+        {{/parameters.noscore}}
+    {{/parameters.gamified }}
+    {{^parameters.gamified }}
+        <img class="ludilearn-img img-responsive d-block mx-auto" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/none.svg" alt="Image no score">
+    {{/parameters.gamified }}
+</div>
+{{> format_ludilearn/components/cm }}

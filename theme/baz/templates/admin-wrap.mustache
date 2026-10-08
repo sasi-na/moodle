@@ -1,0 +1,195 @@
+{{!
+    @template theme_baz/admin-wrap
+
+    Bespoke shell for administration pages. The page's own content is rendered by
+    core into main_content and only restyled from SCSS, so every setting, filter,
+    table, form and script on the wrapped page is preserved.
+
+    Reuses the #sd-root shell (and its --sd-* tokens, which are per-tenant) so the
+    admin pages match the already-approved admin dashboard.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="sd-root" class="sd-app sd-admin sd-adminpage">
+
+            <aside class="sd-side" id="sd-side">
+                <a class="sd-brand" href="{{dashboardurl}}">
+                    {{! This sidebar is navy, like the student one, so prefer the sidebar
+                        logo a site supplies for exactly that background. customlogo also
+                        feeds the light classic topbar, where a white mark would vanish. }}
+                    {{#customsidebarlogo}}<img src="{{customsidebarlogo}}" alt="{{sitename}}">{{/customsidebarlogo}}
+                    {{^customsidebarlogo}}
+                        {{#customlogo}}<img src="{{customlogo}}" alt="{{sitename}}">{{/customlogo}}
+                        {{^customlogo}}<span class="sd-brand-txt">{{{ sitename }}}</span>{{/customlogo}}
+                    {{/customsidebarlogo}}
+                </a>
+                {{#incourse}}<span class="ad-rolebadge aw-coursebadge">{{#str}}course{{/str}}</span>{{/incourse}}
+                {{^incourse}}{{#rolebadge}}<span class="ad-rolebadge">{{rolebadge}}</span>{{/rolebadge}}{{/incourse}}
+
+                <nav class="sd-nav aw-nav" aria-label="{{#str}}administrationsite{{/str}}">
+                    {{> theme_baz/homenav }}
+
+                    {{#incourse}}
+                    <div class="aw-nav-sep"></div>
+                    <div class="aw-coursename" title="{{coursename}}">{{coursename}}</div>
+                    {{/incourse}}
+
+                    {{#hassections}}
+                    {{^incourse}}<div class="aw-nav-sep"></div>
+                    <div class="aw-nav-heading">{{sectionslabel}}</div>{{/incourse}}
+                    {{#sections}}
+                    <a href="{{url}}"{{#active}} class="on" aria-current="page"{{/active}}>
+                        {{! Staff navs carry raw SVG path data; the admin and course navs flag an icon. }}
+                        {{#iconpath}}<svg viewBox="0 0 24 24">{{{iconpath}}}</svg>{{/iconpath}}
+                        {{#icon_users}}<svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M16 3.5a3 3 0 0 1 0 5.8M21 20a5.5 5.5 0 0 0-4-5.3"/></svg>{{/icon_users}}
+                        {{#icon_courses}}<svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M4 5l2-2h12l2 2"/><path d="M9 11h6M9 15h4"/></svg>{{/icon_courses}}
+                        {{#icon_calendar}}<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>{{/icon_calendar}}
+                        {{#icon_grades}}<svg viewBox="0 0 24 24"><path d="M3 17l5-5 4 3 4-6 5 4"/><path d="M3 21h18"/></svg>{{/icon_grades}}
+                        {{#icon_reports}}<svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>{{/icon_reports}}
+                        {{#icon_plugins}}<svg viewBox="0 0 24 24"><path d="M10 3v4H7a2 2 0 0 0-2 2v3h2.5a2 2 0 1 1 0 4H5v3a2 2 0 0 0 2 2h3v-2.5a2 2 0 1 1 4 0V21h3a2 2 0 0 0 2-2v-3h-2.5a2 2 0 1 1 0-4H19V9a2 2 0 0 0-2-2h-3V3z"/></svg>{{/icon_plugins}}
+                        {{#icon_security}}<svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/><path d="M9 12l2 2 4-4"/></svg>{{/icon_security}}
+                        {{#icon_appearance}}<svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.7 0 2-1.2 2-2s-.6-2 1-2h2a4 4 0 0 0 4-4 9 9 0 0 0-9-10z"/><circle cx="8.5" cy="10.5" r="1.2" fill="currentColor" stroke="none"/><circle cx="12" cy="7.5" r="1.2" fill="currentColor" stroke="none"/></svg>{{/icon_appearance}}
+                        {{#icon_server}}<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01"/></svg>{{/icon_server}}
+                        {{#icon_development}}<svg viewBox="0 0 24 24"><path d="M9 8l-4 4 4 4M15 8l4 4-4 4"/></svg>{{/icon_development}}
+                        <span>{{label}}</span></a>
+                    {{/sections}}
+                    {{/hassections}}
+
+                    {{! Everything else this page's own navigation reaches. The curated
+                        list above is eight items; a course page offers 48 and an
+                        activity page 13, so the rest is derived rather than hand-kept.
+                        <details> gives collapsible groups with no JavaScript. }}
+                    {{#haspagenav}}
+                    <div class="aw-nav-more">
+                        <div class="aw-nav-heading">{{#str}}aw_nav_more, theme_baz{{/str}}</div>
+                        {{#pagenav}}
+                        {{#haschildren}}
+                        <details class="aw-navgroup"{{#open}} open{{/open}}>
+                            <summary>
+                                <span>{{label}}</span>
+                                <svg class="aw-navchev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+                            </summary>
+                            {{#haslink}}
+                            <a href="{{url}}" class="aw-navsub aw-navsub-self">{{label}}</a>
+                            {{/haslink}}
+                            {{#children}}
+                            <a href="{{url}}" class="aw-navsub"{{#active}} aria-current="page"{{/active}}>{{label}}</a>
+                            {{/children}}
+                        </details>
+                        {{/haschildren}}
+                        {{^haschildren}}
+                        <a href="{{url}}" class="aw-navflat"{{#active}} aria-current="page"{{/active}}>{{label}}</a>
+                        {{/haschildren}}
+                        {{/pagenav}}
+                    </div>
+                    {{/haspagenav}}
+                </nav>
+            {{> theme_baz/sidebar-support }}
+            </aside>
+
+            <div class="sd-main">
+                <header class="sd-topbar">
+                    <div class="sd-topbar-inner">
+                        <div class="sd-tb-left">
+                            <button type="button" class="sd-burger" id="sd-burger" aria-label="{{#str}}sd_menu, theme_baz{{/str}}" aria-expanded="false" aria-controls="sd-side">
+                                <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            </button>
+                            <nav class="aw-crumb" aria-label="{{#str}}breadcrumb, access{{/str}}">
+                                {{#incourse}}<a href="{{courseurl}}">{{coursename}}</a>{{/incourse}}
+                                {{^incourse}}<a href="{{adminhomeurl}}">{{awroot}}</a>{{/incourse}}
+                                {{#crumbs}}
+                                <span class="sep" aria-hidden="true">/</span>
+                                {{#haslink}}<a href="{{url}}">{{label}}</a>{{/haslink}}
+                                {{^haslink}}<span>{{label}}</span>{{/haslink}}
+                                {{/crumbs}}
+                            </nav>
+                        </div>
+                        <div class="sd-search-wrap">
+                            <form class="sd-search" action="{{searchurl}}" method="get" role="search">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                                <input type="text" name="query" id="sd-search-input" autocomplete="off" placeholder="{{#str}}aw_searchsettings, theme_baz{{/str}}" aria-label="{{#str}}aw_searchsettings, theme_baz{{/str}}">
+                                <span class="sd-search-kbd">/</span>
+                            </form>
+                        </div>
+                        <div class="sd-top-actions">
+                            <div class="aw-editswitch">{{{ output.edit_switch }}}</div>
+                            <button type="button" class="sd-iconbtn" id="sd-themebtn" title="{{#str}}sd_toggletheme, theme_baz{{/str}}">
+                                <svg id="sd-themeicon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+                            </button>
+                            <div class="sd-navbar-plugin">{{{ output.navbar_plugin_output }}}</div>
+                            <div class="sd-usermenu">{{{ output.user_menu }}}</div>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="sd-content aw-content">
+                    <div class="aw-phead">
+                        <div class="sd-eyebrow">{{aweyebrow}}</div>
+                        <h1>{{awtitle}}</h1>
+                        {{#hasregionmainsettingsmenu}}
+                        <div class="aw-pagemenu">{{{ regionmainsettingsmenu }}}</div>
+                        {{/hasregionmainsettingsmenu}}
+                    </div>
+
+                    {{! The course header's fact row (Start date / End date), on
+                        in-course pages only. It carries `.rui-course-info-box`,
+                        which is the selector features that add a course-header
+                        field look for -- without it they attach nowhere and
+                        vanish silently. }}
+                    {{#coursefacts}}
+                    {{{ coursefacts }}}
+                    {{/coursefacts}}
+
+                    {{! The activity header (completion, dates, description) is built
+                        by the wrapped layouts and is not part of main_content. }}
+                    {{#hasheadercontent}}
+                    <div class="aw-activityheader">{{{ headercontent }}}</div>
+                    {{/hasheadercontent}}
+
+                    {{#hasctopbl}}<div class="aw-blockrow aw-blockrow-top">{{{ ctopbl }}}</div>{{/hasctopbl}}
+                    {{#hascstopbl}}<div class="aw-blockrow aw-blockrow-top">{{{ cstopbl }}}</div>{{/hascstopbl}}
+
+                    <div class="aw-cols{{#hasblocks}} has-blocks{{/hasblocks}}">
+                        {{! Core's own content. This placeholder is mandatory: a full-page
+                            layout that omits it throws a coding exception on first load. }}
+                        <div id="region-main-box" class="aw-wrap {{awclass}}">
+                            <section id="region-main" aria-label="{{#str}}content{{/str}}">
+                                {{{ output.main_content }}}
+                            </section>
+                        </div>
+
+                        {{#hasblocks}}
+                        <aside class="aw-blocks" id="aw-blocks" aria-label="{{#str}}blocks{{/str}}">
+                            {{! No add-block button: in edit mode it is non-empty on
+                                every page, which opened an empty rail and squeezed
+                                the content column. }}
+                            {{{ sidepreblocks }}}
+                            {{{ coursesideblocks }}}
+                        </aside>
+                        {{/hasblocks}}
+                    </div>
+
+                    {{#hascsbottombl}}<div class="aw-blockrow aw-blockrow-bottom">{{{ csbottombl }}}</div>{{/hascsbottombl}}
+                    {{#hascbottombl}}<div class="aw-blockrow aw-blockrow-bottom">{{{ cbottombl }}}</div>{{/hascbottombl}}
+                </main>
+            </div>
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+</body>
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/studentdashboard'], function(Loader, StudentDashboard) {
+        StudentDashboard.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

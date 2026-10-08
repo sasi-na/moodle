@@ -1,0 +1,18 @@
+# Preserves the restart annotation that jain's live Redis pod template carries.
+#
+# It is an artifact of a manual `kubectl rollout restart` on 2026-01-25, not
+# configuration -- but it is part of the pod template, so dropping it counts as a
+# spec change and would roll Redis. Restarting Redis drops every session and logs
+# all users out, so it is reproduced here to keep adoption a true no-op.
+#
+# It belongs in the overlay rather than base because it is specific to jain's
+# object history and must not leak into a new tenant.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2026-01-25T12:04:01+05:30"

@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>amazon/simple_storage_service</location>
+        <name>simple_storage_service</name>
+        <version>0.5.1</version>
+        <license>modified BSD license</license>
+        <licenseversion>BSD 2-Clause License</licenseversion>
+    </library>
+</libraries>

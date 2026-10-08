@@ -1,0 +1,36 @@
+# Moodle cron on IIITD -- ACTIVE as of the 2026-09-14 cutover.
+#
+# These were provisioned suspended throughout the migration. IIITD held a copy
+# of production including an imported adhoc backlog, and with cron running
+# Moodle drains that backlog and emails real students: on 2026-09-08 it sent
+# 7,991 notifications to 456 people before it was stopped.
+#
+# The two conditions written here for lifting the suspension were both met at
+# cutover:
+#
+#   1. adhoc backlog purged -- 37,483 tasks deleted, of which 21,281 were the
+#      stale login notifications responsible for that incident. The 223 left
+#      send nothing; course_delete_modules is kept deliberately, because 104
+#      modules sit at deletioninprogress=1 and are stranded without it.
+#   2. noemailever settled -- now false, with divertallemailsto set as a
+#      backstop for the first hours of live traffic.
+#
+# Note this IS a change from how the AWS site ran: there, main cron was
+# deliberately disabled, which is why the backlog accumulated for months in the
+# first place. A Moodle site without cron does not expire enrolments, send
+# notifications, run scheduled reports or clean up after itself, so leaving it
+# off was never a stable end state -- but it does mean tasks that never fired on
+# AWS will now fire here.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: moodle-cron
+spec:
+  suspend: false
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: moodle-adhoc-tasks
+spec:
+  suspend: false

@@ -1,0 +1,59 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Capability definitions for the Raison plugin.
+ *
+ * This file contains the capability definitions for the Raison plugin.
+ * Capabilities are used to control access to various features within the plugin.
+ *
+ * @package    local_corolair
+ * @copyright  2025 Raison
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$capabilities = [
+    // Capability to create and manage tutors within the Raison plugin.
+    // This capability allows users to create and manage tutors within the Raison plugin.
+    // @captype      write
+    // @contextlevel CONTEXT_SYSTEM
+    // @description  Allows users to create and manage tutors within the Raison plugin.
+    'local/corolair:createtutor' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'description' => get_string('createtutorcapability', 'local_corolair'),
+    ],
+    // Capability to read Moodle roles for Corolair integrations.
+    // This capability allows users to retrieve role metadata via the Corolair web service.
+    // @captype      read
+    // @contextlevel CONTEXT_SYSTEM
+    // @description  Allows users to retrieve role metadata via the Corolair web service.
+    'local/corolair:viewroles' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'clonepermissionsfrom' => 'local/corolair:createtutor',
+        'description' => get_string('viewrolescapability', 'local_corolair'),
+    ],
+    // Capability to assign only the fixed Raison Manager role through the scoped external API.
+    'local/corolair:assignmanagerrole' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'clonepermissionsfrom' => 'local/corolair:createtutor',
+        'description' => get_string('assignmanagerrolecapability', 'local_corolair'),
+    ],
+];

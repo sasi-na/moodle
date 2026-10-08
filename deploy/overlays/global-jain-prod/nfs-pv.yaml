@@ -1,0 +1,25 @@
+# moodledata for global.onlinejain.com.
+#
+# Adopts the existing Bound PV rather than creating it, so every field was read
+# back from the live object. storageClassName is deliberately absent: the live PV
+# has it unset, and writing "" would be a change to a bound volume.
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: global-jain-nfs-pv
+spec:
+  capacity:
+    storage: 200Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /moodle_nfs/global_jain_data_prod
+    server: 10.185.32.234
+  mountOptions:
+    - nfsvers=3
+    - hard
+    - timeo=600
+    - retrans=2
+    - rsize=1048576
+    - wsize=1048576

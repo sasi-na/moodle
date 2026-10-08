@@ -1,0 +1,3034 @@
+
+/* Modern color palette variables */
+:root {
+    /* Primary colors */
+    --vpl-primary: #2563eb;
+    --vpl-primary-hover: #1d4ed8;
+    --vpl-primary-light: #dbeafe;
+    
+    /* Secondary colors */
+    --vpl-secondary: #64748b;
+    --vpl-secondary-hover: #475569;
+    --vpl-secondary-light: #f1f5f9;
+    
+    /* Success colors */
+    --vpl-success: #059669;
+    --vpl-success-hover: #047857;
+    --vpl-success-light: #d1fae5;
+    
+    /* Warning colors */
+    --vpl-warning: #d97706;
+    --vpl-warning-hover: #b45309;
+    --vpl-warning-light: #fef3c7;
+    
+    /* Error colors */
+    --vpl-error: #dc2626;
+    --vpl-error-hover: #b91c1c;
+    --vpl-error-light: #fee2e2;
+    
+    /* Neutral colors */
+    --vpl-gray-50: #f8fafc;
+    --vpl-gray-100: #f1f5f9;
+    --vpl-gray-200: #e2e8f0;
+    --vpl-gray-300: #cbd5e1;
+    --vpl-gray-400: #94a3b8;
+    --vpl-gray-500: #64748b;
+    --vpl-gray-600: #475569;
+    --vpl-gray-700: #334155;
+    --vpl-gray-800: #1e293b;
+    --vpl-gray-900: #0f172a;
+    
+    /* Background colors */
+    --vpl-bg-primary: #ffffff;
+    --vpl-bg-secondary: #f8fafc;
+    --vpl-bg-tertiary: #f1f5f9;
+    
+    /* Border colors */
+    --vpl-border-light: #e2e8f0;
+    --vpl-border-medium: #cbd5e1;
+    --vpl-border-dark: #94a3b8;
+    
+    /* Text colors */
+    --vpl-text-primary: #0f172a;
+    --vpl-text-secondary: #475569;
+    --vpl-text-tertiary: #64748b;
+    --vpl-text-inverse: #ffffff;
+    
+    /* Modern IDE Color Palette */
+    --ide-bg-primary: #1e1e1e;
+    --ide-bg-secondary: #252526;
+    --ide-bg-tertiary: #2d2d30;
+    --ide-bg-quaternary: #3c3c3c;
+    
+    --ide-border-primary: #3c3c3c;
+    --ide-border-secondary: #464647;
+    --ide-border-accent: #007acc;
+    
+    --ide-text-primary: #cccccc;
+    --ide-text-secondary: #969696;
+    --ide-text-tertiary: #6a6a6a;
+    --ide-text-accent: #ffffff;
+    
+    --ide-accent-blue: #007acc;
+    --ide-accent-blue-hover: #1177bb;
+    --ide-accent-green: #4ec9b0;
+    --ide-accent-orange: #ce9178;
+    --ide-accent-red: #f44747;
+    --ide-accent-yellow: #dcdcaa;
+    --ide-accent-purple: #c586c0;
+    
+    --ide-button-bg: #0e639c;
+    --ide-button-bg-hover: #1177bb;
+    --ide-button-bg-active: #005a9e;
+    --ide-button-text: #ffffff;
+    
+    --ide-toolbar-bg: #333333;
+    --ide-toolbar-border: #464647;
+    --ide-toolbar-button-bg: #2d2d30;
+    --ide-toolbar-button-bg-hover: #3c3c3c;
+    --ide-toolbar-button-bg-active: #0e639c;
+    
+    /* Typography System */
+    --vpl-font-family-sans: 'Inter', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    --vpl-font-family-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    --vpl-font-family-ui: 'Inter', 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    
+    /* Font Sizes */
+    --vpl-text-xs: 0.75rem;    /* 12px */
+    --vpl-text-sm: 0.875rem;   /* 14px */
+    --vpl-text-base: 1rem;     /* 16px */
+    --vpl-text-lg: 1.125rem;   /* 18px */
+    --vpl-text-xl: 1.25rem;    /* 20px */
+    --vpl-text-2xl: 1.5rem;    /* 24px */
+    --vpl-text-3xl: 1.875rem; /* 30px */
+    
+    /* Font Weights */
+    --vpl-font-light: 300;
+    --vpl-font-normal: 400;
+    --vpl-font-medium: 500;
+    --vpl-font-semibold: 600;
+    --vpl-font-bold: 700;
+    --vpl-font-extrabold: 800;
+    
+    /* Line Heights */
+    --vpl-leading-tight: 1.25;
+    --vpl-leading-snug: 1.375;
+    --vpl-leading-normal: 1.5;
+    --vpl-leading-relaxed: 1.625;
+    --vpl-leading-loose: 2;
+    
+    /* Letter Spacing */
+    --vpl-tracking-tight: -0.025em;
+    --vpl-tracking-normal: 0em;
+    --vpl-tracking-wide: 0.025em;
+    --vpl-tracking-wider: 0.05em;
+}
+
+/* Fix broken CSS header */
+#vpl_results_accordion .vpl_ide_accordion_c_description a,
+#vpl_results_accordion .vpl_ide_accordion_c_comments a,
+#vpl_results_accordion .vpl_ide_accordion_c_compilation a {
+    color: var(--vpl-primary);
+}
+
+/* Compilation section below editor */
+.vpl_ide_compilation {
+    height: var(--compilation-height, 200px);
+    min-height: 100px;
+    max-height: 56%;
+    width: 100%;
+    border-top: 2px solid var(--vpl-border-medium);
+    border-bottom: 1px solid var(--vpl-border-light);
+    overflow: auto;
+    resize: vertical;
+    background-color: var(--vpl-bg-secondary);
+    position: relative;
+    display: block !important;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+/* New container for editor and compilation */
+.vpl_editor_compilation_container {
+    position: absolute;
+    top: 0;
+    left: var(--results-width, 350px);
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--vpl-bg-primary);
+}
+
+#vpl_results_accordion .vpl_ide_accordion_c_description a,
+#vpl_results_accordion .vpl_ide_accordion_c_comments a,
+#vpl_results_accordion .vpl_ide_accordion_c_compilation a {
+    color: var(--vpl-primary);
+}
+
+.vpl_ide_root {
+    direction: ltr;
+    text-align: left;
+    width: 100%;
+    height: 100vh;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.vpl_ide_root_fullscreen {
+    background-color: var(--vpl-bg-primary);
+    height: 100vh;
+    min-height: 100vh;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+}
+
+.vpl_body_fullscreen {
+    overflow: hidden;
+}
+
+/* Using vpl_body_fullscreen class to get fullscreen */
+.vpl_body_fullscreen .block {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen header {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen #dock {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen .back-to-top {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen #nav-drawer {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen nav {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen .d-print-none {
+    display: none;
+    visibility: hidden;
+}
+
+/* Clean Professional Dialog - Facebook Style */
+.vpl_ide_dialog {
+    z-index: 9999 !important;
+    width: 500px !important;
+    max-width: 90vw !important;
+    min-width: 400px !important;
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+.vpl_ide_dialog .ui-dialog-titlebar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    color: #1f2937 !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-lg) !important;
+    font-weight: var(--vpl-font-semibold) !important;
+    line-height: var(--vpl-leading-tight) !important;
+    padding: 16px 20px !important;
+    border-radius: 8px 8px 0 0 !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+.vpl_ide_dialog .ui-dialog-titlebar .ui-dialog-titlebar-close {
+    background: #f3f4f6 !important;
+    border: 1px solid #d1d5db !important;
+    color: #6b7280 !important;
+    border-radius: 4px !important;
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 12px !important;
+    font-weight: var(--vpl-font-bold) !important;
+    transition: all 0.2s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.vpl_ide_dialog .ui-dialog-titlebar .ui-dialog-titlebar-close:hover {
+    background: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+.vpl_ide_dialog .ui-dialog-content {
+    background: #ffffff !important;
+    color: #374151 !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-normal) !important;
+    padding: 20px !important;
+    border-radius: 0 !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Win over the dark IDE theme rule `.vpl_ide .ui-widget-content` (later in
+   this file, same specificity) so the message/run dialog body stays white. */
+.vpl_ide_dialog .ui-dialog-content.ui-widget-content {
+    background: #ffffff !important;
+    color: #374151 !important;
+}
+
+.vpl_ide_dialog .ui-dialog-content a,
+.vpl_ide_dialog .dmessage a {
+    color: #2563eb !important;
+    text-decoration: underline !important;
+    font-weight: var(--vpl-font-semibold) !important;
+}
+
+.vpl_ide_dialog .ui-dialog-content a:hover,
+.vpl_ide_dialog .dmessage a:hover {
+    color: #1d4ed8 !important;
+    text-decoration: underline !important;
+}
+
+.vpl_ide_dialog .ui-dialog-buttonpane {
+    background: #ffffff !important;
+    border-top: 1px solid #e5e7eb !important;
+    padding: 16px 20px !important;
+    border-radius: 0 0 8px 8px !important;
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 12px !important;
+}
+
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button {
+    background: #3b82f6 !important;
+    border: 1px solid #3b82f6 !important;
+    color: #ffffff !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    font-weight: var(--vpl-font-medium) !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    margin: 0 !important;
+    transition: all 0.2s ease !important;
+    text-transform: none !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+    min-width: 60px !important;
+}
+
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button:hover {
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button:active {
+    background: #1d4ed8 !important;
+    border-color: #1d4ed8 !important;
+}
+
+/* Cancel/Secondary buttons - Gray style */
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button[class*="cancel"],
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button:last-child {
+    background: #6b7280 !important;
+    border-color: #6b7280 !important;
+    color: #ffffff !important;
+}
+
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button[class*="cancel"]:hover,
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button:last-child:hover {
+    background: #4b5563 !important;
+    border-color: #4b5563 !important;
+}
+
+/* Special styling for primary action buttons (like Run/Execute) */
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button[class*="primary"],
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button:first-child {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.4) 100%) !important;
+    border-color: rgba(16, 185, 129, 0.5) !important;
+    color: #6ee7b7 !important;
+    font-weight: var(--vpl-font-bold) !important;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3) !important;
+}
+
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button[class*="primary"]:hover,
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button:first-child:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.5) 0%, rgba(5, 150, 105, 0.6) 100%) !important;
+    border-color: rgba(16, 185, 129, 0.7) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4) !important;
+}
+
+/* Special styling for cancel/close buttons */
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button[class*="cancel"],
+.vpl_ide_dialog .ui-dialog-buttonpane .ui-button:last-child {
+    background: linear-gradient(135deg, rgba(107, 114, 128, 0.2) 0%, rgba(75, 85, 99, 0.3) 100%) !important;
+    border-color: rgba(107, 114, 128, 0.4) !important;
+    color: #9ca3af !important;
+}
+
+/* Clean form elements - Simple Facebook style */
+.vpl_ide_dialog .ui-dialog-content input[type="text"],
+.vpl_ide_dialog .ui-dialog-content input[type="password"],
+.vpl_ide_dialog .ui-dialog-content input[type="email"],
+.vpl_ide_dialog .ui-dialog-content input[type="number"],
+.vpl_ide_dialog .ui-dialog-content textarea,
+.vpl_ide_dialog .ui-dialog-content select {
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 6px !important;
+    color: #374151 !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    padding: 8px 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+.vpl_ide_dialog .ui-dialog-content input:focus,
+.vpl_ide_dialog .ui-dialog-content textarea:focus,
+.vpl_ide_dialog .ui-dialog-content select:focus {
+    border-color: #3b82f6 !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.vpl_ide_dialog .ui-dialog-content input::placeholder,
+.vpl_ide_dialog .ui-dialog-content textarea::placeholder {
+    color: #9ca3af !important;
+}
+
+/* Clean labels and text styling */
+.vpl_ide_dialog .ui-dialog-content label {
+    color: #374151 !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    font-weight: var(--vpl-font-medium) !important;
+    margin-bottom: 6px !important;
+    display: block !important;
+}
+
+.vpl_ide_dialog .ui-dialog-content p {
+    color: #6b7280 !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-normal) !important;
+    margin-bottom: 12px !important;
+}
+
+.vpl_ide_dialog .ui-dialog-content h1,
+.vpl_ide_dialog .ui-dialog-content h2,
+.vpl_ide_dialog .ui-dialog-content h3,
+.vpl_ide_dialog .ui-dialog-content h4,
+.vpl_ide_dialog .ui-dialog-content h5,
+.vpl_ide_dialog .ui-dialog-content h6 {
+    color: #1f2937 !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-weight: var(--vpl-font-semibold) !important;
+    margin-bottom: 8px !important;
+}
+
+/* Modern checkbox and radio styling */
+.vpl_ide_dialog .ui-dialog-content input[type="checkbox"],
+.vpl_ide_dialog .ui-dialog-content input[type="radio"] {
+    accent-color: #3b82f6 !important;
+    transform: scale(1.2) !important;
+    margin-right: 8px !important;
+}
+
+/* Modern list styling */
+.vpl_ide_dialog .ui-dialog-content ul,
+.vpl_ide_dialog .ui-dialog-content ol {
+    color: #cbd5e1 !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    padding-left: 20px !important;
+}
+
+.vpl_ide_dialog .ui-dialog-content li {
+    margin-bottom: 8px !important;
+    line-height: var(--vpl-leading-relaxed) !important;
+}
+
+/* Modern table styling */
+.vpl_ide_dialog .ui-dialog-content table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 16px 0 !important;
+}
+
+.vpl_ide_dialog .ui-dialog-content th,
+.vpl_ide_dialog .ui-dialog-content td {
+    border: 1px solid rgba(59, 130, 246, 0.2) !important;
+    padding: 12px !important;
+    text-align: left !important;
+}
+
+.vpl_ide_dialog .ui-dialog-content th {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.3) 100%) !important;
+    color: #ffffff !important;
+    font-weight: var(--vpl-font-bold) !important;
+}
+
+.vpl_ide_dialog .ui-dialog-content td {
+    background: rgba(30, 41, 59, 0.5) !important;
+    color: #e2e8f0 !important;
+}
+#vpl_ide_dialog_about {
+    width: 400px;
+    height: 260px;
+    background: var(--ide-bg-primary) !important;
+    border: 1px solid var(--ide-border-primary) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+#vpl_menu .ui-button-text-only,
+#vpl_menu .ui-button-text {
+    padding: 0.4em;
+    color: inherit !important;
+    font-weight: inherit !important;
+}
+
+/* Professional Tooltip Styling */
+.vpl_tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.vpl_tooltip .vpl_tooltip_text {
+    visibility: hidden;
+    width: auto;
+    min-width: 120px;
+    background-color: #1f2937;
+    color: #ffffff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    font-family: var(--vpl-font-family-ui);
+    font-size: var(--vpl-text-xs);
+    font-weight: var(--vpl-font-medium);
+    line-height: var(--vpl-leading-tight);
+    letter-spacing: var(--vpl-tracking-normal);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 1px solid #374151;
+    white-space: nowrap;
+}
+
+.vpl_tooltip .vpl_tooltip_text::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #1f2937 transparent transparent transparent;
+}
+
+.vpl_tooltip:hover .vpl_tooltip_text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Tooltip positioning variants */
+.vpl_tooltip.top .vpl_tooltip_text {
+    bottom: 125%;
+    top: auto;
+}
+
+.vpl_tooltip.bottom .vpl_tooltip_text {
+    top: 125%;
+    bottom: auto;
+}
+
+.vpl_tooltip.bottom .vpl_tooltip_text::after {
+    top: -5px;
+    border-color: transparent transparent #1f2937 transparent;
+}
+
+.vpl_tooltip.left .vpl_tooltip_text {
+    right: 125%;
+    left: auto;
+    margin-left: 0;
+    margin-right: -60px;
+}
+
+.vpl_tooltip.left .vpl_tooltip_text::after {
+    left: 100%;
+    top: 50%;
+    margin-top: -5px;
+    margin-left: 0;
+    border-color: transparent transparent transparent #1f2937;
+}
+
+.vpl_tooltip.right .vpl_tooltip_text {
+    left: 125%;
+    right: auto;
+    margin-left: 0;
+    margin-right: -60px;
+}
+
+.vpl_tooltip.right .vpl_tooltip_text::after {
+    right: 100%;
+    left: auto;
+    top: 50%;
+    margin-top: -5px;
+    margin-right: 0;
+    border-color: transparent #1f2937 transparent transparent;
+}
+
+/* Enhanced button tooltips for toolbar - positioned below buttons with high z-index */
+#vpl_menu .ui-button {
+    position: relative;
+    cursor: pointer;
+    z-index: 1;
+}
+
+#vpl_menu .ui-button::before {
+    content: attr(title);
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1f2937;
+    color: #ffffff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: var(--vpl-font-medium);
+    font-family: var(--vpl-font-family-ui);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 99999 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    pointer-events: none;
+    min-width: 80px;
+    text-align: center;
+}
+
+#vpl_menu .ui-button::after {
+    content: "";
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 99999 !important;
+    pointer-events: none;
+}
+
+#vpl_menu .ui-button:hover::before,
+#vpl_menu .ui-button:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Refined Unified Modern Toolbar Design */
+.vpl_ide_menu {
+    min-width: 340px;
+    padding: 0 !important;
+    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%) !important;
+    border-bottom: none !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    margin-bottom: 0;
+    font-family: var(--vpl-font-family-ui);
+    font-size: var(--vpl-text-sm);
+    font-weight: var(--vpl-font-medium);
+    line-height: var(--vpl-leading-normal);
+    border-radius: 0 !important;
+    overflow: hidden !important;
+    position: relative;
+    z-index: 1100;
+}
+
+/* Unified toolbar container */
+#vpl_menu {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 0 !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    position: relative;
+    z-index: 1100;
+}
+
+/* Ensure tooltips appear above all IDE content */
+.vpl_ide_root_fullscreen,
+.vpl_ide,
+.vpl_ide_editor,
+.vpl_ide_results,
+.vpl_ide_compilation,
+.vpl_ide_file,
+.vpl_ide_tabs,
+.vpl_ide_accordion_c_compilation,
+.vpl_ide_accordion_c_run,
+.vpl_ide_accordion_c_debug,
+.vpl_ide_accordion_c_evaluate {
+    z-index: auto !important;
+}
+
+/* Ensure dialogs don't interfere with tooltips */
+.vpl_ide_dialog,
+.vpl_clipboard,
+.vpl_terminal,
+#vpl_dialog_terminal {
+    z-index: 9999 !important;
+}
+
+/* Tooltips must be above everything */
+#vpl_menu .ui-button::before,
+#vpl_menu .ui-button::after {
+    z-index: 99999 !important;
+}
+
+/* Modern FontAwesome Icon Styling for Toolbar Buttons - Improved */
+#vpl_menu .ui-button {
+    position: relative;
+    padding: 8px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+/* Enhanced FontAwesome icons with modern styling */
+#vpl_menu .ui-button i.fa {
+    font-size: 16px !important;
+    margin-right: 6px !important;
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    transition: all 0.2s ease;
+    text-shadow: none !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+    display: inline-block !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+/* Special handling for icon-only buttons */
+#vpl_menu .ui-button:not([title*=" "]) i.fa {
+    margin-right: 0 !important;
+}
+
+/* Ensure proper spacing for buttons with both icon and text */
+#vpl_menu .ui-button[title*=" "] i.fa {
+    margin-right: 6px !important;
+}
+
+/* Run/Execute Icon - Enhanced play button */
+#vpl_menu .ui-button[title*="Run"] i.fa-play,
+#vpl_menu .ui-button[title*="Execute"] i.fa-play {
+    color: #ffffff !important;
+    font-size: 20px !important;
+    font-weight: bold !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    margin-right: 6px !important;
+}
+
+#vpl_menu .ui-button[title*="Run"]:hover i.fa-play,
+#vpl_menu .ui-button[title*="Execute"]:hover i.fa-play {
+    color: #ffffff !important;
+    font-size: 22px !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Save Icon - Floppy disk */
+#vpl_menu .ui-button[title*="Save"] i.fa-save {
+    color: #3b82f6 !important;
+    font-size: 16px !important;
+}
+
+/* Submit Icon - Send/Upload */
+#vpl_menu .ui-button[title*="Submit"] i.fa-send,
+#vpl_menu .ui-button[title*="Submit"] i.fa-upload {
+    color: #3b82f6 !important;
+    font-size: 16px !important;
+}
+
+/* Reset Icon - Refresh */
+#vpl_menu .ui-button[title*="Reset"] i.fa-refresh {
+    color: #f59e0b !important;
+    font-size: 16px !important;
+}
+
+/* Clear Icon - Trash */
+#vpl_menu .ui-button[title*="Clear"] i.fa-trash {
+    color: #ef4444 !important;
+    font-size: 16px !important;
+}
+
+/* Help Icon - Question */
+#vpl_menu .ui-button[title*="Help"] i.fa-question {
+    color: #8b5cf6 !important;
+    font-size: 16px !important;
+}
+
+/* About Icon - Info */
+#vpl_menu .ui-button[title*="About"] i.fa-info-circle {
+    color: #8b5cf6 !important;
+    font-size: 16px !important;
+}
+
+/* Edit Icon - Pencil */
+#vpl_menu .ui-button[title*="Edit"] i.fa-edit,
+#vpl_menu .ui-button[title*="Edit"] i.fa-pencil {
+    color: #64748b !important;
+    font-size: 16px !important;
+}
+
+/* Copy Icon - Copy */
+#vpl_menu .ui-button[title*="Copy"] i.fa-copy {
+    color: #64748b !important;
+    font-size: 16px !important;
+}
+
+/* Paste Icon - Paste */
+#vpl_menu .ui-button[title*="Paste"] i.fa-paste {
+    color: #64748b !important;
+    font-size: 16px !important;
+}
+
+/* Undo Icon - Undo */
+#vpl_menu .ui-button[title*="Undo"] i.fa-undo {
+    color: #64748b !important;
+    font-size: 16px !important;
+}
+
+/* Redo Icon - Repeat */
+#vpl_menu .ui-button[title*="Redo"] i.fa-repeat {
+    color: #64748b !important;
+    font-size: 16px !important;
+}
+
+/* Debug Icon - Bug */
+#vpl_menu .ui-button[title*="Debug"] i.fa-bug {
+    color: #f59e0b !important;
+    font-size: 16px !important;
+}
+
+/* Evaluate Icon - Check */
+#vpl_menu .ui-button[title*="Evaluate"] i.fa-check-square-o {
+    color: #10b981 !important;
+    font-size: 16px !important;
+}
+
+/* Console Icon - Terminal */
+#vpl_menu .ui-button[title*="Console"] i.fa-terminal {
+    color: #64748b !important;
+    font-size: 16px !important;
+}
+
+/* New File Icon - File */
+#vpl_menu .ui-button[title*="New"] i.fa-file-code-o {
+    color: #10b981 !important;
+    font-size: 16px !important;
+}
+
+/* Delete Icon - Trash */
+#vpl_menu .ui-button[title*="Delete"] i.fa-trash {
+    color: #ef4444 !important;
+    font-size: 16px !important;
+}
+
+/* Import Icon - Upload */
+#vpl_menu .ui-button[title*="Import"] i.fa-upload {
+    color: #3b82f6 !important;
+    font-size: 16px !important;
+}
+
+/* Download Icon - Download */
+#vpl_menu .ui-button[title*="Download"] i.fa-download {
+    color: #3b82f6 !important;
+    font-size: 16px !important;
+}
+
+/* Fullscreen Icon - Expand */
+#vpl_menu .ui-button[title*="Fullscreen"] i.fa-expand {
+    color: #64748b !important;
+    font-size: 16px !important;
+}
+
+/* Comments Icon - Commenting */
+#vpl_menu .ui-button[title*="Comments"] i.fa-commenting {
+    color: #8b5cf6 !important;
+    font-size: 16px !important;
+}
+
+/* Hover effects for all icons */
+#vpl_menu .ui-button:hover i.fa {
+    transform: scale(1.1);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Active state for icons */
+#vpl_menu .ui-button:active i.fa,
+#vpl_menu .ui-button.ui-state-active i.fa {
+    transform: scale(0.95);
+}
+
+/* Ensure button text alignment */
+#vpl_menu .ui-button {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+/* Fix any text alignment issues */
+#vpl_menu .ui-button span,
+#vpl_menu .ui-button div {
+    display: inline-block !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+}
+
+/* Delete Icon - Trash */
+#vpl_menu .ui-button[title*="Delete"] i.fa-trash {
+    color: #ef4444 !important;
+    font-size: 16px !important;
+}
+
+/* Import Icon - Upload */
+#vpl_menu .ui-button[title*="Import"] i.fa-upload {
+    color: #3b82f6 !important;
+    font-size: 16px !important;
+}
+
+/* Download Icon - Download */
+#vpl_menu .ui-button[title*="Download"] i.fa-download {
+    color: #3b82f6 !important;
+    font-size: 16px !important;
+}
+
+/* Fullscreen Icon - Expand */
+#vpl_menu .ui-button[title*="Fullscreen"] i.fa-expand {
+    color: #64748b !important;
+    font-size: 16px !important;
+}
+
+/* Comments Icon - Commenting */
+#vpl_menu .ui-button[title*="Comments"] i.fa-commenting {
+    color: #8b5cf6 !important;
+    font-size: 16px !important;
+}
+
+/* Hover effects for all icons */
+#vpl_menu .ui-button:hover i.fa {
+    transform: scale(1.1);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Active state for icons */
+#vpl_menu .ui-button:active i.fa,
+#vpl_menu .ui-button.ui-state-active i.fa {
+    transform: scale(0.95);
+}
+
+/* Tooltip system - updated to work with FontAwesome icons */
+#vpl_menu .ui-button::after {
+    content: attr(title);
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1f2937;
+    color: #ffffff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: var(--vpl-font-medium);
+    font-family: var(--vpl-font-family-ui);
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 99999 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    border: 1px solid #374151;
+    pointer-events: none;
+    min-width: 80px;
+    text-align: center;
+}
+
+#vpl_menu .ui-button:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* Fix vertical alignment for specific buttons */
+#vpl_menu .ui-button[title*="Run"],
+#vpl_menu .ui-button[title*="Debug"],
+#vpl_menu .ui-button[title*="Evaluate"],
+#vpl_menu .ui-button[title*="Comments"],
+#vpl_menu .ui-button[title*="Console"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    line-height: 1 !important;
+}
+
+/* Ensure icons in these buttons are properly aligned */
+#vpl_menu .ui-button[title*="Run"] i.fa,
+#vpl_menu .ui-button[title*="Debug"] i.fa,
+#vpl_menu .ui-button[title*="Evaluate"] i.fa,
+#vpl_menu .ui-button[title*="Comments"] i.fa,
+#vpl_menu .ui-button[title*="Console"] i.fa {
+    vertical-align: middle !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    display: inline-block !important;
+}
+
+/* Fix any text alignment issues in these buttons */
+#vpl_menu .ui-button[title*="Run"] span,
+#vpl_menu .ui-button[title*="Debug"] span,
+#vpl_menu .ui-button[title*="Evaluate"] span,
+#vpl_menu .ui-button[title*="Comments"] span,
+#vpl_menu .ui-button[title*="Console"] span {
+    vertical-align: middle !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+}
+
+/* Ensure toolbar container doesn't force full width on buttons */
+#vpl_menu {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+}
+
+/* Refined integrated button design */
+#vpl_menu .ui-button {
+    background: transparent !important;
+    border: none !important;
+    color: #e2e8f0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    font-weight: var(--vpl-font-medium) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-tight) !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+    transition: all 0.2s ease;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    padding: 12px 16px !important;
+    position: relative;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    vertical-align: middle !important;
+    text-align: center !important;
+    line-height: 1 !important;
+    height: auto !important;
+    min-height: 48px !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: auto !important;
+    max-width: none !important;
+}
+
+
+/* Refined hover effect */
+#vpl_menu .ui-button:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+    font-weight: var(--vpl-font-semibold) !important;
+    transform: none !important;
+}
+
+/* Refined active state */
+#vpl_menu .ui-button:active,
+#vpl_menu .ui-button.ui-state-active {
+    background: rgba(255, 255, 255, 0.12) !important;
+    color: #ffffff !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15) !important;
+    transform: none !important;
+}
+
+/* Ensure all icons are properly aligned */
+#vpl_menu .ui-button i.fa {
+    vertical-align: middle !important;
+    line-height: 1 !important;
+    margin: 0 !important;
+    display: inline-block !important;
+}
+
+/* Ensure all text elements are properly aligned */
+#vpl_menu .ui-button span,
+#vpl_menu .ui-button div {
+    vertical-align: middle !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+}
+
+#vpl_menu .ui-button {
+    background: #ffffff !important;
+    color: #374151 !important;
+    margin: 0 6px 0 0;
+    border-radius: 4px !important;
+    font-weight: var(--vpl-font-medium) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-tight) !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    text-shadow: none !important;
+    padding: 8px 16px !important;
+    position: relative;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+#vpl_menu .ui-button:hover {
+    background: #f9fafb !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border-color: #d1d5db !important;
+    color: #111827 !important;
+    font-weight: var(--vpl-font-semibold) !important;
+}
+
+#vpl_menu .ui-button:active,
+#vpl_menu .ui-button.ui-state-active {
+    background: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #111827 !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(0) !important;
+}
+
+#vpl_menu .ui-button:hover {
+    background: #f9fafb !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    border-color: #d1d5db !important;
+    color: #111827 !important;
+    font-weight: var(--vpl-font-semibold) !important;
+}
+
+#vpl_menu .ui-button:active,
+#vpl_menu .ui-button.ui-state-active {
+    background: #f3f4f6 !important;
+    border-color: #9ca3af !important;
+    color: #111827 !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+    transform: translateY(0) !important;
+}
+
+/* Run button - Primary action with maximum visibility */
+#vpl_menu .ui-button[title*="Run"],
+#vpl_menu .ui-button[title*="Execute"] {
+    background: rgba(16, 185, 129, 0.4) !important;
+    color: #ffffff !important;
+    border-right: 1px solid rgba(16, 185, 129, 0.6) !important;
+    font-weight: var(--vpl-font-semibold) !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+}
+
+#vpl_menu .ui-button[title*="Run"]:hover,
+#vpl_menu .ui-button[title*="Execute"]:hover {
+    background: rgba(16, 185, 129, 0.5) !important;
+    color: #ffffff !important;
+    font-weight: var(--vpl-font-bold) !important;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+#vpl_menu .ui-button[title*="Run"]:active,
+#vpl_menu .ui-button[title*="Execute"]:active,
+#vpl_menu .ui-button[title*="Run"].ui-state-active,
+#vpl_menu .ui-button[title*="Execute"].ui-state-active {
+    background: rgba(16, 185, 129, 0.6) !important;
+    color: #ffffff !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+#vpl_menu .ui-button[title*="Help"],
+#vpl_menu .ui-button[title*="About"] {
+    background: rgba(139, 92, 246, 0.25) !important;
+    color: #8b5cf6 !important;
+    border-right: 1px solid rgba(139, 92, 246, 0.4) !important;
+}
+
+/* Other semantic button colors with refined opacity */
+#vpl_menu .ui-button[title*="Save"],
+#vpl_menu .ui-button[title*="Submit"] {
+    background: rgba(59, 130, 246, 0.15) !important;
+    color: #60a5fa !important;
+    border-right: 1px solid rgba(59, 130, 246, 0.25) !important;
+}
+
+#vpl_menu .ui-button[title*="Save"]:hover,
+#vpl_menu .ui-button[title*="Submit"]:hover {
+    background: rgba(59, 130, 246, 0.25) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Reset"],
+#vpl_menu .ui-button[title*="Clear"] {
+    background: rgba(245, 158, 11, 0.15) !important;
+    color: #fbbf24 !important;
+    border-right: 1px solid rgba(245, 158, 11, 0.25) !important;
+}
+
+#vpl_menu .ui-button[title*="Reset"]:hover,
+#vpl_menu .ui-button[title*="Clear"]:hover {
+    background: rgba(245, 158, 11, 0.25) !important;
+    color: #ffffff !important;
+}
+
+.vpl_ide_tr {
+    border: 0;
+    margin: 0;
+    min-width: 330px;
+    padding: 0;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    --results-width: 33%;
+    --compilation-height: 270.2px;
+    background-color: var(--vpl-bg-primary);
+}
+
+#vpl_filelist {
+    display: none;
+    left: 0;
+    position: absolute;
+    top: 0;
+    background: var(--vpl-bg-primary);
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--vpl-border-light);
+    overflow: hidden;
+}
+
+#vpl_filelist_header {
+    padding: 12px 16px;
+    background: var(--vpl-bg-secondary);
+    color: var(--vpl-text-primary);
+    font-weight: var(--vpl-font-semibold);
+    font-size: var(--vpl-text-sm);
+    font-family: var(--vpl-font-family-ui);
+    line-height: var(--vpl-leading-tight);
+    letter-spacing: var(--vpl-tracking-wide);
+    border-bottom: 1px solid var(--vpl-border-light);
+}
+
+#vpl_filelist_content {
+    overflow: auto;
+    padding: 8px 0;
+    white-space: pre;
+    background: var(--vpl-bg-primary);
+    color: var(--vpl-text-primary);
+    font-size: var(--vpl-text-sm);
+    font-family: var(--vpl-font-family-ui);
+    line-height: var(--vpl-leading-normal);
+    letter-spacing: var(--vpl-tracking-normal);
+}
+
+.vpl_ide_dirindent {
+    display: inline-block;
+    width: 1.5em;
+}
+
+.vpl_ide_tabs {
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    flex: 1 !important;
+    z-index: 1;
+    min-height: 200px !important;
+    display: flex !important;
+    flex-direction: column;
+    background-color: var(--vpl-bg-secondary);
+    visibility: visible !important;
+}
+
+/* New container for editor and compilation */
+.vpl_editor_compilation_container {
+    position: absolute;
+    top: 0;
+    left: calc(var(--results-width, 350px) + 8px);
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Custom resize handles */
+.vpl_horizontal_resize_handle {
+    position: absolute;
+    left: var(--results-width, 350px);
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    background: var(--vpl-gray-200);
+    border: 1px solid var(--vpl-border-medium);
+    cursor: col-resize;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.vpl_horizontal_resize_handle:hover {
+    background: var(--vpl-gray-300);
+    border-color: var(--vpl-gray-500);
+}
+
+.vpl_vertical_resize_handle {
+    position: relative;
+    height: 8px;
+    background: var(--vpl-gray-200);
+    border: 1px solid var(--vpl-border-medium);
+    cursor: ns-resize;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+    margin: 0;
+}
+
+.vpl_vertical_resize_handle:hover {
+    background: var(--vpl-gray-300);
+    border-color: var(--vpl-gray-500);
+}
+
+.resize_handle_arrows {
+    color: var(--vpl-gray-500);
+    font-size: 12px;
+    font-weight: bold;
+    user-select: none;
+    pointer-events: none;
+}
+
+.vpl_horizontal_resize_handle:hover .resize_handle_arrows,
+.vpl_vertical_resize_handle:hover .resize_handle_arrows {
+    color: var(--vpl-gray-700);
+}
+
+/* Compilation section below editor */
+.vpl_ide_compilation {
+    height: var(--compilation-height, 300px);
+    min-height: 150px;
+    max-height: 500px;
+    border-top: 2px solid var(--vpl-border-medium);
+    border-bottom: 1px solid var(--vpl-border-light);
+    overflow: auto;
+    resize: vertical;
+    background-color: var(--vpl-bg-secondary);
+    position: relative;
+    display: block !important;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+/* Thin scrollbar for compilation panel */
+.vpl_ide_compilation::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.vpl_ide_compilation::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.vpl_ide_compilation::-webkit-scrollbar-thumb {
+    background: var(--vpl-gray-400);
+    border-radius: 3px;
+}
+
+.vpl_ide_compilation::-webkit-scrollbar-thumb:hover {
+    background: var(--vpl-gray-500);
+}
+
+.vpl_compilation_placeholder {
+    padding: 10px;
+    color: var(--vpl-text-tertiary);
+    font-style: italic;
+    text-align: center;
+}
+ 
+/* Compilation resize handle styling */
+.vpl_ide_compilation::-webkit-resizer {
+    background-color: var(--vpl-gray-500);
+    border: 2px solid var(--vpl-gray-600);
+    border-radius: 3px;
+    width: 15px !important;
+    height: 15px !important;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
+}
+
+.vpl_ide_compilation::-webkit-resizer:hover {
+    background-color: var(--vpl-gray-700);
+    border-color: var(--vpl-gray-800);
+    cursor: ns-resize;
+}
+
+/* Custom resize indicator for compilation */
+.vpl_ide_compilation::after {
+    content: "═══";
+    position: absolute;
+    bottom: 2px;
+    right: 50%;
+    transform: translateX(50%);
+    color: var(--vpl-gray-500);
+    font-size: 8px;
+    line-height: 1;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.vpl_ide_compilation:hover::after {
+    color: var(--vpl-gray-700);
+}
+#vpl_compilation_accordion {
+    width: 100%;
+    height: 100%;
+}
+
+#vpl_compilation_accordion .ui-accordion-header {
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px;
+    cursor: pointer;
+}
+
+#vpl_compilation_accordion .ui-accordion-content {
+    padding: 5px;
+}
+
+#vpl_tabs_scroll {
+    overflow: auto;
+    display: block !important;
+    visibility: visible !important;
+    min-height: 40px !important;
+}
+
+/* Fix file tab display issues */
+#vpl_tabs ul.ui-tabs-nav {
+    background: var(--vpl-gray-200) !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Optimized file tab container */
+#vpl_tabs_ul {
+    display: block !important;
+    visibility: visible !important;
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 8px !important;
+    background: linear-gradient(90deg, var(--vpl-bg-secondary) 0%, var(--vpl-bg-primary) 100%) !important;
+    border-bottom: 3px solid var(--vpl-primary) !important;
+    min-height: 36px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+}
+
+/* Optimized tab sizing */
+#vpl_tabs ul.ui-tabs-nav li {
+    line-height: 1.4em !important;
+    margin: 2px 1px 0 0 !important;
+    padding: 0 !important;
+    background: var(--vpl-gray-300) !important;
+    border: 1px solid var(--vpl-border-light) !important;
+    border-radius: 6px 6px 0 0 !important;
+    display: inline-block !important;
+    position: relative !important;
+    min-width: 140px !important;
+    max-width: 300px !important;
+    width: auto !important;
+    height: 32px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+/* Optimized tab links */
+#vpl_tabs ul.ui-tabs-nav li a {
+    float: left !important;
+    padding: 8px 16px !important;
+    text-decoration: none !important;
+    color: var(--vpl-text-secondary) !important;
+    font-size: var(--vpl-text-sm) !important;
+    font-weight: var(--vpl-font-bold) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    line-height: var(--vpl-leading-tight) !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+    outline: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    width: 100% !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 6px 6px 0 0 !important;
+    transition: all 0.2s ease !important;
+}
+
+/* Active tab styling - ensure full height */
+#vpl_tabs ul.ui_tabs-nav li.ui-tabs-active {
+    background: var(--vpl-bg-primary) !important;
+    border-color: var(--vpl-gray-400) !important;
+    border-bottom: 2px solid var(--vpl-bg-primary) !important;
+    z-index: 2 !important;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15) !important;
+    height: 32px !important;
+}
+
+#vpl_tabs ul.ui-tabs-nav li.ui-tabs-active a {
+    color: var(--vpl-text-primary) !important;
+    font-weight: var(--vpl-font-bold) !important;
+    background: var(--vpl-bg-primary) !important;
+    height: 100% !important;
+    padding: 8px 16px !important;
+}
+
+
+#vpl_tabs ul.ui-tabs-nav li a:hover {
+    background: var(--vpl-bg-secondary) !important;
+    color: var(--vpl-primary) !important;
+    transform: translateY(-1px) !important;
+    font-weight: var(--vpl-font-extrabold) !important;
+}
+
+.vpl_ide_tabs li {
+    line-height: 1ex;
+}
+
+.vpl_ide_charicon {
+    color: gray;
+}
+
+.vpl_ide_closeicon {
+    color: white;
+    text-shadow:
+        1px 0 1px gray,
+        0 1px 1px gray,
+        0 -1px 1px gray,
+        -1px 0 1px gray;
+    margin-left: 8px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+div.vpl_ide_dialog_content {
+    height: 250px;
+    overflow: scroll;
+    width: 350px;
+    background: var(--ide-bg-primary) !important;
+    color: var(--ide-text-primary) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-normal) !important;
+    border: 1px solid var(--ide-border-primary) !important;
+    border-radius: 4px !important;
+    padding: 12px !important;
+}
+
+.vpl_ide_closeicon:hover {
+    color: gray;
+    cursor: pointer;
+    text-shadow: none;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-radius: 3px !important;
+    padding: 2px 4px !important;
+}
+
+.vpl_ide .ui-widget {
+    font-size: 12px;
+}
+
+/* Ensure all dialogs use the new Facebook-style design */
+.ui-dialog {
+    background: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+    z-index: 9999 !important;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    color: #1f2937 !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-lg) !important;
+    font-weight: var(--vpl-font-semibold) !important;
+    line-height: var(--vpl-leading-tight) !important;
+    padding: 16px 20px !important;
+    border-radius: 8px 8px 0 0 !important;
+}
+
+.ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close {
+    background: #f3f4f6 !important;
+    border: 1px solid #d1d5db !important;
+    color: #6b7280 !important;
+    border-radius: 4px !important;
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 12px !important;
+    font-weight: var(--vpl-font-bold) !important;
+    transition: all 0.2s ease !important;
+}
+
+.ui-dialog .ui-dialog-titlebar .ui-dialog-titlebar-close:hover {
+    background: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: #ffffff !important;
+}
+
+.ui-dialog .ui-dialog-content {
+    background: #ffffff !important;
+    color: #374151 !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-normal) !important;
+    padding: 20px !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+    background: #ffffff !important;
+    border-top: 1px solid #e5e7eb !important;
+    padding: 16px 20px !important;
+    border-radius: 0 0 8px 8px !important;
+    margin: 0 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 12px !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-button {
+    background: #3b82f6 !important;
+    border: 1px solid #3b82f6 !important;
+    color: #ffffff !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    font-weight: var(--vpl-font-medium) !important;
+    padding: 8px 16px !important;
+    border-radius: 6px !important;
+    margin: 0 !important;
+    transition: all 0.2s ease !important;
+    text-transform: none !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+    min-width: 60px !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-button:hover {
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+    color: #ffffff !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-button:active {
+    background: #1d4ed8 !important;
+    border-color: #1d4ed8 !important;
+}
+
+/* Cancel/Secondary buttons - Gray style */
+.ui-dialog .ui-dialog-buttonpane .ui-button[class*="cancel"],
+.ui-dialog .ui-dialog-buttonpane .ui-button:last-child {
+    background: #6b7280 !important;
+    border-color: #6b7280 !important;
+    color: #ffffff !important;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-button[class*="cancel"]:hover,
+.ui-dialog .ui-dialog-buttonpane .ui-button:last-child:hover {
+    background: #4b5563 !important;
+    border-color: #4b5563 !important;
+}
+
+.vpl_ide .ui-dialog-titlebar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    color: #1f2937 !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-lg) !important;
+    font-weight: var(--vpl-font-semibold) !important;
+    line-height: var(--vpl-leading-tight) !important;
+    padding: 16px 20px !important;
+    border-radius: 8px 8px 0 0 !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+.vpl_ide .ui-button {
+    font-size: 14px;
+}
+
+div.vpl_ide_file.ui-tabs-panel {
+    padding: 0;
+}
+
+/* Filename header above editor */
+/*  */
+
+/* Empty filename should not show header */
+.vpl_ide_file[data-filename=""]::before,
+.vpl_ide_file:not([data-filename])::before {
+    display: none;
+}
+
+/* Ensure only one filename display - hide any potential duplicates */
+.vpl_ide_file::after {
+    display: none !important;
+}
+
+.vpl_ide_file[data-filename]::after {
+    display: none !important;
+}
+
+/* Position the editor content below the filename header */
+.vpl_ide_file[data-filename]:not([data-filename=""]) {
+    position: relative;
+}
+
+.vpl_ide_file[data-filename]:not([data-filename=""]) > div:first-child {
+    margin-top: 0;
+    position: relative;
+    top: 0;
+    height: calc(100% - 36px);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* For binary files and other content types */
+.vpl_ide_file[data-filename]:not([data-filename=""]) .vpl_ide_binary,
+.vpl_ide_file[data-filename]:not([data-filename=""]) .vpl_ide_img {
+    height: calc(100% - 36px) !important;
+    width: 100% !important;
+}
+
+/* For Blockly editor containers */
+.vpl_ide_file[data-filename]:not([data-filename=""]) div[id^="blockly"] {
+    height: calc(100% - 36px) !important;
+    width: 100% !important;
+}
+
+/* For binary files and other content types */
+.vpl_ide_file[data-filename]:not([data-filename=""]) .vpl_ide_binary,
+.vpl_ide_file[data-filename]:not([data-filename=""]) .vpl_ide_img {
+    height: calc(100% - 36px) !important;
+    width: 100% !important;
+}
+
+/* For Blockly editor containers */
+.vpl_ide_file[data-filename]:not([data-filename=""]) div[id^="blockly"] {
+    height: calc(100% - 36px) !important;
+    width: 100% !important;
+}
+
+/* Modern typography for code editor */
+.vpl_ide_file * {
+    font-family: var(--vpl-font-family-mono) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-relaxed) !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+}
+
+.vpl_ide_file {
+    font-family: var(--vpl-font-family-mono) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-relaxed) !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+    margin: 2px;
+    padding: 0;
+    z-index: 0;
+    position: absolute;
+}
+
+.vpl_ide_binary {
+    font-size: 300%;
+    line-height: 200%;
+    margin: auto;
+    text-align: center;
+    z-index: 0;
+}
+
+.vpl_ide_img {
+    overflow: auto;
+}
+
+.vpl_ide_status {
+    bottom: 2px;
+    right: 2px;
+    border: 1px;
+    margin: 0;
+    padding: 0;
+    font-size: 80%;
+    z-index: 200;
+    position: absolute;
+    display: none;
+}
+
+img.vpl_ide_file {
+    display: block;
+    height: auto;
+    padding: 2px;
+    width: auto;
+    z-index: 0;
+}
+
+/* Dynamic Results Panel - Consolidated Styling */
+.vpl_ide_results {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--results-width, 350px);
+    min-width: 200px;
+    max-width: 60%;
+    background: var(--vpl-bg-primary);
+    color: var(--vpl-text-primary);
+    border-right: 1px solid var(--vpl-border-medium);
+    overflow: auto;
+    resize: horizontal;
+    z-index: 1;
+    display: block !important;
+    box-sizing: border-box;
+    height: auto !important;
+    min-height: 100%;
+}
+
+/* Hide webkit scrollbars completely */
+.vpl_ide_results::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    background: transparent !important;
+}
+
+/* Hide scrollbars from all child elements in description */
+.vpl_ide_results *,
+#vpl_results_accordion,
+#vpl_results_accordion *,
+.vpl_ide_accordion_c_description,
+.vpl_ide_accordion_c_description * {
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE */
+}
+
+.vpl_ide_results *::-webkit-scrollbar,
+#vpl_results_accordion::-webkit-scrollbar,
+#vpl_results_accordion *::-webkit-scrollbar,
+.vpl_ide_accordion_c_description::-webkit-scrollbar,
+.vpl_ide_accordion_c_description *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
+
+
+.vpl_ide_tr,
+.vpl_ide_tr * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.vpl_ide_tr::-webkit-scrollbar,
+.vpl_ide_tr *::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    height: 0px !important;
+    background: transparent !important;
+}
+
+
+body .vpl_ide_results,
+body .vpl_ide_results *,
+html .vpl_ide_results,
+html .vpl_ide_results * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+body .vpl_ide_results::-webkit-scrollbar,
+body .vpl_ide_results *::-webkit-scrollbar,
+html .vpl_ide_results::-webkit-scrollbar,
+html .vpl_ide_results *::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+    height: 0px !important;
+}
+
+
+.vpl_ide_results {
+    height: 100%;
+    min-width: 250px;
+    max-width: 50%;
+    width: var(--results-width, 33%);
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-right: 1px solid #d0d0d0;
+    overflow: hidden !important; 
+    resize: horizontal;
+    background-color: #f0f0f0;
+    box-sizing: border-box;
+}
+
+/* Make the accordion content scrollable with hidden scrollbar */
+#vpl_results_accordion {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+#vpl_results_accordion::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+}
+
+/* Ensure accordion content fits properly with proper contrast */
+.vpl_ide_accordion_c_description {
+    max-height: none !important;
+    overflow-y: auto;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    background: var(--vpl-bg-primary) !important;
+    color: var(--vpl-text-primary) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-normal) !important;
+    padding: 16px !important;
+    border-radius: 4px !important;
+}
+
+.vpl_ide_accordion_c_description::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+}
+
+/* Ensure description text has proper contrast */
+.vpl_ide_accordion_c_description * {
+    color: var(--vpl-text-primary) !important;
+    background: transparent !important;
+}
+
+.vpl_ide_accordion_c_description p,
+.vpl_ide_accordion_c_description div,
+.vpl_ide_accordion_c_description span {
+    color: var(--vpl-text-primary) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-normal) !important;
+}
+
+.vpl_ide_accordion_c_description h1,
+.vpl_ide_accordion_c_description h2,
+.vpl_ide_accordion_c_description h3,
+.vpl_ide_accordion_c_description h4,
+.vpl_ide_accordion_c_description h5,
+.vpl_ide_accordion_c_description h6 {
+    color: var(--vpl-text-primary) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-weight: var(--vpl-font-bold) !important;
+    margin: 12px 0 8px 0 !important;
+}
+
+.vpl_ide_accordion_c_description ul,
+.vpl_ide_accordion_c_description ol {
+    color: var(--vpl-text-primary) !important;
+    margin: 8px 0 !important;
+    padding-left: 20px !important;
+}
+
+.vpl_ide_accordion_c_description li {
+    color: var(--vpl-text-primary) !important;
+    margin: 4px 0 !important;
+}
+
+.vpl_ide_accordion_c_description code {
+    background: var(--vpl-bg-secondary) !important;
+    color: var(--vpl-text-primary) !important;
+    font-family: var(--vpl-font-family-mono) !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+    border: 1px solid var(--vpl-border-light) !important;
+}
+
+.vpl_ide_accordion_c_description pre {
+    background: var(--vpl-bg-secondary) !important;
+    color: var(--vpl-text-primary) !important;
+    font-family: var(--vpl-font-family-mono) !important;
+    padding: 12px !important;
+    border-radius: 4px !important;
+    border: 1px solid var(--vpl-border-light) !important;
+    overflow-x: auto !important;
+}
+
+/* Enhanced resize handle for better visibility and functionality */
+.vpl_ide_results::-webkit-resizer {
+    background-color: #666;
+    border: 2px solid #444;
+    border-radius: 2px;
+    width: 15px !important;
+    height: 30px !important;
+    cursor: col-resize;
+}
+
+.vpl_ide_results::-webkit-resizer:hover {
+    background-color: #333;
+    border-color: #000;
+    cursor: col-resize;
+}
+
+
+
+.vpl_ide_results pre {
+    line-height: 100%;
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
+}
+
+.vpl_ide_progressbar {
+    min-width: 100px;
+    position: relative;
+}
+
+.vpl_ide_progressbaricon {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 2em;
+}
+
+.vpl_ide_progressbarlabel {
+    border: 0;
+    display: block;
+    font-weight: bold;
+    margin: 0 1em 0 1em;
+    padding: 0 1em 0 1em;
+    text-align: center;
+}
+
+.vpl_icon_repeat {
+    left: -0.7em;
+    position: absolute;
+}
+
+/* Modern UI typography */
+.vpl_ide {
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-normal) !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+}
+
+.vpl_ide div.ui-dialog-titlebar {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e5e7eb !important;
+    color: #1f2937 !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-lg) !important;
+    font-weight: var(--vpl-font-semibold) !important;
+    line-height: var(--vpl-leading-tight) !important;
+    letter-spacing: var(--vpl-tracking-wide) !important;
+    padding: 16px 20px !important;
+    border-radius: 8px 8px 0 0 !important;
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+/* Modern IDE UI Widget Styling */
+.vpl_ide .ui-widget {
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    background: var(--vpl-bg-primary) !important;
+    color: var(--ide-text-primary) !important;
+    border: 1px solid var(--ide-border-primary) !important;
+}
+
+.vpl_ide .ui-widget-content {
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    background: var(--ide-bg-primary) !important;
+    color: var(--ide-text-primary) !important;
+    border: 1px solid var(--ide-border-primary) !important;
+}
+
+.vpl_ide .ui-button {
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    font-weight: var(--vpl-font-medium) !important;
+    background: var(--ide-button-bg) !important;
+    border: 1px solid var(--ide-accent-blue) !important;
+    color: var(--ide-button-text) !important;
+    border-radius: 4px !important;
+    transition: all 0.2s ease !important;
+}
+
+.vpl_ide .ui-button:hover {
+    background: var(--ide-button-bg-hover) !important;
+    border-color: var(--ide-accent-blue-hover) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.vpl_ide .ui-button:active {
+    background: var(--ide-button-bg-active) !important;
+    transform: translateY(0) !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Modern compilation and execution typography */
+.ui-widget.vpl_ide_accordion_c_compilation,
+.ui-widget.vpl_ide_accordion_c_execution,
+.vpl_ide_accordion_c_compilation,
+.vpl_ide_accordion_c_execution {
+    font-family: var(--vpl-font-family-mono) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-relaxed) !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+    max-width: 120em;
+    white-space: pre;
+}
+
+.ace_gutter-tooltip {
+    white-space: pre-wrap;
+    font-family: var(--vpl-font-family-mono) !important;
+    font-size: var(--vpl-text-xs) !important;
+    line-height: var(--vpl-leading-normal) !important;
+}
+#vpl_dialog_terminal {
+    display: none;
+    background: var(--ide-bg-primary) !important;
+    border: 1px solid var(--ide-border-primary) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+.vpl_terminal {
+    background-color: var(--ide-bg-primary) !important;
+    border: 1px solid var(--ide-border-primary) !important;
+    margin: 0;
+    padding: 0;
+    z-index: 1000;
+    border-radius: 6px !important;
+    color: var(--ide-text-primary) !important;
+    font-family: var(--vpl-font-family-mono) !important;
+}
+
+/* Modern IDE Terminal Themes */
+.vpl_terminal_theme1 div {
+    background-color: var(--ide-bg-primary);
+    color: var(--ide-text-primary);
+}
+
+.vpl_terminal_theme1 .reverse-video {
+    background-color: var(--ide-accent-blue);
+    color: var(--ide-text-accent);
+}
+
+.vpl_terminal_theme2 div {
+    background-color: var(--ide-bg-secondary);
+    color: var(--ide-accent-green);
+}
+
+.vpl_terminal_theme2 .reverse-video {
+    background-color: var(--ide-accent-green);
+    color: var(--ide-bg-primary);
+}
+
+.vpl_terminal_theme3 div {
+    background-color: var(--ide-bg-tertiary);
+    color: var(--ide-text-primary);
+}
+
+.vpl_terminal_theme3 .reverse-video {
+    background-color: var(--ide-accent-purple);
+    color: var(--ide-text-accent);
+}
+
+.vpl_terminal_theme4 div {
+    background-color: var(--ide-bg-quaternary);
+    color: var(--ide-accent-orange);
+}
+
+.vpl_terminal_theme4 .reverse-video {
+    background-color: var(--ide-accent-orange);
+    color: var(--ide-bg-primary);
+}
+
+.vpl_clipboard {
+    display: none;
+    z-index: 1010;
+    background: var(--ide-bg-primary) !important;
+    border: 1px solid var(--ide-border-primary) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+}
+
+.vpl_clipboard_label1.ui-button-text,
+.vpl_clipboard_label1.ui-button-text {
+    padding: 0.15em;
+    color: var(--ide-text-primary) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+}
+
+.vpl_clipboard .vpl_clipboard_entry1,
+.vpl_clipboard .vpl_clipboard_entry2 {
+    height: 50px;
+    width: 200px;
+    background: var(--ide-bg-secondary) !important;
+    border: 1px solid var(--ide-border-primary) !important;
+    color: var(--ide-text-primary) !important;
+    font-family: var(--vpl-font-family-mono) !important;
+    font-size: var(--vpl-text-sm) !important;
+    border-radius: 4px !important;
+    padding: 8px !important;
+}
+
+/* Modern terminal typography */
+pre.vpl_terminal * {
+    border: 0;
+    font-family: var(--vpl-font-family-mono) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-relaxed) !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+    margin: 0;
+    padding: 0;
+}
+
+pre.vpl_terminal {
+    display: inline-block;
+    font-family: var(--vpl-font-family-mono) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-relaxed) !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+    padding: 8px;
+}
+/* Modern status button typography with stronger weights */
+#vpl_ide_timeleft.vpl_buttonleft_orange,
+.vpl_buttonleft_orange {
+    background-color: var(--vpl-warning);
+    background-image: none;
+    color: var(--vpl-text-inverse);
+    font-weight: var(--vpl-font-extrabold);
+    font-family: var(--vpl-font-family-ui);
+    font-size: var(--vpl-text-base);
+    line-height: var(--vpl-leading-tight);
+    letter-spacing: var(--vpl-tracking-wide);
+}
+
+#vpl_ide_timeleft.vpl_buttonleft_red,
+.vpl_buttonleft_red {
+    background-color: var(--vpl-error);
+    background-image: none;
+    color: var(--vpl-text-inverse);
+    font-weight: var(--vpl-font-extrabold);
+    font-family: var(--vpl-font-family-ui);
+    font-size: var(--vpl-text-base);
+    line-height: var(--vpl-leading-tight);
+    letter-spacing: var(--vpl-tracking-wide);
+}
+
+#vpl_ide_timeleft.vpl_buttonleft_black,
+.vpl_buttonleft_black {
+    background-color: var(--vpl-gray-800);
+    background-image: none;
+    color: var(--vpl-text-inverse);
+    font-weight: var(--vpl-font-extrabold);
+    font-family: var(--vpl-font-family-ui);
+    font-size: var(--vpl-text-base);
+    line-height: var(--vpl-leading-tight);
+    letter-spacing: var(--vpl-tracking-wide);
+}
+
+label[for="vpl_donotshowagain"] {
+    font-size: var(--vpl-text-sm);
+    font-family: var(--vpl-font-family-ui);
+    font-weight: var(--vpl-font-normal);
+    line-height: var(--vpl-leading-normal);
+    color: var(--vpl-text-secondary);
+}
+
+.vpl_bt_extrahtml {
+    font-weight: var(--vpl-font-bold);
+    font-family: var(--vpl-font-family-ui);
+    font-size: var(--vpl-text-base);
+    line-height: var(--vpl-leading-normal);
+    letter-spacing: var(--vpl-tracking-wide);
+}
+
+
+#vpl_results_accordion {
+  width: 100%;
+  height: 100%;
+}
+
+/* Fixed Accordion Header Styling */
+#vpl_results_accordion .ui-accordion-header {
+    background: var(--vpl-bg-secondary) !important;
+    border: 1px solid var(--vpl-border-light) !important;
+    color: var(--vpl-text-primary) !important;
+    font-weight: var(--vpl-font-semibold) !important;
+    font-size: var(--vpl-text-sm) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    padding: 12px 16px !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    transition: all 0.2s ease !important;
+    display: block !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+#vpl_results_accordion .ui-accordion-header:hover {
+    background: var(--vpl-bg-tertiary) !important;
+    border-color: var(--vpl-border-medium) !important;
+    color: var(--vpl-text-primary) !important;
+    transform: none !important;
+}
+
+#vpl_results_accordion .ui-accordion-header.ui-state-active {
+    background: var(--vpl-primary-light) !important;
+    border-color: var(--vpl-primary) !important;
+    color: var(--vpl-primary) !important;
+    font-weight: var(--vpl-font-bold) !important;
+}
+
+/* Ensure accordion content is properly styled */
+#vpl_results_accordion .ui-accordion-content {
+    background: var(--vpl-bg-primary) !important;
+    color: var(--vpl-text-primary) !important;
+    border-top: none !important;
+    padding: 16px !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-normal) !important;
+    overflow: visible !important;
+    display: block !important;
+    position: relative !important;
+    z-index: 0 !important;
+}
+
+/* Ensure accordion functionality is not blocked */
+#vpl_results_accordion {
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+    pointer-events: auto !important;
+    position: relative !important;
+}
+
+#vpl_results_accordion::-webkit-scrollbar {
+    display: none !important;
+    width: 0px !important;
+}
+
+/* Ensure accordion headers are clickable */
+#vpl_results_accordion .ui-accordion-header {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+}
+
+/* Ensure accordion content can be displayed */
+#vpl_results_accordion .ui-accordion-content {
+    pointer-events: auto !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+#vpl_results_accordion .ui-accordion-header {
+    background: var(--vpl-bg-secondary) !important;
+    border: 1px solid var(--vpl-border-light) !important;
+    color: var(--vpl-text-primary) !important;
+    font-weight: var(--vpl-font-semibold) !important;
+    font-size: var(--vpl-text-sm) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    line-height: var(--vpl-leading-tight) !important;
+    letter-spacing: var(--vpl-tracking-wide) !important;
+    padding: 12px 16px !important;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#vpl_results_accordion .ui-accordion-header:hover {
+    background: var(--vpl-bg-tertiary) !important;
+    color: var(--vpl-text-primary) !important;
+    font-weight: var(--vpl-font-bold) !important;
+}
+
+#vpl_results_accordion .ui-accordion-header.ui-state-active {
+    background: var(--vpl-bg-primary) !important;
+    color: var(--vpl-text-primary) !important;
+    border-color: var(--vpl-border-medium) !important;
+    font-weight: var(--vpl-font-bold) !important;
+}
+
+#vpl_results_accordion .ui-accordion-content {
+    padding: 16px !important;
+    border-top: none !important;
+    background: var(--vpl-bg-primary) !important;
+    color: var(--vpl-text-primary) !important;
+    max-height: none !important;
+    overflow: visible !important;
+    font-size: var(--vpl-text-sm) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    line-height: var(--vpl-leading-normal) !important;
+    border-radius: 0 0 4px 4px !important;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Ensure all content in results accordion fills full width */
+#vpl_results_accordion .ui-accordion-content * {
+    color: var(--vpl-text-primary) !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#vpl_results_accordion .ui-accordion-content p,
+#vpl_results_accordion .ui-accordion-content div,
+#vpl_results_accordion .ui-accordion-content span {
+    color: var(--vpl-text-primary) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-normal) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#vpl_results_accordion .ui-accordion-content h1,
+#vpl_results_accordion .ui-accordion-content h2,
+#vpl_results_accordion .ui-accordion-content h3,
+#vpl_results_accordion .ui-accordion-content h4,
+#vpl_results_accordion .ui-accordion-content h5,
+#vpl_results_accordion .ui-accordion-content h6 {
+    color: var(--vpl-text-primary) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-weight: var(--vpl-font-bold) !important;
+    margin: 12px 0 8px 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+
+
+
+/* Modern compilation accordion typography with stronger headers */
+.vpl_ide_accordion_c_compilation .ui-accordion-header {
+    background: linear-gradient(90deg, var(--vpl-gray-300) 0%, var(--vpl-gray-400) 100%) !important;
+    border-left: 4px solid var(--vpl-gray-500) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-base) !important;
+    font-weight: var(--vpl-font-bold) !important;
+    line-height: var(--vpl-leading-tight) !important;
+    letter-spacing: var(--vpl-tracking-wide) !important;
+}
+
+.vpl_ide_accordion_c_compilation.ui-state-active .ui-accordion-header {
+    background: linear-gradient(90deg, var(--vpl-gray-400) 0%, var(--vpl-gray-500) 100%) !important;
+    font-weight: var(--vpl-font-extrabold) !important;
+}
+
+/* Compilation Success */
+.vpl_ide_accordion_c_compilation.vpl_compilation_success .ui-accordion-header {
+    background: linear-gradient(90deg, var(--vpl-success) 0%, var(--vpl-success-hover) 100%) !important;
+    border-left: 4px solid var(--vpl-success) !important;
+    font-weight: var(--vpl-font-extrabold) !important;
+}
+
+.vpl_ide_accordion_c_compilation .ui-accordion-content {
+    background: linear-gradient(135deg, var(--vpl-bg-primary) 0%, var(--vpl-bg-secondary) 100%) !important;
+    border-left: 4px solid var(--vpl-gray-400) !important;
+}
+
+.vpl_ide_accordion_c_compilation.vpl_compilation_success .ui-accordion-content {
+    background: linear-gradient(135deg, var(--vpl-success-light) 0%, var(--vpl-bg-primary) 100%) !important;
+    border-left: 4px solid var(--vpl-success) !important;
+}
+
+/* Enhanced compilation text with modern typography */
+.vpl_ide_accordion_c_compilation pre {
+    background: var(--vpl-bg-primary) !important;
+    padding: 20px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--vpl-border-light) !important;
+    margin: 12px 0 !important;
+    font-size: var(--vpl-text-sm) !important;
+    font-family: var(--vpl-font-family-mono) !important;
+    line-height: var(--vpl-leading-relaxed) !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    color: var(--vpl-error) !important;
+    font-weight: var(--vpl-font-medium) !important;
+}
+
+.vpl_ide_accordion_c_compilation.vpl_compilation_success pre {
+    color: var(--vpl-success) !important;
+    border: 1px solid var(--vpl-success-light) !important;
+    background: var(--vpl-success-light) !important;
+    font-weight: var(--vpl-font-medium) !important;
+}
+
+.vpl_ide_tr {
+    border: 0;
+    margin: 0;
+    min-width: 330px;
+    padding: 0;
+    position: relative;
+    width: 100%;
+}
+
+/* Enhanced resize handle for better UX */
+
+
+#vpl_results_accordion {
+    height: 100%;
+    width: 100%;
+}
+
+#vpl_results_accordion .ui-accordion-header {
+    background: var(--vpl-bg-secondary) !important;
+    border: 1px solid var(--vpl-border-light) !important;
+    color: var(--vpl-text-secondary) !important;
+    font-weight: var(--vpl-font-bold) !important;
+    font-size: var(--vpl-text-base) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    line-height: var(--vpl-leading-tight) !important;
+    letter-spacing: var(--vpl-tracking-wide) !important;
+    padding: 12px 16px !important;
+    margin: 0 !important;
+}
+
+#vpl_results_accordion .ui-accordion-header:hover {
+    background: var(--vpl-gray-100) !important;
+    color: var(--vpl-text-primary) !important;
+    font-weight: var(--vpl-font-extrabold) !important;
+}
+
+#vpl_results_accordion .ui-accordion-header.ui-state-active {
+    background: var(--vpl-gray-600) !important;
+    color: var(--vpl-text-inverse) !important;
+    border-color: var(--vpl-gray-500) !important;
+    font-weight: var(--vpl-font-extrabold) !important;
+}
+
+#vpl_results_accordion .ui-accordion-content {
+    padding: 16px !important;
+    border-top: none !important;
+    background: var(--vpl-bg-primary) !important;
+    color: var(--vpl-text-primary) !important;
+    max-height: 600px !important;
+    overflow: auto !important;
+    font-size: var(--vpl-text-sm) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    line-height: var(--vpl-leading-normal) !important;
+    border-radius: 0 0 4px 4px !important;
+}
+
+/* Ensure all content in results accordion has proper contrast */
+#vpl_results_accordion .ui-accordion-content * {
+    color: var(--vpl-text-primary) !important;
+}
+
+#vpl_results_accordion .ui-accordion-content p,
+#vpl_results_accordion .ui-accordion-content div,
+#vpl_results_accordion .ui-accordion-content span {
+    color: var(--vpl-text-primary) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-normal) !important;
+}
+
+#vpl_results_accordion .ui-accordion-content h1,
+#vpl_results_accordion .ui-accordion-content h2,
+#vpl_results_accordion .ui-accordion-content h3,
+#vpl_results_accordion .ui-accordion-content h4,
+#vpl_results_accordion .ui-accordion-content h5,
+#vpl_results_accordion .ui-accordion-content h6 {
+    color: var(--vpl-text-primary) !important;
+    font-family: var(--vpl-font-family-ui) !important;
+    font-weight: var(--vpl-font-bold) !important;
+    margin: 12px 0 8px 0 !important;
+}
+
+/* Ensure execution results are visible with modern typography */
+.vpl_ide_accordion_c_compilation,
+.vpl_ide_accordion_c_run,
+.vpl_ide_accordion_c_debug,
+.vpl_ide_accordion_c_evaluate {
+    display: block !important;
+    visibility: visible !important;
+    font-family: var(--vpl-font-family-mono) !important;
+    font-size: var(--vpl-text-sm) !important;
+    line-height: var(--vpl-leading-relaxed) !important;
+    letter-spacing: var(--vpl-tracking-normal) !important;
+    background: var(--vpl-bg-secondary) !important;
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+}
+.vpl_ide_results::-webkit-resizer {
+    background: linear-gradient(45deg, var(--vpl-gray-500), var(--vpl-gray-400));
+    border: 1px solid var(--vpl-gray-600);
+    border-radius: 3px;
+}
+
+/* Clean resize indicator for results panel */
+.vpl_ide_results::after {
+    content: "⋮";
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--vpl-gray-400);
+    font-size: 14px;
+    font-weight: var(--vpl-font-bold);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.5;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.vpl_ide_results:hover::after {
+    opacity: 0.8;
+    color: var(--vpl-gray-600);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.vpl_dimmed {
+    opacity: 0.3;
+}
+
+.vpl_ide_status {
+    opacity: 0.8;
+    z-index: 100;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 1200px) {
+    .vpl_ide_tr {
+        --results-width: 30%; 
+        --compilation-height: 270.2px; /* Set to exact height for medium screens */
+    }
+    
+    .vpl_ide_compilation {
+        min-height: 120px; 
+        max-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .vpl_ide_tr {
+        --results-width: 40%; 
+        --compilation-height: 270.2px; /* Set to exact height on mobile */
+    }
+    
+    .vpl_ide_compilation {
+        min-height: 100px; 
+        max-height: 350px;
+    }
+    
+    .vpl_ide_results {
+        min-width: 200px; 
+        max-width: 50%;
+    }
+}
+
+/* Additional Button Colors for Modern Design */
+
+/* Console Button - Icon only styling */
+#vpl_menu .ui-button[title*="Console"] {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="Console"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Console"] i.fa-terminal {
+    color: #22c55e !important;
+    font-size: 18px !important;
+}
+
+#vpl_menu .ui-button[title*="Console"]:hover i.fa-terminal {
+    color: #ffffff !important;
+}
+
+/* Files Button - Icon only styling */
+#vpl_menu .ui-button[title*="Files"] {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="Files"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Files"] i.fa-folder,
+#vpl_menu .ui-button[title*="Files"] i.fa-folder-open {
+    color: #3b82f6 !important;
+    font-size: 18px !important;
+}
+
+#vpl_menu .ui-button[title*="Files"]:hover i.fa-folder,
+#vpl_menu .ui-button[title*="Files"]:hover i.fa-folder-open {
+    color: #ffffff !important;
+}
+
+/* Hints Button - Icon only styling */
+#vpl_menu .ui-button[title*="Hints"] {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="Hints"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Hints"] i.fa-lightbulb-o,
+#vpl_menu .ui-button[title*="Hints"] i.fa-bulb {
+    color: #a855f7 !important;
+    font-size: 18px !important;
+}
+
+#vpl_menu .ui-button[title*="Hints"]:hover i.fa-lightbulb-o,
+#vpl_menu .ui-button[title*="Hints"]:hover i.fa-bulb {
+    color: #ffffff !important;
+}
+
+/* Generate Test Cases Button - Icon only styling */
+#vpl_menu .ui-button[title*="Generate test cases"],
+#vpl_menu .ui-button[title*="Generate Test Cases"] {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="Generate test cases"]:hover,
+#vpl_menu .ui-button[title*="Generate Test Cases"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Generate test cases"] i.fa-magic,
+#vpl_menu .ui-button[title*="Generate test cases"] i.fa-wand-magic-sparkles,
+#vpl_menu .ui-button[title*="Generate Test Cases"] i.fa-magic,
+#vpl_menu .ui-button[title*="Generate Test Cases"] i.fa-wand-magic-sparkles {
+    color: #10b981 !important;
+    font-size: 18px !important;
+}
+
+#vpl_menu .ui-button[title*="Generate test cases"]:hover i.fa-magic,
+#vpl_menu .ui-button[title*="Generate test cases"]:hover i.fa-wand-magic-sparkles,
+#vpl_menu .ui-button[title*="Generate Test Cases"]:hover i.fa-magic,
+#vpl_menu .ui-button[title*="Generate Test Cases"]:hover i.fa-wand-magic-sparkles {
+    color: #ffffff !important;
+}
+
+/* Rename Button - Icon only styling */
+#vpl_menu .ui-button[title*="Rename"] {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="Rename"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Rename"] i.fa-edit,
+#vpl_menu .ui-button[title*="Rename"] i.fa-pencil {
+    color: #f59e0b !important;
+    font-size: 18px !important;
+}
+
+#vpl_menu .ui-button[title*="Rename"]:hover i.fa-edit,
+#vpl_menu .ui-button[title*="Rename"]:hover i.fa-pencil {
+    color: #ffffff !important;
+}
+
+/* Font Size Button - Icon only styling */
+#vpl_menu .ui-button[title*="Font size"],
+#vpl_menu .ui-button[title*="Font Size"] {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="Font size"]:hover,
+#vpl_menu .ui-button[title*="Font Size"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Font size"] i.fa,
+#vpl_menu .ui-button[title*="Font Size"] i.fa {
+    color: #6b7280 !important;
+    font-size: 18px !important;
+}
+
+#vpl_menu .ui-button[title*="Font size"]:hover i.fa,
+#vpl_menu .ui-button[title*="Font Size"]:hover i.fa {
+    color: #ffffff !important;
+}
+
+/* Theme Button - Icon only styling */
+#vpl_menu .ui-button[title*="Theme"] {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="Theme"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Theme"] i.fa-paint-brush,
+#vpl_menu .ui-button[title*="Theme"] i.fa-palette {
+    color: #8b5cf6 !important;
+    font-size: 18px !important;
+}
+
+#vpl_menu .ui-button[title*="Theme"]:hover i.fa-paint-brush,
+#vpl_menu .ui-button[title*="Theme"]:hover i.fa-palette {
+    color: #ffffff !important;
+}
+
+/* Select All Button - Icon only styling */
+#vpl_menu .ui-button[title*="Select All"] {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="Select All"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Select All"] i.fa-check-square-o,
+#vpl_menu .ui-button[title*="Select All"] i.fa-check-square {
+    color: #10b981 !important;
+    font-size: 18px !important;
+}
+
+#vpl_menu .ui-button[title*="Select All"]:hover i.fa-check-square-o,
+#vpl_menu .ui-button[title*="Select All"]:hover i.fa-check-square {
+    color: #ffffff !important;
+}
+
+/* Find Button - Icon only styling */
+#vpl_menu .ui-button[title*="Find"]:not([title*="Replace"]) {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="Find"]:not([title*="Replace"]):hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Find"]:not([title*="Replace"]) i.fa-search {
+    color: #3b82f6 !important;
+    font-size: 18px !important;
+}
+
+#vpl_menu .ui-button[title*="Find"]:not([title*="Replace"]):hover i.fa-search {
+    color: #ffffff !important;
+}
+
+/* Find/Replace Button - Icon only styling */
+#vpl_menu .ui-button[title*="Find/Replace"],
+#vpl_menu .ui-button[title*="Replace"] {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="Find/Replace"]:hover,
+#vpl_menu .ui-button[title*="Replace"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Find/Replace"] i.fa,
+#vpl_menu .ui-button[title*="Replace"] i.fa {
+    color: #a855f7 !important;
+    font-size: 18px !important;
+}
+
+#vpl_menu .ui-button[title*="Find/Replace"]:hover i.fa,
+#vpl_menu .ui-button[title*="Replace"]:hover i.fa {
+    color: #ffffff !important;
+}
+
+/* Next Button - Icon only styling */
+#vpl_menu .ui-button[title*="Next"] {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="Next"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Next"] i.fa-arrow-right,
+#vpl_menu .ui-button[title*="Next"] i.fa-chevron-right {
+    color: #f59e0b !important;
+    font-size: 18px !important;
+}
+
+#vpl_menu .ui-button[title*="Next"]:hover i.fa-arrow-right,
+#vpl_menu .ui-button[title*="Next"]:hover i.fa-chevron-right {
+    color: #ffffff !important;
+}
+
+/* Full Screen Button - Icon only styling */
+#vpl_menu .ui-button[title*="Full Screen"],
+#vpl_menu .ui-button[title*="Fullscreen"] {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="Full Screen"]:hover,
+#vpl_menu .ui-button[title*="Fullscreen"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="Full Screen"] i.fa-expand,
+#vpl_menu .ui-button[title*="Fullscreen"] i.fa-expand {
+    color: #22c55e !important;
+    font-size: 18px !important;
+}
+
+#vpl_menu .ui-button[title*="Full Screen"]:hover i.fa-expand,
+#vpl_menu .ui-button[title*="Fullscreen"]:hover i.fa-expand {
+    color: #ffffff !important;
+}
+
+/* User Button - Icon only styling */
+#vpl_menu .ui-button[title*="User"] {
+    background: transparent !important;
+    color: #e2e8f0 !important;
+}
+
+#vpl_menu .ui-button[title*="User"]:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+
+#vpl_menu .ui-button[title*="User"] i.fa-user,
+#vpl_menu .ui-button[title*="User"] i.fa-user-circle {
+    color: #6b7280 !important;
+    font-size: 18px !important;
+    margin-right: 6px !important;
+}
+
+#vpl_menu .ui-button[title*="User"]:hover i.fa-user,
+#vpl_menu .ui-button[title*="User"]:hover i.fa-user-circle {
+    color: #ffffff !important;
+    margin-right: 6px !important;
+}
+
+/* Hide Moodle navigation when in VPL editor */
+body.pagelayout-embedded .navbar,
+body.pagelayout-embedded .navbar-nav,
+body.pagelayout-embedded .breadcrumb,
+body.pagelayout-embedded .page-header-headings,
+body.pagelayout-embedded .activity-navigation,
+body.pagelayout-embedded .secondary-navigation,
+body.pagelayout-embedded .tertiary-navigation,
+body.pagelayout-embedded .drawer-toggles,
+body.pagelayout-embedded #page-header,
+body.pagelayout-embedded #page-navbar,
+body.pagelayout-embedded .navbar-brand,
+body.pagelayout-embedded .navbar-toggler,
+body.pagelayout-embedded .nav-tabs,
+body.pagelayout-embedded .nav-pills {
+    display: none !important;
+}
+
+/* Ensure VPL editor takes full viewport */
+body.pagelayout-embedded #page {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+body.pagelayout-embedded #page-content {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+/* Hide any remaining navigation elements */
+body.pagelayout-embedded .fixed-top {
+    display: none !important;
+}

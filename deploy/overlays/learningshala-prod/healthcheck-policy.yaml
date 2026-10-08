@@ -1,0 +1,30 @@
+# Without this, GKE Gateway infers the health check from the pods' readinessProbe
+# -- and if the Service is created before any pod exists, there is nothing to
+# infer from, so it defaults to requestPath: "/". Moodle answers "/" with a 303
+# (sslproxy redirect), GCP health checks accept only 200, every backend goes
+# UNHEALTHY and the load balancer serves 503 while the pods look perfectly fine.
+#
+# On a brand-new tenant the Service genuinely IS created before any pod, so this
+# is not optional here -- it is the difference between a working first deploy and
+# an afternoon spent debugging healthy pods behind a 503.
+apiVersion: networking.gke.io/v1
+kind: HealthCheckPolicy
+metadata:
+  name: learningshala-prod-healthcheck
+spec:
+  default:
+    checkIntervalSec: 20
+    timeoutSec: 10
+    healthyThreshold: 1
+    unhealthyThreshold: 5
+    logConfig:
+      enabled: true
+    config:
+      type: HTTP
+      httpHealthCheck:
+        port: 80
+        requestPath: /healthz.php
+  targetRef:
+    group: ""
+    kind: Service
+    name: moodle-service

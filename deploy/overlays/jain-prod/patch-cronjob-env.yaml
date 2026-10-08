@@ -1,0 +1,84 @@
+# Cron environment for learn.onlinejain.com.
+#
+# MOODLE_DOCKER_DBPASS now comes from the Secret instead of a literal. This is
+# the one intentional difference from live: everything else reproduces the
+# current objects exactly.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: moodle-cron
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: moodle-cron
+            env:
+            - name: MOODLE_DOCKER_DBTYPE
+              value: "mysqli"
+            - name: MOODLE_DOCKER_DBHOST
+              value: "mysql-db-pxc-db-haproxy"
+            - name: MOODLE_DOCKER_DBNAME
+              value: "moodledb"
+            - name: MOODLE_DOCKER_DBUSER
+              value: "moodleuser"
+            - name: MOODLE_DOCKER_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            # config.php reads $CFG->dbpass from this, and the CronJobs mount
+            # that same config.php. Without it, cron bootstraps Moodle with an
+            # empty password and cannot reach the database.
+            - name: MOODLE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            - name: MOODLE_DOCKER_PREFIX
+              value: "acu_"
+            - name: MOODLE_DOCKER_WWWROOT
+              value: "https://learn.onlinejain.com"
+            - name: PHP_MEMORY_LIMIT
+              value: "4G"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: moodle-adhoc-tasks
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: moodle-adhoc-tasks
+            env:
+            - name: MOODLE_DOCKER_DBTYPE
+              value: "mysqli"
+            - name: MOODLE_DOCKER_DBHOST
+              value: "mysql-db-pxc-db-haproxy"
+            - name: MOODLE_DOCKER_DBNAME
+              value: "moodledb"
+            - name: MOODLE_DOCKER_DBUSER
+              value: "moodleuser"
+            - name: MOODLE_DOCKER_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            # config.php reads $CFG->dbpass from this, and the CronJobs mount
+            # that same config.php. Without it, cron bootstraps Moodle with an
+            # empty password and cannot reach the database.
+            - name: MOODLE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            - name: MOODLE_DOCKER_PREFIX
+              value: "acu_"
+            - name: MOODLE_DOCKER_WWWROOT
+              value: "https://learn.onlinejain.com"
+            - name: PHP_MEMORY_LIMIT
+              value: "12G"

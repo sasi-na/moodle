@@ -1,0 +1,52 @@
+# Sized from measured load in ONE pass. usdc needed two rounds because the first
+# reproduced its live values, which were a jain-shaped template rather than a
+# choice; this overlay skips that step.
+#
+# Measured 2026-09-02:
+#   moodle pods       1m CPU / 610-667Mi each, across 4 replicas
+#   busiest hour      119 distinct users, 1,840 hits  ->  ~0.5 requests/second
+#   busiest day       190 distinct users
+#   30-day actives    429 of 1,138 accounts
+#
+# Live requests were 500m / 2560Mi x 4 = 2 CPU and 10Gi reserved on a node pool
+# shared with ~20 namespaces, to serve half a request per second.
+#
+# Most of the 610-667Mi is not Moodle, it is 25 idle php-fpm workers from base's
+# jain-sized pool; config/www.conf cuts that to 8, so 1Gi is comfortable headroom
+# rather than a tight fit. There are no memory limits anywhere in base, so these
+# govern scheduling only and a heavy request can still burst.
+#
+# 4 replicas -> 2 is availability, not capacity: two pods keep the site up
+# through a rollout, and 2 x 32 php-fpm workers is ~64 concurrent requests
+# against a measured peak of 0.5/s. The HPA can take it to 6.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  replicas: 2
+  template:
+    spec:
+      # Live carries 300s. Base's 120s is already longer than the preStop drain
+      # (80s php-fpm / 75s nginx), so 300 only slows down rollouts.
+      terminationGracePeriodSeconds: 120
+      containers:
+      - name: php-fpm
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "150m"
+      - name: nginx
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+      # theme-css-warmer is deliberately NOT patched. It is a native sidecar (an
+      # initContainer with restartPolicy: Always), so a patch for it must go in
+      # the initContainers list -- and a single-entry list there makes kustomize's
+      # strategic merge treat it as the list HEAD and hoist it in front of
+      # setup-logs-and-code, the container that populates the shared volume the
+      # warmer reads. It would then loop on an empty /var/www/html forever, and
+      # because a sidecar only has to START, the pod would come up healthy with
+      # the CSS pre-warm silently dead. That was caught on usdc by
+      # `kubectl diff -k`; base's 50m/128Mi is not worth repeating the risk for.

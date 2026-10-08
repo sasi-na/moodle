@@ -1,0 +1,71 @@
+# learn.onlinejain.com -- namespace jo-moodle-prod, cluster usdc-prod-cluster-1
+#
+# STATUS: refactor-only. This overlay is built to reproduce the CURRENTLY LIVE
+# objects exactly, so that `kubectl diff -k` prints nothing. It has not been
+# applied -- adopting it is a separate, deliberate decision.
+#
+# Values below were taken from the LIVE cluster, not from Deployment-files/prod/,
+# because the committed manifests have drifted from live and applying them would
+# break the site (see deploy/README.md for the full drift table).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: jo-moodle-prod
+
+resources:
+  - ../../base
+  - namespace.yaml
+  - serviceaccount.yaml
+  - cronjob-nfs-backup.yaml
+
+patches:
+  - path: patch-deployment-env.yaml
+  - path: patch-cronjob-env.yaml
+  - path: patch-redis.yaml
+
+# Merges jain's moodle_config.php into the moodle-config ConfigMap that base
+# generates. Verified byte-for-byte against live by md5.
+configMapGenerator:
+  - name: moodle-config
+    behavior: merge
+    files:
+      - config/moodle_config.php
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+# The image tag is the deployment unit. CI currently moves it with
+# `kubectl set image`; once this overlay is adopted, the deploy job must instead
+# run `kustomize edit set image` here and apply, otherwise an apply would roll
+# the site back to whatever tag is committed.
+images:
+  - name: moodle-lms
+    newName: asia-south1-docker.pkg.dev/org-dev-infra/services/moodle-lms
+    newTag: cbd68032
+
+# Intentionally NOT managed here -- each needs a deliberate decision first:
+#
+#   ConfigMap moodle-config
+#     Live differs from git: dbhost is `mysql-db-pxc-db-haproxy` live vs the dead
+#     `moodle-db` in git, and live has an extra `$CFG->lock_factory`. Adopting it
+#     also restarts every pod. Reconcile as its own change.
+#
+#   CronJobs moodle-cron / moodle-adhoc-tasks
+#     The committed manifests embed the production DB password in plaintext, both
+#     as an env value and inline in a PHP connection-test snippet. These should
+#     move to secretKeyRef before being brought under kustomize.
+#
+#   Secret moodle-secrets
+#     Plaintext DB and admin credentials are committed to git. Needs Sealed
+#     Secrets / External Secrets before it belongs in a manifest tree.
+#
+#   HTTPRoute jain-prod-route
+#     Owned by the `gateway-api` Helm release in the `default` namespace, not by
+#     this repo. Taking it over here would fight Helm. Leave it where it is.
+#
+#   PersistentVolume moodle-nfs-pv / PVC moodle-nfs-pvc
+#     Bootstrap-once storage, already Bound. Re-applying a bound PV/PVC risks
+#     disturbing the claimRef for no benefit.
+#
+#   Redis, PXC cluster, backup CronJobs
+#     Separate lifecycle / operator-managed.

@@ -1,0 +1,49 @@
+services:
+  moodle-db:
+    image: mysql:8.4
+    container_name: moodle-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: moodledb
+      MYSQL_USER: moodleuser
+      MYSQL_PASSWORD: moodlepass
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - moodle-net
+    ports:
+      - "3307:3306"
+
+  moodle:
+    image: custom-image-moodle:latest
+    container_name: moodle-app-2
+    restart: always
+    # ports:
+    #   - "8081:8080"  
+    environment:
+      - MOODLE_DATABASE_TYPE=mysqli
+      - MOODLE_DATABASE_HOST=moodle-db
+      - MOODLE_DATABASE_PORT_NUMBER=3306
+      - MOODLE_DATABASE_NAME=moodledb
+      - MOODLE_DATABASE_USER=moodleuser
+      - MOODLE_DATABASE_PASSWORD=moodlepass
+      - MOODLE_USERNAME=admin
+      - MOODLE_PASSWORD=Admin@1234
+      - MOODLE_EMAIL=admin@example.com
+      # - ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - moodle_data:/var/www/html
+      - moodledata_data:/var/moodledata
+    depends_on:
+      - moodle-db
+    networks:
+      - moodle-net
+
+volumes:
+  db_data:
+  moodle_data:
+  moodledata_data:
+
+networks:
+  moodle-net:

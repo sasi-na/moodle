@@ -1,0 +1,36 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ludilearn/filename
+
+    Example context (json):
+    {}
+}}
+
+<div id="ludilearn-settings">
+    <div class="alert alert-success editsettingssuccess" role="alert">
+        {{#str}} editsettingssuccess, format_ludilearn {{/str}}
+    </div>
+    <div class="alert alert-danger editsettingsfailed" role="alert">
+        {{#str}} editsettingsfailed, format_ludilearn {{/str}}
+    </div>
+    <p class="align-center">{{#str}} settings:updateprogressiondescription, format_ludilearn {{/str}}</p>
+    <form id="form-parameters" class="form-parameters mform" action="#">
+        <input type="hidden" name="courseid" value="{{ courseid }}">
+        <button class="btn btn-primary" type="submit">{{#str}} execute, format_ludilearn {{/str}}</button>
+    </form>
+</div>

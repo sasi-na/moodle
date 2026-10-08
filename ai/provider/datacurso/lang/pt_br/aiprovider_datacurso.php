@@ -1,0 +1,261 @@
+<?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ * Plugin strings are defined here.
+ *
+ * @package     aiprovider_datacurso
+ * @category    string
+ * @copyright   Josue <josue@datacurso.com>
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+$string['action'] = 'Ação';
+$string['action:generate_image:endpoint'] = 'Endpoint da API';
+$string['action:generate_image:endpoint_desc'] = 'O endpoint para gerar imagens';
+$string['action:generate_text:endpoint'] = 'Endpoint da API';
+$string['action:generate_text:endpoint_desc'] = 'O endpoint para gerar texto';
+$string['action:generate_text:instruction'] = 'Instrução do sistema';
+$string['action:generate_text:instruction_desc'] = 'Esta instrução é enviada ao modelo de IA junto com o prompt do usuário. Não é recomendado editar esta instrução, a menos que seja absolutamente necessário.';
+$string['action:summarise_text:endpoint'] = 'Endpoint da API';
+$string['action:summarise_text:endpoint_desc'] = 'O endpoint para gerar texto';
+$string['action:summarise_text:instruction'] = 'Instrução do sistema';
+$string['action:summarise_text:instruction_desc'] = 'Esta instrução é enviada ao modelo de IA junto com o prompt do usuário. Não é recomendado editar esta instrução, a menos que seja absolutamente necessário.';
+$string['all'] = 'Todos';
+$string['alt_datacurso_icon'] = 'Ícone do Datacurso';
+$string['apikey'] = 'Chave da API';
+$string['apikey_desc'] = 'Insira a chave da API do seu serviço Datacurso para conectar a IA.';
+$string['apiurl'] = 'URL base da API';
+$string['apiurl_desc'] = 'Insira a URL base do serviço para conectar à API Datacurso.';
+$string['assigned'] = 'Atribuído';
+$string['chart_actions'] = 'Distribuição de créditos por serviço';
+$string['chart_tokens_by_day'] = 'Consumo de créditos por dia';
+$string['chart_tokens_by_month'] = 'Número de créditos consumidos por mês';
+$string['configured'] = 'Configurado';
+$string['confirm_delete_message'] = 'Você realmente deseja excluir o limite de créditos para "{$a}"?';
+$string['confirm_delete_title'] = 'Excluir limite de créditos';
+$string['confirm_reset_usage_message'] = 'Isso irá redefinir o contador de uso para "{$a}". Deseja continuar?';
+$string['create_activity_assign_image'] = 'Criar tarefa com IA (com imagens)';
+$string['create_activity_assign_noimage'] = 'Criar tarefa com IA (sem imagens)';
+$string['create_activity_book_image'] = 'Criar livro com IA (com imagens)';
+$string['create_activity_book_noimage'] = 'Criar livro com IA (sem imagens)';
+$string['create_activity_choice_image'] = 'Criar enquete com IA (com imagens)';
+$string['create_activity_choice_noimage'] = 'Criar enquete com IA (sem imagens)';
+$string['create_activity_data_image'] = 'Criar banco de dados com IA (com imagens)';
+$string['create_activity_data_noimage'] = 'Criar banco de dados com IA (sem imagens)';
+$string['create_activity_feedback_image'] = 'Criar pesquisa com IA (com imagens)';
+$string['create_activity_feedback_noimage'] = 'Criar pesquisa com IA (sem imagens)';
+$string['create_activity_folder_image'] = 'Criar pasta com IA (com imagens)';
+$string['create_activity_folder_noimage'] = 'Criar pasta com IA (sem imagens)';
+$string['create_activity_forum_image'] = 'Criar fórum com IA (com imagens)';
+$string['create_activity_forum_noimage'] = 'Criar fórum com IA (sem imagens)';
+$string['create_activity_glossary_image'] = 'Criar glossário com IA (com imagens)';
+$string['create_activity_glossary_noimage'] = 'Criar glossário com IA (sem imagens)';
+$string['create_activity_h5pactivity_image'] = 'Criar atividade H5P com IA (com imagens)';
+$string['create_activity_h5pactivity_noimage'] = 'Criar atividade H5P com IA (sem imagens)';
+$string['create_activity_imscp_image'] = 'Criar pacote IMS com IA (com imagens)';
+$string['create_activity_imscp_noimage'] = 'Criar pacote IMS com IA (sem imagens)';
+$string['create_activity_label_image'] = 'Criar rótulo com IA (com imagens)';
+$string['create_activity_label_noimage'] = 'Criar rótulo com IA (sem imagens)';
+$string['create_activity_lesson_image'] = 'Criar lição com IA (com imagens)';
+$string['create_activity_lesson_noimage'] = 'Criar lição com IA (sem imagens)';
+$string['create_activity_page_image'] = 'Criar página com IA (com imagens)';
+$string['create_activity_page_noimage'] = 'Criar página com IA (sem imagens)';
+$string['create_activity_quiz_image'] = 'Criar questionário com IA (com imagens)';
+$string['create_activity_quiz_noimage'] = 'Criar questionário com IA (sem imagens)';
+$string['create_activity_resource_image'] = 'Criar arquivo/recurso com IA (com imagens)';
+$string['create_activity_resource_noimage'] = 'Criar arquivo/recurso com IA (sem imagens)';
+$string['create_activity_scorm_image'] = 'Criar pacote SCORM com IA (com imagens)';
+$string['create_activity_scorm_noimage'] = 'Criar pacote SCORM com IA (sem imagens)';
+$string['create_activity_url_image'] = 'Criar URL com IA (com imagens)';
+$string['create_activity_url_noimage'] = 'Criar URL com IA (sem imagens)';
+$string['create_activity_wiki_image'] = 'Criar wiki com IA (com imagens)';
+$string['create_activity_wiki_noimage'] = 'Criar wiki com IA (sem imagens)';
+$string['create_activity_workshop_image'] = 'Criar oficina com IA (com imagens)';
+$string['create_activity_workshop_noimage'] = 'Criar oficina com IA (sem imagens)';
+$string['created'] = 'Criado';
+$string['curlerror'] = 'Erro cURL da API Datacurso: {$a}';
+$string['datacurso:manage'] = 'Gerenciar configurações do provedor de IA';
+$string['datacurso:use'] = 'Usar serviços de IA Datacurso';
+$string['datacurso:viewreports'] = 'Ver relatórios de uso de IA';
+$string['day'] = 'dia';
+$string['description'] = 'Descrição';
+$string['descriptionpagelistplugins'] = 'Aqui você pode encontrar a lista de plugins compatíveis com o provedor Datacurso';
+$string['disabled'] = 'Desabilitado';
+$string['emptyprompt'] = 'Prompt vazio';
+$string['emptyresponse'] = 'Sem resposta da API Datacurso.';
+$string['enabled'] = 'Habilitado';
+$string['enableglobalratelimit'] = 'Habilitar limite global';
+$string['enableglobalratelimit_desc'] = 'Se habilitado, um limite de solicitações global por hora será aplicado para todos os usuários.';
+$string['enableuserratelimit'] = 'Habilitar limite por usuário';
+$string['enableuserratelimit_desc'] = 'Se habilitado, cada usuário terá um limite de solicitações por hora.';
+$string['errorgetbalancecredits'] = 'Não foi possível recuperar o saldo de créditos da API externa';
+$string['exists'] = 'Existe';
+$string['forbidden'] = 'Você não tem permissão para executar esta ação com a licença atual. Por favor, verifique sua licença e créditos disponíveis em <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Gerenciar Créditos</a> na Loja Datacurso.';
+$string['generate_activitie'] = 'Gerar atividade ou recurso com IA';
+$string['generate_ai_reinforcement_activity'] = 'Criar atividade de reforço com IA';
+$string['generate_analysis_comments'] = 'Gerar análise de avaliação de uma atividade/recurso com IA';
+$string['generate_analysis_course'] = 'Gerar análise de avaliação do curso com IA';
+$string['generate_analysis_general'] = 'Gerar análise de avaliação geral com IA';
+$string['generate_analysis_story_student'] = 'Gerar análise da história do aluno com IA';
+$string['generate_assign_answer'] = 'Gerar revisão de tarefa com IA';
+$string['generate_certificate_answer'] = 'Gerar mensagem de certificado com IA';
+$string['generate_chat_embeddings'] = 'Histórico de conversa IA';
+$string['generate_chat_stream'] = 'Resposta IA';
+$string['generate_creation_course'] = 'Criar curso completo com IA';
+$string['generate_creation_course_image'] = 'Criar curso completo com IA (com imagens)';
+$string['generate_creation_course_noimage'] = 'Criar curso completo com IA (sem imagens)';
+$string['generate_forum_chat'] = 'Gerar resposta de fórum com IA';
+$string['generate_forum_grade'] = 'Avaliar fórum com IA';
+$string['generate_image'] = 'Gerar imagem com IA';
+$string['generate_plan_course'] = 'Gerar plano de criação de curso com IA';
+$string['generate_summary'] = 'Gerar resumo com IA';
+$string['generate_text'] = 'Gerar texto com IA';
+$string['globalratelimit'] = 'Limite de solicitações global';
+$string['globalratelimit_desc'] = 'Número máximo de solicitações permitidas por hora para todo o sistema.';
+$string['goto'] = 'Ir para o Relatório';
+$string['hour'] = 'hora';
+$string['httperror'] = 'Erro inesperado ao processar sua solicitação (HTTP {$a}). Por favor, tente novamente mais tarde. Se o problema persistir, entre em contato com o administrador do site.';
+$string['id'] = 'ID';
+$string['installed'] = 'Instalado';
+$string['invalidlicensekey'] = 'A chave de licença expirou ou não é válida. Por favor, acesse <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Gerenciar Créditos</a> na Loja Datacurso para renovar ou comprar uma nova licença.';
+$string['json_encode_failed'] = 'Falha na codificação JSON';
+$string['jsondecodeerror'] = 'Erro ao processar resposta da API Datacurso: {$a}';
+$string['last_sent'] = 'Último envio';
+$string['license_not_allowed'] = 'Sua licença não permite executar esta solicitação. Por favor, gerencie suas licenças e créditos em <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Gerenciar Créditos</a> na Loja Datacurso.';
+$string['licensekey'] = 'Chave de licença';
+$string['licensekey_desc'] = 'Insira a chave de licença da área de clientes da Loja Datacurso.';
+$string['link_consumptionhistory'] = 'Histórico de consumo de créditos';
+$string['link_generalreport'] = 'Relatório geral';
+$string['link_generalreport_datacurso'] = 'Relatório geral Datacurso IA';
+$string['link_listplugings'] = 'Lista de plugins Datacurso';
+$string['link_plugin'] = 'Link';
+$string['link_report_statistic'] = 'Relatório de estatísticas gerais';
+$string['live_log'] = 'Log ao vivo';
+$string['message_no_there_plugins'] = 'Nenhum plugin disponível';
+$string['missing'] = 'Ausente';
+$string['month'] = 'mês';
+$string['needs_repair'] = 'Precisa de reparo';
+$string['not_assigned'] = 'Não atribuído';
+$string['not_configured'] = 'Não configurado';
+$string['not_created'] = 'Não criado';
+$string['notenoughtokens'] = 'Créditos de IA insuficientes. Por favor, visite <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Gerenciar Créditos</a> na Loja Datacurso para alocar ou comprar mais créditos. Ou entre em contato com seu administrador.';
+$string['of'] = 'de';
+$string['orgid'] = 'ID da organização';
+$string['orgid_desc'] = 'Insira o identificador da sua organização no serviço Datacurso.';
+$string['pending'] = 'Pendente';
+$string['plugin'] = 'Plugin';
+$string['plugindesc_assign_ai'] = 'Revisar tarefas com assistência de IA.';
+$string['plugindesc_coursegen'] = 'Criar cursos completos, atividades e recursos com IA.';
+$string['plugindesc_datacurso_ratings'] = 'Permite que os alunos avaliem atividades e recursos; professores e administradores podem gerar análises de cursos baseadas em IA.';
+$string['plugindesc_dttutor'] = 'Conversar com um tutor de IA dentro do curso.';
+$string['plugindesc_forum_ai'] = 'Estender fóruns com análise alimentada por IA para gerar resumos automaticamente.';
+$string['plugindesc_lifestory'] = 'Relatório e análise alimentados por IA do progresso acadêmico do aluno.';
+$string['plugindesc_smartrules'] = 'Criar atividades automatizadas com base em condições anteriores dos alunos.';
+$string['plugindesc_socialcert'] = 'Gerar automaticamente certificados personalizados ao concluir o curso.';
+$string['pluginname'] = 'Provedor de IA Datacurso';
+$string['pluginname_assign_ai'] = 'Tarefa IA';
+$string['pluginname_coursegen'] = 'Criador de Curso IA';
+$string['pluginname_datacurso_ratings'] = 'Classificação de Atividades IA';
+$string['pluginname_dttutor'] = 'Tutor IA';
+$string['pluginname_forum_ai'] = 'Fórum IA';
+$string['pluginname_lifestory'] = 'História de Vida do Aluno IA';
+$string['pluginname_smartrules'] = 'SmartRules IA';
+$string['pluginname_socialcert'] = 'Compartilhar Certificado IA';
+$string['privacy:metadata'] = 'O plugin Provedor de IA Datacurso não armazena nenhum dado pessoal localmente. Todos os dados são processados pelos serviços externos de IA Datacurso.';
+$string['privacy:metadata:aiprovider_datacurso'] = 'Cargas úteis de solicitações de IA Datacurso enviadas ao serviço externo.';
+$string['ratelimit_enable'] = 'Habilitar limite de taxa';
+$string['ratelimit_enable_desc'] = 'Se habilitado, o limite de créditos por usuário será aplicado para este plugin.';
+$string['ratelimit_limit'] = 'Créditos por janela';
+$string['ratelimit_limit_desc'] = 'Número máximo de créditos que um usuário pode consumir dentro da janela de tempo selecionada. 0 para ilimitado.';
+$string['ratelimit_window'] = 'Janela de tempo';
+$string['ratelimit_window_desc'] = 'Selecione a duração e a unidade para a janela do limite.';
+$string['ratelimits_heading'] = 'Limites por plugin';
+$string['ratelimits_heading_desc'] = 'Configure limites por usuário para cada plugin que usa o provedor Datacurso.';
+$string['read_context_course'] = 'Ler contexto para criação de curso com IA';
+$string['read_context_course_model'] = 'Carregar modelo acadêmico para criação de curso com IA';
+$string['registers'] = 'Registros';
+$string['registration_error'] = 'Último erro';
+$string['registration_last'] = 'Registro';
+$string['registration_lastsent'] = 'Último envio';
+$string['registration_notverified'] = 'Registro não verificado';
+$string['registration_status'] = 'Último status';
+$string['registration_verified'] = 'Registro verificado';
+$string['registrationsettings'] = 'API de registro';
+$string['remainingtokens'] = 'Saldo restante';
+$string['responseinvalidai'] = 'Resposta inválida do serviço de IA.';
+$string['responseinvalidaimage'] = 'Resposta inválida do serviço de IA (sem imagem).';
+$string['responseinvalidaimagecreate'] = 'Não foi possível criar o arquivo de imagem.';
+$string['rest_enabled'] = 'Protocolo REST habilitado';
+$string['service'] = 'Serviço';
+$string['tokens'] = 'Créditos';
+$string['tokens_available'] = 'Créditos disponíveis';
+$string['tokensconsumed'] = 'Créditos consumidos';
+$string['tokensconsumedday'] = 'Créditos consumidos por dia';
+$string['tokensconsumedmonth'] = 'Créditos consumidos por mês';
+$string['tokensnotsufficient'] = 'Créditos de IA insuficientes. Saldo atual: {$a->current}. Mínimo necessário: {$a->required}. Por favor, visite <a href="https://shop.datacurso.com/index.php?m=tokens_manager" target="_blank">Gerenciar Créditos</a> na Loja Datacurso para alocar ou comprar mais créditos. Ou entre em contato com seu administrador.';
+$string['tokensused'] = 'Créditos usados';
+$string['tokenthreshold'] = 'Limite de créditos';
+$string['tokenthreshold_desc'] = 'Número de créditos a partir do qual uma notificação será exibida para comprar mais.';
+$string['total_consumed'] = 'Créditos consumidos';
+$string['userid'] = 'Usuário';
+$string['userratelimit'] = 'Limite de solicitações por usuário';
+$string['userratelimit_desc'] = 'Número máximo de solicitações permitidas por hora para cada usuário individual.';
+$string['usertokenlimit_add'] = 'Adicionar limite de créditos';
+$string['usertokenlimit_add_title'] = 'Adicionar limite de créditos por usuário';
+$string['usertokenlimit_assignedtotal'] = 'Créditos totais atribuídos';
+$string['usertokenlimit_delete_failed'] = 'Não foi possível excluir o limite de créditos do usuário.';
+$string['usertokenlimit_deleted'] = 'Limite de créditos do usuário excluído.';
+$string['usertokenlimit_edit_title'] = 'Editar limite: {$a}';
+$string['usertokenlimit_licensebalance'] = 'Créditos totais da licença';
+$string['usertokenlimit_limit'] = 'Limite de créditos';
+$string['usertokenlimit_limit_help'] = 'Informe o número máximo de créditos que o usuário pode consumir. Use 0 para bloquear o acesso à IA para este usuário.';
+$string['usertokenlimit_limit_invalid'] = 'O limite deve ser zero ou um número positivo.';
+$string['usertokenlimit_limit_invalid_nonnegative'] = 'O limite deve ser zero ou um número positivo.';
+$string['usertokenlimit_recurringenabled'] = 'Habilitar intervalo recorrente';
+$string['usertokenlimit_recurringenabled_help'] = 'Habilita a redefinição automática recorrente da cota para este usuário.';
+$string['usertokenlimit_recurringinterval'] = 'Intervalo recorrente';
+$string['usertokenlimit_recurringinterval_help'] = 'Quantidade de dias após os quais a cota do usuário será redefinida e reatribuída. Use 0 para desativar a redefinição recorrente.';
+$string['usertokenlimit_recurringinterval_invalid'] = 'O intervalo recorrente deve ser zero ou um número positivo de dias.';
+$string['usertokenlimit_recurringunit'] = 'Unidade de tempo';
+$string['usertokenlimit_recurringunit_day'] = 'Dias';
+$string['usertokenlimit_recurringunit_help'] = 'Unidade usada para o intervalo recorrente (horas, dias, semanas, meses, anos).';
+$string['usertokenlimit_recurringunit_hour'] = 'Horas';
+$string['usertokenlimit_recurringunit_invalid'] = 'Unidade de intervalo recorrente inválida.';
+$string['usertokenlimit_recurringunit_month'] = 'Meses';
+$string['usertokenlimit_recurringunit_week'] = 'Semanas';
+$string['usertokenlimit_recurringunit_year'] = 'Anos';
+$string['usertokenlimit_recurringvalue'] = 'Valor do intervalo';
+$string['usertokenlimit_recurringvalue_help'] = 'Valor numérico para a unidade de tempo selecionada. Deve ser maior que 0 quando habilitado.';
+$string['usertokenlimit_recurringvalue_invalid_positive'] = 'O valor do intervalo deve ser maior que 0 quando o intervalo recorrente estiver habilitado.';
+$string['usertokenlimit_reset'] = 'Redefinir contador de uso';
+$string['usertokenlimit_reset_done'] = 'O contador de uso foi redefinido.';
+$string['usertokenlimit_reset_failed'] = 'Não foi possível redefinir o contador de uso.';
+$string['usertokenlimit_reset_help'] = 'Se habilitado, o contador de uso atual deste usuário será redefinido imediatamente após salvar.';
+$string['usertokenlimit_reset_usage'] = 'Redefinir uso';
+$string['usertokenlimit_saved'] = 'Limite de créditos do usuário salvo';
+$string['usertokenlimit_used'] = 'Créditos utilizados';
+$string['usertokenlimit_user'] = 'Usuário';
+$string['usertokenlimit_user_help'] = 'Selecione o usuário ao qual o limite de créditos se aplicará.';
+$string['usertokenlimit_user_readonly'] = 'Usuário';
+$string['usertokenlimit_user_readonly_help'] = 'Este usuário é fixo para registros existentes e não pode ser alterado.';
+$string['verified'] = 'Verificado';
+$string['week'] = 'semana';
+$string['workplace'] = 'Este é o Moodle Workplace?';
+$string['workplace_desc'] = 'Define se o cabeçalho X-Workplace deve ser enviado com valor true (Workplace) ou false (Moodle Padrão).';
+$string['year'] = 'ano';

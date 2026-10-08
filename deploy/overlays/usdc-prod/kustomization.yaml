@@ -1,0 +1,70 @@
+# learn.usdcglobal.com -- namespace learn-usdc-prod, cluster usdc-prod-cluster-1
+#
+# The third tenant on the shared image, and the first ADOPTION: unlike nitk this
+# namespace was already running, built from its own `learn-usdc-moodle` image off
+# a forked copy of this codebase. This overlay takes it over.
+#
+# Every value here was read back from the live cluster first, so applying it is a
+# no-op on the workload's shape. What genuinely changes is listed in the commit
+# message; the short version is the image, the two plaintext database passwords,
+# and the hardened base config (nginx deny rules, php.ini, www.conf timeouts).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: learn-usdc-prod
+
+resources:
+  - ../../base
+  - namespace.yaml
+  - nfs-pv.yaml
+  - nfs-pvc.yaml
+
+patches:
+  - path: patch-deployment-env.yaml
+  - path: patch-cronjob-env.yaml
+  - path: patch-scale.yaml
+  - path: patch-hpa.yaml
+  - path: patch-redis.yaml
+
+# Merges usdc's own three keys into the moodle-config ConfigMap that base
+# generates. healthz.php, my.cnf, nginx.conf and php.ini come from base unchanged
+# -- which is much of the point: usdc inherits jain's hardened nginx and php.ini
+# instead of its own drifted copies.
+#
+# The three overridden here are overridden for one reason each, all sizing:
+# moodle_config.php is genuinely per-tenant, redis.conf's maxmemory must track
+# this tenant's much smaller Redis container, and www.conf's php-fpm pool is
+# jain's (25 workers at start, 80 max) which is the bulk of what these pods idle
+# at.
+configMapGenerator:
+  - name: moodle-config
+    behavior: merge
+    files:
+      - config/moodle_config.php
+      - config/redis.conf
+      - config/www.conf
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+# Same image as jain-prod and nitk-prod, which is the entire point.
+#
+# newTag is only a default: the deploy job runs `kustomize edit set image` with
+# the freshly built commit sha before applying, so this value is what a manual
+# `kubectl apply -k` would use, not what CI deploys.
+images:
+  - name: moodle-lms
+    newName: asia-south1-docker.pkg.dev/org-dev-infra/services/moodle-lms
+    newTag: 331c421b
+
+# Not included, mirroring the other overlays:
+#   Secret moodle-secrets -- created out of band, already present in this
+#     namespace with both keys (database-password verified to match the password
+#     the old ConfigMap carried in plaintext, which is what made the switch to
+#     getenv() safe).
+#   PerconaXtraDBCluster + haproxy -- a Helm release, like every other tenant.
+#   HTTPRoute / TLS -- every route in this cluster belongs to the single
+#     `gateway-api` Helm release in the `default` namespace. usdc is already
+#     routed and serving on 34.107.148.85; nothing here touches that.
+#   CronJobs moodle-db-backup / moodle-nfs-backup -- pre-existing usdc-only jobs,
+#     deliberately left alone rather than adopted in the same change.

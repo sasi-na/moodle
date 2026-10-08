@@ -1,0 +1,112 @@
+{{!
+    @template local_helpdesk/queue
+
+    The support queue. Breached requests sort first, then whatever is due soonest.
+
+    Example context (json):
+    {
+        "hasrows": true, "truncated": false, "actionurl": "#", "sesskey": "abc",
+        "counts": {"unassigned": 2, "mine": 1, "breached": 1, "open": 4},
+        "tabs": [{"key": "open", "label": "Open", "url": "#", "active": true, "count": 4, "hascount": true}],
+        "categories": [{"value": "", "label": "All categories", "selected": true}],
+        "rows": [{"id": 1, "reference": "NITK-00001", "subject": "Rubric mismatch", "url": "#",
+                  "student": "Ananya Rao", "category": "Academic", "status": "Open", "urgency": "warning",
+                  "timeleft": "Response due in 2 hours", "hastimeleft": true, "isbreached": false, "assignee": "",
+                  "unassigned": true, "mine": false, "forwardedto": "", "flags": [], "hasflags": false}]
+    }
+}}
+<div class="hd-page hd-queue">
+    <div class="hd-head">
+        <h2 class="hd-title">{{#str}}queue, local_helpdesk{{/str}}</h2>
+    </div>
+
+    <div class="hd-stats">
+        <div class="hd-stat">
+            <span class="hd-stat-n">{{counts.unassigned}}</span>
+            <span class="hd-stat-l">{{#str}}filter_unassigned, local_helpdesk{{/str}}</span>
+        </div>
+        <div class="hd-stat">
+            <span class="hd-stat-n">{{counts.mine}}</span>
+            <span class="hd-stat-l">{{#str}}filter_mine, local_helpdesk{{/str}}</span>
+        </div>
+        <div class="hd-stat {{#counts.breached}}hd-stat-bad{{/counts.breached}}">
+            <span class="hd-stat-n">{{counts.breached}}</span>
+            <span class="hd-stat-l">{{#str}}filter_breached, local_helpdesk{{/str}}</span>
+        </div>
+        <div class="hd-stat">
+            <span class="hd-stat-n">{{counts.open}}</span>
+            <span class="hd-stat-l">{{#str}}filter_open, local_helpdesk{{/str}}</span>
+        </div>
+    </div>
+
+    <div class="hd-toolbar">
+        <nav class="hd-tabs">
+            {{#tabs}}
+            <a class="hd-tab {{#active}}hd-tab-on{{/active}}" href="{{url}}">
+                {{label}}{{#hascount}} <span class="hd-tab-n">{{count}}</span>{{/hascount}}
+            </a>
+            {{/tabs}}
+        </nav>
+        <form class="hd-filter" method="get" action="{{actionurl}}">
+            <label class="visually-hidden" for="hd-cat">{{#str}}field_category, local_helpdesk{{/str}}</label>
+            <select class="hd-select" id="hd-cat" name="category" onchange="this.form.submit()">
+                {{#categories}}
+                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+                {{/categories}}
+            </select>
+            <label class="visually-hidden" for="hd-q">{{#str}}searchtickets, local_helpdesk{{/str}}</label>
+            <input class="hd-search" id="hd-q" type="search" name="q" value="{{q}}"
+                   placeholder="{{#str}}searchtickets_help, local_helpdesk{{/str}}">
+            <input type="hidden" name="filter" value="{{filter}}">
+            <button class="hd-btn hd-btn-sm hd-btn-quiet" type="submit">{{#str}}searchtickets, local_helpdesk{{/str}}</button>
+        </form>
+        <a class="hd-btn hd-btn-sm hd-btn-quiet" href="{{exporturl}}">{{#str}}exportcsv, local_helpdesk{{/str}}</a>
+    </div>
+
+    {{^hasrows}}
+    <div class="hd-card hd-empty">
+        <p>{{#str}}noticketshere, local_helpdesk{{/str}}</p>
+    </div>
+    {{/hasrows}}
+
+    {{#hasrows}}
+    <ul class="hd-list">
+        {{#rows}}
+        <li class="hd-row hd-qrow {{#isbreached}}hd-row-bad{{/isbreached}}">
+            <a class="hd-row-main" href="{{url}}">
+                <span class="hd-ref">{{reference}}</span>
+                <span class="hd-subject">{{subject}}</span>
+                <span class="hd-meta">
+                    {{student}} · {{category}}
+                    {{#forwardedto}} · {{#str}}withspecialist, local_helpdesk, {{forwardedto}}{{/str}}{{/forwardedto}}
+                </span>
+                {{#hasflags}}
+                <span class="hd-flags">
+                    {{#flags}}<span class="hd-tag">{{.}}</span>{{/flags}}
+                </span>
+                {{/hasflags}}
+            </a>
+
+            <span class="hd-owner">
+                {{#unassigned}}<em class="hd-unassigned">{{#str}}unassigned, local_helpdesk{{/str}}</em>{{/unassigned}}
+                {{^unassigned}}{{assignee}}{{/unassigned}}
+            </span>
+            <span class="hd-state hd-{{urgency}}">{{status}}</span>
+            {{#hastimeleft}}<span class="hd-left {{#isbreached}}hd-breached{{/isbreached}}">{{timeleft}}</span>{{/hastimeleft}}
+
+            {{#unassigned}}
+            <form method="post" action="{{../actionurl}}">
+                <input type="hidden" name="sesskey" value="{{../sesskey}}">
+                <input type="hidden" name="take" value="{{id}}">
+                <button class="hd-btn hd-btn-sm" type="submit">{{#str}}take, local_helpdesk{{/str}}</button>
+            </form>
+            {{/unassigned}}
+        </li>
+        {{/rows}}
+    </ul>
+    {{/hasrows}}
+
+    {{#truncated}}
+    <p class="hd-note">{{#str}}queuetruncated, local_helpdesk{{/str}}</p>
+    {{/truncated}}
+</div>

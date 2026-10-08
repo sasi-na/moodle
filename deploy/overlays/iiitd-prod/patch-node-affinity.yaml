@@ -1,0 +1,53 @@
+# Keep IIITD's Moodle pods off spot nodes.
+#
+# On 2026-09-08 IIITD's haproxy was preempted on a spot node and the site
+# returned 500s until it rescheduled; !259 pinned the database and proxy to
+# on-demand in response. The Moodle pods were left unpinned, and both of them
+# were still running on spot nodes at cutover -- a preemption during an exam
+# would drop a pod mid-request.
+#
+# WHY PREFERRED AND NOT A HARD nodeSelector
+#
+# The database pods can be pinned hard: pxc.size is 1 and haproxy.size is 1, so
+# the scheduler needs exactly one node each and the requirement is always
+# satisfiable. Moodle is different -- moodle-hpa scales 2 to 8 replicas, and at
+# the time of writing only 3 of the 6 on-demand nodes have room for a pod
+# (2 CPU + 4Gi for php-fpm, plus nginx). A hard rule would leave pods Pending
+# the moment the HPA scaled past available on-demand capacity, turning a
+# preemption risk into a capacity outage, which is the worse failure.
+#
+# weight 100 is the strongest preference the scheduler accepts: on-demand is
+# chosen whenever it can be, and spot is used only when the alternative is not
+# scheduling at all.
+#
+# Revisit as a hard nodeSelector if the on-demand pool is grown enough to hold
+# maxReplicas.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                  - key: pool-type
+                    operator: In
+                    values:
+                      - ondemand
+        # Spread replicas across hosts so one node failing -- preemption or
+        # otherwise -- cannot take every pod at once. Preferred rather than
+        # required for the same reason as above: at 8 replicas there are not 8
+        # distinct nodes with room, and a required rule would block the scale-up.
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchLabels:
+                    app: moodle

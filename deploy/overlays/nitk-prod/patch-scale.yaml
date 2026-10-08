@@ -1,0 +1,20 @@
+# nitk starts far smaller than jain.
+#
+# Base carries jain's sizing: 4 replicas x 6 CPU / 12Gi = 24 CPU and 48Gi of
+# *requests* before any traffic exists. That reserves real capacity on the shared
+# prod node pool and would be charged for whether or not anyone logs in. Start
+# nitk at a fraction of it and scale on evidence.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moodle
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: php-fpm
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "2"

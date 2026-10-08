@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/eventreg/db" VERSION="2026072900" COMMENT="Event registration form tables"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <TABLES>
+
+        <!-- A registration form, targeted at cohort_batch audiences and published
+             batch-wise. audiencetokens holds comma-joined base64 tokens of the
+             cohort_batch values (values contain commas, so they are base64-encoded
+             the same way theme_baz dashboard banners store them). -->
+        <TABLE NAME="local_eventreg_forms" COMMENT="Event registration forms">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="title" TYPE="char" LENGTH="255" NOTNULL="true"/>
+                <FIELD NAME="intro" TYPE="text" NOTNULL="false" COMMENT="Description/instructions shown above the form"/>
+                <FIELD NAME="introformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1"/>
+                <FIELD NAME="audiencemode" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" COMMENT="0=all, 1=only listed batches, 2=all except listed"/>
+                <FIELD NAME="audiencetokens" TYPE="text" NOTNULL="false" COMMENT="Comma-joined base64 cohort_batch tokens (used when audiencemode != 0)"/>
+                <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="draft" COMMENT="draft|open|closed"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
+                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="status_idx" UNIQUE="false" FIELDS="status"/>
+            </INDEXES>
+        </TABLE>
+
+        <!-- A question/field belonging to a form. options/settings are JSON. -->
+        <TABLE NAME="local_eventreg_fields" COMMENT="Form fields (questions)">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="formid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="type" TYPE="char" LENGTH="30" NOTNULL="true" COMMENT="text|textarea|radio|checkbox|select|date|email|number|phone|rating|file|description"/>
+                <FIELD NAME="label" TYPE="text" NOTNULL="true" COMMENT="Question text, or the body of a description field"/>
+                <FIELD NAME="labelformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" COMMENT="Text format of label. 0 = FORMAT_MOODLE, the default rows written before the editor existed need: they hold plain text with real newlines"/>
+                <FIELD NAME="helptext" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="helptextformat" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" COMMENT="Text format of helptext, as for labelformat"/>
+                <FIELD NAME="required" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="options" TYPE="text" NOTNULL="false" COMMENT="JSON array of choice labels (radio/checkbox/select); null otherwise"/>
+                <FIELD NAME="settings" TYPE="text" NOTNULL="false" COMMENT="JSON per-type extras (number min/max, rating scale, maxlength, file maxfiles/maxbytes/accept)"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="formsort_idx" UNIQUE="false" FIELDS="formid, sortorder"/>
+            </INDEXES>
+        </TABLE>
+
+        <!-- One submission per user per form (enforced by the unique index). -->
+        <TABLE NAME="local_eventreg_submissions" COMMENT="Form submissions">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="formid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="formuser_uix" UNIQUE="true" FIELDS="formid, userid"/>
+                <INDEX NAME="userid_idx" UNIQUE="false" FIELDS="userid"/>
+            </INDEXES>
+        </TABLE>
+
+        <!-- One answer per (submission, field). Checkbox answers store a JSON
+             array of selected labels in value; file answers store a JSON array of
+             the uploaded filenames, the files themselves living in the file API
+             (system context, component local_eventreg, area "answer", itemid =
+             this row's id). -->
+        <TABLE NAME="local_eventreg_answers" COMMENT="Submission answers">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="submissionid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="fieldid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="value" TYPE="text" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="subfield_uix" UNIQUE="true" FIELDS="submissionid, fieldid"/>
+                <INDEX NAME="fieldid_idx" UNIQUE="false" FIELDS="fieldid"/>
+            </INDEXES>
+        </TABLE>
+
+    </TABLES>
+
+</XMLDB>

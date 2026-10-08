@@ -1,0 +1,165 @@
+/* Inside the student shell the heading is already the shell's own h1. Staff reach
+   the same templates unwrapped, so the heading is hidden here rather than dropped. */
+.sw-helpdesk .hd-page .hd-title {
+    display: none;
+}
+
+/* Support ticket pages (local_helpdesk), rendered inside the student shell. */
+.hd-page {
+    --hd-ink: #{$bz-navy};
+    --hd-muted: #5C7184;
+    --hd-line: #E5ECF3;
+    --hd-surface: #fff;
+
+    max-width: 860px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+
+    .hd-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .hd-head-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+    .hd-title { font-size: 22px; font-weight: 800; letter-spacing: -.02em; margin: 0; color: var(--hd-ink); }
+    .hd-h3 { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .09em;
+             color: var(--hd-muted); margin: 6px 0 0; }
+    .hd-sub { color: var(--hd-muted); font-size: 14px; margin: 4px 0 0; }
+    .hd-note { color: var(--hd-muted); font-size: 12.5px; margin: 12px 0 0; }
+    .hd-ref { font-family: var(--sw-mono, monospace); font-size: 12px; color: var(--hd-muted); }
+
+    .hd-card { background: var(--hd-surface); border: 1px solid var(--hd-line);
+               border-radius: 14px; padding: 20px; }
+    .hd-alt { background: #F7FAFC; }
+    .hd-empty { text-align: center; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+
+    .hd-btn {
+        display: inline-block;
+        background: $bz-accent;
+        color: $bz-accent-on;
+        border: 0;
+        border-radius: 9px;
+        padding: 10px 18px;
+        font-weight: 700;
+        font-size: 13.5px;
+        text-decoration: none;
+        cursor: pointer;
+
+        &:hover { background: darken($bz-accent, 8%); color: $bz-accent-on; text-decoration: none; }
+    }
+    .hd-btn-quiet { background: transparent; color: var(--hd-ink); border: 1px solid var(--hd-line);
+                    &:hover { background: #F1F5F9; color: var(--hd-ink); } }
+
+    .hd-banner {
+        background: rgba($bz-accent, .14);
+        border: 1px solid rgba($bz-accent, .4);
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        font-size: 14px;
+    }
+
+    .hd-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+    .hd-row {
+        display: flex; align-items: center; gap: 14px;
+        background: var(--hd-surface); border: 1px solid var(--hd-line);
+        border-radius: 12px; padding: 13px 16px;
+    }
+    .hd-row-main { flex: 1; display: flex; flex-direction: column; gap: 2px; text-decoration: none; min-width: 0; }
+    .hd-subject { font-weight: 650; color: var(--hd-ink); }
+    .hd-meta { font-size: 12px; color: var(--hd-muted); }
+    .hd-muted .hd-row { opacity: .72; }
+
+    .hd-state {
+        font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+        padding: 3px 9px; border-radius: 6px; white-space: nowrap;
+        background: #EEF2F6; color: var(--hd-muted);
+    }
+    .hd-state.hd-warning  { background: rgba(#A9700D, .14); color: #8A5A0B; }
+    .hd-state.hd-critical,
+    .hd-state.hd-breached { background: rgba(#C0451F, .14); color: #A03A1A; }
+    .hd-left { font-size: 11.5px; color: var(--hd-muted); white-space: nowrap; }
+    .hd-left.hd-breached { color: #A03A1A; font-weight: 700; }
+
+    .hd-thread { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+    .hd-msg {
+        background: var(--hd-surface); border: 1px solid var(--hd-line);
+        border-radius: 12px; padding: 14px 16px;
+    }
+    .hd-msg-mine { background: #F6F9FC; }
+    .hd-msg-internal { background: rgba(#A9700D, .08); border-style: dashed; }
+    .hd-msg-head { display: flex; align-items: center; gap: 9px; margin-bottom: 7px; flex-wrap: wrap; }
+    .hd-msg-author { font-weight: 700; font-size: 13px; color: var(--hd-ink); }
+    .hd-msg-time { margin-left: auto; font-size: 11.5px; color: var(--hd-muted); }
+    .hd-msg-body { font-size: 14px; line-height: 1.6; }
+    .hd-tag {
+        font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em;
+        padding: 2px 7px; border-radius: 5px; background: rgba(#A9700D, .18); color: #8A5A0B;
+    }
+    .hd-tag-quiet { background: #EEF2F6; color: var(--hd-muted); }
+
+    .hd-btn-sm { padding: 7px 13px; font-size: 12.5px; }
+
+    &.hd-queue { max-width: 1040px; }
+
+    .hd-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .hd-stat {
+        background: var(--hd-surface); border: 1px solid var(--hd-line);
+        border-radius: 12px; padding: 13px 15px;
+        display: flex; flex-direction: column; gap: 2px;
+    }
+    .hd-stat-n { font-size: 24px; font-weight: 800; color: var(--hd-ink);
+                 font-variant-numeric: tabular-nums; line-height: 1.1; }
+    .hd-stat-l { font-size: 11px; font-weight: 700; text-transform: uppercase;
+                 letter-spacing: .07em; color: var(--hd-muted); }
+    .hd-stat-bad { border-color: rgba(#C0451F, .45); .hd-stat-n { color: #A03A1A; } }
+
+    .hd-toolbar { display: flex; align-items: center; justify-content: space-between;
+                  gap: 14px; flex-wrap: wrap; }
+    .hd-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+    .hd-tab {
+        font-size: 13px; font-weight: 650; padding: 7px 12px; border-radius: 8px;
+        color: var(--hd-muted); text-decoration: none;
+        &:hover { background: #F1F5F9; text-decoration: none; }
+    }
+    .hd-tab-on { background: rgba($bz-accent, .16); color: var(--hd-ink); }
+    .hd-tab-n { font-variant-numeric: tabular-nums; opacity: .75; }
+
+    .hd-select, .hd-input {
+        border: 1px solid var(--hd-line); border-radius: 9px; padding: 8px 11px;
+        font: inherit; font-size: 13.5px; background: var(--hd-surface); color: var(--hd-ink);
+        &:focus { outline: none; border-color: $bz-accent; box-shadow: 0 0 0 3px rgba($bz-accent, .22); }
+    }
+    .hd-input { min-width: 200px; flex: 1; }
+
+    .hd-qrow { align-items: center; }
+    .hd-row-bad { border-color: rgba(#C0451F, .45); }
+    .hd-owner { font-size: 12.5px; color: var(--hd-muted); min-width: 110px; }
+    .hd-unassigned { font-style: normal; font-weight: 700; color: #A03A1A; }
+    .hd-flags { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 3px; }
+
+    .hd-actions { display: flex; flex-direction: column; gap: 14px; }
+    .hd-actions-facts { display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px;
+                        color: var(--hd-muted);
+                        strong { color: var(--hd-ink); font-weight: 700; } }
+    .hd-actions-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+                      form { display: flex; gap: 8px; align-items: center; margin: 0; } }
+    .hd-forward { border-top: 1px solid var(--hd-line); padding-top: 14px;
+                  display: flex; flex-direction: column; gap: 8px; }
+    .hd-forward-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    .hd-composer { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+    .hd-label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .07em;
+                color: var(--hd-muted); }
+    .hd-textarea { width: 100%; border: 1px solid var(--hd-line); border-radius: 9px; padding: 11px 13px;
+                   font: inherit; font-size: 14px; resize: vertical;
+                   &:focus { outline: none; border-color: $bz-accent; box-shadow: 0 0 0 3px rgba($bz-accent, .22); } }
+    .hd-check { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--hd-muted); }
+    .hd-back { font-size: 13px; font-weight: 600; }
+
+    @media (max-width: 620px) {
+        .hd-row { flex-wrap: wrap; }
+        .hd-head-right { align-items: flex-start; }
+        .hd-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .hd-input { min-width: 0; width: 100%; }
+    }
+}

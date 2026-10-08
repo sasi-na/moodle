@@ -1,0 +1,102 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+/**
+ * OpenAI-style chat/completions endpoint used by Tutor AI, answered by Google Gemini.
+ * Only accepts calls carrying this site's shared secret (sent by Tutor AI's server-side proxy).
+ *
+ * @package   local_dttutorgemini
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+define('NO_MOODLE_COOKIES', true);
+define('NO_DEBUG_DISPLAY', true);
+require(__DIR__ . '/../../../../config.php');
+
+$secret = (string) get_config('local_dttutorgemini', 'secret');
+$given = (string) ($_SERVER['HTTP_LICENSE_KEY'] ?? '');
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || strlen($secret) < 10 || !hash_equals($secret, $given)) {
+    http_response_code(403);
+    die('{"detail":"forbidden"}');
+}
+
+$input = json_decode((string) file_get_contents('php://input', false, null, 0, 2 * 1024 * 1024), true);
+if (!is_array($input) || empty($input['messages']) || !is_array($input['messages'])) {
+    http_response_code(400);
+    die('{"detail":"invalid_request"}');
+}
+
+$system = [];
+$contents = [];
+foreach ($input['messages'] as $m) {
+    $role = $m['role'] ?? 'user';
+    $text = is_string($m['content'] ?? null) ? trim($m['content']) : '';
+    if ($text === '') {
+        continue;
+    }
+    if ($role === 'system' || $role === 'developer') {
+        $system[] = $text;
+        continue;
+    }
+    $grole = $role === 'assistant' ? 'model' : 'user';
+    $last = count($contents) - 1;
+    if ($last >= 0 && $contents[$last]['role'] === $grole) {
+        $contents[$last]['parts'][0]['text'] .= "\n\n" . $text;
+    } else {
+        $contents[] = ['role' => $grole, 'parts' => [['text' => $text]]];
+    }
+}
+if (empty($contents) || $contents[0]['role'] !== 'user') {
+    array_unshift($contents, ['role' => 'user', 'parts' => [['text' => 'Hello']]]);
+}
+$post = ['contents' => $contents, 'generationConfig' => ['temperature' => 0.4, 'maxOutputTokens' => 8192]];
+$system[] = "SCOPE - STRICT: You are the tutor of ONE course only: the course named in the context/material above. Only answer questions about that course's subject, topics, units and activities. If the learner asks about another subject, another course or anything unrelated, do not answer it: reply politely in one or two sentences that you can only help with this course, and that for other subjects they should open that course and ask its tutor. Never give information about other courses or subjects, even if the learner insists.";
+if ($system) {
+    $post['systemInstruction'] = ['parts' => [['text' => implode("\n\n", $system)]]];
+}
+
+$key = \local_dttutorgemini\client::apikey();
+$model = trim((string) get_config('local_dttutorgemini', 'model')) ?: 'gemini-3.5-flash-lite';
+$data = null;
+$code = 0;
+foreach (array_values(array_unique([$model, 'gemini-3.5-flash-lite'])) as $try) {
+    for ($attempt = 0; $attempt < 2; $attempt++) {
+        $ch = curl_init('https://generativelanguage.googleapis.com/v1beta/models/' . rawurlencode($try) . ':generateContent');
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true, CURLOPT_TIMEOUT => 150,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'x-goog-api-key: ' . $key],
+            CURLOPT_POSTFIELDS => json_encode($post, JSON_UNESCAPED_UNICODE),
+        ]);
+        $raw = curl_exec($ch);
+        $code = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        $data = json_decode((string) $raw, true);
+        if (!in_array($code, [429, 500, 503], true)) {
+            break 2;
+        }
+        sleep(2);
+    }
+}
+
+$text = '';
+foreach (($data['candidates'][0]['content']['parts'] ?? []) as $part) {
+    if (isset($part['text']) && empty($part['thought'])) {
+        $text .= $part['text'];
+    }
+}
+if ($code !== 200 || trim($text) === '') {
+    http_response_code(502);
+    die(json_encode(['detail' => 'gemini_error', 'status' => $code,
+        'message' => $data['error']['message'] ?? ($data['promptFeedback']['blockReason'] ?? 'empty answer')]));
+}
+
+// Reply in the OpenAI streaming format Tutor AI parses.
+header('Content-Type: text/event-stream');
+echo 'data: ' . json_encode(['choices' => [['index' => 0, 'delta' => ['role' => 'assistant', 'content' => $text]]]],
+    JSON_UNESCAPED_UNICODE) . "\n\n";
+echo "data: [DONE]\n\n";

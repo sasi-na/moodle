@@ -1,0 +1,60 @@
+/* Stack the support buttons reliably with a consistent gap (avoids the
+   inline-block + <br> overlap under the theme's button styling). */
+.support-block-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+/* LSM contact button: keep default btn sizing, just let long name/number wrap */
+.support-block-button .support-lsm-button {
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* LSM popup modal */
+.lsm-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    padding: 16px;
+}
+
+.lsm-modal {
+    position: relative;
+    background: #fff;
+    color: #1d2125;
+    max-width: 420px;
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    padding: 24px 24px 22px;
+}
+
+.lsm-modal-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    border: 0;
+    background: transparent;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 4px;
+}
+
+.lsm-modal-close:hover {
+    color: #1d2125;
+}
+
+.lsm-modal-body {
+    font-size: 15px;
+    line-height: 1.55;
+    text-align: left;
+}

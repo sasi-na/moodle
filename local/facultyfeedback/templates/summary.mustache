@@ -1,0 +1,201 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_facultyfeedback/summary
+
+    Body of the weekly-feedback pop-up: the course's overall standing, then the
+    week-by-week trend, then the latest week's answer distribution.
+
+    All SVG geometry arrives pre-computed from manager::chart() — this template
+    does no arithmetic.
+
+    Context variables required for this template:
+    * subtitle - Course name and short name
+    * averagedisplay - Overall average to two decimals
+    * scalemax - Top of the scale
+    * starglyphs - Whole stars, already repeated (a mustache section over an
+      integer renders once, not N times, so PHP does the repetition)
+    * hasnps, nps, npsexplain - Net Promoter Score beside the average, with its
+      bucketing spelled out in the tooltip and for screen readers
+    * responsesdisplay - Formatted total response count
+    * weeks - Number of feedback weeks counted
+    * latestweekvalue - "Week commencing 20 June 2026 · 3.98 from 197"
+    * hastrend, chart - Trend geometry (see manager::chart())
+    * hashistogram, histogram - 1-5 distribution across every rated week, each
+      row carrying barwidth (share of the widest row, for the bar) and share
+      (share of all respondents, the printed figure)
+    * hasthinweeks, thinweeks, minresponses - Weeks left off the trend
+    * haslatesturl, latesturl - Link to the latest activity's own analysis page
+
+    Example context (json):
+    {
+        "subtitle": "2.1 Entrepreneurship · 25VMB0C201",
+        "averagedisplay": "3.99",
+        "scalemax": 5,
+        "starglyphs": "★★★★",
+        "hasnps": true,
+        "nps": {"display": "+3%"},
+        "npsexplain": "Promoters (440 rated 5) minus detractors (387 rated 1–3), as a share of all 1,811 responses.",
+        "responsesdisplay": "1,811",
+        "weeks": 8,
+        "latestweekvalue": "Week commencing 20 June 2026 · 3.98 from 197",
+        "hastrend": false,
+        "hashistogram": false,
+        "hasthinweeks": false,
+        "thinweeks": 0,
+        "minresponses": 5,
+        "haslatesturl": false,
+        "latesturl": ""
+    }
+}}
+<div class="lff-modal">
+
+    <p class="lff-modal__subtitle">{{subtitle}}</p>
+
+    <div class="lff-hero">
+        <div class="lff-hero__figure">
+            <span class="lff-hero__num">{{averagedisplay}}<sub class="lff-hero__scale">{{#str}} outofscale, local_facultyfeedback, {{scalemax}} {{/str}}</sub></span>
+            <span class="lff-hero__stars" aria-hidden="true">{{starglyphs}}</span>
+        </div>
+        {{#hasnps}}
+        <div class="lff-hero__figure lff-hero__figure--nps">
+            {{#nps}}<span class="lff-hero__num lff-hero__num--nps">{{display}}</span>{{/nps}}
+            <span class="lff-hero__caption" title="{{npsexplain}}">{{#str}} nps, local_facultyfeedback {{/str}}</span>
+            <span class="sr-only">{{npsexplain}}</span>
+        </div>
+        {{/hasnps}}
+        <dl class="lff-hero__facts">
+            <div class="lff-hero__pair">
+                <div>
+                    <dt>{{#str}} overallresponses, local_facultyfeedback {{/str}}</dt>
+                    <dd>{{responsesdisplay}}</dd>
+                </div>
+                <div>
+                    <dt>{{#str}} feedbackweeks, local_facultyfeedback {{/str}}</dt>
+                    <dd>{{weeks}}</dd>
+                </div>
+            </div>
+            <dt>{{#str}} latestweek, local_facultyfeedback {{/str}}</dt>
+            <dd>{{latestweekvalue}}</dd>
+        </dl>
+    </div>
+
+    {{#hastrend}}
+    <div class="lff-block">
+        <p class="lff-block__title">{{#str}} averagebyweek, local_facultyfeedback {{/str}}</p>
+        <p class="lff-block__note">{{trendnote}}</p>
+
+        {{#chart}}
+        <svg class="lff-chart" viewBox="0 0 560 168" role="img" aria-label="{{chartaria}}">
+            {{#gridlines}}
+                <line class="lff-chart__grid" x1="{{left}}" y1="{{y}}" x2="{{right}}" y2="{{y}}"/>
+            {{/gridlines}}
+            {{#gridlines}}
+                {{#showlabel}}<text class="lff-chart__axis" x="28" y="{{y}}" dy="3" text-anchor="end">{{value}}</text>{{/showlabel}}
+            {{/gridlines}}
+
+            {{^single}}
+                <polygon class="lff-chart__area" points="{{area}}"/>
+                <polyline class="lff-chart__line" points="{{line}}"/>
+            {{/single}}
+
+            {{#points}}
+                <circle class="lff-chart__hit" cx="{{x}}" cy="{{y}}" r="16">
+                    <title>{{weeklabel}} &middot; {{label}} &middot; {{responses}}</title>
+                </circle>
+                <circle class="lff-chart__dot {{#islast}}lff-chart__dot--last{{/islast}}" cx="{{x}}" cy="{{y}}" r="{{radius}}"/>
+                {{#showlabel}}
+                    <text class="lff-chart__value" x="{{x}}" y="{{labely}}" text-anchor="{{anchor}}">{{label}}</text>
+                {{/showlabel}}
+                {{#showtick}}
+                    <text class="lff-chart__axis" x="{{x}}" y="140" text-anchor="{{anchor}}">{{shortdate}}</text>
+                    <text class="lff-chart__axis" x="{{x}}" y="156" text-anchor="{{anchor}}">{{responses}}</text>
+                {{/showtick}}
+            {{/points}}
+        </svg>
+        {{/chart}}
+
+        {{#hasthinweeks}}
+            <p class="lff-block__note lff-block__note--warn">{{thinnote}}</p>
+        {{/hasthinweeks}}
+
+        <details class="lff-table">
+            <summary>{{#str}} viewastable, local_facultyfeedback {{/str}}</summary>
+            <div class="lff-table__wrap">
+                <table>
+                    <caption class="sr-only">{{#str}} averagebyweek, local_facultyfeedback {{/str}}</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">{{#str}} colweek, local_facultyfeedback {{/str}}</th>
+                            <th scope="col">{{#str}} colaverage, local_facultyfeedback {{/str}}</th>
+                            <th scope="col">{{#str}} colresponses, local_facultyfeedback {{/str}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#chart}}{{#points}}
+                        <tr>
+                            <th scope="row">{{weeklabel}}</th>
+                            <td>{{label}}</td>
+                            <td>{{responses}}</td>
+                        </tr>
+                        {{/points}}{{/chart}}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th scope="row">{{#str}} allweeks, local_facultyfeedback {{/str}}</th>
+                            <td>{{averagedisplay}}</td>
+                            <td>{{responsesdisplay}}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </details>
+    </div>
+    {{/hastrend}}
+
+    {{#hashistogram}}
+    <div class="lff-block">
+        <p class="lff-block__title">{{#str}} ratingdistribution, local_facultyfeedback {{/str}}</p>
+        <p class="lff-block__note">{{histogramnote}}</p>
+        <dl class="lff-hist">
+            {{#histogram}}
+            <div class="lff-hist__row">
+                <dt class="lff-hist__key" aria-hidden="true">{{stars}}</dt>
+                <dd class="lff-hist__track">
+                    <span class="lff-hist__fill {{#ismode}}lff-hist__fill--mode{{/ismode}}" style="width: {{barwidth}}%"></span>
+                </dd>
+                <dd class="lff-hist__count"><span class="sr-only">{{rowlabel}}</span><span aria-hidden="true">{{count}}</span></dd>
+                <dd class="lff-hist__share" aria-hidden="true">{{share}}%</dd>
+            </div>
+            {{/histogram}}
+        </dl>
+    </div>
+    {{/hashistogram}}
+
+    {{^hastrend}}
+        {{^hashistogram}}
+            <p class="lff-empty">{{#str}} nofeedbackyet, local_facultyfeedback {{/str}}</p>
+        {{/hashistogram}}
+    {{/hastrend}}
+
+    {{#haslatesturl}}
+        <p class="lff-modal__foot">
+            <a href="{{latesturl}}" class="btn btn-secondary btn-sm">{{#str}} openlatest, local_facultyfeedback {{/str}}</a>
+        </p>
+    {{/haslatesturl}}
+
+</div>

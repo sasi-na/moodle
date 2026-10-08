@@ -1,0 +1,70 @@
+// Support contact at the foot of every bespoke sidebar.
+//
+// Deliberately NOT scoped to a shell root. The shells have eight different
+// roots between them (#sd-root, #sc-root, #sg-root, #sgr-root, #cal-root,
+// #sid-root, #cv-root, #sw-root), so a rule written under any one of them
+// styles that shell and leaves the rest rendering dark-on-navy text — which is
+// exactly what a first attempt at this did.
+//
+// The markup is theme_baz_support_contact()'s, shared with the floating "Need
+// help?" panel whose own styling assumes a white card; these rules restyle the
+// same markup for a navy sidebar.
+.sd-sidesupport {
+    // The sidebars are flex columns, so this pins the block to the bottom.
+    margin-top: auto;
+    padding-top: 14px;
+
+    // Clearance for the floating "Need help?" button, which is position:fixed at
+    // the bottom-left corner (22–24px in) and therefore sits ON TOP of the foot
+    // of the sidebar. Nine of the student shells render one. Without this the
+    // contact details are covered by it.
+    padding-bottom: 76px;
+
+    .sw-help-contact {
+        margin-top: 0;
+        padding-top: 12px;
+        border-top: 1px solid rgba(255, 255, 255, .14);
+    }
+
+    .sw-help-contact-lead {
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, .55);
+        margin-bottom: 8px;
+    }
+
+    .sw-help-contact-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 5px 0;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #cfe0ec;
+        text-decoration: none;
+        word-break: break-all;
+
+        svg {
+            flex: 0 0 auto;
+            width: 15px;
+            height: 15px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: .7;
+        }
+
+        &:hover,
+        &:focus {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        &:hover svg { opacity: 1; }
+    }
+}

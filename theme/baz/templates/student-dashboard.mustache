@@ -1,0 +1,452 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_baz/student-dashboard
+
+    Bespoke server-rendered dashboard for student-only users. Reuses the theme's
+    head/footer scaffolding and the core search/notifications/user-menu so session
+    chrome keeps working; the main content is a custom app shell.
+}}
+{{> theme_baz/head }}
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="sd-root" class="sd-app">
+
+            <!-- ============ SIDEBAR (slide-in drawer on mobile) ============ -->
+            <div class="sd-backdrop" id="sd-backdrop"></div>
+            <aside class="sd-side" id="sd-side">
+                <a class="sd-brand" href="{{{ config.wwwroot }}}/my/">
+                    {{! The sidebar is always navy, unlike the classic topbar that customlogo
+                        also feeds, so prefer the sidebar logo where a site supplies one. }}
+                    {{#customsidebarlogo}}<img src="{{customsidebarlogo}}" alt="{{sitename}}">{{/customsidebarlogo}}
+                    {{^customsidebarlogo}}
+                        {{#customlogo}}<img src="{{customlogo}}" alt="{{sitename}}">{{/customlogo}}
+                        {{^customlogo}}<span class="sd-brand-txt">{{{ sitename }}}</span>{{/customlogo}}
+                    {{/customsidebarlogo}}
+                </a>
+
+                <nav class="sd-nav">
+                    <a href="{{{ config.wwwroot }}}/my/" class="on">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+                        {{#str}}sd_nav_dashboard, theme_baz{{/str}}</a>
+                    <a href="{{coursesurl}}">
+                        <svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M4 5l2-2h12l2 2"/><path d="M9 11h6M9 15h4"/></svg>
+                        {{#str}}sd_nav_courses, theme_baz{{/str}}</a>
+                    <a href="{{calendarurl}}">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+                        {{#str}}sd_nav_calendar, theme_baz{{/str}}</a>
+                    <a href="{{{ config.wwwroot }}}/grade/report/overview/index.php">
+                        <svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg>
+                        {{#str}}sd_nav_grades, theme_baz{{/str}}</a>
+                    {{#hasinterestzone}}
+                    <a href="{{interestzoneurl}}">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.25"/><circle cx="12" cy="9" r="1" fill="currentColor" stroke="none"/><path d="M12 13V15"/></svg>
+                        {{interestzonelabel}}</a>
+                    {{/hasinterestzone}}
+
+                    <div class="sd-navlbl">{{#str}}sd_nav_resources, theme_baz{{/str}}</div>
+                    {{#showeidcard}}
+                    <a href="{{eidcardurl}}">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8" cy="11" r="2"/><path d="M13 10h5M13.5 14h3M5 16c.4-1.4 1.5-2 3-2s2.6.6 3 2"/></svg>
+                        {{#str}}pluginname, local_studentid{{/str}}</a>
+                    {{/showeidcard}}
+                    <a href="{{{ config.wwwroot }}}/user/files.php">
+                        <svg viewBox="0 0 24 24"><path d="M3 6a2 2 0 0 1 2-2h6l2 2h6a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                        {{#str}}sd_nav_files, theme_baz{{/str}}</a>
+                </nav>
+            {{> theme_baz/sidebar-support }}
+            </aside>
+
+            <!-- ============ MAIN ============ -->
+            <div class="sd-main">
+                <header class="sd-topbar">
+                    {{! Inner wrapper capped to the same max-width as .sd-content so the
+                        bar's items (esp. the profile menu) line up with the content below
+                        instead of running to the screen edge on wide displays. }}
+                    <div class="sd-topbar-inner">
+                        <div class="sd-tb-left">
+                            <button type="button" class="sd-burger" id="sd-burger" aria-label="{{#str}}sd_menu, theme_baz{{/str}}" aria-expanded="false" aria-controls="sd-side">
+                                <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                            </button>
+                            <span class="sd-tb-title">{{#str}}sd_nav_dashboard, theme_baz{{/str}}</span>
+                            {{#hassemester}}<span class="sd-tb-chip">{{#str}}sd_semshort, theme_baz, {{semesternum}}{{/str}}</span>{{/hassemester}}
+                        </div>
+                        <div class="sd-search-wrap" data-suggest="{{searchitemsjson}}">
+                            <form class="sd-search" action="{{{ config.wwwroot }}}/course/search.php" method="get" role="search">
+                                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                                <input type="text" name="search" id="sd-search-input" autocomplete="off" placeholder="{{#str}}sd_searchph, theme_baz{{/str}}" aria-label="{{#str}}search, core{{/str}}">
+                                <span class="sd-search-kbd">/</span>
+                            </form>
+                            <div class="sd-suggest" id="sd-suggest" hidden></div>
+                        </div>
+                        <div class="sd-top-actions">
+                            {{#hasaskjo}}<button type="button" class="sd-askjo" id="sd-askjo-btn">
+                                <svg viewBox="0 0 24 24" fill="var(--bz-accent)"><path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8z"/><circle cx="18.5" cy="17.5" r="1.6"/></svg>
+                                {{#str}}sd_askjo, theme_baz{{/str}}</button>{{/hasaskjo}}
+                            <button type="button" class="sd-iconbtn" id="sd-themebtn" title="{{#str}}sd_toggletheme, theme_baz{{/str}}">
+                                <svg id="sd-themeicon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+                            </button>
+                            {{! Notifications + native Messages popovers (both emitted here);
+                                styled as icon buttons to match the theme toggle. }}
+                            <div class="sd-navbar-plugin">{{{ output.navbar_plugin_output }}}</div>
+                            <div class="sd-usermenu">{{{ output.user_menu }}}</div>
+                        </div>
+                    </div>
+                </header>
+
+                {{#hasaskjo}}
+                <div class="sd-askjo-panel" id="sd-askjo-panel" hidden>
+                    <div class="sd-askjo-head">
+                        <span>{{#str}}sd_askjo, theme_baz{{/str}}</span>
+                        <button type="button" class="sd-askjo-close" id="sd-askjo-close" aria-label="Close">×</button>
+                    </div>
+                    {{! block_openai_chat[data-instance-id] wrapper is required — the chat
+                        JS attaches its input/send listeners by querying inside it. }}
+                    <div class="block_openai_chat" data-instance-id="{{askjo.blockid}}">
+                        <div class="sd-askjo-body">{{{ askjo.log }}}</div>
+                        <div class="sd-askjo-control">{{{ askjo.control }}}</div>
+                    </div>
+                </div>
+                {{/hasaskjo}}
+
+                <main class="sd-content">
+                    {{{weatherwidget}}}
+
+                    {{#hasbanner}}
+                    <!-- DASHBOARD BANNER (RemUI theme setting) -->
+                    <div class="sd-banner-wrap{{#bannermulti}} sd-banner-carousel{{/bannermulti}}" data-delay="{{bannerdelay}}">
+                        {{#banners}}
+                        {{#haslink}}<a class="sd-banner" href="{{link}}" target="_blank" rel="noopener"><img src="{{img}}" alt="{{alt}}"></a>{{/haslink}}
+                        {{^haslink}}<div class="sd-banner"><img src="{{img}}" alt="{{alt}}"></div>{{/haslink}}
+                        {{/banners}}
+                    </div>
+                    {{/hasbanner}}
+
+                    <!-- HERO -->
+                    <section class="sd-hero">
+                        <div class="sd-hero-l">
+                            <div class="sd-glow"></div>
+                            <div class="sd-eyebrow">{{datelabel}}</div>
+                            <h1>{{greetingtime}}, {{firstname}} 👋</h1>
+                            <p class="sd-sub">
+                                {{#str}}sd_herosub, theme_baz, {"deadlines": "{{deadlinecount}}", "classes": "{{liveclasscount}}"}{{/str}}
+                            </p>
+
+                            {{#hasupnext}}
+                            <div class="sd-upnext" data-deadline="{{upnext.timestart}}">
+                                <span class="sd-upnext-bar"></span>
+                                <div class="sd-upnext-info">
+                                    <div class="sd-tag">⚡ {{#str}}sd_upnext, theme_baz{{/str}}</div>
+                                    <div class="sd-ti">{{upnext.name}}</div>
+                                    <div class="sd-meta">{{upnext.coursename}} · {{upnext.timelabel}}</div>
+                                </div>
+                                <div class="sd-count"><div class="sd-num" data-countdown>--:--:--</div><div class="sd-lbl">{{#str}}sd_remaining, theme_baz{{/str}}</div></div>
+                                <a class="sd-go" href="{{upnext.url}}">{{#str}}sd_attempt, theme_baz{{/str}} <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            </div>
+                            {{/hasupnext}}
+
+                            <div class="sd-qa">
+                                {{#resumeitem}}<a class="sd-qa-primary" href="{{url}}"><svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9z"/></svg> {{#str}}sd_resume, theme_baz{{/str}}</a>{{/resumeitem}}
+                                <a href="{{joinclassurl}}"{{#joinclassexternal}} target="_blank" rel="noopener noreferrer"{{/joinclassexternal}}><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/></svg> {{#str}}sd_joinclass, theme_baz{{/str}}</a>
+                                {{#showexamcta}}
+                                <a class="sd-qa-exam" href="{{examctaurl}}">
+                                    <svg viewBox="0 0 24 24"><path d="M8 3h6l4 4v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4M9 13l2 2 4-4"/></svg>
+                                    {{#str}}sd_exam_start, theme_baz{{/str}}</a>
+                                {{/showexamcta}}
+                            </div>
+                        </div>
+
+                        <div class="sd-hero-r">
+                            <div class="sd-hr-head">
+                                <span class="sd-t">{{#str}}sd_semprogress, theme_baz{{/str}}{{#hassemester}} · {{#str}}sd_semcurrent, theme_baz, {{semesternum}}{{/str}}{{/hassemester}}</span>
+                                {{#hasstreak}}<span class="sd-streak">🔥 {{#str}}sd_streak, theme_baz, {{streak}}{{/str}}</span>{{/hasstreak}}
+                            </div>
+                            <div class="sd-donut-row">
+                                <div class="sd-donut">
+                                    <svg width="124" height="124" viewBox="0 0 140 140">
+                                        <circle class="sd-donut-track" cx="70" cy="70" r="58" fill="none" stroke="#EEF2F6" stroke-width="15"/>
+                                        {{#donutarcs}}
+                                        <circle class="sd-donut-seg" cx="70" cy="70" r="58" fill="none" stroke="{{color}}" stroke-width="15" stroke-linecap="round" stroke-dasharray="{{dash}}" stroke-dashoffset="{{offset}}"/>
+                                        {{/donutarcs}}
+                                    </svg>
+                                    <div class="sd-donut-mid"><b>{{ringpct}}%</b><span>{{#str}}sd_avgcomplete, theme_baz{{/str}}</span></div>
+                                </div>
+                                <div class="sd-chips">
+                                    <div class="sd-chip2"><i style="background:#5B9BFF"></i> {{#str}}sd_completed, theme_baz{{/str}} <b>{{ringcompleted}}</b></div>
+                                    <div class="sd-chip2"><i style="background:var(--bz-accent)"></i> {{#str}}sd_inprogress, theme_baz{{/str}} <b>{{ringinprogress}}</b></div>
+                                    <div class="sd-chip2"><i class="sd-sw-empty"></i> {{#str}}sd_notstarted, theme_baz{{/str}} <b>{{ringnotstarted}}</b></div>
+                                </div>
+                            </div>
+                            <div class="sd-spark-row">
+                                <div class="sd-spark-lbl"><span>{{#str}}sd_thisweek, theme_baz{{/str}}</span><span>{{#str}}sd_activity, theme_baz{{/str}}</span></div>
+                                <div class="sd-spark">
+                                    {{#sparkbars}}<div class="sd-sbar{{#dim}} dim{{/dim}}" style="height:{{height}}%"></div>{{/sparkbars}}
+                                </div>
+                            </div>
+                            {{#hasfocus}}
+                            <a class="sd-focus" href="{{focus.url}}">
+                                <span class="sd-focus-ic"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+                                <div class="sd-focus-txt">
+                                    <div class="sd-focus-k">{{#str}}sd_focusnext, theme_baz{{/str}}</div>
+                                    <div class="sd-focus-v">{{focus.name}} · {{focus.statuslabel}}</div>
+                                </div>
+                                <span class="sd-focus-go">{{#str}}sd_focusgo, theme_baz{{/str}} →</span>
+                            </a>
+                            {{/hasfocus}}
+                        </div>
+                    </section>
+
+                    <!-- KPI STRIP -->
+                    <section class="sd-stats">
+                        <div class="sd-stat">
+                            <div class="sd-stat-top"><span class="sd-ic2" style="background:#406CD2"><svg viewBox="0 0 24 24"><path d="M4 5h16M4 5v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V5M9 11h6M9 15h4"/></svg></span>{{#hassemester}}<span class="sd-chip" style="background:#eef3fc;color:#406CD2">{{#str}}sd_semshort, theme_baz, {{semesternum}}{{/str}}</span>{{/hassemester}}</div>
+                            <div class="sd-v">{{kpicourses}}</div><div class="sd-l">{{#str}}sd_kpicourses, theme_baz{{/str}}</div>
+                        </div>
+                        <div class="sd-stat">
+                            <div class="sd-stat-top"><span class="sd-ic2" style="background:#1FA37A"><svg viewBox="0 0 24 24"><path d="M4 19V5M4 19h16M8 16l3-4 3 2 4-6"/></svg></span></div>
+                            <div class="sd-v">{{kpiprogress}}%</div><div class="sd-l">{{#str}}sd_kpiprogress, theme_baz{{/str}}</div>
+                        </div>
+                        <div class="sd-stat">
+                            <div class="sd-stat-top"><span class="sd-ic2" style="background:#E5556E"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span></div>
+                            <div class="sd-v">{{kpideadlines}}</div><div class="sd-l">{{#str}}sd_kpideadlines, theme_baz{{/str}}</div>
+                        </div>
+                        <div class="sd-stat">
+                            <div class="sd-stat-top"><span class="sd-ic2" style="background:#8B5CF6"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="m10 9 5 3-5 3z" fill="currentColor" stroke="none"/></svg></span></div>
+                            <div class="sd-v">{{kpiliveclasses}}</div><div class="sd-l">{{#str}}sd_kpiliveclasses, theme_baz{{/str}}</div>
+                        </div>
+                    </section>
+
+                    <!-- JUMP BACK IN -->
+                    {{#hasrecent}}
+                    <section>
+                        <div class="sd-sec-h"><h2>{{#str}}sd_jumpback, theme_baz{{/str}}</h2></div>
+                        <div class="sd-rail">
+                            {{#recentitems}}
+                            <a class="sd-ritem sd-clickable" href="{{url}}">
+                                <span class="sd-open"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+                                <span class="sd-ico" style="background:{{iconcolor}}"><svg viewBox="0 0 24 24">{{{iconsvg}}}</svg></span>
+                                <div class="sd-kind">{{kind}}</div>
+                                <div class="sd-nm">{{name}}</div>
+                                <div class="sd-crs">{{coursename}}</div>
+                            </a>
+                            {{/recentitems}}
+                        </div>
+                    </section>
+                    {{/hasrecent}}
+
+                    <!-- COURSES -->
+                    {{#hascourses}}
+                    <section>
+                        <div class="sd-sec-h"><h2>{{#str}}sd_mycourses, theme_baz{{/str}}{{#hassemester}} <span class="sd-sembadge">{{#str}}sd_semshort, theme_baz, {{semesternum}}{{/str}}</span>{{/hassemester}}</h2><a class="sd-all" href="{{coursesurl}}">{{#str}}sd_allcourses, theme_baz, {{coursecount}}{{/str}}</a></div>
+                        <div class="sd-courses">
+                            {{#courses}}
+                            <a class="sd-course sd-reveal sd-clickable" href="{{url}}">
+                                <div class="sd-cover{{#hasimage}} has-img{{/hasimage}}" style="background:linear-gradient(135deg,{{gradfrom}},{{gradto}})">
+                                    {{#hasimage}}<img class="sd-cover-img" src="{{imageurl}}" alt="" loading="lazy">{{/hasimage}}
+                                    {{^hasimage}}<span class="sd-mono">{{abbr}}</span><span class="sd-deco"></span>{{/hasimage}}
+                                    <span class="sd-open"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></span>
+                                </div>
+                                <div class="sd-cbody">
+                                    <h3>{{name}}</h3>
+                                    <div class="sd-prog"><span class="sd-bar"><i style="width:{{barwidth}}%;background:{{barcolor}}"></i></span><span class="sd-p">{{progress}}%</span></div>
+                                    <div class="sd-cstatus"><span class="sd-pill" style="background:{{statusbg}};color:{{statusink}}">{{statuslabel}}</span></div>
+                                </div>
+                            </a>
+                            {{/courses}}
+                        </div>
+                    </section>
+                    {{/hascourses}}
+
+                    <!-- LOWER: deadlines/live (left) + xp/fee/support/calendar (right) -->
+                    <section class="sd-lower{{^haslowerleft}} sd-lower--noleft{{/haslowerleft}}">
+                        {{#haslowerleft}}
+                        <div class="sd-lstack">
+                            {{#hasdeadlines}}
+                            <div class="sd-card">
+                                <div class="sd-hd"><span class="sd-hic" style="background:var(--bz-accent);color:var(--bz-navy)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><h3>{{#str}}sd_deadlines, theme_baz{{/str}}</h3></div>
+                                <div class="sd-tl">
+                                    {{#deadlinedays}}
+                                    <div class="sd-day">{{daylabel}}</div>
+                                    {{#events}}
+                                    <a class="sd-ev" href="{{url}}"{{#external}} target="_blank" rel="noopener noreferrer"{{/external}}><span class="sd-tm">{{time}}</span><span class="sd-evbar"></span><div class="sd-evinfo"><div class="sd-evt">{{name}}</div><div class="sd-evc">{{coursename}}</div></div><span class="sd-act">{{action}}</span></a>
+                                    {{/events}}
+                                    {{/deadlinedays}}
+                                </div>
+                            </div>
+                            {{/hasdeadlines}}
+
+                            {{#hasliveclasses}}
+                            <div class="sd-card">
+                                <div class="sd-hd"><span class="sd-hic" style="background:#8B5CF6"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="13" rx="2"/><path d="m10 9 5 3-5 3z" fill="currentColor" stroke="none"/></svg></span><h3>{{#str}}sd_liveclasses, theme_baz{{/str}}</h3></div>
+                                <div class="sd-tl">
+                                    {{#liveclassdays}}
+                                    <div class="sd-day">{{daylabel}}</div>
+                                    {{#events}}
+                                    <a class="sd-ev" href="{{url}}"{{#external}} target="_blank" rel="noopener noreferrer"{{/external}}><span class="sd-tm">{{time}}</span><span class="sd-evbar" style="background:#8B5CF6"></span><div class="sd-evinfo"><div class="sd-evt">{{name}}</div><div class="sd-evc">{{coursename}}</div></div><span class="sd-act sd-act--ghost">{{action}}</span></a>
+                                    {{/events}}
+                                    {{/liveclassdays}}
+                                </div>
+                            </div>
+                            {{/hasliveclasses}}
+                        </div>
+
+                        {{/haslowerleft}}
+
+                        <div class="sd-rstack">
+                            {{#hasxp}}
+                            <div class="sd-card">
+                                <div class="sd-hd"><span class="sd-hic" style="background:linear-gradient(135deg,var(--bz-accent),var(--bz-accent-lo2));color:var(--bz-navy)"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"/></svg></span><h3>{{#str}}sd_levelup, theme_baz{{/str}}</h3></div>
+                                <div class="sd-pad">
+                                    <div class="sd-xp-row">
+                                        <div class="sd-lvl-badge">{{xp.level}}</div>
+                                        <div class="sd-xp-info">
+                                            <div class="sd-xp-pts">{{xp.points}} {{#xp.hasnext}}<span>/ {{xp.nextpoints}} {{#str}}sd_xp, theme_baz{{/str}}</span>{{/xp.hasnext}}</div>
+                                            <div class="sd-bar"><i style="width:{{xp.ratio}}%;background:linear-gradient(90deg,var(--bz-accent),var(--bz-accent-lo2))"></i></div>
+                                            {{#xp.hasnext}}<div class="sd-xp-next">{{#str}}sd_xptonext, theme_baz, {{xp.topct}}{{/str}}</div>{{/xp.hasnext}}
+                                        </div>
+                                    </div>
+                                    {{#xp.hasrank}}<div class="sd-xp-rank">🏅 <span>{{#str}}sd_xprank, theme_baz, {{xp.rank}}{{/str}}</span></div>{{/xp.hasrank}}
+                                </div>
+                            </div>
+                            {{/hasxp}}
+
+                            {{#hasfee}}
+                            <div class="sd-fee">
+                                <div class="sd-fee-head">
+                                    <div class="sd-fee-ic"><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg></div>
+                                    <div class="sd-fee-txt">
+                                        <h3>{{fee.title}}</h3>
+                                        <p>{{fee.desc}}</p>
+                                    </div>
+                                </div>
+                                <a class="sd-pay" href="{{fee.payurl}}" target="_blank" rel="noopener">{{fee.button}} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            </div>
+                            {{/hasfee}}
+
+                            {{! Support moved out of the column into a floating "Need help?"
+                                button (see .sd-help near the end of the layout). }}
+
+                            {{#hasannouncements}}
+                            <div class="sd-card">
+                                <div class="sd-hd"><span class="sd-hic" style="background:#406CD2"><svg viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg></span><h3>{{#str}}sd_announcements, theme_baz{{/str}}</h3></div>
+                                <div class="sd-blockcontent">{{{ announcements_html }}}</div>
+                            </div>
+                            {{/hasannouncements}}
+
+                            <div class="sd-card">
+                                <div class="sd-cal">
+                                    <div class="sd-ct"><b>{{calendar.monthlabel}}</b></div>
+                                    <div class="sd-grid7">
+                                        <span class="sd-dow">S</span><span class="sd-dow">M</span><span class="sd-dow">T</span><span class="sd-dow">W</span><span class="sd-dow">T</span><span class="sd-dow">F</span><span class="sd-dow">S</span>
+                                        {{#calendar.cells}}
+                                        {{#blank}}<span class="sd-d sd-mut"></span>{{/blank}}
+                                        {{^blank}}<div class="sd-d sd-col{{col}}{{#istoday}} sd-today{{/istoday}}{{#isdue}} sd-due{{/isdue}}"><a class="sd-d-n" href="{{url}}">{{day}}</a>{{#hasevents}}<span class="sd-cal-pop"><span class="sd-cal-pop-d">{{daylabel}}</span>{{#events}}<a class="sd-cal-pop-ev" href="{{url}}"{{#external}} target="_blank" rel="noopener noreferrer"{{/external}}><b>{{time}}</b> {{name}}</a>{{/events}}</span>{{/hasevents}}</div>{{/blank}}
+                                        {{/calendar.cells}}
+                                    </div>
+                                    <div class="sd-cal-actions">
+                                        <a href="{{calendarurl}}">{{#str}}sd_cal_full, theme_baz{{/str}}</a>
+                                        {{#calendarexporturl}}
+                                        <a href="{{calendarexporturl}}">{{#str}}sd_cal_export, theme_baz{{/str}}</a>
+                                        {{/calendarexporturl}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {{! Business news + Podcasts (real RSS blocks). }}
+                    <section class="sd-feeds">
+                        {{#hasbusinessnews}}
+                        <div class="sd-card">
+                            <div class="sd-hd"><span class="sd-hic" style="background:#406CD2"><svg viewBox="0 0 24 24"><path d="M4 5h13v14H4z"/><path d="M17 8h3v9a2 2 0 0 1-2 2h-1M7 9h7M7 13h5"/></svg></span><h3>{{#str}}sd_businessnews, theme_baz{{/str}}</h3></div>
+                            <div class="sd-feed">
+                                {{#businessnews}}
+                                <a class="sd-fitem" href="{{url}}" target="_blank" rel="noopener">
+                                    <span class="sd-th" style="background:{{color}}">{{abbr}}</span>
+                                    <span class="sd-ft"><span class="sd-fsrc">{{source}}</span><span class="sd-fhl">{{title}}</span></span>
+                                </a>
+                                {{/businessnews}}
+                            </div>
+                        </div>
+                        {{/hasbusinessnews}}
+                        {{#haspodcasts}}
+                        <div class="sd-card">
+                            <div class="sd-hd"><span class="sd-hic" style="background:#8B5CF6"><svg viewBox="0 0 24 24"><path d="M12 2v6m0 0 3-3m-3 3L9 5"/><rect x="4" y="8" width="16" height="13" rx="2"/></svg></span><h3>{{#str}}sd_podcasts, theme_baz{{/str}}</h3></div>
+                            <div class="sd-feed">
+                                {{#podcasts}}
+                                <a class="sd-fitem" href="{{url}}" target="_blank" rel="noopener">
+                                    <span class="sd-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
+                                    <span class="sd-ft"><span class="sd-fsrc">{{source}}</span><span class="sd-fhl">{{title}}</span></span>
+                                </a>
+                                {{/podcasts}}
+                            </div>
+                        </div>
+                        {{/haspodcasts}}
+                    </section>
+
+                    <p class="sd-footnote">{{brandfootnote}}</p>
+
+                    {{! Required Moodle main-content placeholder (normally empty on the dashboard,
+                        but every layout must output it or core throws a coding exception). }}
+                    <div id="region-main-box" class="sd-region-main">
+                        <section id="region-main" aria-label="{{#str}}content{{/str}}">
+                            {{{ output.main_content }}}
+                        </section>
+                    </div>
+                </main>
+            </div>
+
+            {{#hassupport}}
+            <!-- Floating "Need help?" (Support) — always reachable without scrolling. -->
+            <div class="sd-help">
+                <div class="sd-help-panel" id="sd-help-panel" hidden>
+                    <div class="sd-help-head">
+                        <span class="sd-help-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg></span>
+                        <div class="sd-help-t"><b>{{#str}}sd_help, theme_baz{{/str}}</b><small>{{#str}}sd_help_sub, theme_baz{{/str}}</small></div>
+                        <button type="button" class="sd-help-close" id="sd-help-close" aria-label="Close">&times;</button>
+                    </div>
+                    <div class="sd-blockcontent sd-support">{{{ support_html }}}</div>
+                </div>
+                <button type="button" class="sd-help-fab" id="sd-help-fab" aria-expanded="false" aria-controls="sd-help-panel">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg>
+                    <span>{{#str}}sd_help, theme_baz{{/str}}</span>
+                </button>
+            </div>
+            {{/hassupport}}
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{! Bespoke layout: emit only the essential end-of-body JS, not the full theme
+            footer (which carries a mycourses/#topBar script that this layout has no DOM for). }}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+
+</body>
+
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/studentdashboard'], function(Loader, StudentDashboard) {
+        StudentDashboard.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+{{/js}}

@@ -1,0 +1,16 @@
+.aidock {position: fixed; left: 18px; bottom: 18px; z-index: 1035; display: flex; flex-direction: column; gap: 12px;}
+.aidock .aidock-btn {position: relative; width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: var(--aidock-c, #0f6cbf); color: #fff !important; font-size: 1.35rem; text-decoration: none !important;
+    box-shadow: 0 4px 14px rgba(0,0,0,.22); transition: transform .15s ease, box-shadow .15s ease;}
+.aidock .aidock-btn:hover, .aidock .aidock-btn:focus {transform: scale(1.08); box-shadow: 0 6px 20px rgba(0,0,0,.3); outline: none;}
+.aidock .aidock-dot {position: absolute; top: 2px; right: 2px; width: 13px; height: 13px; border-radius: 50%; background: #9ca3af; border: 2px solid #fff;}
+.aidock .aidock-dot.on {background: #22c55e;}
+.aidock .aidock-label {position: absolute; left: 62px; white-space: nowrap; background: #111827; color: #fff; font-size: .8rem; padding: .35rem .6rem;
+    border-radius: .5rem; opacity: 0; pointer-events: none; transform: translateX(-4px); transition: opacity .15s, transform .15s;}
+.aidock .aidock-label small {display: block; opacity: .75; font-size: .7rem;}
+.aidock .aidock-btn:hover .aidock-label, .aidock .aidock-btn:focus .aidock-label {opacity: 1; transform: none;}
+@media (max-width: 576px) {.aidock {left: 10px; bottom: 10px; gap: 8px;} .aidock .aidock-btn {width: 44px; height: 44px; font-size: 1.1rem;}}
+
+/* Status badge on tool.php: explicit colours so the theme can't make it unreadable. */
+.badge.aidock-badge-ok { background: #16a34a !important; color: #fff !important; }
+.badge.aidock-badge-off { background: #64748b !important; color: #fff !important; }

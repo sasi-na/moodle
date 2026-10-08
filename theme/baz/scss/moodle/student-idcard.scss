@@ -1,0 +1,246 @@
+/* ==========================================================================
+   theme_baz — bespoke Student e-ID Card portal (student-only)
+   Scoped to #sid-root. Navy / gold, matching the other bespoke pages.
+   Light + dark. scssphp-safe: block comments only.
+   ========================================================================== */
+
+#sid-root {
+    --sid-navy: #{$bz-navy};
+    /* Label on an accent surface. Derived from the accent's contrast in
+       theme_baz_brand_palette(), so a dark accent gets white and a light
+       one keeps the navy. */
+    --sid-on-accent: #{$bz-accent-on};
+    --sid-ground: #F4F7FB;
+    --sid-surface: #fff;
+    --sid-ink: #0B2034;
+    --sid-muted: #5C7184;
+    --sid-faint: #90A4B5;
+    --sid-line: #E5ECF3;
+    --sid-accent: #{$bz-accent};
+    --sid-green: #1FA37A;
+    --sid-rose: #E5556E;
+    --sid-blue: #2563EB;
+    --sid-gnavy: linear-gradient(135deg, #{$bz-navy-hi}, #{$bz-navy-lo});
+    --sid-gaccent: linear-gradient(135deg, #{$bz-accent-hi}, #{$bz-accent-lo});
+    --sid-sans: 'Manrope', 'Inter', system-ui, sans-serif;
+    --sid-mono: 'JetBrains Mono', ui-monospace, monospace;
+    --sid-sh-sm: 0 1px 2px rgba(11, 32, 52, .06), 0 1px 3px rgba(11, 32, 52, .04);
+    --sid-sh: 0 4px 14px rgba(11, 32, 52, .07);
+    --sid-sh-lg: 0 18px 50px rgba(11, 32, 52, .12);
+
+    font-family: var(--sid-sans);
+    color: var(--sid-ink);
+    background: var(--sid-ground);
+    min-height: 100vh;
+
+    *, *::before, *::after { box-sizing: border-box; }
+    svg { display: block; }
+
+    /* ---- shell ---- */
+    &.sid-app { display: grid; grid-template-columns: 248px 1fr; }
+    .sid-side { background: linear-gradient(180deg, var(--sid-navy), $bz-navy-deep); color: #cfe0ec; padding: 20px 16px; display: flex; flex-direction: column; gap: 3px; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sid-brand { display: block; padding: 4px 8px 18px; }
+    .sid-brand img { max-height: 38px; width: auto; }
+    .sid-brand-txt { color: #fff; font-weight: 800; font-size: 18px; }
+    .sid-nav a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 11px; color: #aec4d4; font-weight: 600; font-size: 14px; text-decoration: none; }
+    .sid-nav a svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .sid-nav a:hover { background: rgba(255, 255, 255, .06); color: #fff; }
+    .sid-nav a.on { background: rgba($bz-accent, .2); color: var(--sid-accent); font-weight: 700; }
+    .sid-nav a.on svg { stroke: var(--sid-accent); }
+    .sid-navlbl { font: 600 11px/1 var(--sid-mono); letter-spacing: .12em; text-transform: uppercase; color: #5d7e95; padding: 16px 12px 8px; }
+
+    .sid-main-col { min-width: 0; display: flex; flex-direction: column; }
+
+    /* ---- topbar (actions right-aligned, dark-aware) ---- */
+    .sid-topbar { position: sticky; top: 0; z-index: 30; background: rgba(244, 247, 251, .92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--sid-line); }
+    .sid-topbar-inner { display: flex; align-items: center; gap: 14px; padding: 12px 28px; }
+    .sid-tb-left { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
+    .sid-tb-right { display: flex; align-items: center; gap: 10px; flex: 0 0 auto; }
+    .sid-burger { display: none; border: 0; background: none; padding: 0; cursor: pointer; }
+    .sid-burger svg { width: 24px; height: 24px; stroke: var(--sid-ink); fill: none; stroke-width: 1.9; }
+    .sid-crumb { font-weight: 600; color: var(--sid-muted); font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sid-crumb a { color: var(--sid-muted); text-decoration: none; }
+    .sid-crumb .sep { margin: 0 7px; color: var(--sid-faint); }
+    .sid-crumb .cur { color: var(--sid-ink); font-weight: 700; }
+    .sid-askjo { display: inline-flex; align-items: center; gap: 8px; background: var(--sid-gnavy); color: #fff; font-weight: 700; font-size: 13.5px; padding: 9px 15px; border: 0; border-radius: 12px; cursor: pointer; }
+    .sid-askjo svg { width: 16px; height: 16px; }
+    .sid-askjo[disabled] { opacity: .5; cursor: default; }
+    .sid-iconbtn { width: 42px; height: 42px; border-radius: 12px; background: var(--sid-surface); border: 1px solid var(--sid-line); display: grid; place-items: center; color: var(--sid-muted); box-shadow: var(--sid-sh-sm); cursor: pointer; }
+    .sid-iconbtn svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .sid-navbar-plugin { display: flex; align-items: center; gap: 10px; }
+    .sid-navbar-plugin .popover-region-toggle, .sid-navbar-plugin .nav-link { width: 42px; height: 42px; border-radius: 12px; background: var(--sid-surface); border: 1px solid var(--sid-line); display: grid; place-items: center; color: var(--sid-muted); box-shadow: var(--sid-sh-sm); position: relative; }
+    .sid-navbar-plugin .count-container { top: 4px; right: 4px; }
+    .sid-usermenu .dropdown-toggle { text-decoration: none; }
+
+    /* ---- content ---- */
+    .sid-content { padding: 24px 28px 70px; max-width: 1180px; width: 100%; }
+    .sid-phead { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+    .sid-eyebrow { font: 700 11px/1 var(--sid-mono); letter-spacing: .16em; text-transform: uppercase; color: $bz-accent-text; }
+    .sid-phead h1 { font-size: 28px; font-weight: 800; letter-spacing: -.02em; margin-top: 9px; }
+    .sid-phead p { color: var(--sid-muted); font-size: 14px; margin-top: 6px; max-width: 520px; }
+    .sid-pill { display: inline-flex; align-items: center; gap: 8px; background: #EDF1F6; color: var(--sid-muted); font: 800 12px var(--sid-mono); text-transform: uppercase; letter-spacing: .05em; padding: 9px 14px; border-radius: 10px; white-space: nowrap; }
+    .sid-pill.ok { background: rgba(31, 163, 122, .12); color: var(--sid-green); }
+    .sid-pill.ok span { width: 8px; height: 8px; border-radius: 50%; background: var(--sid-green); }
+
+    .sid-alert { display: flex; gap: 12px; background: rgba(229, 85, 110, .08); border: 1px solid rgba(229, 85, 110, .25); border-radius: 14px; padding: 14px 16px; margin-bottom: 18px; }
+    .sid-alert-ic { width: 34px; height: 34px; flex: 0 0 34px; border-radius: 10px; background: rgba(229, 85, 110, .14); color: var(--sid-rose); display: grid; place-items: center; }
+    .sid-alert-ic svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .sid-alert b { font-size: 14px; }
+    .sid-alert p { color: var(--sid-muted); font-size: 13px; margin-top: 4px; }
+
+    .sid-grid { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 20px; align-items: start; }
+    .sid-col { display: flex; flex-direction: column; gap: 18px; }
+
+    /* ---- the e-ID card ---- */
+    .sid-cardwrap { background: var(--sid-surface); border: 1px solid var(--sid-line); border-radius: 20px; box-shadow: var(--sid-sh); padding: 26px; display: flex; justify-content: center; }
+    .idc { position: relative; width: 430px; max-width: 100%; height: 264px; border-radius: 18px; background: linear-gradient(140deg, $bz-navy-f 0%, $bz-navy-g 60%, $bz-navy-h 100%); color: #fff; padding: 20px 22px; overflow: hidden; box-shadow: 0 20px 44px rgba(0, 28, 50, .4); border: 1px solid rgba(255, 255, 255, .08); }
+    .idc-sheen { position: absolute; inset: 0; background: radial-gradient(120% 80% at 85% -10%, rgba($bz-accent, .22), transparent 55%); pointer-events: none; }
+    .idc-top { display: flex; align-items: flex-start; justify-content: space-between; position: relative; }
+    .idc-brand { display: flex; align-items: baseline; gap: 7px; }
+    .idc-logo { font-weight: 800; font-size: 21px; letter-spacing: -.01em; }
+    .idc-subl { font: 700 10px/1 var(--sid-mono); letter-spacing: .22em; color: var(--sid-accent); }
+    .idc-kind { font: 700 9px/1 var(--sid-mono); letter-spacing: .16em; text-transform: uppercase; color: #9fc0d8; border: 1px solid rgba(255, 255, 255, .18); border-radius: 20px; padding: 6px 10px; }
+    .idc-body { display: flex; gap: 16px; margin-top: 20px; position: relative; }
+    .idc-photo { width: 78px; height: 92px; border-radius: 10px; background: var(--sid-gaccent); color: var(--sid-on-accent); display: grid; place-items: center; font: 800 26px var(--sid-mono); flex: 0 0 auto; box-shadow: 0 6px 16px rgba(0, 0, 0, .25); border: 2px solid rgba(255, 255, 255, .5); }
+    .idc-info { min-width: 0; flex: 1; }
+    .idc-name { font-size: 20px; font-weight: 800; letter-spacing: -.01em; }
+    .idc-prog { font-size: 11.5px; color: #bcd4e6; margin-top: 3px; }
+    .idc-pair { display: flex; gap: 26px; margin-top: 14px; }
+    .idc-pair label { display: block; font: 700 8px/1 var(--sid-mono); letter-spacing: .12em; text-transform: uppercase; color: #7fa3bd; }
+    .idc-pair b { font: 700 13px var(--sid-mono); color: #fff; margin-top: 5px; display: block; }
+    .idc-foot { position: absolute; left: 22px; right: 22px; bottom: 18px; display: flex; align-items: flex-end; gap: 18px; }
+    .idc-no { flex: 1; }
+    .idc-no label { display: block; font: 700 8px/1 var(--sid-mono); letter-spacing: .12em; text-transform: uppercase; color: #7fa3bd; }
+    .idc-no b { font: 700 12px var(--sid-mono); color: #fff; margin-top: 5px; display: block; }
+    .idc-qr { width: 52px; height: 52px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 2px; background: #fff; padding: 5px; border-radius: 7px; flex: 0 0 auto; }
+    .idc-qr i { background: #eef1f4; border-radius: 1px; }
+    .idc-qr i.on { background: var(--sid-navy); }
+
+    /* ---- panels / details ---- */
+    .sid-panel { background: var(--sid-surface); border: 1px solid var(--sid-line); border-radius: 16px; box-shadow: var(--sid-sh-sm); padding: 18px 20px; }
+    .sid-panel h3 { font-size: 13px; font-weight: 800; display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+    .sid-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--sid-accent); }
+    .sid-dl { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; }
+    .sid-di-wide { grid-column: 1 / -1; }
+    .sid-di label { display: block; font: 700 9.5px/1 var(--sid-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--sid-faint); }
+    .sid-di b { font: 700 14px var(--sid-mono); color: var(--sid-ink); margin-top: 6px; display: block; }
+    .sid-di b.sans { font-family: var(--sid-sans); font-size: 13.5px; }
+
+    /* ---- empty / state panels ---- */
+    .sid-empty { background: var(--sid-surface); border: 1px solid var(--sid-line); border-radius: 18px; box-shadow: var(--sid-sh-sm); padding: 40px 28px; text-align: center; }
+    .sid-empty-ic { width: 60px; height: 60px; border-radius: 16px; background: rgba($bz-accent, .14); color: $bz-accent-text; display: grid; place-items: center; margin: 0 auto 16px; }
+    .sid-empty-ic svg { width: 30px; height: 30px; stroke: currentColor; fill: none; stroke-width: 1.7; }
+    .sid-empty h2 { font-size: 19px; font-weight: 800; }
+    .sid-empty p { color: var(--sid-muted); font-size: 14px; margin: 8px auto 18px; max-width: 420px; line-height: 1.5; }
+    .sid-empty-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .sid-inlineform { margin: 0; }
+
+    .sid-btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 0; border-radius: 12px; padding: 13px 20px; font: 800 13.5px var(--sid-sans); cursor: pointer; text-decoration: none; }
+    .sid-btn svg { width: 17px; height: 17px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+    .sid-btn-gold { background: var(--sid-gaccent); color: var(--sid-on-accent); box-shadow: 0 8px 22px rgba($bz-accent, .4); }
+    .sid-btn-ghost { background: var(--sid-ground); border: 1px solid var(--sid-line); color: var(--sid-navy); }
+    .sid-block { display: block; margin-top: 10px; }
+    .sid-block .sid-btn { width: 100%; }
+    .sid-rail .sid-panel .sid-btn-gold { width: 100%; }
+
+    /* ---- history ---- */
+    .sid-sech { font-size: 15px; font-weight: 800; margin: 6px 2px 12px; }
+    .sid-history { display: flex; flex-direction: column; }
+    .sid-hrow { display: flex; align-items: center; gap: 13px; padding: 13px 16px; background: var(--sid-surface); border: 1px solid var(--sid-line); border-radius: 13px; box-shadow: var(--sid-sh-sm); margin-bottom: 10px; }
+    .sid-hic { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex: 0 0 auto; background: var(--sid-ground); color: var(--sid-muted); }
+    .sid-hic.ok { background: rgba(31, 163, 122, .13); color: var(--sid-green); }
+    .sid-hic.no { background: rgba(229, 85, 110, .13); color: var(--sid-rose); }
+    .sid-hic svg { width: 19px; height: 19px; stroke: currentColor; fill: none; stroke-width: 2.2; }
+    .sid-hmain { flex: 1; min-width: 0; }
+    .sid-hn { display: block; font-size: 14px; font-weight: 700; }
+    .sid-hm { display: block; font: 600 11px/1 var(--sid-mono); color: var(--sid-faint); text-transform: uppercase; letter-spacing: .03em; margin-top: 5px; }
+    .sid-hc { display: block; font-size: 12.5px; color: var(--sid-muted); margin-top: 6px; }
+    .sid-htag { font: 800 9.5px var(--sid-mono); text-transform: uppercase; letter-spacing: .05em; padding: 5px 9px; border-radius: 7px; background: #EDF1F6; color: var(--sid-muted); white-space: nowrap; }
+    .sid-htag.ok { background: rgba(31, 163, 122, .14); color: var(--sid-green); }
+    .sid-htag.no { background: rgba(229, 85, 110, .14); color: var(--sid-rose); }
+
+    /* ---- rail: stepper + stats ---- */
+    .sid-rail .sid-panel + .sid-panel { margin-top: 18px; }
+    .sid-steplist { display: flex; flex-direction: column; }
+    .sid-stp { display: flex; align-items: center; gap: 12px; padding: 3px 0; }
+    .sid-stp-dot { width: 30px; height: 30px; flex: 0 0 30px; border-radius: 50%; display: grid; place-items: center; background: #EDF1F6; color: var(--sid-faint); font: 800 12px var(--sid-mono); }
+    .sid-stp-dot svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2.4; }
+    .sid-stp.done .sid-stp-dot { background: var(--sid-green); color: #fff; }
+    .sid-stp.active .sid-stp-dot { background: var(--sid-gaccent); color: var(--sid-on-accent); box-shadow: 0 0 0 4px rgba($bz-accent, .22); }
+    .sid-stp-lbl { font-size: 13.5px; font-weight: 700; color: var(--sid-ink); }
+    .sid-stp.todo .sid-stp-lbl { color: var(--sid-faint); font-weight: 600; }
+    .sid-stp-bar { width: 2px; height: 12px; background: var(--sid-line); margin-left: 14px; }
+    .sid-stp.done + .sid-stp-bar { background: var(--sid-green); }
+
+    .sid-stat { display: flex; align-items: center; gap: 13px; padding: 11px 0; border-bottom: 1px solid var(--sid-line); }
+    .sid-stat:last-child { border-bottom: 0; }
+    .sid-sic { width: 36px; height: 36px; border-radius: 10px; background: rgba($bz-accent, .14); color: $bz-accent-text; display: grid; place-items: center; flex: 0 0 auto; }
+    .sid-sic svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.9; }
+    .sid-sn { font-size: 13px; font-weight: 700; }
+    .sid-sm { font: 600 11px/1 var(--sid-mono); color: var(--sid-faint); margin-top: 4px; }
+    .sid-big { margin-left: auto; font: 800 20px var(--sid-mono); color: var(--sid-ink); }
+
+    .sid-region-main { display: none; }
+    .sid-backdrop { display: none; }
+
+    /* ---- floating help (gold FAB, bottom-left) ---- */
+    .sid-help { position: fixed; left: 22px; bottom: 22px; z-index: 1050; }
+    .sid-help-fab { display: inline-flex; align-items: center; gap: 9px; background: var(--sid-gaccent); color: var(--sid-on-accent); font-weight: 800; font-size: 13.5px; border: 0; border-radius: 30px; padding: 13px 19px; cursor: pointer; box-shadow: 0 12px 30px rgba($bz-accent, .42); }
+    .sid-help-fab svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+    .sid-help-panel { position: absolute; left: 0; bottom: 62px; width: 320px; background: var(--sid-surface); border: 1px solid var(--sid-line); border-radius: 16px; box-shadow: var(--sid-sh-lg); overflow: hidden; }
+    .sid-help-head { display: flex; align-items: center; gap: 11px; padding: 14px 16px; border-bottom: 1px solid var(--sid-line); }
+    .sid-help-ic { width: 34px; height: 34px; border-radius: 10px; background: rgba($bz-accent, .16); color: $bz-accent-text; display: grid; place-items: center; }
+    .sid-help-ic svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.9; }
+    .sid-help-t b { display: block; font-size: 13.5px; font-weight: 800; }
+    .sid-help-t small { color: var(--sid-faint); font-size: 11px; }
+    .sid-help-close { margin-left: auto; border: 0; background: none; font-size: 22px; line-height: 1; color: var(--sid-faint); cursor: pointer; }
+    .sid-help-panel .sd-support { padding: 6px 16px 14px; }
+    .sid-help-panel .sd-support .support-block-button { display: flex; flex-direction: column; }
+    .sid-help-panel .sd-support .btn { display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%; text-align: left; padding: 13px 0; margin: 0; border: 0; border-bottom: 1px solid var(--sid-line); border-radius: 0; background: none; box-shadow: none; color: var(--sid-ink); font: 600 13px/1.3 var(--sid-sans); cursor: pointer; }
+    .sid-help-panel .sd-support .btn::before { content: ""; flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--sid-accent); }
+    .sid-help-panel .sd-support .btn:last-child { border-bottom: 0; }
+    .sid-help-panel .sd-support .btn:hover { color: var(--sid-blue); }
+
+    /* ---- Ask JO panel ---- */
+    .sid-askjo-panel { position: fixed; right: 22px; bottom: 22px; z-index: 1060; width: 380px; max-width: calc(100vw - 32px); background: var(--sid-surface); border: 1px solid var(--sid-line); border-radius: 16px; box-shadow: var(--sid-sh-lg); overflow: hidden; display: flex; flex-direction: column; max-height: 72vh; }
+    .sid-askjo-head { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; background: var(--sid-gnavy); color: #fff; font-weight: 800; }
+    .sid-askjo-close { border: 0; background: none; color: #fff; font-size: 22px; line-height: 1; cursor: pointer; }
+    .sid-askjo-body { flex: 1; overflow-y: auto; padding: 12px 14px; min-height: 220px; }
+    .sid-askjo-control { border-top: 1px solid var(--sid-line); padding: 10px 12px; }
+
+    @media (max-width: 980px) {
+        &.sid-app { grid-template-columns: 1fr; }
+        .sid-side { position: fixed; left: 0; top: 0; bottom: 0; width: 248px; z-index: 1080; transform: translateX(-100%); transition: transform .25s ease; }
+        &.sid-nav-open .sid-side { transform: translateX(0); }
+        &.sid-nav-open .sid-backdrop { display: block; position: fixed; inset: 0; background: rgba(11, 32, 52, .45); z-index: 1070; }
+        .sid-burger { display: block; }
+        .sid-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+        .sid-askjo span { display: none; }
+        .sid-content { padding: 16px 14px 80px; }
+        .idc { height: auto; padding-bottom: 86px; }
+    }
+}
+
+/* ==========================================================================
+   Dark mode
+   ========================================================================== */
+body.sd-dark #sid-root,
+body.theme-dark #sid-root {
+    --sid-ground: #0A1722;
+    --sid-surface: #0F2230;
+    --sid-ink: #EAF2F9;
+    --sid-muted: #9DB2C3;
+    --sid-faint: #6F8597;
+    --sid-line: #1E3445;
+    --sid-navy: #{$bz-navy-dm};
+    --sid-gnavy: linear-gradient(135deg, #{$bz-navy-dm-hi}, #{$bz-navy-dm-lo});
+
+    .sid-topbar { background: rgba(10, 23, 34, .92); }
+    .sid-pill { background: #1A2D3C; }
+    .sid-btn-ghost { background: #14293A; }
+    .sid-stat .sid-sic, .sid-empty-ic, .sid-help-ic { background: rgba($bz-accent, .18); }
+    .sid-stp-dot { background: #1A2D3C; }
+    /* The card keeps its own dark navy gradient in both modes. */
+}

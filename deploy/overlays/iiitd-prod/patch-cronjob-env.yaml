@@ -1,0 +1,100 @@
+# Cron environment for learning.iiitdwd.ac.in.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: moodle-cron
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: moodle-cron
+            env:
+            - name: MOODLE_DOCKER_DBTYPE
+              value: "mysqli"
+            - name: MOODLE_DOCKER_DBHOST
+              value: "mysql-db-pxc-db-haproxy"
+            - name: MOODLE_DOCKER_DBNAME
+              value: "jaincfs"
+            - name: MOODLE_DOCKER_DBUSER
+              value: "jaincfs"
+            - name: MOODLE_DOCKER_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            # nitk's config.php reads $CFG->dbpass from this variable, and the
+            # CronJobs mount that same config.php. Without it, cron bootstraps
+            # Moodle with an empty password and cannot reach the database.
+            - name: MOODLE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            - name: MOODLE_DOCKER_PREFIX
+              value: "acu_"
+            - name: MOODLE_DOCKER_WWWROOT
+              # Must match $CFG->wwwroot in config/moodle_config.php. Cron builds
+              # the absolute URLs in emails and notifications from this, so a
+              # mismatch sends learners links to the wrong host.
+              value: "https://learning.iiitdwd.ac.in"
+            # Tenant-scoped plugins this site needs in mod/. The base CronJob
+            # copies each named entry out of tenant-plugins/ before running
+            # cron. Must match what the Deployment's init container installs,
+            # or cron sees a plugin in the database with no code on disk and
+            # suspends itself as though an upgrade were pending.
+            - name: TENANT_PLUGINS
+              value: "pdfannotator"
+            - name: PHP_MEMORY_LIMIT
+              value: "4G"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: moodle-adhoc-tasks
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: moodle-adhoc-tasks
+            env:
+            - name: MOODLE_DOCKER_DBTYPE
+              value: "mysqli"
+            - name: MOODLE_DOCKER_DBHOST
+              value: "mysql-db-pxc-db-haproxy"
+            - name: MOODLE_DOCKER_DBNAME
+              value: "jaincfs"
+            - name: MOODLE_DOCKER_DBUSER
+              value: "jaincfs"
+            - name: MOODLE_DOCKER_DBPASS
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            # nitk's config.php reads $CFG->dbpass from this variable, and the
+            # CronJobs mount that same config.php. Without it, cron bootstraps
+            # Moodle with an empty password and cannot reach the database.
+            - name: MOODLE_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: moodle-secrets
+                  key: database-password
+            - name: MOODLE_DOCKER_PREFIX
+              value: "acu_"
+            - name: MOODLE_DOCKER_WWWROOT
+              # Must match $CFG->wwwroot in config/moodle_config.php. Cron builds
+              # the absolute URLs in emails and notifications from this, so a
+              # mismatch sends learners links to the wrong host.
+              value: "https://learning.iiitdwd.ac.in"
+            # Tenant-scoped plugins this site needs in mod/. The base CronJob
+            # copies each named entry out of tenant-plugins/ before running
+            # cron. Must match what the Deployment's init container installs,
+            # or cron sees a plugin in the database with no code on disk and
+            # suspends itself as though an upgrade were pending.
+            - name: TENANT_PLUGINS
+              value: "pdfannotator"
+            - name: PHP_MEMORY_LIMIT
+              value: "8G"

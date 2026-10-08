@@ -1,0 +1,1185 @@
+/* ==========================================================================
+   theme_baz — bespoke activity restyle for student-only users.
+   Applied via body classes (baz-student-activity + baz-mod-{type}) added in
+   theme_baz_page_init for incourse mod-* pages. CSS-only: the activity's own
+   markup, JS, drawers and navigation are preserved — this only re-skins them
+   navy/gold and deep-restyles quiz / assignment / forum / lesson content.
+   Light + dark. scssphp-safe: block comments only.
+   ========================================================================== */
+
+/* The bespoke forum hero + discussion cards are emitted in
+   mod_forum/discussion_list for everyone; keep them hidden unless the bespoke
+   student experience is active (shown via body.baz-student-activity below). */
+.baz-forum-hero, .baz-disc-cards, .baz-op-tag{ display:none; }
+
+body.baz-student-activity {
+    --sa-navy:#{$bz-navy};
+    /* Label on an accent surface. Derived from the accent's contrast in
+       theme_baz_brand_palette(), so a dark accent gets white and a light
+       one keeps the navy. */
+    --sa-on-accent: #{$bz-accent-on}; --sa-gnavy:linear-gradient(140deg,#{$bz-navy-hi},#{$bz-navy-lo});
+    --sa-accent:#{$bz-accent}; --sa-gaccent:linear-gradient(135deg,#{$bz-accent-hi},#{$bz-accent-lo});
+    --sa-surface:#fff; --sa-ground:#F4F7FB; --sa-ink:#0B2034; --sa-muted:#5C7184;
+    --sa-faint:#90A4B5; --sa-line:#E5ECF3; --sa-green:#1FA37A; --sa-red:#E0563E; --sa-blue:#2563EB;
+    --sa-sans:'Manrope','Inter',system-ui,sans-serif; --sa-mono:'JetBrains Mono',ui-monospace,monospace;
+    --sa-sh:0 4px 14px rgba(11,32,52,.07); --sa-shsm:0 1px 3px rgba(11,32,52,.08);
+
+    /* ====================== BESPOKE SHELL (global sidebar) ====================== */
+    .ba-side{ position:fixed; left:0; top:0; bottom:0; width:248px; z-index:1090; background:linear-gradient(180deg,var(--sa-navy),$bz-navy-deep); color:#cfe0ec; padding:20px 16px; display:flex; flex-direction:column; gap:3px; overflow-y:auto; }
+    .ba-brand{ display:block; padding:4px 8px 18px; }
+    .ba-brand img{ max-height:38px; width:auto; }
+    .ba-brand-txt{ color:#fff; font-weight:800; font-size:18px; }
+    .ba-nav a{ display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:11px; color:#aec4d4; font-weight:600; font-size:14px; text-decoration:none; }
+    .ba-nav a svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.8; }
+    .ba-nav a:hover{ background:rgba(255,255,255,.06); color:#fff; }
+    .ba-nav a.on{ background:rgba($bz-accent,.2); color:var(--sa-accent); font-weight:700; }
+    .ba-nav a.on svg{ stroke:var(--sa-accent); }
+    .ba-navlbl{ font:600 11px/1 var(--sa-mono); letter-spacing:.12em; text-transform:uppercase; color:#5d7e95; padding:16px 12px 8px; }
+    .ba-askjo-trigger{ margin-top:auto; display:inline-flex; align-items:center; gap:8px; background:var(--sa-gnavy); color:#fff; font-weight:700; font-size:13px; padding:10px 14px; border:0; border-radius:11px; cursor:pointer; }
+    .ba-askjo-trigger svg{ width:15px; height:15px; }
+
+    /* ---- bespoke topbar (replaces the rui topbar on activity pages) ---- */
+    .ba-topbar{ position:sticky; top:0; z-index:40; background:rgba(244,247,251,.92); backdrop-filter:blur(10px); border-bottom:1px solid var(--sa-line); }
+    .ba-topbar-inner{ display:flex; align-items:center; gap:14px; padding:11px 24px; }
+    .ba-crumb{ font-weight:600; color:var(--sa-muted); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:42%; }
+    .ba-crumb a{ color:var(--sa-muted); text-decoration:none; }
+    .ba-crumb a:hover{ color:var(--sa-ink); }
+    .ba-crumb .sep{ margin:0 6px; color:var(--sa-faint); }
+    .ba-crumb .cur{ color:var(--sa-ink); font-weight:700; }
+    .ba-search{ flex:1; max-width:420px; margin:0 auto; display:flex; align-items:center; gap:9px; background:var(--sa-surface); border:1px solid #CBD8E6; border-radius:12px; padding:8px 14px; }
+    .ba-search svg{ width:17px; height:17px; stroke:var(--sa-faint); fill:none; stroke-width:2; flex:0 0 auto; }
+    .ba-search input{ border:0; background:none; outline:0; width:100%; font:600 13px var(--sa-sans); color:var(--sa-ink); }
+    /* topbar left cluster: just the logo now (module menu + back moved to the
+       action bar above the activity title) */
+    .ba-tb-left{ display:flex; align-items:center; gap:10px; flex:0 0 auto; }
+    /* logo keeps a navy tile (as it had on the old sidebar) so it reads as the brand */
+    .ba-tb-logo{ display:inline-flex; align-items:center; background:linear-gradient(140deg,var(--sa-navy),$bz-navy-deep); padding:8px 15px; border-radius:11px; }
+    .ba-tb-logo img{ max-height:26px; width:auto; display:block; }
+    .ba-tb-logo-txt{ color:#fff; font-weight:800; font-size:16px; }
+    .ba-tb-right{ display:flex; align-items:center; gap:10px; margin-left:auto; flex:0 0 auto; }
+
+    /* action bar (above the activity title): ☰ Course modules + Back-to-course on
+       the left, Summarise pulled to the right (moved into this row by studentwrap.js) */
+    .ba-actionbar{ display:flex; align-items:center; justify-content:flex-start; gap:10px; max-width:960px; margin:0 auto 6px; }
+    .ba-ab-back, .ba-ab-menu{ display:inline-flex; align-items:center; gap:8px; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:11px; padding:9px 15px; font:800 13px var(--sa-sans); color:var(--sa-navy) !important; text-decoration:none !important; white-space:nowrap; cursor:pointer; box-shadow:var(--sa-shsm); }
+    .ba-ab-back svg, .ba-ab-menu svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2.2; }
+    .ba-ab-back:hover, .ba-ab-menu:hover{ border-color:var(--sa-accent); color:var(--sa-navy) !important; }
+    /* Summarise relocated into the action row → pin it hard to the right (course
+       nav left, summarise right). Duplicated class + #region-main out-specifies the
+       per-mod `#region-main .ai-course-summarise-controls{margin:0 auto!important}`
+       rule (which otherwise keeps margin-right:auto and centres it). */
+    #region-main .ba-actionbar .ai-course-summarise-controls.ai-course-summarise-controls{ margin-top:0 !important; margin-bottom:0 !important; margin-left:auto !important; margin-right:0 !important; max-width:none !important; width:auto !important; flex:0 0 auto !important; padding:0 !important; display:flex !important; justify-content:flex-end !important; }
+    .ba-iconbtn{ width:40px; height:40px; border-radius:11px; background:var(--sa-surface); border:1px solid var(--sa-line); display:grid; place-items:center; color:var(--sa-muted); cursor:pointer; }
+    .ba-iconbtn svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.8; }
+    .ba-navbar-plugin{ display:flex; align-items:center; gap:8px; }
+    .ba-navbar-plugin .popover-region-toggle, .ba-navbar-plugin .nav-link{ width:40px; height:40px; border-radius:11px; background:var(--sa-surface); border:1px solid var(--sa-line); display:grid; place-items:center; color:var(--sa-muted); position:relative; }
+
+    /* ---- module-navigation overlay (☰): reuses the course-view section/activity
+       list; slides in from the left over a dimmed backdrop ---- */
+    .ba-mnav-backdrop{ position:fixed; inset:0; z-index:1102; background:rgba(4,18,32,.5); }
+    .ba-mnav{ position:fixed; left:0; top:0; bottom:0; width:340px; max-width:86vw; z-index:1103; background:linear-gradient(180deg,var(--sa-navy),$bz-navy-deep); color:#cfe0ec; display:flex; flex-direction:column; transform:translateX(-100%); transition:transform .22s ease; box-shadow:0 20px 60px rgba(0,0,0,.4); }
+    .ba-mnav.show{ transform:none; }
+    .ba-mnav-head{ display:flex; align-items:center; gap:10px; padding:18px 14px 14px; border-bottom:1px solid rgba(255,255,255,.1); }
+    .ba-mnav-course{ flex:1; min-width:0; display:flex; align-items:center; gap:10px; color:#fff; font-weight:800; font-size:14px; text-decoration:none; }
+    .ba-mnav-course svg{ width:18px; height:18px; stroke:var(--sa-accent); fill:none; stroke-width:1.8; flex:0 0 auto; }
+    .ba-mnav-course span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .ba-mnav-course:hover{ color:var(--sa-accent); }
+    .ba-mnav-close{ border:0; background:rgba(255,255,255,.08); color:#cfe0ec; width:32px; height:32px; border-radius:9px; font-size:20px; line-height:1; cursor:pointer; flex:0 0 auto; }
+    .ba-mnav-body{ flex:1; overflow-y:auto; padding:8px 12px 24px; }
+    .ba-mnav-sec{ margin-top:10px; }
+    .ba-mnav-secname{ font:700 11px/1 var(--sa-mono); letter-spacing:.1em; text-transform:uppercase; color:#5d7e95; padding:8px 10px; }
+    .ba-mnav-act{ display:flex; align-items:center; gap:11px; padding:9px 10px; border-radius:10px; color:#aec4d4; text-decoration:none; font-weight:600; font-size:13.5px; }
+    .ba-mnav-act:hover{ background:rgba(255,255,255,.06); color:#fff; }
+    .ba-mnav-act.current{ background:rgba($bz-accent,.18); color:var(--sa-accent); font-weight:700; }
+    .ba-mnav-ic{ flex:0 0 auto; width:30px; height:30px; border-radius:8px; background:rgba(255,255,255,.07); display:grid; place-items:center; color:#9fc1d8; }
+    .ba-mnav-act.current .ba-mnav-ic{ background:rgba($bz-accent,.2); color:var(--sa-accent); }
+    .ba-mnav-ic svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.8; }
+    .ba-mnav-name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .ba-mnav-check{ flex:0 0 auto; width:18px; height:18px; border-radius:50%; border:1.5px solid rgba(255,255,255,.25); display:grid; place-items:center; }
+    .ba-mnav-check.on{ background:var(--sa-green); border-color:var(--sa-green); }
+    .ba-mnav-check svg{ width:11px; height:11px; stroke:#fff; fill:none; stroke-width:3; }
+
+    /* focus mode: no fixed site sidebar — the activity fills the whole width */
+    #page-wrapper{ padding-left:0; }
+    .drawer-left{ left:0; }
+
+    /* ---- full-screen light canvas (replace the rui blue page background) ---- */
+    background:var(--sa-ground) !important;
+    #page, #page-wrapper, #page-content, .main-inner, #topofscroll{ background:var(--sa-ground) !important; }
+    #page-content{ min-height:calc(100vh - 64px); }
+
+    /* ---- consistent gutter after the sidebar (match the dashboard: content
+       starts ~30px after the 248px sidebar; drop the rui 15px #page margin and
+       align the topbar + content to the same left edge) ---- */
+    /* focus mode uses the full viewport width (rui caps #page at ~1290px and
+       left-aligns it, leaving a big gap on the right) — remove the cap + centre */
+    #page{ margin:0 auto !important; max-width:none !important; }
+    .ba-topbar-inner{ padding-left:30px !important; padding-right:30px !important; }
+    #region-main{ padding-left:30px !important; padding-right:30px !important; }
+    /* centre the header + content columns so the activity sits balanced, not left-hugged */
+    #region-main #page-header.page-header-content,
+    #region-main .activity-header,
+    #region-main .box.contents, #region-main .contentwithoutanswers,
+    #region-main .box.generalbox{ margin-left:auto !important; margin-right:auto !important; }
+    /* the header is inline-flex by default (auto margins don't centre inline boxes) —
+       make it a block-level flex box so margin:auto actually centres it */
+    #region-main #page-header.page-header-content{ display:flex !important; }
+    /* the copyright footer now sits on the light canvas, not a blue banner */
+    #s-page-footer{ background:transparent !important; }
+    #s-page-footer, #s-page-footer *{ color:var(--sa-muted) !important; }
+    #s-page-footer a{ color:var(--sa-blue) !important; }
+
+    /* Need help (gold FAB, bottom-left) + Ask JO panel */
+    .ba-help{ position:fixed; left:22px; bottom:22px; z-index:1100; }
+    .ba-help-fab{ display:inline-flex; align-items:center; gap:9px; background:var(--sa-gaccent); color:var(--sa-on-accent); font-weight:800; font-size:13.5px; border:0; border-radius:30px; padding:13px 19px; cursor:pointer; box-shadow:0 12px 30px rgba($bz-accent,.42); }
+    .ba-help-fab svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:2; }
+    .ba-help-panel{ position:absolute; left:0; bottom:62px; width:320px; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:0 18px 50px rgba(11,32,52,.18); overflow:hidden; }
+    .ba-help-head{ display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid var(--sa-line); font-weight:800; color:var(--sa-ink); }
+    .ba-help-close,.ba-askjo-close{ border:0; background:none; font-size:22px; line-height:1; color:var(--sa-faint); cursor:pointer; }
+    .ba-support{ padding:6px 16px 14px; }
+    .ba-support .btn{ display:flex; align-items:center; gap:10px; width:100%; text-align:left; padding:12px 0; border:0; border-bottom:1px solid var(--sa-line); border-radius:0; background:none; box-shadow:none; color:var(--sa-ink); font:600 13px var(--sa-sans); cursor:pointer; }
+    .ba-support .btn::before{ content:""; flex:0 0 8px; width:8px; height:8px; border-radius:50%; background:var(--sa-accent); }
+    .ba-support .btn:last-child{ border-bottom:0; }
+    .ba-askjo-panel{ position:fixed; right:22px; bottom:22px; z-index:1100; width:380px; max-width:calc(100vw - 32px); background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:0 18px 50px rgba(11,32,52,.18); overflow:hidden; display:flex; flex-direction:column; max-height:72vh; }
+    .ba-askjo-head{ display:flex; align-items:center; justify-content:space-between; padding:13px 16px; background:var(--sa-gnavy); color:#fff; font-weight:800; }
+    .ba-askjo-body{ flex:1; overflow-y:auto; padding:12px 14px; min-height:220px; }
+    .ba-askjo-control{ border-top:1px solid var(--sa-line); padding:10px 12px; }
+
+    /* ---- cleanup: use bespoke font in the sidebar (was inheriting rui body font) ---- */
+    .ba-side, .ba-side a, .ba-side button, .ba-brand-txt, .ba-nav, .ba-navlbl{ font-family:var(--sa-sans) !important; -webkit-font-smoothing:antialiased; }
+    /* ---- cleanup: drop the duplicated top navigation (the sidebar provides it) ---- */
+    .main-nav-container,
+    #logo, .rui-navbar-brand,
+    #myCoursesBtn{ display:none !important; }
+    /* ---- cleanup: remove the course-index hamburger that overlapped the left nav
+       (the navy sidebar is the primary nav; the button is absolutely positioned at
+       far-left, so hide the button itself, not just its width:0 container) ---- */
+    .drawer-left-toggle, .btn-drawer--left, #btnCourseIndex{ display:none !important; }
+    /* course-index drawer (if reached) gets a clean bespoke header */
+    .drawer-course-index .drawerheader{ background:var(--sa-gnavy); color:#fff; }
+
+    @media(max-width:980px){
+        .ba-side{ display:none; }
+        #page-wrapper{ padding-left:0; }
+        .drawer-left{ left:0; }
+        .ba-help{ left:14px; bottom:14px; }
+    }
+
+    /* ---- activity header (title / completion / dates / description) ---- */
+    .activity-header,
+    [data-region="activity-information"]{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; padding:18px 20px; box-shadow:var(--sa-shsm); }
+    .activity-header h1, .activity-header h2,
+    #region-main h2.h2, .page-context-header h1{ font-family:var(--sa-sans); font-weight:800; letter-spacing:-.02em; color:var(--sa-ink); }
+    .activity-dates{ font-size:13px; color:var(--sa-muted); }
+    .automatic-completion-conditions, .completion-info,
+    .activity-information .badge{ border-radius:20px; }
+    .activity-description, [data-region="activity-description"]{ background:#F7FAFD; border:1px solid var(--sa-line); border-radius:12px; padding:14px 16px; color:var(--sa-muted); }
+
+    /* ---- secondary / "More" nav tabs (course secondary nav on activity pages) ---- */
+    .secondary-navigation .nav-tabs{ border-bottom:1px solid var(--sa-line); }
+    .secondary-navigation .nav-link{ font-weight:700; color:var(--sa-muted); border:0; border-bottom:2px solid transparent; }
+    .secondary-navigation .nav-link.active{ color:var(--sa-navy); border-bottom-color:var(--sa-accent); background:none; }
+    /* the shell renders the secondary nav as a bare .moremenu (no .secondary-navigation
+       wrapper), so style it directly to match the design. */
+    .moremenu.navigation{ border-bottom:1px solid var(--sa-line); margin-bottom:14px; }
+    .moremenu .nav-tabs, .moremenu .more-nav{ display:flex; flex-wrap:wrap; align-items:center; gap:2px; list-style:none; margin:0; padding:0; border:0; }
+    .moremenu .nav-tabs .nav-item{ margin:0; list-style:none; }
+    .moremenu .nav-tabs .nav-link{ font:800 13px var(--sa-sans); color:var(--sa-muted); border:0; border-bottom:2.5px solid transparent; border-radius:0; padding:10px 15px; background:none; text-decoration:none; }
+    .moremenu .nav-tabs .nav-link:hover{ color:var(--sa-navy); border-bottom-color:var(--sa-line); }
+    .moremenu .nav-tabs .nav-link.active, .moremenu .nav-tabs .nav-link.active_tree_node{ color:var(--sa-navy); border-bottom-color:var(--sa-accent); background:none; }
+    /* students shouldn't see the course Participants tab */
+    .moremenu .nav-tabs .nav-item[data-key="participants"]{ display:none; }
+
+    /* ---- buttons: one gold primary + clean secondary across activities ---- */
+    .btn-primary{ background:var(--sa-gaccent) !important; border:0 !important; color:var(--sa-navy) !important; font-weight:800; border-radius:12px; box-shadow:0 8px 20px rgba($bz-accent,.3); }
+    .btn-primary:hover{ filter:brightness(1.03); color:var(--sa-navy) !important; }
+    .btn-secondary, .btn-outline-secondary{ border-radius:12px; }
+    a.aalink, #region-main a:not(.btn){ color:var(--sa-blue); }
+
+    /* ---- AI "Summarise" button — ONE canonical style for every activity
+       (quiz / forum / page / assign / resource / …). A clean secondary card
+       matching the prev/next nav buttons; gold sparkles icon. Top-level so it
+       applies regardless of the per-mod scope. Per-context positioning of the
+       .ai-course-summarise-controls container is set within each mod block. ---- */
+    .ai-course-summarise-controls .btn{ display:inline-flex; align-items:center; gap:7px; background:var(--sa-surface) !important; border:1.5px solid var(--sa-line) !important; color:var(--sa-navy) !important; border-radius:11px !important; padding:9px 15px !important; font:800 13px var(--sa-sans) !important; box-shadow:var(--sa-sh) !important; }
+    .ai-course-summarise-controls .btn:hover{ border-color:var(--sa-accent) !important; color:var(--sa-navy) !important; }
+    .ai-course-summarise-controls .ai-course-summarise-sparkles-icon{ color:var(--sa-accent) !important; }
+    .ai-course-summarise-controls .ai-course-summarise-sparkles-icon img{ filter:saturate(0) brightness(0) invert(58%) sepia(60%) saturate(600%) hue-rotate(2deg); }
+
+    /* ---- completion status ("Done: View" / "To do: …") on content activities:
+       ONE compact, single-line, right-aligned chip row (was sitting oddly in a big
+       empty header card). Shared across page / resource / lesson / url / feedback. ---- */
+    #region-main .rui-completion-info, #region-main [data-region="completion-info"]{ margin:0 !important; width:100%; }
+    #region-main .rui-completion-badges{ display:flex !important; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:8px; margin:0 !important; }
+    #region-main .rui-completion-badges .badge-sm{ display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:6px 12px !important; font:700 12px var(--sa-sans); margin:0 !important; white-space:nowrap; }
+    #region-main .rui-completion-badges .badge-sm.badge-success{ background:#E6F6F0 !important; color:#1a7d5a !important; border:1px solid #cfe9df; }
+    #region-main .rui-completion-badges .badge-sm.badge-secondary{ background:var(--sa-ground) !important; color:var(--sa-muted) !important; border:1px solid var(--sa-line); }
+    #region-main .rui-completion-badges .badge-sm strong, #region-main .rui-completion-badges .badge-sm .mx-2, #region-main .rui-completion-badges .badge-sm .ml-2{ margin:0 !important; }
+
+    /* ---- activity description / instructions card (rendered inside the bespoke
+       quiz & forum views, since their hero hides the standard activity-header) ---- */
+    .sa-adesc{ max-width:880px; margin:0 auto 16px; background:var(--sa-surface); border:1px solid var(--sa-line); border-left:3px solid var(--sa-accent); border-radius:14px; padding:16px 22px; box-shadow:var(--sa-shsm); }
+    .sa-adesc .sa-desc-label{ font:800 10.5px/1 var(--sa-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--sa-accent); margin-bottom:10px; }
+    .sa-adesc .no-overflow{ font-size:14px; line-height:1.65; color:var(--sa-ink); }
+    .sa-adesc .no-overflow > :first-child{ margin-top:0; }
+    .sa-adesc .no-overflow > :last-child{ margin-bottom:0; }
+    .sa-adesc a{ color:var(--sa-blue); }
+    .sa-adesc table{ max-width:100% !important; display:block; overflow-x:auto; }
+    .sa-adesc td, .sa-adesc th{ width:auto !important; }
+    .sa-adesc img{ max-width:100% !important; height:auto; }
+
+    /* ---- generic content card + tables ---- */
+    #region-main .generaltable{ border:1px solid var(--sa-line); border-radius:12px; overflow:hidden; border-collapse:separate; border-spacing:0; }
+    #region-main .generaltable th{ background:#F7FAFD; font:600 11px var(--sa-mono); letter-spacing:.06em; text-transform:uppercase; color:var(--sa-faint); border:0; border-bottom:1px solid var(--sa-line); }
+    #region-main .generaltable td{ border:0; border-bottom:1px solid var(--sa-line); color:var(--sa-ink); }
+
+    /* ---- activity navigation footer (prev / jump to / next) ---- */
+    .activity-navigation{ margin-top:20px !important; padding:0 !important; }
+    .activity-navigation .row{ align-items:center; }
+    .activity-navigation .float-left{ float:none !important; }
+    .activity-navigation .float-right{ float:none !important; display:flex; justify-content:flex-end; }
+    .activity-navigation .mdl-align{ display:none !important; }
+    /* prev / next as carded buttons (rui renders icon links) */
+    .activity-navigation .rui-btn-action-link,
+    #prev-activity-link, #next-activity-link{ display:inline-flex; align-items:center; gap:8px; background:var(--sa-surface) !important; border:1px solid var(--sa-line) !important; border-radius:12px; padding:11px 18px; font-weight:800; color:var(--sa-ink) !important; box-shadow:var(--sa-shsm); text-decoration:none; }
+    .activity-navigation .rui-btn-action-link:hover{ border-color:var(--sa-accent) !important; color:var(--sa-navy) !important; }
+    .activity-navigation .rui-btn-action-link svg{ width:18px; height:18px; }
+    /* jump-to select as a navy pill */
+    .activity-navigation .urlselect{ display:inline-flex; }
+    .activity-navigation select.urlselect, #jump-to-activity{ background:var(--sa-navy) !important; color:#fff !important; border:0 !important; border-radius:12px !important; font-weight:700; padding:11px 38px 11px 16px !important; box-shadow:var(--sa-shsm); height:auto; cursor:pointer; }
+    .activity-navigation select.urlselect option, #jump-to-activity option{ color:var(--sa-ink); background:#fff; }
+
+    /* ---- bespoke named prev / jump / next cards (theme_baz/student-activity) ---- */
+    .ba-actnav{ display:flex; align-items:stretch; gap:12px; margin-top:20px; }
+    .ba-actnav-side{ flex:1 1 0; display:flex; min-width:0; }
+    .ba-actnav-side--r{ justify-content:flex-end; }
+    /* "Jump to…" menu removed on activity pages (prev/next cards are enough) */
+    .ba-actnav-jump{ display:none !important; }
+    .ba-actnav-jump form, .ba-actnav-jump .urlselect{ margin:0; }
+    /* the jump menu's own label duplicates the select's "Jump to…" placeholder —
+       force it visually hidden (kept for screen readers). */
+    .ba-actnav-jump label{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; white-space:nowrap; }
+    .ba-actnav-jump select, .ba-actnav-jump select.urlselect{ background:var(--sa-navy) !important; color:#fff !important; border:0 !important; border-radius:12px !important; font-weight:700; padding:12px 40px 12px 18px !important; box-shadow:var(--sa-shsm); height:auto; cursor:pointer; }
+    .ba-actnav-jump select option{ color:var(--sa-ink); background:#fff; }
+    .ba-actnav-card{ display:flex; align-items:center; gap:12px; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:12px; padding:11px 18px; text-decoration:none !important; box-shadow:var(--sa-shsm); max-width:340px; }
+    .ba-actnav-card:hover{ border-color:var(--sa-accent); }
+    .ba-actnav-ar{ font-size:18px; line-height:1; color:var(--sa-accent); font-weight:800; flex:0 0 auto; }
+    .ba-actnav-meta{ display:flex; flex-direction:column; min-width:0; }
+    .ba-actnav-next .ba-actnav-meta{ text-align:right; }
+    .ba-actnav-lbl{ font:800 10px var(--sa-mono); letter-spacing:.08em; text-transform:uppercase; color:var(--sa-faint); }
+    .ba-actnav-name{ font-weight:800; color:var(--sa-ink); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    @media(max-width:720px){ .ba-actnav{ flex-wrap:wrap; } .ba-actnav-name{ max-width:36vw; } }
+
+    /* ---- tertiary "Back" bar during attempts (clean standard button) ---- */
+    .tertiary-navigation{ background:none !important; border:0 !important; padding:0 !important; margin-bottom:14px; }
+    .tertiary-navigation .btn, .tertiary-navigation a.btn{ display:inline-flex; align-items:center; gap:7px; background:var(--sa-surface) !important; border:1px solid var(--sa-line) !important; border-radius:12px; padding:10px 18px; font-weight:800; color:var(--sa-ink) !important; box-shadow:var(--sa-shsm); }
+    .tertiary-navigation .btn:hover{ border-color:var(--sa-accent) !important; }
+
+    /* ---- back-to-course / continue button (standard gold) ---- */
+    .continuebutton .btn, .continuebutton a, .submitbtns .continuebutton .btn{ background:var(--sa-gaccent) !important; border:0 !important; color:var(--sa-navy) !important; font-weight:800; border-radius:12px; padding:12px 24px; box-shadow:0 8px 20px rgba($bz-accent,.3); }
+
+    /* ======================= QUIZ ======================= */
+    &.baz-mod-quiz {
+        /* On the view page the bespoke hero carries the title/dates, so the
+           default core activity header + page heading are redundant — hide on
+           the view page only. */
+        &#page-mod-quiz-view .activity-header,
+        &#page-mod-quiz-view [data-for="page-activity-header"],
+        &#page-mod-quiz-view .page-context-header{ display:none !important; }
+
+        /* attempt / summary / review carry a bespoke compact header instead of
+           the lilac default activity header. */
+        &#page-mod-quiz-attempt .activity-header, &#page-mod-quiz-attempt [data-for="page-activity-header"], &#page-mod-quiz-attempt .page-context-header,
+        &#page-mod-quiz-summary .activity-header, &#page-mod-quiz-summary [data-for="page-activity-header"], &#page-mod-quiz-summary .page-context-header,
+        &#page-mod-quiz-review .activity-header,  &#page-mod-quiz-review [data-for="page-activity-header"],  &#page-mod-quiz-review .page-context-header{ display:none !important; }
+
+        .sa-qah{ display:flex; align-items:center; gap:12px; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:14px; padding:12px 15px; box-shadow:var(--sa-shsm); margin:0 0 14px; }
+        .sa-qah-ic{ width:38px; height:38px; border-radius:10px; background:var(--sa-gaccent); color:var(--sa-on-accent); display:grid; place-items:center; flex:none; }
+        .sa-qah-ic svg{ stroke:currentColor; fill:none; }
+        .sa-qah-meta{ flex:1; min-width:0; }
+        .sa-qah-chip{ font:800 10px/1 var(--sa-mono); letter-spacing:.09em; text-transform:uppercase; color:var(--sa-faint); }
+        .sa-qah-title{ font:800 17px var(--sa-sans); letter-spacing:-.01em; color:var(--sa-ink); margin:5px 0 0; }
+        .sa-qah-right{ display:flex; align-items:center; gap:12px; flex:none; margin-left:auto; }
+        .sa-qah-prog{ text-align:right; }
+        .sa-qah-bar{ width:132px; height:6px; border-radius:999px; background:var(--sa-ground); overflow:hidden; margin:0 0 5px auto; }
+        .sa-qah-barfill{ height:100%; background:var(--sa-gaccent); border-radius:999px; }
+        .sa-qah-ptxt{ font:700 10px var(--sa-sans); color:var(--sa-muted); }
+        .sa-qah-back{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:10px; padding:9px 15px; font-weight:800; color:var(--sa-ink) !important; text-decoration:none; }
+        .sa-qah-back:hover{ border-color:var(--sa-accent); }
+        .sa-qah-grade{ display:flex; align-items:baseline; gap:6px; background:var(--sa-gnavy); color:#fff; border-radius:11px; padding:8px 16px; }
+        .sa-qah-gnum{ font:800 22px var(--sa-sans); color:#fff; }
+        .sa-qah-gmax{ font:700 11px var(--sa-mono); color:#AFC6D8; }
+        .sa-qah-right #quiz-timer-wrapper{ margin:0; }
+
+        /* AI "Summarise" positioning only — button styling is centralised in one
+           rule (see "AI Summarise" under the shared blocks) so it's identical
+           across quiz / forum / page / every activity. */
+        .ai-course-summarise-controls{ padding:0 !important; margin:0 0 14px; display:flex; justify-content:flex-end; }
+
+        /* ---- bespoke view-page wrapper ---- */
+        .sa-quizview{ display:flex; flex-direction:column; }
+
+        /* ---- hero ---- */
+        .sa-qhero{ position:relative; display:flex; align-items:center; gap:20px; background:var(--sa-gnavy); color:#EAF1F7; border-radius:18px; padding:22px 24px; margin:0 0 18px; overflow:hidden; }
+        .sa-qhero::after{ content:""; position:absolute; right:-60px; top:-60px; width:220px; height:220px; border-radius:50%; background:radial-gradient(circle,rgba($bz-accent,.22),transparent 65%); pointer-events:none; }
+        .sa-qh-icon{ flex:0 0 auto; width:52px; height:52px; border-radius:13px; background:rgba($bz-accent,.18); border:1px solid rgba($bz-accent,.4); display:grid; place-items:center; color:var(--sa-accent); }
+        .sa-qh-icon svg{ stroke:currentColor; fill:none; }
+        .sa-qh-meta{ min-width:0; flex:1; }
+        .sa-qh-course{ display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.1); color:#BCD0E2; font:700 11px var(--sa-sans); letter-spacing:.02em; padding:3px 10px; border-radius:999px; }
+        .sa-qh-course svg{ stroke:currentColor; fill:none; }
+        .sa-qh-title{ font:800 22px/1.2 var(--sa-sans); letter-spacing:-.02em; color:#fff; margin:9px 0 7px; }
+        .sa-qh-status{ display:inline-flex; align-items:center; gap:8px; font:700 12.5px var(--sa-sans); color:#CFE0EC; }
+        .sa-qh-pip{ width:8px; height:8px; border-radius:50%; background:#7FA7C4; box-shadow:0 0 0 3px rgba(127,167,196,.22); }
+        .sa-qh-status.is-done .sa-qh-pip{ background:#46D18A; box-shadow:0 0 0 3px rgba(70,209,138,.22); }
+        .sa-qh-status.is-done{ color:#9FE6C0; }
+        .sa-qh-status.is-progress .sa-qh-pip{ background:var(--sa-accent); box-shadow:0 0 0 3px rgba($bz-accent,.25); }
+        .sa-qh-status.is-progress{ color:$bz-accent-bd6; }
+        .sa-qh-cta{ margin-left:auto; z-index:1; display:flex; flex-direction:column; align-items:flex-end; gap:8px; text-align:right; }
+        .sa-qh-cta .singlebutton{ margin:0; }
+        .sa-qh-cta .btn{ background:var(--sa-gaccent) !important; color:var(--sa-navy) !important; border:0 !important; font-weight:800; border-radius:11px; padding:13px 26px; box-shadow:0 10px 22px -10px rgba($bz-accent,.8); }
+        .sa-qh-ctasub{ font:600 11px var(--sa-sans); color:#9FB1C1; }
+
+        /* ---- panel (timeline container) ---- */
+        .sa-panel{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; padding:18px 20px; margin:0 0 16px; box-shadow:var(--sa-shsm); }
+        .sa-panel-ttl{ font:800 11px var(--sa-mono); letter-spacing:.09em; text-transform:uppercase; color:var(--sa-faint); margin:0 0 14px; }
+        .sa-tl{ display:flex; align-items:center; }
+        .sa-tl-node{ display:flex; flex-direction:column; gap:3px; }
+        .sa-tl-node--r{ text-align:right; align-items:flex-end; }
+        .sa-tl-lbl{ font:800 10px var(--sa-mono); letter-spacing:.08em; text-transform:uppercase; color:var(--sa-faint); }
+        .sa-tl-val{ font:800 13.5px var(--sa-sans); color:var(--sa-ink); }
+        .sa-tl-sub{ font:600 11.5px var(--sa-sans); color:var(--sa-muted); }
+        .sa-tl-track{ flex:1; height:6px; border-radius:999px; margin:0 16px; position:relative; background:linear-gradient(90deg,#46D18A,var(--sa-accent) 60%,var(--sa-line)); }
+        .sa-tl-mk{ position:absolute; top:-3px; width:12px; height:12px; border-radius:50%; background:#fff; border:3px solid var(--sa-accent); transform:translateX(-50%); }
+
+        .sa-qbtns{ margin-top:6px; }
+        .sa-qbtns .quizattempt, .sa-qbtns .box{ background:none; padding:0; }
+        .sa-qbtns .quizattempt{ display:flex; flex-direction:column; align-items:flex-start; gap:10px; }
+        .sa-qbtns .quizattempt p, .sa-qbtns .quizattempt .text-start{ color:var(--sa-muted); font-weight:600; margin:0; }
+
+        /* ---- "Your attempts" section ---- */
+        #region-main h3.mt-4{ font:800 16px var(--sa-sans); letter-spacing:-.01em; color:var(--sa-ink); margin:22px 0 12px; }
+        .rui-attempts-list{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; padding:18px 20px; box-shadow:var(--sa-shsm); }
+        .rui-attempts-list .generaltable{ box-shadow:none; border:0; }
+        /* the per-attempt info cells (Status / Started / Completed / Duration / Grade) */
+        .rui-attempts-list .quizattemptsummary,
+        .rui-attempts-list [class*="attempt"]{ border-radius:12px; }
+        /* Review → standard gold button */
+        a[href*="/mod/quiz/review.php"]{ display:inline-flex; align-items:center; gap:7px; background:var(--sa-gaccent) !important; color:var(--sa-navy) !important; font-weight:800; border-radius:11px; padding:9px 20px; text-decoration:none !important; box-shadow:0 8px 20px rgba($bz-accent,.3); }
+        a[href*="/mod/quiz/review.php"]:hover{ filter:brightness(1.03); }
+        a[href*="/mod/quiz/review.php"]::before{ content:""; width:15px; height:15px; background:currentColor; -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/><circle cx='12' cy='12' r='3'/></svg>") center/contain no-repeat; mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'/><circle cx='12' cy='12' r='3'/></svg>") center/contain no-repeat; }
+
+        /* ---- attempt: clear-my-choice + flag (standard chrome) ---- */
+        .qtype_multichoice_clearchoice a, a.qtype_multichoice_clearchoice{ display:inline-flex; align-items:center; gap:6px; color:var(--sa-muted) !important; font-weight:700; font-size:12.5px; text-decoration:none; }
+        .qtype_multichoice_clearchoice a:hover{ color:var(--sa-red) !important; }
+        .questionflag.editable label{ cursor:pointer; }
+        .questionflag .questionflagimage, .questionflag svg{ color:var(--sa-faint); }
+        .que.flagged .questionflag .questionflagimage, .que.flagged .questionflag svg{ color:var(--sa-accent); }
+
+        /* info chips (theme_baz mod_quiz renderer: view_information) */
+        .sa-chips{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:0 0 18px; }
+        .sa-chip{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:13px; padding:12px 15px; box-shadow:var(--sa-shsm); }
+        .sa-chip-k{ font:600 10px/1 var(--sa-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--sa-faint); }
+        .sa-chip-v{ font-weight:800; font-size:15px; margin-top:6px; color:var(--sa-ink); }
+        .sa-chip-wide{ grid-column:1/-1; font-weight:600; color:var(--sa-muted); }
+        /* grade banner (renderer: view_result_info) */
+        .sa-gradebanner{ display:flex; align-items:center; gap:18px; background:var(--sa-gnavy); color:#fff; border-radius:14px; padding:18px 22px; margin:0 0 18px; flex-wrap:wrap; }
+        .sa-grade-main{ display:flex; align-items:baseline; gap:10px; }
+        .sa-grade-num{ font:800 30px var(--sa-sans); color:#fff; }
+        .sa-grade-lbl{ font:600 11px var(--sa-mono); letter-spacing:.08em; text-transform:uppercase; color:#AFC6D8; }
+        .sa-grade-fb{ margin-left:auto; font-size:13px; color:#cfe0ec; max-width:52ch; }
+
+        .quizinfo, .quizattemptcounts{ background:#F7FAFD; border:1px solid var(--sa-line); border-radius:12px; padding:12px 16px; color:var(--sa-muted); font-weight:600; }
+        .quizattemptsummary, .generaltable.quizattemptsummary{ box-shadow:var(--sa-shsm); }
+        /* attempts list (theme override renders cards) */
+        .list_of_attempts, [data-region="attempt-row"], .quizattempt{ border-radius:14px; }
+        .quizstartbuttondiv .btn, #quizstartbuttondiv .btn{ /* inherits gold .btn-primary */ }
+        /* the "your grade" / feedback */
+        .quizgradefeedback, .feedback, .grade{ font-weight:700; }
+        /* question navigation buttons (block stays where core puts it) */
+        .qnbutton, .quiznavbutton{ border-radius:9px !important; border:1.5px solid var(--sa-line) !important; font-weight:800; color:var(--sa-muted); background:#fff !important; }
+        .qnbutton.thispage, .quiznavbutton.thispage{ border-color:var(--sa-accent) !important; box-shadow:0 0 0 3px rgba($bz-accent,.25); color:var(--sa-navy); }
+        .qnbutton.answersaved, .qnbutton.complete, .quiznavbutton.answersaved{ background:var(--sa-navy) !important; color:#fff !important; border-color:var(--sa-navy) !important; }
+        .qnbutton.flagged .questionflag, .quiznavbutton.flagged::after{ }
+        .qnbutton.correct, .quiznavbutton.correct{ background:var(--sa-green) !important; color:#fff !important; border-color:var(--sa-green) !important; }
+        .qnbutton.incorrect, .quiznavbutton.incorrect{ background:var(--sa-red) !important; color:#fff !important; border-color:var(--sa-red) !important; }
+        .qnbutton.partiallycorrect{ background:$bz-accent-lo2 !important; color:#fff !important; border-color:$bz-accent-lo2 !important; }
+        /* question cards */
+        .que{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:14px; box-shadow:var(--sa-shsm); overflow:hidden; margin-bottom:16px; }
+        .que .info{ background:#F7FAFD; border-bottom:1px solid var(--sa-line); padding:12px 16px; }
+        .que .info .no .qno{ color:var(--sa-navy); font-weight:800; }
+        .que .info .state, .que .info .grade{ font:600 11px var(--sa-mono); color:var(--sa-muted); }
+        .que .qtext{ font-size:15px; line-height:1.55; color:var(--sa-ink); }
+        .que .content{ padding:16px 18px; }
+        .que .ablock .answer > div{ border:1px solid var(--sa-line); border-radius:11px; padding:10px 14px; margin-bottom:9px; }
+        .que .ablock .answer > div.correct{ border-color:var(--sa-green); background:rgba(31,163,122,.08); }
+        .que .ablock .answer > div.incorrect{ border-color:var(--sa-red); background:rgba(224,86,62,.07); }
+        .que .specificfeedback{ background:rgba(31,163,122,.1); color:#127155; border-radius:11px; padding:12px 15px; }
+        .que .generalfeedback{ background:#F4F8FC; border:1px solid var(--sa-line); border-radius:11px; padding:12px 15px; color:var(--sa-muted); }
+        /* attempt page nav */
+        .submitbtns{ display:flex; gap:12px; justify-content:flex-end; margin-top:8px; }
+        .submitbtns .btn, .mod_quiz-next-nav, .mod_quiz-prev-nav{ border-radius:12px; padding:11px 22px; font-weight:800; }
+
+        /* ---- attempt: countdown timer chip (keep the theme's own visibility
+           toggling — only restyle the chip; the timer has its own clock icon) ---- */
+        #quiz-timer-wrapper{ margin-bottom:14px; }
+        #quiz-timer{ display:inline-flex; align-items:center; gap:8px; background:var(--sa-gnavy); color:#fff !important; border-radius:12px; padding:9px 16px; font:800 14px var(--sa-sans); box-shadow:var(--sa-sh); }
+        #quiz-timer .quiz-timer-icon{ color:var(--sa-accent); width:20px; height:20px; }
+        #quiz-time-left{ font-variant-numeric:tabular-nums; letter-spacing:.02em; color:#fff; }
+        #quiz-timer.timeleft-low, #quiz-timer.timelefturgent{ background:linear-gradient(140deg,#B5371F,#7A1F12); }
+        #toggle-timer{ border-radius:10px; font-weight:700; margin-left:8px; }
+
+        /* ---- attempt: question navigation panel (blocks region) ---- */
+        .qn_buttons{ display:flex; flex-wrap:wrap; gap:8px; }
+        #user-picture{ display:flex; align-items:center; gap:10px; font-weight:700; color:var(--sa-ink); margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--sa-line); }
+        #user-picture img{ border-radius:50%; }
+        .othernav{ margin-top:14px; display:flex; flex-direction:column; gap:9px; }
+        .othernav .btn, .endtestlink{ border-radius:11px; font-weight:700; }
+
+        /* ---- summary page (review before submit) ---- */
+        .quizsummaryofattempt{ box-shadow:var(--sa-shsm); }
+        .quizsummaryofattempt .quizsummaryheading th{ background:var(--sa-ground); color:var(--sa-ink); font-weight:800; }
+        .quizsummaryofattempt .requiresgrading{ color:var(--sa-muted); }
+        .quizsummaryofattempt .notyetanswered td, .quizsummaryofattempt .notanswered td{ color:var(--sa-red); font-weight:700; }
+        .submitallandfinish .btn, .submitallandfinishbtn .btn, .endtestlink .btn{ background:var(--sa-gaccent) !important; color:var(--sa-navy) !important; border:0 !important; font-weight:800; border-radius:12px; padding:13px 26px; box-shadow:0 8px 20px rgba($bz-accent,.3); }
+
+        /* ---- review page (after submit) ---- */
+        .quizreviewsummary{ box-shadow:var(--sa-shsm); }
+        .quizreviewsummary td.cell.c0{ font:600 11px var(--sa-mono); letter-spacing:.05em; text-transform:uppercase; color:var(--sa-faint); }
+        .quizreviewsummary td.cell.c1{ font-weight:700; color:var(--sa-ink); }
+        .submitbtns .mod_quiz-next-nav[value]{ }
+    }
+
+    /* ======================= ASSIGNMENT ======================= */
+    &.baz-mod-assign {
+        .submissionstatustable, .feedback{ box-shadow:var(--sa-shsm); }
+        .submissionstatustable .generaltable td{ font-weight:600; }
+        .submissionstatussubmitted, .earlysubmission{ color:#127155; font-weight:700; }
+        .submissionstatusdraft, .latesubmission, .overdue{ color:#b23a25; font-weight:700; }
+        .fileuploadsubmission, .files .fileuploadsubmission{ border-radius:10px; }
+        [data-region="grade-panel"], .assignfeedback, .feedbackcomment{ background:#F7FAFD; border:1px solid var(--sa-line); border-radius:12px; padding:14px 16px; }
+        .gradingsummary .generaltable{ box-shadow:var(--sa-shsm); }
+    }
+
+    /* ======================= FORUM ======================= */
+    &.baz-mod-forum {
+        /* ---- Forum index (list of a course's forums, /mod/forum/index.php) ----
+           Robust CSS-only restyle: the two html_tables have variable columns
+           (tracking/subscribe/digest appear conditionally) and ambiguous hrefs,
+           so we avoid per-cell targeting and just present each table as a clean
+           carded list — header row, padded rows with dividers + hover, navy links. */
+        &#page-mod-forum-index {
+            #region-main h2{ font:800 12px var(--sa-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--sa-navy); margin:6px 0 12px; }
+            #region-main h2 ~ h2{ margin-top:26px; }
+            .subscription{ text-align:right; font-size:13px; margin-bottom:12px; }
+            .generaltable{ width:100%; border-collapse:collapse; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:14px; overflow:hidden; box-shadow:var(--sa-shsm); margin:0 0 8px; }
+            .generaltable th{ background:#F5F8FC; text-align:left; padding:11px 16px; font:800 10px var(--sa-mono); letter-spacing:.07em; text-transform:uppercase; color:var(--sa-faint); border:0; border-bottom:1px solid var(--sa-line); }
+            .generaltable td{ padding:14px 16px; border:0; border-bottom:1px solid var(--sa-line); vertical-align:middle; color:var(--sa-muted); font-size:13px; }
+            .generaltable tr:last-child td{ border-bottom:0; }
+            .generaltable tbody tr:hover td{ background:rgba($bz-accent,.05); }
+            /* first cell of each row (the forum name / section) reads as the title */
+            .generaltable td.cell.c0{ font:800 15px var(--sa-sans); color:var(--sa-ink); }
+            .generaltable td a{ color:var(--sa-navy) !important; font-weight:700; text-decoration:none !important; }
+            .generaltable td a:hover{ color:var(--sa-accent) !important; }
+        }
+        /* AI Summarise positioning only — button styling is centralised (below). */
+        .ai-course-summarise-controls{ padding:0 !important; margin:0 0 14px; display:flex; justify-content:flex-end; }
+        /* the forum-name activity header is redundant on the list (hero carries it) */
+        &#page-mod-forum-view .activity-header,
+        &#page-mod-forum-view [data-for="page-activity-header"],
+        &#page-mod-forum-view .page-context-header{ display:none !important; }
+
+        /* ---- bespoke forum hero (list) ---- */
+        .baz-forum-hero{ display:flex !important; align-items:center; gap:14px; background:var(--sa-gnavy); color:#EAF1F7; border-radius:16px; padding:16px 18px; margin:0 0 6px; }
+        .baz-fh-ic{ width:44px; height:44px; border-radius:12px; background:rgba($bz-accent,.18); border:1px solid rgba($bz-accent,.4); display:grid; place-items:center; color:var(--sa-accent); flex:none; }
+        .baz-fh-ic svg{ stroke:currentColor; fill:none; }
+        .baz-fh-meta{ flex:1; min-width:0; }
+        .baz-fh-title{ font:800 20px var(--sa-sans); letter-spacing:-.01em; color:#fff; }
+        .baz-fh-stats{ margin-top:4px; font:600 11.5px var(--sa-sans); color:#CFE0EC; display:flex; align-items:center; gap:7px; }
+        .baz-fh-dot{ width:7px; height:7px; border-radius:50%; background:#46D18A; }
+        .baz-fh-cta{ background:var(--sa-gaccent); color:var(--sa-on-accent) !important; font-weight:800; font-size:13.5px; border-radius:11px; padding:11px 18px; text-decoration:none !important; box-shadow:0 8px 20px rgba($bz-accent,.3); white-space:nowrap; flex:none; }
+        /* the default add-a-discussion bar is folded into the hero CTA */
+        .baz-forum-addbar{ display:none !important; }
+
+        /* ---- forum list toolbar (segmented filter + sort + subscribe) ---- */
+        .baz-fl-toolbar{ display:flex; align-items:center; gap:10px; margin:0 0 12px; flex-wrap:wrap; }
+        .baz-fl-seg{ display:inline-flex; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:10px; overflow:hidden; box-shadow:var(--sa-shsm); }
+        .baz-fl-tab{ padding:8px 15px; font:700 12.5px var(--sa-sans); color:var(--sa-muted) !important; text-decoration:none; border-right:1px solid var(--sa-line); }
+        .baz-fl-tab:last-child{ border-right:0; }
+        .baz-fl-tab.active{ background:var(--sa-navy); color:#fff !important; }
+        .baz-fl-right{ margin-left:auto; display:flex; align-items:center; gap:10px; }
+        .baz-fl-sort{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:10px; padding:8px 13px; font:700 12.5px var(--sa-sans); color:var(--sa-muted) !important; text-decoration:none; }
+        .baz-fl-sub{ display:inline-flex; align-items:center; gap:7px; font:700 12.5px var(--sa-sans); color:var(--sa-muted); }
+        .baz-fl-sub svg{ stroke:currentColor; fill:none; }
+        .baz-fl-sub.on{ color:$bz-accent-text3; }
+        .baz-fl-sw{ width:30px; height:17px; border-radius:999px; background:#cdd8e2; position:relative; display:inline-block; }
+        .baz-fl-sw::after{ content:""; position:absolute; top:2px; left:2px; width:13px; height:13px; border-radius:50%; background:#fff; }
+        .baz-fl-sw.on{ background:var(--sa-accent); }
+        .baz-fl-sw.on::after{ left:15px; }
+
+        /* ---- discussion list: hide the stock table, show the bespoke cards ---- */
+        .position-relative > .no-overflow, table.discussion-list{ display:none !important; }
+        .baz-disc-cards{ display:flex !important; flex-direction:column; gap:8px; list-style:none; margin:14px 0 0; padding:0; }
+        .baz-dc{ display:flex; align-items:center; gap:11px; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:12px; padding:11px 14px; box-shadow:var(--sa-shsm); }
+        .baz-dc:hover{ border-color:var(--sa-accent); }
+        .baz-dc.is-pinned{ border-color:$bz-accent-bd4; background:$bz-accent-bg4; }
+        .baz-dc-lead{ flex:0 0 auto; width:12px; text-align:center; }
+        .baz-dc-lead.pin{ color:var(--sa-gold2, $bz-accent-lo); font-size:13px; }
+        .baz-dc-lead.dot{ width:8px; height:8px; border-radius:50%; background:var(--sa-accent); }
+        .baz-dc-lead.dot.ghost{ background:transparent; }
+        .baz-dc-av{ flex:0 0 auto; width:34px; height:34px; border-radius:50%; object-fit:cover; }
+        .baz-dc-mid{ flex:1 1 auto; min-width:0; }
+        .baz-dc-title{ font:800 14px var(--sa-sans); color:var(--sa-ink) !important; text-decoration:none; }
+        .baz-dc-title:hover{ color:var(--sa-navy) !important; }
+        .baz-dc-tag{ font:800 9px var(--sa-mono); letter-spacing:.04em; padding:2px 7px; border-radius:6px; vertical-align:middle; }
+        .baz-dc-tag.pin{ background:$bz-accent-bg5; color:$bz-accent-text3; }
+        .baz-dc-tag.lock{ background:#FBE3DE; color:#B23A25; }
+        .baz-dc-by{ font:600 11.5px var(--sa-sans); color:var(--sa-muted); margin-top:3px; }
+        .baz-dc-stat{ flex:0 0 auto; display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+        .baz-dc-badge{ background:var(--sa-ground); color:var(--sa-muted) !important; font:700 11px var(--sa-mono); padding:4px 11px; border-radius:999px; text-decoration:none; }
+        .baz-dc-badge.new{ background:var(--sa-accent); color:var(--sa-navy) !important; }
+        .baz-dc-last{ display:flex; align-items:center; gap:5px; font:600 10px var(--sa-sans); color:var(--sa-faint); }
+        .baz-dc-mini{ width:16px; height:16px; border-radius:50%; object-fit:cover; }
+        /* Subscribe switch: reset Bootstrap's negative-offset geometry so the
+           toggle stays inside its own column instead of overflowing left onto
+           the replies badge (custom-switch draws ::before at left:-2.25rem
+           relative to the control padding). */
+        .baz-dc-sub{ flex:0 0 auto; padding-left:0; width:1.85rem; position:relative; align-self:center; }
+        .baz-dc-sub .custom-control-label::before{ left:0; border-radius:999px; }
+        .baz-dc-sub .custom-control-label::after{ left:2px; }
+
+        /* pagination — keep only the one below the cards (drop the top duplicate),
+           restyle to the navy active-pill look. */
+        .baz-toppage{ display:none !important; }
+        .forumpaging, .pagination{ display:flex; flex-wrap:wrap; justify-content:center; gap:5px; border:0; list-style:none; padding-left:0; margin:14px 0 0; }
+        .pagination .page-item{ margin:0; list-style:none; }
+        .pagination .page-item .page-link{ border:0 !important; background:transparent !important; color:var(--sa-muted) !important; font:800 13px var(--sa-sans); min-width:34px; text-align:center; padding:7px 11px; border-radius:9px; text-decoration:none !important; }
+        .pagination .page-item .page-link:hover{ background:var(--sa-ground) !important; color:var(--sa-navy) !important; }
+        .pagination .page-item.active .page-link{ background:var(--sa-navy) !important; color:#fff !important; box-shadow:none; }
+        .pagination .page-item.disabled .page-link{ color:var(--sa-faint) !important; }
+
+        /* ---- discussion thread: bespoke hero (theme_baz/student-activity) ---- */
+        &#page-mod-forum-discuss .activity-header,
+        &#page-mod-forum-discuss [data-for="page-activity-header"],
+        &#page-mod-forum-discuss .page-context-header,
+        &#page-mod-forum-discuss .discussionname{ display:none !important; }
+        .baz-ft-hero{ background:var(--sa-gnavy); color:#EAF1F7; border-radius:16px; padding:18px 20px; margin:0 0 12px; }
+        .baz-ft-top{ display:flex; align-items:flex-start; gap:12px; }
+        .baz-ft-title{ flex:1; min-width:0; font:800 20px var(--sa-sans) !important; letter-spacing:-.01em; color:#fff !important; margin:0 !important; }
+        .baz-ft-acts{ display:flex; gap:7px; flex:none; }
+        .baz-ft-btn{ display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); color:#DCEAF5; border-radius:9px; padding:6px 11px; font:700 11.5px var(--sa-sans); cursor:pointer; }
+        .baz-ft-btn svg{ stroke:currentColor; fill:none; }
+        .baz-ft-btn.on{ background:rgba($bz-accent,.2); color:var(--sa-accent); border-color:rgba($bz-accent,.4); }
+        .baz-ft-btn.on svg{ fill:currentColor; }
+        .baz-ft-meta{ margin-top:10px; font:600 11.5px var(--sa-sans); color:#CFE0EC; display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+        .baz-ft-meta b{ color:#fff; }
+        .baz-ft-av{ display:inline-grid; place-items:center; width:20px; height:20px; border-radius:50%; background:var(--sa-accent); color:var(--sa-navy); font:800 8px var(--sa-mono); }
+        .baz-ft-parts{ display:inline-flex; align-items:center; gap:3px; margin-left:6px; }
+        .baz-ft-mini{ display:inline-grid; place-items:center; width:18px; height:18px; border-radius:50%; background:#6a8299; color:#fff; font:800 8px var(--sa-mono); border:1.5px solid var(--sa-navy); margin-left:-6px; }
+        .baz-ft-mini:first-child{ margin-left:0; }
+        .baz-ft-pn{ margin-left:6px; color:#AFC6D8; }
+        /* segmented Nested / Flat / Threaded (replaces the native select) */
+        .baz-ft-modebar{ display:flex; align-items:center; margin:0 0 12px; }
+        .baz-ft-modes{ display:inline-flex; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:10px; overflow:hidden; box-shadow:var(--sa-shsm); }
+        .baz-ft-mode{ padding:8px 16px; font:700 12.5px var(--sa-sans); color:var(--sa-muted) !important; text-decoration:none; border-right:1px solid var(--sa-line); }
+        .baz-ft-mode:last-child{ border-right:0; }
+        .baz-ft-mode.active{ background:var(--sa-navy); color:#fff !important; }
+        .baz-ft-collapse{ margin-left:auto; background:none; border:0; color:var(--sa-muted); font:700 12px var(--sa-sans); cursor:pointer; }
+        .baz-ft-collapse:hover{ color:var(--sa-navy); }
+        /* the native mode selector is replaced by the segmented control */
+        .rui-exportdiscussion, .modeselectorform{ display:none !important; }
+        /* back link + inline composer */
+        .baz-ft-back{ display:inline-block; color:var(--sa-muted) !important; font:700 12px var(--sa-sans); text-decoration:none; margin:0 0 10px; }
+        .baz-ft-back:hover{ color:var(--sa-navy) !important; }
+        .baz-ft-composer{ display:flex; align-items:center; gap:12px; background:var(--sa-surface); border:1px dashed #CBD8E6; border-radius:12px; padding:12px 16px; margin-top:10px; text-decoration:none; }
+        .baz-ft-cprompt{ color:var(--sa-faint); font-weight:600; }
+        .baz-ft-cbar{ color:var(--sa-muted); font-weight:700; letter-spacing:3px; }
+        .baz-ft-cpost{ margin-left:auto; background:var(--sa-gaccent); color:var(--sa-on-accent) !important; font-weight:800; border-radius:10px; padding:8px 16px; }
+
+        /* ================= FORUM POST FORM (reply / edit / new discussion) ================= */
+        /* hide the redundant chrome — bespoke context card + composer replace it */
+        &#page-mod-forum-post .activity-header,
+        &#page-mod-forum-post [data-for="page-activity-header"],
+        &#page-mod-forum-post .page-context-header,
+        &#page-mod-forum-post h2.rui-main-content-title,
+        &#page-mod-forum-post [data-content="forum-discussion"],
+        &#page-mod-forum-post .forumpost,
+        &#page-mod-forum-post .forum-post-container{ display:none !important; }
+        /* keep the reply form itself visible (it is not a .forumpost) */
+        &#page-mod-forum-post #mformforum, &#page-mod-forum-post form.mform{ display:block !important; }
+
+        /* "Replying to" context card + back link */
+        .baz-fp-back{ display:inline-block; color:var(--sa-muted) !important; font:700 12px var(--sa-sans); text-decoration:none; margin:0 0 10px; }
+        .baz-fp-back:hover{ color:var(--sa-navy) !important; }
+        .baz-fp-ctx{ background:var(--sa-gnavy); color:#EAF1F7; border-radius:14px; padding:14px 18px; margin:0 0 14px; }
+        .baz-fp-label{ font:800 9px var(--sa-mono); letter-spacing:.1em; text-transform:uppercase; color:#8FB0C8; }
+        .baz-fp-title{ font:800 16px var(--sa-sans); color:#fff; margin:5px 0 6px; }
+        .baz-fp-by{ font-size:11.5px; color:#CFE0EC; display:flex; align-items:center; gap:7px; }
+        .baz-fp-av{ display:inline-grid; place-items:center; width:20px; height:20px; border-radius:50%; background:var(--sa-accent); color:var(--sa-navy); font:800 8px var(--sa-mono); }
+
+        /* the mform → a clean composer card with stacked labels */
+        &#page-mod-forum-post #mformforum,
+        &#page-mod-forum-post form.mform{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:14px; padding:16px 20px; box-shadow:var(--sa-shsm); }
+        &#page-mod-forum-post .mform fieldset{ border:0; margin:0; padding:0; }
+        &#page-mod-forum-post .mform .fcontainer{ margin:0; }
+        &#page-mod-forum-post .mform .form-group.row{ display:block !important; margin:0 0 14px; }
+        &#page-mod-forum-post .mform .col-form-label,
+        &#page-mod-forum-post .mform .fitemtitle{ max-width:100% !important; flex:0 0 100% !important; width:100%; text-align:left !important; padding:0 0 5px !important; font:800 10px var(--sa-mono); letter-spacing:.06em; text-transform:uppercase; color:var(--sa-faint); }
+        &#page-mod-forum-post .mform .felement,
+        &#page-mod-forum-post .mform [class*="col-md-9"]{ max-width:100% !important; flex:0 0 100% !important; width:100%; padding:0 !important; }
+        &#page-mod-forum-post .mform input[type="text"]{ border:1px solid var(--sa-line); border-radius:10px; padding:10px 13px; width:100%; font:600 13px var(--sa-sans); }
+        &#page-mod-forum-post .tox-tinymce, &#page-mod-forum-post .editor_atto_wrap{ border-radius:10px !important; border:1px solid var(--sa-line) !important; overflow:hidden; }
+        &#page-mod-forum-post .filemanager, &#page-mod-forum-post .fp-content{ border-radius:10px; }
+        /* section legends ("Your reply", "Tags") as card sub-headers */
+        &#page-mod-forum-post .mform > fieldset > .d-flex, &#page-mod-forum-post .fheader, &#page-mod-forum-post legend{ font:800 15px var(--sa-sans) !important; color:var(--sa-ink); }
+        /* actions */
+        &#page-mod-forum-post .mform .btn-primary,
+        &#page-mod-forum-post #id_submitbutton{ background:var(--sa-gaccent) !important; color:var(--sa-navy) !important; border:0 !important; font-weight:800; border-radius:11px; padding:12px 26px; box-shadow:0 8px 20px rgba($bz-accent,.3); }
+        &#page-mod-forum-post .mform .btn-secondary,
+        &#page-mod-forum-post #id_cancel{ border-radius:11px; font-weight:800; }
+        /* drop the mform expand/collapse-all control (no collapsible sections in the composer look) */
+        &#page-mod-forum-post .collapsible-actions{ display:none !important; }
+        /* required marker as a small gold dot (the stock icon can 404 in some renders) */
+        &#page-mod-forum-post .mform .req{ filter:none; }
+
+        /* ---- discussion thread: controls + posts ---- */
+        .rui-forum-discussion .d-flex.flex-wrap.mb-4{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:12px; padding:8px 12px; box-shadow:var(--sa-shsm); margin-bottom:12px !important; }
+        .forumpost, [data-region-content="forum-post"], .forum-post-container{ background:var(--sa-surface); border:1px solid var(--sa-line) !important; border-radius:14px; box-shadow:var(--sa-shsm); overflow:hidden; margin-bottom:14px; }
+        /* the first (original) post gets a gold accent rail + "Original post" tag */
+        .firstpost.starter, .forumpost.firstpost{ border-left:3px solid var(--sa-accent) !important; }
+        .baz-op-tag{ display:inline-block; background:$bz-accent-bg5; color:$bz-accent-text3; font:800 9px var(--sa-mono); letter-spacing:.06em; text-transform:uppercase; padding:3px 8px; border-radius:6px; margin-right:8px; }
+        /* Moodle already renders "X replying to Y" (parentauthorname) — make it read clearly */
+        .forumpost .author-header{ font-weight:700; color:var(--sa-ink); }
+        .forumpost .header, .forum-post-core header{ background:#F7FAFD; border-bottom:1px solid var(--sa-line); }
+        .forumpost .author, .forum-post-core .author{ font-weight:700; color:var(--sa-ink); }
+        .forumpost .content, .post-content-container{ padding:14px 16px; }
+        .forumpost .commands a, .forum-post-core .commands a{ color:var(--sa-blue); font-weight:700; }
+        /* replies are threaded with a rail */
+        .indent{ border-left:2px solid var(--sa-line); padding-left:16px; margin-left:14px; }
+        .forumdiscussion .pinned, .discussionsubscription{ border-radius:8px; }
+        [data-region="forum-post-reply"] .btn, .indent .btn, .modeselectorform .btn{ border-radius:12px; }
+        /* reply/settings buttons + mode selector */
+        .btn.post-action, a[data-action="collapsible-link"]{ color:var(--sa-blue); font-weight:700; }
+        [data-region="post-reply"] .btn-primary, .inpage-reply-content .btn-primary{ background:var(--sa-gaccent) !important; color:var(--sa-navy) !important; border:0 !important; }
+    }
+
+    /* ======================= LESSON ======================= */
+    /* ---- mod_page: content pages (mostly embedded videos, some text) ---- */
+    /* ---- mod_resource: file resources (mostly embedded PDFs) ---- */
+    &.baz-mod-resource {
+        /* title → hero card (consistent with mod_page) */
+        #region-main #page-header.page-header-content{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:var(--sa-sh); padding:16px 22px !important; max-width:960px; margin:0 auto 14px; }
+        #region-main .page-header-image .activityiconcontainer{ width:52px; height:52px; border-radius:13px; background:rgba(229,85,110,.12); display:grid; place-items:center; margin:0 !important; }
+        #region-main .page-header-image .activityicon{ width:28px; height:28px; }
+        #region-main .rui-main-content-title{ font:800 20px/1.25 var(--sa-sans) !important; letter-spacing:-.02em; color:var(--sa-ink) !important; margin:0 !important; }
+        /* drop the redundant empty details card — the file type/size is already in
+           the file card below; keep any real description as plain text (no card). */
+        #region-main .activity-header{ background:none !important; border:0 !important; box-shadow:none !important; padding:0 !important; max-width:960px; margin:0 auto 8px !important; }
+        #region-main .rui-activity-wrapper{ border:0 !important; background:none !important; padding:0 !important; box-shadow:none !important; margin:0 !important; }
+        #region-main .activity-description{ background:none !important; border:0 !important; padding:0 !important; }
+        #region-main .resourcedetails{ display:none !important; }
+        /* summarise → right-aligned in the content column (as on page) */
+        #region-main .ai-course-summarise-controls{ max-width:960px; margin:0 auto 12px !important; padding:0 !important; display:flex; justify-content:flex-end; }
+        /* bespoke document header (built from the file link by page_init JS) */
+        .baz-res-file{ display:flex; align-items:center; gap:15px; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:var(--sa-sh); padding:16px 20px; max-width:960px; margin:0 auto 14px; }
+        .baz-res-ic{ width:52px; height:52px; flex:none; border-radius:13px; display:grid; place-items:center; position:relative; background:rgba(229,85,110,.12); color:var(--sa-red); }
+        .baz-res-ic svg{ width:25px; height:25px; stroke:currentColor; fill:none; stroke-width:1.7; }
+        .baz-res-ic .ext{ position:absolute; bottom:5px; font:800 8px var(--sa-mono); letter-spacing:.02em; }
+        .baz-res-meta{ flex:1; min-width:0; }
+        .baz-res-name{ font:800 16px var(--sa-sans); color:var(--sa-ink); word-break:break-word; }
+        .baz-res-sub{ font:600 12px var(--sa-mono); color:var(--sa-muted); margin-top:3px; }
+        .baz-res-acts{ display:flex; gap:9px; flex:none; }
+        .baz-res-acts a{ display:inline-flex; align-items:center; gap:7px; font:800 13px var(--sa-sans); border-radius:11px; padding:11px 17px; text-decoration:none !important; white-space:nowrap; }
+        .baz-res-dl{ background:var(--sa-gaccent); color:var(--sa-on-accent) !important; box-shadow:0 6px 16px rgba($bz-accent,.3); }
+        .baz-res-open{ background:var(--sa-surface); border:1.5px solid var(--sa-line); color:var(--sa-navy) !important; }
+        .baz-res-acts a svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2.2; }
+        @media(max-width:600px){ .baz-res-file{ flex-wrap:wrap; } .baz-res-acts{ width:100%; } .baz-res-acts a{ flex:1; justify-content:center; } }
+        /* the embedded PDF object → framed viewer card */
+        .resourcecontent{ max-width:960px; margin:0 auto; }
+        .resourcecontent.resourcepdf{ background:#525659; border-radius:14px; padding:0; overflow:hidden; box-shadow:var(--sa-sh); }
+        #resourceobject{ width:100% !important; height:80vh !important; min-height:520px; border:0; display:block; }
+        /* download-only workaround → card */
+        .resourceworkaround{ max-width:640px; margin:0 auto; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:var(--sa-sh); padding:26px; text-align:center; font-size:14px; color:var(--sa-muted); }
+        .resourceworkaround a{ color:var(--sa-blue); font-weight:700; }
+        /* "Last modified" meta */
+        #region-main .modified{ max-width:960px; margin:14px auto 4px; text-align:center; font:600 12px/1.4 var(--sa-mono); color:var(--sa-faint); }
+    }
+
+    &.baz-mod-url {
+        /* title → hero card + clean header (consistent with page/resource/lesson);
+           the big empty activity-header card is dropped, the intro stays as plain
+           text, completion chips handled by the shared rule. */
+        #region-main #page-header.page-header-content{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:var(--sa-sh); padding:16px 22px !important; max-width:900px; margin:0 auto 14px; }
+        #region-main .page-context-header{ gap:14px; }
+        #region-main .page-header-image .activityiconcontainer{ width:52px; height:52px; border-radius:13px; background:rgba(37,99,235,.1); display:grid; place-items:center; margin:0 !important; }
+        #region-main .page-header-image .activityicon{ width:28px; height:28px; }
+        #region-main .rui-main-content-title{ font:800 20px/1.25 var(--sa-sans) !important; letter-spacing:-.02em; color:var(--sa-ink) !important; margin:0 !important; }
+        #region-main .activity-header{ max-width:900px; margin:0 auto 10px !important; padding:0 !important; background:none !important; border:0 !important; box-shadow:none !important; }
+        #region-main .rui-activity-wrapper{ border:0 !important; background:none !important; padding:0 !important; box-shadow:none !important; margin:0 !important; }
+        #region-main .activity-description{ background:none !important; border:0 !important; padding:0 !important; color:var(--sa-muted); }
+        #region-main .ai-course-summarise-controls{ max-width:900px; margin:0 auto 12px !important; padding:0 !important; display:flex; justify-content:flex-end; }
+        /* "click to open" line → external-link card (built by page_init JS) */
+        .urlworkaround{ max-width:640px; margin:0 auto; }
+        .baz-url-card{ display:flex; align-items:center; gap:15px; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:var(--sa-sh); padding:16px 20px; }
+        .baz-url-ic{ width:52px; height:52px; flex:none; border-radius:13px; display:grid; place-items:center; background:rgba(37,99,235,.1); color:var(--sa-blue); }
+        .baz-url-ic svg{ width:26px; height:26px; stroke:currentColor; fill:none; stroke-width:1.7; }
+        .baz-url-meta{ flex:1; min-width:0; }
+        .baz-url-crumb{ font:800 10.5px/1 var(--sa-mono); letter-spacing:.08em; text-transform:uppercase; color:var(--sa-faint); }
+        .baz-url-name{ font:800 16px var(--sa-sans); color:var(--sa-ink); margin:5px 0 2px; word-break:break-word; }
+        .baz-url-host{ font:600 12px var(--sa-mono); color:var(--sa-blue); word-break:break-all; }
+        .baz-url-open{ flex:none; display:inline-flex; align-items:center; gap:7px; background:var(--sa-gaccent); color:var(--sa-on-accent) !important; font:800 13px var(--sa-sans); border-radius:11px; padding:11px 17px; text-decoration:none !important; white-space:nowrap; box-shadow:0 6px 16px rgba($bz-accent,.3); }
+        .baz-url-open svg{ width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:2.2; }
+        @media(max-width:600px){ .baz-url-card{ flex-wrap:wrap; } .baz-url-open{ width:100%; justify-content:center; } }
+        /* embedded URL (image / video / object / iframe) → framed card */
+        #region-main .resourcecontent, #region-main > .box{ max-width:960px; margin:0 auto; }
+        #region-main object, #region-main iframe, #region-main video, #region-main .mediaplugin{ display:block; width:100%; max-width:960px; margin:0 auto; border:0; border-radius:14px; box-shadow:var(--sa-sh); background:#0b1220; }
+        #region-main object{ min-height:70vh; }
+        #region-main img{ max-width:100%; height:auto; border-radius:14px; box-shadow:var(--sa-sh); display:block; margin:0 auto; }
+    }
+
+    &.baz-mod-page {
+        /* page header (icon + crumb + title) → clean hero card */
+        #region-main #page-header.page-header-content{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:var(--sa-sh); padding:16px 22px !important; max-width:880px; margin:0 auto 14px; }
+        #region-main .page-context-header{ gap:14px; }
+        #region-main .page-header-image .activityiconcontainer{ width:52px; height:52px; border-radius:13px; background:rgba(96,138,255,.12); display:grid; place-items:center; margin:0 !important; }
+        #region-main .page-header-image .activityicon{ width:28px; height:28px; }
+        .baz-pg-eyebrow{ font:800 10.5px/1 var(--sa-mono); letter-spacing:.14em; text-transform:uppercase; color:var(--sa-accent); margin-bottom:6px; }
+        #region-main .rui-main-content-title{ font:800 20px/1.25 var(--sa-sans) !important; letter-spacing:-.02em; color:var(--sa-ink) !important; margin:0 !important; }
+        /* AI Summarise positioning (page): centred in the 880 content column.
+           Button styling is the top-level canonical rule. */
+        #region-main .ai-course-summarise-controls{ max-width:880px; margin:0 auto 10px !important; padding:0 !important; display:flex; justify-content:flex-end; }
+        /* header card removed; completion chip row is the shared rule above */
+        #region-main .activity-header{ max-width:880px; margin:0 auto 12px !important; padding:0 !important; background:none; border:0; }
+        #region-main .rui-activity-wrapper{ border:0 !important; background:none !important; padding:0 !important; box-shadow:none !important; margin:0 !important; }
+        /* the page content box → focused reading/video card */
+        #region-main .box.generalbox{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:var(--sa-sh); padding:24px 26px !important; max-width:880px; margin:0 auto 16px; }
+        .no-overflow{ font-size:15px; line-height:1.75; color:#2b3f4f; }
+        .no-overflow > :first-child{ margin-top:0; }
+        .no-overflow > :last-child{ margin-bottom:0; }
+        .no-overflow h1, .no-overflow h2{ font-size:22px; font-weight:800; letter-spacing:-.01em; color:var(--sa-ink); margin:0 0 14px; }
+        .no-overflow h3, .no-overflow h4{ font-size:16px; font-weight:800; color:var(--sa-navy); margin:20px 0 8px; }
+        .no-overflow p{ margin:0 0 14px; }
+        .no-overflow ul, .no-overflow ol{ margin:0 0 14px; padding-left:20px; }
+        .no-overflow li{ margin-bottom:6px; }
+        .no-overflow a{ color:var(--sa-blue); }
+        .no-overflow img{ max-width:100%; height:auto; border-radius:10px; }
+        .no-overflow table{ max-width:100%; }
+        /* embedded video: Vimeo/YouTube use a responsive padding-hack wrapper —
+           round it into a player card. Also handle bare iframes. */
+        .no-overflow div[style*="56.25%"], .no-overflow div[style*="position: relative"]{
+            border-radius:13px; overflow:hidden; box-shadow:0 10px 30px -14px rgba(0,0,0,.55); background:#0b1220; margin:0 auto; }
+        .no-overflow > iframe, .no-overflow p > iframe{ display:block; width:100%; max-width:100%; aspect-ratio:16/9; height:auto; border:0; border-radius:13px; box-shadow:0 10px 30px -14px rgba(0,0,0,.55); background:#0b1220; }
+        .no-overflow iframe{ border:0; }
+        /* "Last modified" timestamp → clean centred meta line under the card */
+        #region-main .modified{ max-width:880px; margin:14px auto 4px; text-align:center; font:600 12px/1.4 var(--sa-mono); color:var(--sa-faint); }
+    }
+
+    &.baz-mod-feedback {
+        /* title → hero card + clean header (consistent with other content mods) */
+        #region-main #page-header.page-header-content{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:var(--sa-sh); padding:16px 22px !important; max-width:760px; margin:0 auto 14px; }
+        #region-main .page-context-header{ gap:14px; }
+        #region-main .page-header-image .activityiconcontainer{ width:52px; height:52px; border-radius:13px; background:rgba(96,138,255,.12); display:grid; place-items:center; margin:0 !important; }
+        #region-main .page-header-image .activityicon{ width:28px; height:28px; }
+        #region-main .rui-main-content-title{ font:800 20px/1.25 var(--sa-sans) !important; letter-spacing:-.02em; color:var(--sa-ink) !important; margin:0 !important; }
+        #region-main .activity-header{ max-width:760px; margin:0 auto 10px !important; padding:0 !important; background:none !important; border:0 !important; box-shadow:none !important; }
+        #region-main .rui-activity-wrapper{ border:0 !important; background:none !important; padding:0 !important; box-shadow:none !important; margin:0 !important; }
+        #region-main .ai-course-summarise-controls{ max-width:760px; margin:0 auto 12px !important; padding:0 !important; display:flex; justify-content:flex-end; }
+        /* intro/description → a lead card */
+        #region-main .feedback_description{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:var(--sa-sh); padding:20px 24px !important; max-width:760px; margin:0 auto 16px; }
+        #region-main .feedback_description h3{ font:800 15px var(--sa-sans); color:var(--sa-navy); margin:0 0 8px; }
+        /* the questionnaire form + its box wrappers → one centred column */
+        #region-main .feedback_form, #region-main form.mform{ max-width:760px; margin:0 auto; }
+        #region-main .boxaligncenter, #region-main .box.boxaligncenter{ border:0 !important; background:none !important; padding:0 !important; max-width:760px; margin:0 auto; }
+        #region-main .mform fieldset{ border:0; margin:0; padding:0; }
+        #region-main .mform .fcontainer{ margin:0; }
+
+        /* each answerable question → a white card */
+        #region-main .fitem.feedback_hasvalue{ display:block !important; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:14px; box-shadow:var(--sa-shsm); padding:18px 20px !important; margin:0 0 14px !important; }
+        /* question title: a readable sentence, full width above the input */
+        #region-main .feedback_hasvalue .col-form-label,
+        #region-main .feedback_hasvalue .fitemtitle,
+        #region-main .feedback_hasvalue .fitemtitle label{ max-width:100% !important; flex:0 0 100% !important; width:100%; text-align:left !important; padding:0 0 12px !important; margin:0 !important; font:700 15px/1.4 var(--sa-sans) !important; color:var(--sa-ink) !important; }
+        /* felement col spans full width (override Bootstrap .col-md-9 max-width:75%) */
+        #region-main .feedback_hasvalue .felement,
+        #region-main .feedback_hasvalue [class*="col-md-9"]{ max-width:100% !important; flex:0 0 100% !important; width:100%; padding:0 !important; }
+        #region-main .feedback_hasvalue .text-danger{ color:var(--sa-red) !important; font:700 12px var(--sa-sans); }
+        /* radio / checkbox options → spaced tappable rows */
+        #region-main .feedback_hasvalue .form-check{ padding:9px 12px; border:1px solid var(--sa-line); border-radius:10px; margin:0 0 8px; transition:border-color .12s, background .12s; }
+        #region-main .feedback_hasvalue .form-check:hover{ border-color:var(--sa-accent); background:rgba($bz-accent,.06); }
+        #region-main .feedback_hasvalue .form-check-label{ font:600 14px var(--sa-sans); color:var(--sa-ink); cursor:pointer; }
+        /* text / textarea / select inputs */
+        #region-main .feedback_hasvalue input[type="text"], #region-main .feedback_hasvalue input[type="number"],
+        #region-main .feedback_hasvalue textarea, #region-main .feedback_hasvalue select{ width:100%; border:1.5px solid var(--sa-line); border-radius:10px; padding:10px 13px; font:500 14px var(--sa-sans); color:var(--sa-ink); background:#fff; }
+        #region-main .feedback_hasvalue input:focus, #region-main .feedback_hasvalue textarea:focus, #region-main .feedback_hasvalue select:focus{ outline:0; border-color:var(--sa-accent); box-shadow:0 0 0 3px rgba($bz-accent,.18); }
+        /* non-answerable label/info items → subtle section heading, not a card */
+        #region-main .fitem.feedback-item-label:not(.feedback_hasvalue){ margin:6px auto 10px; max-width:760px; }
+        #region-main .feedback-item-label .felement, #region-main .feedback-item-label .col-form-label{ font:700 13px var(--sa-mono); letter-spacing:.04em; text-transform:uppercase; color:var(--sa-faint); }
+        /* page position + navigation buttons */
+        #region-main .feedback_complete_form .btn, #region-main .form-submit,
+        #region-main #id_submitbutton, #region-main input[name="savevalues"]{ border-radius:11px; }
+        #region-main .feedback_form .text-center, #region-main .mdl-align{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:6px; }
+    }
+
+    &.baz-mod-lesson {
+        /* title → hero card + clean header (consistent with page/resource); the
+           big empty activity-header card is dropped, completion chips handled by
+           the shared rule. */
+        #region-main #page-header.page-header-content{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:var(--sa-sh); padding:16px 22px !important; max-width:820px; margin:0 auto 14px; }
+        #region-main .page-context-header{ gap:14px; }
+        #region-main .page-header-image .activityiconcontainer{ width:52px; height:52px; border-radius:13px; background:rgba(96,138,255,.12); display:grid; place-items:center; margin:0 !important; }
+        #region-main .page-header-image .activityicon{ width:28px; height:28px; }
+        #region-main .rui-main-content-title{ font:800 20px/1.25 var(--sa-sans) !important; letter-spacing:-.02em; color:var(--sa-ink) !important; margin:0 !important; }
+        #region-main .activity-header{ max-width:820px; margin:0 auto 10px !important; padding:0 !important; background:none !important; border:0 !important; box-shadow:none !important; }
+        #region-main .rui-activity-wrapper{ border:0 !important; background:none !important; padding:0 !important; box-shadow:none !important; margin:0 !important; }
+        #region-main .activity-description{ background:none !important; border:0 !important; padding:0 !important; }
+        #region-main .ai-course-summarise-controls{ max-width:820px; margin:0 auto 12px !important; padding:0 !important; display:flex; justify-content:flex-end; }
+        /* reading content → a focused reading card */
+        .box.contents, .contentwithoutanswers{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:var(--sa-sh); padding:26px 28px !important; max-width:820px; margin:0 auto 16px; }
+        .box.contents .no-overflow{ font-size:15px; line-height:1.75; color:#2b3f4f; }
+        .box.contents h1, .box.contents h2{ font-size:22px; font-weight:800; letter-spacing:-.01em; color:var(--sa-ink); margin:0 0 14px; }
+        .box.contents h3, .box.contents h4{ font-size:16px; font-weight:800; color:var(--sa-navy); margin:20px 0 8px; }
+        .box.contents p{ margin:0 0 14px; }
+        .box.contents ul, .box.contents ol{ margin:0 0 14px; padding-left:20px; }
+        .box.contents li{ margin-bottom:6px; }
+        .box.contents img{ max-width:100%; height:auto; border-radius:10px; }
+        .box.contents table{ max-width:100%; }
+        /* continue / branch buttons → prominent gold CTA row */
+        .branchbuttoncontainer{ background:none; border:0; box-shadow:none; padding:0 !important; max-width:820px; margin:0 auto 14px; display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; }
+        .branchbuttoncontainer .singlebutton{ margin:0; }
+        .branchbuttoncontainer .singlebutton .btn, .lessonbutton .btn{ background:var(--sa-gaccent) !important; border:0 !important; color:var(--sa-navy) !important; font:800 14px var(--sa-sans); border-radius:12px; padding:13px 24px; box-shadow:0 8px 20px -8px rgba(232,154,44,.9); }
+        .branchbuttoncontainer .singlebutton .btn:hover, .lessonbutton .btn:hover{ filter:brightness(1.03); color:var(--sa-navy) !important; }
+        /* question answers → selectable option rows */
+        .contents form fieldset, .answeroptions{ max-width:820px; margin:0 auto; border:0; }
+        .answeroption, .answeroptions .fitem{ display:flex; align-items:center; gap:12px; border:1.5px solid var(--sa-line); border-radius:12px; padding:13px 16px; margin-bottom:10px; background:var(--sa-surface); }
+        .answeroption:hover{ border-color:var(--sa-accent); }
+        .answeroption label, .answeroptions label{ font-size:15px; font-weight:600; color:var(--sa-ink); margin:0; }
+        .correctanswer{ background:#E6F6F0; border:1px solid #BFE9D8; border-radius:12px; padding:13px 16px; color:#14503b; }
+        .wronganswer{ background:#FDECEF; border:1px solid #F5C6CE; border-radius:12px; padding:13px 16px; color:#8f2233; }
+        /* progress bar → thin gold-filled track */
+        .progress_bar{ max-width:820px; margin:0 auto 16px; }
+        .progress{ height:8px; border-radius:999px; overflow:hidden; background:var(--sa-line); }
+        .progress-bar, .lesson-progressbar .bar{ background:var(--sa-gaccent) !important; }
+        .menuwrapper, .lessonmediafilecontrol{ border-radius:12px; }
+        /* end-of-lesson bespoke completion card */
+        .baz-les-eol{ max-width:640px; margin:0 auto; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; box-shadow:var(--sa-sh); overflow:hidden; }
+        .baz-les-eol-top{ background:#E6F6F0; border-bottom:1px solid #BFE9D8; padding:26px; text-align:center; }
+        .baz-les-eol-ic{ width:58px; height:58px; margin:0 auto 14px; border-radius:15px; background:var(--sa-green); color:#fff; display:grid; place-items:center; }
+        .baz-les-eol-ic svg{ width:30px; height:30px; stroke:currentColor; fill:none; stroke-width:2.4; }
+        .baz-les-eol-top h3{ font:800 21px var(--sa-sans); color:var(--sa-ink); margin:0 0 5px; }
+        .baz-les-eol-top p{ color:#3f6a5b; font-size:14px; margin:0; }
+        .baz-les-eol-body{ padding:14px 24px; }
+        .baz-les-eol-body:empty{ display:none; }
+        .baz-les-eol-line{ font-size:14px; line-height:1.6; color:var(--sa-ink); padding:9px 0; border-bottom:1px solid var(--sa-line); }
+        .baz-les-eol-line:last-child{ border-bottom:0; }
+        .baz-les-eol-actions{ padding:8px 24px 22px; display:flex; gap:11px; justify-content:center; flex-wrap:wrap; }
+        .baz-les-eol-actions .btn{ border-radius:12px; font-weight:800; padding:12px 20px; }
+        .baz-les-eol-actions .btn-primary{ background:var(--sa-gaccent) !important; border:0 !important; color:var(--sa-navy) !important; }
+        .baz-les-eol-actions .btn-secondary, .baz-les-eol-actions .btn-outline-primary{ background:var(--sa-surface) !important; border:1.5px solid var(--sa-line) !important; color:var(--sa-navy) !important; }
+    }
+}
+
+/* ==========================================================================
+   Dark mode — re-skin the wrapped activity content (Moodle's theme-dark also
+   applies; these align our accent colours within the activity restyle).
+   ========================================================================== */
+body.baz-student-activity.theme-dark,
+body.baz-student-activity.sd-dark {
+    --sa-surface:#0F2230; --sa-ground:#0A1722; --sa-ink:#EAF2F9; --sa-muted:#9DB2C3;
+    --sa-faint:#6F8597; --sa-line:#1E3445; --sa-navy:#{$bz-navy-dm};
+
+    .ba-topbar{ background:rgba(10,23,34,.92); }
+    .ba-search{ border-color:#294056; }
+    .activity-header, [data-region="activity-information"]{ background:var(--sa-surface); border-color:var(--sa-line); }
+    .activity-description, [data-region="activity-description"]{ background:#13283A; border-color:var(--sa-line); }
+    #region-main .generaltable th{ background:#13283A; }
+    &.baz-mod-quiz .que .info, &.baz-mod-forum .forumpost .header{ background:#13283A; }
+    .quizinfo, &.baz-mod-quiz .que .generalfeedback{ background:#13283A; }
+
+    /* These three widgets use light-mode hues that go near-black on the dark
+       surface — retune them so they stay legible in dark mode. */
+    /* AI "Summarise" — navy card text goes invisible on dark: use gold. Single
+       selector to match the consolidated light-mode rule. */
+    .ai-course-summarise-controls .btn{ background:var(--sa-surface) !important; border-color:var(--sa-accent) !important; color:var(--sa-accent) !important; box-shadow:none !important; }
+    .ai-course-summarise-controls .btn:hover{ color:var(--sa-accent) !important; }
+    .ai-course-summarise-controls .ai-course-summarise-sparkles-icon{ color:var(--sa-accent) !important; }
+    /* completion "Done" chip — translucent green instead of a bright light pill. */
+    #region-main .badge-sm.badge-success{ background:rgba(31,163,122,.18) !important; color:#74E6B1 !important; border-color:rgba(31,163,122,.4) !important; }
+    /* "Need help" FAB — keep dark text on the gold gradient (navy token darkens). */
+    .ba-help-fab{ color:$bz-accent-ink !important; }
+    .ba-help-panel{ box-shadow:0 20px 50px rgba(0,0,0,.55); }
+}
+
+/* ==========================================================================
+   Bespoke assignment (mod_assign) student view — pairs with
+   theme_baz_mod_assign_renderer. The renderer emits .baz-asg markup for the
+   submission-status, feedback and submit-confirmation; the action buttons and
+   edit form are core Moodle, restyled here only. Scoped to the assign page.
+   --sa-* vars cascade from body.baz-student-activity.
+   ========================================================================== */
+body.baz-student-activity.baz-mod-assign {
+
+    /* The bespoke card wrapper (status / feedback / confirm all share it). */
+    .baz-asg{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; padding:18px 20px; margin:0 0 18px; box-shadow:var(--sa-sh); }
+
+    /* Status / feedback banner. */
+    .baz-asg-banner{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; border-radius:13px; padding:15px 16px; margin-bottom:16px; }
+    .baz-asg-bi{ width:42px; height:42px; flex:0 0 auto; border-radius:11px; display:grid; place-items:center; }
+    .baz-asg-bi svg{ width:23px; height:23px; stroke:currentColor; fill:none; stroke-width:2; }
+    .baz-asg-bmain{ flex:1 1 auto; min-width:160px; }
+    .baz-asg-bstate{ font:800 10.5px/1 var(--sa-mono); letter-spacing:.14em; text-transform:uppercase; }
+    .baz-asg-bmsg{ font:700 15px/1.3 var(--sa-sans); color:var(--sa-ink); margin-top:5px; }
+    .baz-asg-bsub{ font:600 12.5px/1.4 var(--sa-sans); color:var(--sa-muted); margin-top:3px; }
+    .b-todo{ background:$bz-accent-bg; } .b-todo .baz-asg-bi{ background:var(--sa-accent); color:$bz-accent-ink3; } .b-todo .baz-asg-bstate{ color:$bz-accent-text2; }
+    .b-draft,.b-sub{ background:#EAF0FC; } .b-draft .baz-asg-bi,.b-sub .baz-asg-bi{ background:var(--sa-blue); color:#fff; } .b-draft .baz-asg-bstate,.b-sub .baz-asg-bstate{ color:var(--sa-blue); }
+    .b-graded{ background:#E6F6F0; } .b-graded .baz-asg-bi{ background:var(--sa-green); color:#fff; } .b-graded .baz-asg-bstate{ color:var(--sa-green); }
+    .b-late{ background:#FDECEF; } .b-late .baz-asg-bi{ background:var(--sa-red); color:#fff; } .b-late .baz-asg-bstate{ color:var(--sa-red); }
+    .b-closed{ background:#EEF2F6; } .b-closed .baz-asg-bi{ background:#8296A6; color:#fff; } .b-closed .baz-asg-bstate{ color:var(--sa-muted); }
+
+    /* Detail grid. */
+    .baz-asg-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:1px; background:var(--sa-line); border:1px solid var(--sa-line); border-radius:12px; overflow:hidden; margin-bottom:16px; }
+    .baz-asg-cell{ background:var(--sa-surface); padding:12px 14px; }
+    .baz-asg-k{ font:700 10px/1 var(--sa-mono); letter-spacing:.05em; text-transform:uppercase; color:var(--sa-faint); }
+    .baz-asg-v{ font:700 14px/1.35 var(--sa-sans); color:var(--sa-ink); margin-top:8px; }
+    .baz-asg-v.warn{ color:$bz-accent-text; } .baz-asg-v.bad{ color:var(--sa-red); } .baz-asg-v.ok{ color:var(--sa-green); } .baz-asg-v.blue{ color:var(--sa-blue); }
+
+    /* Submission-content blocks (files / online text). */
+    .baz-asg-blk{ margin-bottom:16px; } .baz-asg-blk:last-child{ margin-bottom:0; }
+    .baz-asg-blk-h{ font:800 10.5px/1 var(--sa-mono); letter-spacing:.09em; text-transform:uppercase; color:var(--sa-muted); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+    .baz-asg-blk-h::after{ content:""; flex:1; height:1px; background:var(--sa-line); }
+    .baz-asg-blk-body{ font-size:14px; line-height:1.6; color:var(--sa-ink); }
+    .baz-asg-blk-body .fileuploadsubmission,.baz-asg-blk-body .no-overflow{ margin:0; }
+    .baz-asg-blk-body a{ color:var(--sa-blue); }
+    /* keep core toggle icons small inside the content blocks. */
+    .baz-asg-blk-body img.icon,.baz-asg-fb-c img.icon{ width:16px; height:16px; vertical-align:middle; }
+
+    /* Uploaded file submissions — present each as a clean file card (core
+       renders a YUI tree: ul > li > div > .fileuploadsubmission + .fileuploadsubmissiontime). */
+    .baz-asg-blk-body .plugincontentsummary[class*="_file_"] > div,
+    .baz-asg-blk-body [id^="assign_files_tree"]{ margin:0; }
+    .baz-asg-blk-body [id^="assign_files_tree"] ul{ list-style:none; margin:0; padding:0; }
+    .baz-asg-blk-body [id^="assign_files_tree"] li{ list-style:none; margin:0 0 8px; }
+    .baz-asg-blk-body [id^="assign_files_tree"] li:last-child{ margin-bottom:0; }
+    .baz-asg-blk-body [id^="assign_files_tree"] li > div{ border:1px solid var(--sa-line); border-radius:11px; padding:11px 13px; background:var(--sa-surface); }
+    .baz-asg-blk-body .fileuploadsubmission{ display:flex; align-items:center; gap:12px; }
+    .baz-asg-blk-body .fileuploadsubmission img.icon{ width:24px; height:24px; flex:0 0 40px; box-sizing:content-box; padding:8px; border-radius:10px; background:var(--sa-ground); }
+    .baz-asg-blk-body .fileuploadsubmission a{ font:700 14px var(--sa-sans); color:var(--sa-ink) !important; text-decoration:none; word-break:break-word; }
+    .baz-asg-blk-body .fileuploadsubmission a:hover{ color:var(--sa-navy) !important; text-decoration:underline; }
+    .baz-asg-blk-body .fileuploadsubmissiontime{ font:600 11.5px var(--sa-mono); color:var(--sa-faint); margin-top:6px; padding-left:52px; }
+
+    /* Submission comments (core comment API widget) — tidy it into a clean,
+       contained disclosure so it stops looking like raw markup in the card. */
+    .baz-asg-blk-body .plugincontentsummary{ padding:0; margin:0; background:transparent; border:0; }
+    .baz-asg-blk-body .commentscontainer{ background:var(--sa-ground); border:1px solid var(--sa-line); border-radius:11px; padding:12px 14px; }
+    .baz-asg-blk-body .showcommentsnonjs{ display:none; }
+    .baz-asg-blk-body .mdl-left{ margin:0; }
+    .baz-asg-blk-body .comment-link{ display:inline-flex; align-items:center; gap:7px; font:800 12px var(--sa-sans); color:var(--sa-navy) !important; text-decoration:none; }
+    .baz-asg-blk-body .comment-link img.icon{ display:none; }
+    .baz-asg-blk-body .comment-link .comment-link-text,.baz-asg-blk-body .comment-link-count{ color:var(--sa-navy) !important; }
+    .baz-asg-blk-body .comment-list{ list-style:none; margin:12px 0 0; padding:0; }
+    .baz-asg-blk-body .comment-list li,.baz-asg-blk-body .comment-list li.first{ list-style:none; margin:0 0 8px; }
+    .baz-asg-blk-body .comment-message{ display:flex; gap:10px; align-items:flex-start; background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:9px; padding:9px 11px; }
+    .baz-asg-blk-body .comment-message-meta{ font:600 11px var(--sa-sans); color:var(--sa-muted); white-space:nowrap; }
+    .baz-asg-blk-body .comment-message .text,.baz-asg-blk-body .comment-message p{ font-size:13px; line-height:1.5; color:var(--sa-ink); margin:0; }
+    .baz-asg-blk-body .comment-area{ margin-top:12px; }
+    .baz-asg-blk-body .comment-area .db{ margin:0; }
+    .baz-asg-blk-body .comment-area textarea{ width:100%; box-sizing:border-box; border:1px solid var(--sa-line); border-radius:10px; padding:10px 12px; font:400 13px/1.5 var(--sa-sans); color:var(--sa-ink); background:var(--sa-surface); }
+    /* Save comment / Cancel action row (.fd holds the two links + a " | " span). */
+    .baz-asg-blk-body .comment-area .fd{ margin-top:10px; display:flex; align-items:center; gap:9px; }
+    .baz-asg-blk-body .comment-area .fd > span{ display:none; }
+    .baz-asg-blk-body .comment-area .fd a{ font:800 12px var(--sa-sans); text-decoration:none; border-radius:9px; padding:9px 16px; line-height:1; }
+    .baz-asg-blk-body .comment-area .fd a[id*="comment-action-post"]{ background:var(--sa-gaccent); color:$bz-accent-ink !important; }
+    .baz-asg-blk-body .comment-area .fd a[id*="comment-action-post"]:hover{ filter:brightness(1.03); color:$bz-accent-ink !important; }
+    .baz-asg-blk-body .comment-area .fd a[id*="comment-action-cancel"]{ border:1.5px solid var(--sa-line); color:var(--sa-navy) !important; }
+    .baz-asg-blk-body .comment-area .fd a[id*="comment-action-cancel"]:hover{ border-color:var(--sa-accent); }
+    .baz-asg-blk-body .comment-pagination{ font-size:12px; color:var(--sa-muted); }
+
+    /* Feedback panel. */
+    .baz-asg-fb-head{ display:flex; align-items:center; gap:11px; margin-bottom:13px; }
+    .baz-asg-fb-ic{ width:36px; height:36px; flex:0 0 auto; border-radius:10px; background:var(--sa-green); color:#fff; display:grid; place-items:center; }
+    .baz-asg-fb-ic svg{ width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; }
+    .baz-asg-fb-title{ font:800 16px var(--sa-sans); color:var(--sa-ink); letter-spacing:-.01em; }
+    .baz-asg-fb{ background:#E6F6F0; border:1px solid #BFE9D8; border-radius:13px; overflow:hidden; }
+    .baz-asg-fb-grade{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:18px 20px; border-bottom:1px solid #BFE9D8; }
+    .baz-asg-grade-val{ font:800 30px/1 var(--sa-sans); letter-spacing:-.03em; color:var(--sa-green); }
+    .baz-asg-grade-val .grade,.baz-asg-grade-val .rating{ font-size:inherit; }
+    .baz-asg-fb-meta{ font:600 12px/1.65 var(--sa-sans); color:#3f6a5b; }
+    .baz-asg-fb-meta b{ color:#14503b; }
+    .baz-asg-fb-line{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .baz-asg-fb-av{ border-radius:50%; vertical-align:middle; }
+    .baz-asg-fb-item{ padding:16px 20px; } .baz-asg-fb-item + .baz-asg-fb-item{ padding-top:0; }
+    .baz-asg-fb-h{ font:800 10px/1 var(--sa-mono); letter-spacing:.08em; text-transform:uppercase; color:#3f6a5b; margin-bottom:9px; }
+    .baz-asg-fb-c{ font-size:14px; line-height:1.6; color:var(--sa-ink); }
+    .baz-asg-fb-c a{ color:var(--sa-blue); }
+
+    /* Submit-for-grading confirmation. */
+    .baz-asg-confirm{ max-width:560px; margin:0 auto; text-align:center; padding:22px 18px; }
+    .baz-asg-confirm-ic{ width:56px; height:56px; margin:0 auto 16px; border-radius:15px; background:$bz-accent-bg; color:$bz-accent-lo; display:grid; place-items:center; }
+    .baz-asg-confirm-ic svg{ width:28px; height:28px; stroke:currentColor; fill:none; stroke-width:1.8; }
+    .baz-asg-confirm-h{ font:800 19px/1.2 var(--sa-sans); color:var(--sa-ink); margin:0 0 10px; }
+    .baz-asg-confirm-p{ color:var(--sa-muted); font-size:14px; line-height:1.6; margin:0 0 20px; }
+    .baz-asg-confirm .singlebutton,.baz-asg-confirm form{ display:inline-block; }
+
+    /* Edit-submission form chrome. */
+    .baz-asg-form{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; padding:8px 20px 20px; box-shadow:var(--sa-sh); }
+    .baz-asg-form .filemanager,.baz-asg-form .filepicker{ border-radius:12px; }
+    .baz-asg-form .fp-btn-add,.baz-asg-form .editor_atto_toolbar{ border-radius:8px; }
+
+    /* Action buttons (core user_submission_actionmenu / single buttons) — restyle
+       to bespoke without touching Moodle's submit/edit/remove logic. */
+    #region-main .container-fluid.mb-4 .row{ display:flex; flex-wrap:wrap; gap:10px; margin:0 0 8px; }
+    #region-main .container-fluid.mb-4 .row [class*="col-"]{ flex:0 0 auto; width:auto; max-width:none; margin:0; padding:0; }
+    #region-main .singlebutton{ display:inline-block; margin:0; }
+    #region-main .singlebutton .btn{ font:800 13px var(--sa-sans); border-radius:11px; padding:11px 18px; border:1.5px solid var(--sa-line); box-shadow:none; }
+    #region-main .singlebutton .btn-primary{ background:var(--sa-gaccent); border-color:transparent; color:$bz-accent-ink; }
+    #region-main .singlebutton .btn-primary:hover{ filter:brightness(1.03); color:$bz-accent-ink; }
+    #region-main .singlebutton .btn-secondary{ background:var(--sa-surface); color:var(--sa-navy); }
+    #region-main .singlebutton .btn-secondary:hover{ border-color:var(--sa-accent); color:var(--sa-navy); }
+}
+
+/* Dark-mode tweaks for the assignment card (theme-dark / sd-dark). */
+body.baz-student-activity.baz-mod-assign.theme-dark,
+body.baz-student-activity.baz-mod-assign.sd-dark {
+    .baz-asg{ background:var(--sa-surface); }
+    .baz-asg-cell{ background:var(--sa-surface); }
+    .baz-asg-blk-body,.baz-asg-fb-c{ color:var(--sa-ink); }
+}
+
+/* ==========================================================================
+   Bespoke forum SEARCH page (results + advanced form). pagelayout is
+   'standard', so page_init tags it with body.baz-forum-search for student-only
+   users. CSS-only restyle — core search markup/logic untouched.
+   ========================================================================== */
+body.baz-student-activity.baz-forum-search {
+    /* "Search results: N" heading + the Forums heading */
+    #region-main h3, #region-main .h3, #region-main h2.rui-main-content-title{ font:800 22px/1.25 var(--sa-sans); color:var(--sa-ink); letter-spacing:-.02em; margin:0 0 16px; }
+    .highlight{ background:rgba($bz-accent,.35); border-radius:3px; padding:0 2px; font-weight:700; color:inherit; }
+
+    /* ---- Result cards (theme forum_search_results override → .baz-fsr) ---- */
+    .baz-fsr-list{ display:flex; flex-direction:column; gap:11px; }
+    .baz-fsr{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:14px; padding:15px 17px; box-shadow:var(--sa-shsm); }
+    .baz-fsr:hover{ border-color:var(--sa-accent); }
+    .baz-fsr-crumb{ font:700 12px/1.5 var(--sa-mono); color:var(--sa-faint); margin-bottom:8px; }
+    .baz-fsr-crumb .breadcrumb, .baz-fsr-crumb ol{ display:flex; flex-wrap:wrap; gap:4px 6px; list-style:none; margin:0; padding:0; background:none; align-items:center; }
+    .baz-fsr-crumb a{ color:var(--sa-navy) !important; font-weight:800; text-decoration:none; }
+    .baz-fsr-crumb a:hover{ color:var(--sa-accent) !important; }
+    .baz-fsr-snip{ font-size:14px; line-height:1.6; color:var(--sa-ink); margin:0 0 12px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    .baz-fsr-snip p{ margin:0; }
+    .baz-fsr-foot{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:12.5px; color:var(--sa-muted); }
+    .baz-fsr-by{ color:var(--sa-muted); }
+    .baz-fsr-by a{ color:var(--sa-ink) !important; font-weight:700; text-decoration:none; }
+    .baz-fsr-by time{ color:var(--sa-faint); }
+    .baz-fsr-cta{ margin-left:auto; display:inline-flex; align-items:center; gap:6px; font:800 12px var(--sa-sans); color:var(--sa-navy) !important; text-decoration:none !important; white-space:nowrap; }
+    .baz-fsr-cta svg{ width:14px; height:14px; }
+    .baz-fsr-cta:hover{ color:var(--sa-accent) !important; }
+
+    /* ---- Grouped advanced form (theme big_search_form override → .baz-fs) ---- */
+    #searchform{ max-width:860px; }
+    .baz-fs{ background:var(--sa-surface); border:1px solid var(--sa-line); border-radius:16px; padding:8px 22px 20px; box-shadow:var(--sa-sh); }
+    .baz-fs-sec{ padding:18px 0; border-bottom:1px solid var(--sa-line); }
+    .baz-fs-sec:last-of-type{ border-bottom:0; }
+    .baz-fs-sec-h{ font:800 11px/1 var(--sa-mono); letter-spacing:.1em; text-transform:uppercase; color:var(--sa-muted); margin:0 0 14px; }
+    .baz-fs-field{ margin-bottom:13px; }
+    .baz-fs-field:last-child{ margin-bottom:0; }
+    .baz-fs-field label{ display:block; font:800 12.5px var(--sa-sans); color:var(--sa-ink); margin-bottom:6px; }
+    .baz-fs-row{ display:grid; grid-template-columns:1fr 1fr; gap:13px; }
+    @media(max-width:620px){ .baz-fs-row{ grid-template-columns:1fr; } }
+    .baz-fs-ctrl{ width:100%; box-sizing:border-box; border:1px solid var(--sa-line) !important; border-radius:10px !important; padding:10px 13px !important; font:600 14px var(--sa-sans); color:var(--sa-ink); background:var(--sa-surface); box-shadow:none !important; }
+    .baz-fs-ctrl:focus{ border-color:var(--sa-accent) !important; outline:none; }
+    select.baz-fs-ctrl[multiple]{ min-height:84px; }
+    .baz-fs-check{ display:flex; align-items:center; gap:10px; padding:11px 13px; border:1px solid var(--sa-line); border-radius:10px; background:var(--sa-ground); font:700 13.5px var(--sa-sans); color:var(--sa-ink); margin:0 0 4px; cursor:pointer; }
+    .baz-fs-check input{ width:18px; height:18px; flex:0 0 auto; }
+    .baz-fs-daterow{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+    .baz-fs-daterow .baz-fs-check{ margin:0; flex:0 0 auto; }
+    .baz-fs-dates{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+    .baz-fs-dates select{ border:1px solid var(--sa-line) !important; border-radius:9px !important; padding:8px 10px !important; font:600 13px var(--sa-sans); color:var(--sa-ink); background:var(--sa-surface); }
+    .baz-fs-dates fieldset, .baz-fs-dates .fdate_selector{ display:flex; gap:6px; align-items:center; border:0; margin:0; padding:0; }
+    .baz-fs-actions{ padding-top:18px; }
+    .baz-fs-btn{ background:var(--sa-gaccent) !important; border:0 !important; color:var(--sa-navy) !important; font-weight:800; border-radius:11px; padding:12px 22px; box-shadow:0 6px 16px rgba($bz-accent,.3); }
+}
+
+/* ==========================================================================
+   SCORM player full-screen toggle (theme_baz enhancement — ALL users).
+   The SCORM player uses the 'embedded' layout, so this is intentionally NOT
+   scoped to body.baz-student-activity. Button injected by theme_baz_scorm_
+   fullscreen_js(); :fullscreen pseudos kept in separate rules so a browser
+   that doesn't know :-webkit-full-screen doesn't drop the whole selector.
+   ========================================================================== */
+// The SCORM player's action row.
+//
+// scss/moodle/scorm.scss pins .rui-scorm-exit-btn with `position: fixed;
+// top: $navbar-height + 10px; right: 30px`. That was written for the classic
+// theme, where the player page was bare and pinning the bar to the viewport was
+// reasonable. Under either shell it lands ON the page header -- above the
+// eyebrow and the activity title. Undone here rather than edited there, so the
+// classic page keeps the behaviour it was designed with.
+//
+// !important is genuinely required, not defensive habit. Both selectors are a
+// single class, so specificity ties -- and moodle.scss imports
+// moodle/student-activity at line 43 but moodle/scorm at line 65, so the
+// original `position: fixed` is the LATER rule and wins the tie. The
+// alternative would be moving this block into scorm.scss below that rule; it
+// lives here instead to sit with the .baz-scorm-fs styles it works alongside.
+.baz-scorm-exitbar-inflow {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    z-index: auto !important;
+    margin-bottom: 0 !important;
+}
+
+// aiplacement_courseassist renders Summarise as a plain block; making it a row
+// lets the exit bar sit beside it. margin-left:auto on the bar pushes it right,
+// so the row reads: Summarise ... [Full screen][Exit activity] -- the bar is
+// flex-row-reverse internally, which is what puts Exit activity outermost.
+.baz-scorm-actionrow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    > .rui-scorm-exit-btn {
+        margin-left: auto;
+    }
+}
+
+// Two states, because the button lives in two places -- see the placement notes
+// in theme_baz_scorm_fullscreen_js(). Windowed it is an ordinary control in
+// core's exit bar; fullscreen it floats over the SCO, where there is no bar to
+// sit in and nothing to collide with.
+.baz-scorm-fs {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba($bz-navy, .9); color: #fff; border: 0; border-radius: 10px;
+    padding: 9px 14px; font: 800 12.5px 'Manrope', 'Inter', system-ui, sans-serif;
+    cursor: pointer;
+}
+// The row is flex-row-reverse and this button is its SECOND child, so it renders
+// immediately left of "Exit activity" -- which means its physical RIGHT edge is
+// the one facing it, and that is where the gap belongs.
+.baz-scorm-fs:not(.baz-scorm-fs--overlay) { margin-right: 10px; }
+.baz-scorm-fs--overlay {
+    position: absolute; top: 12px; right: 12px; z-index: 5;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .25); backdrop-filter: blur(4px);
+}
+.baz-scorm-fs svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+.baz-scorm-fs:hover { background: $bz-accent; color: $bz-navy; }
+#scorm_content:fullscreen { background: #000; }
+#scorm_content:-webkit-full-screen { background: #000; }
+
+// Entering fullscreen fires a resize, and SCORM's own scorm_toggle_toc(true)
+// (mod/scorm/module.js) reads the now-screen-sized winWidth, decides the table
+// of contents should be visible, and swaps #scorm_content from yui3-u-1 (100%)
+// to yui3-u-3-4 (75%) -- on the very element that IS the fullscreen element.
+// The result is the SCO pushed right with a quarter of the screen dead, holding
+// space for a TOC that is not rendered because it is outside the fullscreen
+// element.
+//
+// !important is warranted: this overrides a YUI grid class that SCORM's handler
+// re-applies on every resize, so specificity alone does not hold. Scoped to
+// :fullscreen, so the windowed layout and the TOC toggle are untouched.
+#scorm_content:fullscreen,
+#scorm_content:-webkit-full-screen {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+}
+#scorm_content:fullscreen #scorm_object { width: 100vw !important; height: 100vh !important; }
+#scorm_content:-webkit-full-screen #scorm_object { width: 100vw !important; height: 100vh !important; }

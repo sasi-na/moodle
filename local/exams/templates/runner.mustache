@@ -1,0 +1,147 @@
+{{!
+    @template local_exams/runner
+
+    Client-side exam runner: a full-screen 3-zone "command center" (live stats |
+    question | palette+webcam) with a pre-exam system check. Charts/behaviour are
+    driven by local_exams/runner; proctoring (if enabled) by quizaccess_proctor.
+}}
+<div class="exui exui-light" id="local-exams-runner" {{#proctor}}data-proctor="1"{{/proctor}}>
+  <div class="exui-root exui-runner">
+
+    {{! ============================ LAUNCH / SYSTEM CHECK ============================ }}
+    <div data-region="launch" class="exui-runner-launch">
+      <div class="exui-card exui-launch-card">
+        <h1>{{quizname}}</h1>
+        <p class="exui-sub">{{instructions}}</p>
+
+        <div class="exui-launch-grid">
+          <div>
+            <ul class="exui-checklist" data-region="checklist">
+              <li data-check="browser"><span class="ck-ic">○</span> System &amp; browser <span class="ck-st" data-region="check-browser">checking…</span></li>
+              {{#proctor}}
+                <li data-check="camera"><span class="ck-ic">○</span> Camera access <span class="ck-st" data-region="check-camera">—</span></li>
+                <li data-check="identity"><span class="ck-ic">○</span> Identity photo <span class="ck-st" data-region="check-identity">—</span></li>
+                {{#wantmic}}<li data-check="mic"><span class="ck-ic">○</span> Microphone <span class="ck-st" data-region="check-mic">—</span></li>{{/wantmic}}
+                {{#wantscreen}}<li data-check="screen"><span class="ck-ic">○</span> Screen share <span class="ck-st" data-region="check-screen">—</span></li>{{/wantscreen}}
+              {{/proctor}}
+              <li data-check="connection"><span class="ck-ic">○</span> Connection <span class="ck-st" data-region="check-connection">—</span></li>
+            </ul>
+            <div class="exui-launch-actions">
+              {{#proctor}}<button type="button" class="exui-btn" data-action="runchecks">Run system check</button>{{/proctor}}
+              <button type="button" class="exui-btn exui-btn-primary" data-action="start" data-region="startbtn" {{#proctor}}disabled{{/proctor}}>{{#str}}runner_launch, local_exams{{/str}}</button>
+            </div>
+            <p class="exui-sub" data-region="launch-msg"></p>
+          </div>
+
+          {{#proctor}}
+          <div class="exui-launch-preview">
+            <video data-region="id-preview" autoplay muted playsinline></video>
+            <button type="button" class="exui-btn" data-action="capture-id" data-region="capturebtn" disabled>Capture identity photo</button>
+          </div>
+          {{/proctor}}
+        </div>
+      </div>
+    </div>
+
+    {{! ============================ EXAM (3-zone) ============================ }}
+    <div data-region="exam" class="exui-runner-exam" style="display:none;">
+
+      <div class="exui-runner-header">
+        <div class="hdr-left">
+          <div class="hdr-title">{{quizname}}</div>
+          <div class="exui-sub" data-region="qposition">Question 1 of {{numquestions}}</div>
+        </div>
+        <div class="hdr-progress"><div class="exui-progress"><div class="exui-progress-fill" data-region="hprogress-fill"></div></div></div>
+        <div class="hdr-right">
+          <div class="exui-ring exui-timer-ring" data-region="timer">
+            <svg viewBox="0 0 100 100"><circle class="exui-ring-bg" cx="50" cy="50" r="44"></circle>
+              <circle class="exui-ring-fg" cx="50" cy="50" r="44" data-region="timer-fg"></circle></svg>
+            <div class="exui-ring-text"><span class="v" data-region="timer-text">--:--</span></div>
+          </div>
+          {{#proctor}}<span class="exui-badge exui-badge-danger" data-region="status-cluster">● proctored</span>{{/proctor}}
+          <button type="button" class="exui-btn exui-icon-btn" data-action="font-dec" title="Smaller text">A−</button>
+          <button type="button" class="exui-btn exui-icon-btn" data-action="font-inc" title="Larger text">A+</button>
+          <button type="button" class="exui-btn exui-icon-btn" data-action="contrast" title="High contrast">◑</button>
+          <button type="button" class="exui-btn exui-btn-primary" data-action="open-summary">{{#str}}runner_submit, local_exams{{/str}}</button>
+        </div>
+      </div>
+
+      <div class="exui-runner-grid">
+
+        <aside class="exui-rail exui-rail-left">
+          <div class="exui-card">
+            <p class="exui-card-title">Progress</p>
+            <div class="exui-progress big"><div class="exui-progress-fill" data-region="progressbar-fill"></div></div>
+            <div class="exui-stat-rows">
+              <div><b data-region="stat-answered">0</b><small>Answered</small></div>
+              <div><b data-region="stat-remaining">{{numquestions}}</b><small>Remaining</small></div>
+              <div><b data-region="stat-marked">0</b><small>Marked</small></div>
+            </div>
+          </div>
+          <div class="exui-card">
+            <p class="exui-card-title">Pace</p>
+            <div class="exui-pace" data-region="stat-pace">—</div>
+            <div class="exui-stat-mini">Avg / question <b data-region="stat-avg">—</b></div>
+            <div class="exui-stat-mini">This question <b data-region="stat-thisq">0:00</b></div>
+          </div>
+        </aside>
+
+        <main class="exui-runner-center">
+          <form id="local-exams-runnerform" onsubmit="return false;">
+            {{#questions}}
+              <div class="exui-card local-exams-qpanel" data-slot="{{slot}}" data-index="{{index}}" style="{{^first}}display:none;{{/first}}">
+                <div class="exui-qhead">Question {{number}}</div>
+                {{{html}}}
+              </div>
+            {{/questions}}
+          </form>
+          <div class="exui-runner-nav">
+            <button type="button" class="exui-btn" data-action="prev">← Previous</button>
+            <div class="exui-runner-nav-mid">
+              <button type="button" class="exui-btn" data-action="toggle-review">⚑ Mark for review</button>
+              <button type="button" class="exui-btn" data-action="clear">Clear response</button>
+            </div>
+            <button type="button" class="exui-btn" data-action="next">Next →</button>
+          </div>
+        </main>
+
+        <aside class="exui-rail exui-rail-right">
+          <div class="exui-card">
+            <p class="exui-card-title">Questions</p>
+            <div class="exui-palette" data-region="palette"></div>
+            <div class="exui-legend">
+              <span><i class="lg lg-ans"></i>Answered</span>
+              <span><i class="lg lg-rev"></i>Marked</span>
+              <span><i class="lg lg-cur"></i>Current</span>
+            </div>
+          </div>
+          {{#proctor}}
+          <div class="exui-card exui-webcam-card">
+            <p class="exui-card-title">Proctoring active</p>
+            <video class="exui-webcam" data-region="webcam" autoplay muted playsinline></video>
+          </div>
+          {{/proctor}}
+          <div class="exui-card"><div class="exui-save" data-region="savestatus">Saved ✓</div></div>
+        </aside>
+
+      </div>
+    </div>
+
+    {{! ============================ SUMMARY ============================ }}
+    <div data-region="summary" class="exui-card exui-runner-modal" style="display:none;">
+      <h2>{{#str}}runner_submit, local_exams{{/str}}</h2>
+      <p data-region="summary-text"></p>
+      <div class="exui-runner-modal-actions">
+        <button type="button" class="exui-btn" data-action="close-summary">Back to exam</button>
+        <button type="button" class="exui-btn exui-btn-primary" data-action="submit">{{#str}}runner_submit, local_exams{{/str}}</button>
+      </div>
+    </div>
+
+    {{! ============================ SUBMITTED ============================ }}
+    <div data-region="submitted" class="exui-card exui-runner-modal" style="display:none;">
+      <div class="exui-empty">{{#str}}runner_submitted, local_exams{{/str}}</div>
+    </div>
+
+    <script type="application/json" id="local-exams-data">{{{datajson}}}</script>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ludilearn/components/section
+
+    Example context (json):
+    {
+           "jsonstate": "[]",
+        "id": 7,
+        "type": "course",
+        "sectionid": 3
+    }
+}}
+{{#js}}
+    require([
+    'format_ludilearn/local/reactive',
+    'format_ludilearn/local/{{type}}/section',
+    ], function(reactive, component) {
+
+        // Initialize state before component init.
+        const jsonstate = {{{jsonstate}}}{{^jsonstate}}[]{{/jsonstate}};
+        const stateManager = reactive.ludilearn.getStateManager();
+        stateManager.setReadOnly(false);
+        stateManager.processUpdates(jsonstate);
+        stateManager.setReadOnly(true);
+
+        // Data to pass to the component.
+        const data = {
+            sectionid: {{id}}{{^id}}0{{/id}}
+        };
+        component.init('ludilearn-{{type}}-section', reactive.ludilearn, data);
+    });
+{{/js}}

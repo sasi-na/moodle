@@ -1,0 +1,65 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * TODO describe module repository
+ *
+ * @module     aiprovider_datacurso/repository
+ * @copyright  2025 Wilber Narvaez <wilber@buendata.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+import Ajax from 'core/ajax';
+
+/**
+ * Get users for filtering.
+ * @param {string} search - Search query.
+ */
+export function getUsers(search = '') {
+    return Ajax.call([{
+        methodname: 'aiprovider_datacurso_get_users',
+        args: { search: search }
+    }])[0];
+}
+
+/**
+ * Autocomplete transport for users.
+ * @param {string} selector
+ * @param {string} query
+ * @param {function} success
+ * @param {function} failure
+ */
+export function transport(selector, query, success, failure) {
+    getUsers(query).then(success).catch(failure);
+}
+
+/**
+ * Autocomplete process results for users.
+ * @param {string} selector
+ * @param {Object|Array} response
+ * @returns {Array}
+ */
+export function processResults(selector, response) {
+    let users = [];
+    if (Array.isArray(response)) {
+        users = response;
+    } else if (response && response.status === 'success' && response.users) {
+        users = response.users;
+    }
+
+    return users.map(user => ({
+        value: user.id,
+        label: user.fullname
+    }));
+}

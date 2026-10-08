@@ -1,0 +1,65 @@
+# learn.nitk.edu.in -- namespace nitk-prod, cluster usdc-prod-cluster-1
+#
+# STATUS: scaffold. NOT applied, and not yet applyable -- the REPLACE_ME values
+# below are blocked on decisions listed in deploy/README.md ("Before nitk-prod
+# can be applied"). Rendering works; applying as-is would create a Deployment
+# that cannot reach a database.
+#
+# The point of this overlay: nitk runs the SAME image as jain, off the same
+# `main`. Contrast with the existing sharda tenant, which runs its own
+# `sharda-moodle-prod:*` image built from a forked copy of this codebase -- the
+# pattern this restructure exists to stop repeating.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: nitk-prod
+
+resources:
+  - ../../base
+  - namespace.yaml
+  - nfs-pv.yaml
+  - nfs-pvc.yaml
+
+patches:
+  - path: patch-deployment-env.yaml
+  - path: patch-cronjob-env.yaml
+  - path: patch-scale.yaml
+  - path: patch-hpa.yaml
+
+# Merges nitk's moodle_config.php into the moodle-config ConfigMap that base
+# generates. The other six keys come from base unchanged.
+configMapGenerator:
+  - name: moodle-config
+    behavior: merge
+    files:
+      - config/moodle_config.php
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+# Same image as jain-prod, deliberately. A shared image is what makes "push once,
+# deploys everywhere" real.
+#
+# newTag is only a default: the deploy job runs `kustomize edit set image` with
+# the freshly built commit sha before applying, so this value is what a manual
+# `kubectl apply -k` would use, not what CI deploys.
+images:
+  - name: moodle-lms
+    newName: asia-south1-docker.pkg.dev/org-dev-infra/services/moodle-lms
+    newTag: 207dc5fd
+
+# Routing is NOT here. Every HTTPRoute in this cluster -- all eleven, across
+# eight namespaces and services well beyond Moodle -- belongs to the single
+# `gateway-api` Helm release in the `default` namespace. nitk's route is
+# requested there, not defined here. See "Routing ownership" in
+# deploy/README.md, which carries the exact spec to add.
+#
+# Not included, mirroring jain-prod:
+#   ConfigMap moodle-config -- nitk needs its own config.php (wwwroot, dbname,
+#     and a distinct $CFG->session_redis_prefix / cache_redis_prefix so it cannot
+#     collide with another tenant in Redis). Authored in step 1b alongside the
+#     jain reconcile, so both tenants get the same treatment.
+#   Secret moodle-secrets -- must be created out of band. Do NOT commit nitk
+#     credentials to git; that mistake already exists for jain and is not worth
+#     duplicating.
+#   CronJobs -- pending the secretKeyRef refactor.

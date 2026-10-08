@@ -1,0 +1,36 @@
+apiVersion: networking.gke.io/v1
+kind: GCPBackendPolicy
+metadata:
+  name: moodle-backend-policy
+spec:
+  default:
+    timeoutSec: 3600
+    # Load-balancer request logging. Off until now, which meant there was no history to
+    # look at when someone reported the site was slow -- every measurement had to come
+    # from php-fpm slowlogs and hand-run curls.
+    #
+    # What this adds over the nginx logs we already have: requests that never reach a pod.
+    # A `502 failed_to_pick_backend` is invisible to nginx because nginx never sees it, and
+    # LB-side latency includes queuing the pod cannot observe either.
+    #
+    # sampleRate is per-million, so this is 100%. Deliberate: sampling drops random
+    # individual requests, and a failure you did not capture is the one you needed. Volume
+    # is controlled at ingestion instead, by an exclusion on the project's _Default sink
+    # named `jain-prod-lb-success-fast`, which drops anything that both succeeded and
+    # finished in under 10s. What is retained is status >= 400 plus anything >= 10s.
+    #
+    # THE EXCLUSION IS NOT IN THIS REPO -- it is a project-level Cloud Logging object,
+    # applied 2026-08-12. If it is ever removed, this setting starts logging ~2.03M
+    # requests/day (~1.94 GiB/day, roughly $29/month) instead of ~41k/day (~$0.58/month).
+    # Check it before assuming the bill is wrong:
+    #   gcloud logging sinks describe _Default --project=org-dev-infra
+    #
+    # Logs land in the _Default bucket, log name projects/org-dev-infra/logs/requests,
+    # retention 30 days (bucket is unlocked, so that can be raised if needed).
+    logging:
+      enabled: true
+      sampleRate: 1000000
+  targetRef:
+    group: ""
+    kind: Service
+    name: moodle-service

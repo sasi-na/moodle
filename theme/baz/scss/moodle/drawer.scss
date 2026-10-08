@@ -1,0 +1,870 @@
+/* Anchor link offset fix. This makes hash links scroll 60px down to account for the fixed header. */
+:target::before {
+    content: " ";
+    display: block;
+    height: 60px;
+    /* fixed header height*/
+    margin-top: -60px;
+    /* negative fixed header height */
+    width: 1px;
+    pointer-events: none;
+}
+
+.pagelayout-embedded :target {
+    padding-top: initial;
+    margin-top: initial;
+}
+
+#nav-drawer.closed {
+    left: -($drawer-width + $drawer-offscreen-gutter);
+
+    @include media-breakpoint-between(xs, sm) {
+        left: -100%;
+    }
+}
+
+#nav-drawer[aria-hidden=true] .list-group-item {
+    display: none;
+}
+
+.drawer-toggle-icon-open,
+.drawer-toggle-icon-close {
+    opacity: 0;
+    display: none;
+
+    transition: $transition-base;
+}
+
+.sidebar-btn[aria-expanded="true"] {
+    .drawer-toggle-icon-open {
+        opacity: 1;
+        display: inline-flex;
+    }
+}
+
+.sidebar-btn[aria-expanded="false"] {
+    .drawer-toggle-icon-close {
+        opacity: 1;
+        display: inline-flex;
+    }
+}
+
+#nav-drawer {
+    position: fixed;
+    z-index: $zindex-fixed + 10;
+    width: $drawer-width;
+    top: 7px;
+    right: auto;
+    left: 7px;
+    height: calc(100% - 14px);
+
+    background-color: $drawer-bg;
+    border-radius: 9px;
+    transition: right 350ms ease, left 350ms ease;
+
+    @include media-breakpoint-down(md) {
+        top: 68px;
+        height: calc(100% - 74px);
+    }
+
+    @include media-breakpoint-between(xs, sm) {
+        width: calc(100% - 14px);
+    }
+
+    .theme-dark & {
+        background-color: $dm-gray-100; // todo: variable
+    }
+
+    .nav-drawer-container {
+        max-height: calc(100vh - 133px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 5px;
+        padding-right: 5px;
+        margin: 7px 3px 4px 7px;
+
+        @include thin-scrolls($drawer-scroll-bg-track);
+
+        .theme-dark & {
+            @include thin-scrolls($dm-drawer-scroll-bg-track);
+        }
+    }
+
+    .rui-drawer-footer {
+        background-color: $drawer-nav-box-bg;
+        width: 100%;
+        padding: 7px 10px 10px;
+        position: absolute;
+        bottom: 0;
+        border-radius: 0 0 9px 9px;
+    }
+
+    .rui-custom-sidebar-content {
+        a {
+            color: $drawer-link;
+
+            &:hover {
+                color: $drawer-link-h;
+            }
+        }
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        color: $drawer-text;
+    }
+}
+
+.rui-drawer-logo {
+    padding: 10px 16px;
+    margin: 20px 0 20px;
+}
+
+.nav-drawer-wrapper {
+    margin: 40px 0;
+}
+
+
+
+body.drawer-ease {
+    @include transition(margin-left 0.5s ease, margin-right 0.5s ease);
+}
+
+body:not(.uses-drawers).drawer-open-left {
+    @include media-breakpoint-up(md) {
+        margin-left: $drawer-left-width;
+    }
+}
+
+body.drawer-open-left #page.drawers {
+    @include media-breakpoint-up(md) {
+        margin-left: $drawer-left-width;
+        padding-left: 1rem;
+    }
+}
+
+$right-drawer-width: 320px;
+
+[data-region=right-hand-drawer] {
+    display: flex;
+    flex-direction: column;
+    transition: all 350ms ease-in-out;
+
+    &.drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: $right-drawer-width;
+        border-left: 1px solid $border-color;
+        padding: 0;
+        visibility: visible;
+        opacity: 1;
+
+        overflow: hidden;
+        z-index: 1301;
+
+        .theme-dark & {
+            border-color: $dm-border-color;
+        }
+    }
+
+    &.hidden {
+        display: block;
+        right: $right-drawer-width * -1;
+        // Turn off visibility so that nothing in the drawer can receive focus when
+        // it is hidden.
+        visibility: hidden;
+        opacity: 0;
+        // Delay visibility changes until after the slide right animation has completed.
+        @include transition(right 350ms ease-in-out, visibility 0s ease-in-out 350ms, opacity 0s ease-in-out 350ms);
+    }
+}
+
+@include media-breakpoint-between(xs, sm) {
+    [data-region=right-hand-drawer] {
+        .closewidget {
+            display: block;
+            padding: 0 0.2rem;
+        }
+    }
+}
+
+
+.message-drawer-backdrop {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1240;
+
+    background-color: rgba(#000, .6);
+
+    cursor: e-resize;
+
+    .layout.fullscreen & {
+        display: none;
+        z-index: -1;
+        height: calc(100vh - 60px);
+    }
+}
+
+.rui-flatnavigation {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.rui-flatnavigation-box {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid $border-color;
+}
+
+.rui-sidebar-nav-item {
+    margin-bottom: 2px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.rui-sidebar-nav-item-link {
+    padding: .35rem .65rem;
+
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    align-items: center;
+
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $drawer-nav-btn-text;
+    word-break: break-word;
+
+    background-color: transparent;
+    border: none;
+    border-radius: $btn-border-radius;
+
+    transition: color 350ms ease;
+
+    .rui-category-name {
+        margin-left: 35px;
+        font-size: $font-size-xs;
+        font-weight: $font-weight-normal;
+        color: $drawer-nav-btn-text;
+
+        .theme-dark & {
+            color: $dm-body-color-light;
+        }
+    }
+
+    .rui-sidebar-nav-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 30px;
+        height: 30px;
+        margin-right: 5px;
+        color: $drawer-nav-btn-icon;
+        opacity: $drawer-icon-opacity;
+
+        .theme-dark & {
+            color: $dm-body-color;
+        }
+
+        .rui-course-list-past & {
+            color: $green-600;
+        }
+    }
+
+    &.active,
+    &:hover {
+        border: none;
+        background-color: $drawer-nav-btn-bg-hover;
+        color: $drawer-nav-btn-text-hover;
+
+        text-decoration: none;
+
+        .theme-dark & {
+            background-color: $dm-gray-300;
+            color: $dm-body-color;
+        }
+
+        .rui-sidebar-nav-icon {
+            color: $drawer-nav-btn-text-hover;
+            opacity: $drawer-icon-opacity;
+
+            .theme-dark & {
+                color: $dm-body-color;
+            }
+        }
+    }
+
+}
+
+.rui-drawer-course-nav {
+    margin-bottom: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid $border-color;
+
+    .rui-sidebar-nav-item-link {
+        margin-bottom: 2px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        font-size: $font-size-xs;
+    }
+}
+
+.rui-sidebar-nav-item-link--sm {
+    font-size: $font-size-xs;
+}
+
+.rui-sidebar-nav-text,
+.rui-course-menu-list-text {
+    width: calc(100% - 35px);
+}
+
+.rui-course-menu-list-text {
+    font-size: $font-size-sm;
+    line-height: 1.3;
+    font-weight: $font-weight-bold;
+}
+
+.rui-sidebar-nav-text {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.rui-sidebar-mycourses {
+    margin: 0;
+    padding: 20px;
+    background-color: $drawer-nav-box-bg;
+    border-radius: $btn-border-radius;
+    overflow: hidden;
+}
+
+.rui-sidebar-hr {
+    margin: 0;
+    padding: 0;
+    display: block;
+    margin: 5px 0;
+    width: 100%;
+    height: 1px;
+
+    .theme-dark & {
+        background-color: $dm-border-color;
+    }
+}
+
+.rui-course-wrapper {
+    max-height: calc(100vh - 328px);
+    overflow-y: auto;
+
+    @include thin-scrolls($drawer-scroll-bg-track);
+
+    .theme-dark & {
+        @include thin-scrolls($dm-drawer-scroll-bg-track);
+    }
+}
+
+.rui-course-menu-list--more {
+    width: 100%;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+
+    margin: 0;
+    padding: .35rem 1rem;
+
+    border-radius: $btn-border-radius;
+
+    font-size: $font-size-xs;
+    color: $drawer-nav-btn-text-light;
+    text-align: right;
+
+    .theme-dark & {
+        color: $dm-body-color;
+    }
+
+    &:hover {
+        background-color: $drawer-nav-btn-bg-hover;
+        color: $drawer-nav-btn-text-hover;
+        text-decoration: none;
+
+        .theme-dark & {
+            background-color: $primary-color-600;
+            color: $primary-color-100;
+        }
+    }
+}
+
+.rui-drawer-nav-title {
+    padding: 0 12px;
+    font-size: 11px;
+    font-weight: $font-weight-medium;
+    text-transform: uppercase;
+    opacity: .6;
+}
+
+.rui-nav-item-container {
+    display: flex;
+    align-items: start;
+}
+
+.rui-nav-list-group {
+    font-size: $font-size-md;
+    font-weight: $font-weight-medium;
+    color: $drawer-nav-btn-text;
+
+    .theme-dark & {
+        color: $dm-body-color-secondary;
+    }
+}
+
+
+.nav-drawer-header {
+    position: sticky;
+    top: 0;
+    margin: -15px -15px 30px;
+    padding: $drawer-padding-x $drawer-padding-x 0 $drawer-padding-x;
+    z-index: $zindex-sticky;
+}
+
+.rui-custom-sidebar-content {
+    font-size: $font-size-md;
+    color: $drawer-nav-btn-text;
+
+    .theme-dark & {
+        color: $dm-body-color-light;
+    }
+}
+
+.btn-drawer {
+    position: fixed;
+    z-index: $zindex-fixed;
+    top: 90px;
+    left: 20px;
+
+    .format-tiles-tile-open & {
+        display: none;
+    }
+    
+    @include media-breakpoint-down(md) {
+        top: 152px;
+        left: 0;
+    }
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    width: 40px;
+    height: 40px;
+
+    background-color: $gray-900;
+    border: 1px solid $gray-900;
+    color: $gray-100;
+    border-radius: $btn-border-radius;
+
+    transition: $transition-base;
+
+    &:hover {
+        background-color: $primary-color-600;
+        border-color: $primary-color-600;
+        color: $primary-color-100;
+
+        .theme-dark & {
+            background-color: $primary-color-600;
+            border-color: $primary-color-600;
+            color: $primary-color-100;
+        }
+    }
+
+
+    @include media-breakpoint-between(xs, md) {
+        right: auto;
+    }
+
+    .theme-dark & {
+        background-color: $dm-gray-100;
+        border-color: $dm-gray-100;
+        color: $dm-body-color;
+    }
+}
+
+.btn-drawer--right {
+    left: auto !important;
+    right: 30px;
+}
+
+.rui-lang-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 40px;
+    width: max-content;
+    min-height: 40px;
+
+    border: none;
+    border-radius: $btn-border-radius;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+
+    background-color: $topbar-btn;
+    color: $topbar-btn-text;
+
+    .theme-dark & {
+        background-color: $dm-topbar-btn;
+        color: $dm-topbar-btn-text;
+    }
+
+    &:hover {
+        background-color: $topbar-btn-hover;
+        color: $topbar-btn-hover-text;
+
+        .theme-dark & {
+            background-color: $dm-topbar-btn-hover;
+            color: $dm-topbar-btn-hover-text;
+        }
+    }
+}
+
+@mixin drawer() {
+    background-color: $drawer-bg-color;
+    z-index: $zindex-modal;
+    position: fixed;
+
+    transition: all 150ms ease;
+
+    @include media-breakpoint-up(lg) {
+        height: calc(100vh - #{$navbar-height});
+    }
+
+    @include media-breakpoint-between(xs, md) {
+        height: calc(100vh - 20px);
+    }
+
+    .theme-dark & {
+        background-color: $dm-drawer-bg-color;
+    }
+
+    &.not-initialized {
+        display: none;
+    }
+}
+
+@mixin drawertypes() {
+    &.drawer-right {
+        background-color: $container-bg;
+        border-radius: $border-radius;
+        box-shadow: $box-shadow-lg;
+        z-index: 1301;
+
+        .theme-dark & {
+            background-color: $dm-container-bg;
+        }
+
+        @include media-breakpoint-up(lg) {
+            top: 10px;
+            height: calc(100vh - 20px);
+        }
+
+        @include media-breakpoint-between(xs, md) {
+            top: 10px;
+            border-radius: $btn-border-radius;
+        }
+
+        @include media-breakpoint-up(md) {
+            width: $drawer-right-width;
+        }
+
+        @include media-breakpoint-between(xs, sm) {
+            width: calc(100% - 20px);
+            max-width: 410px;
+        }
+
+        max-width: 100%;
+        right: calc(-#{$drawer-right-width} - 10px);
+        visibility: hidden;
+        @include box-shadow($box-shadow-drawer-right);
+
+        &.show {
+            right: 10px;
+            visibility: visible;
+
+            @include media-breakpoint-between(xs, md) {
+                right: 10px;
+            }
+        }
+
+        .drawertoggle {
+            margin-left: auto;
+            margin-right: 5px;
+        }
+    }
+
+    &.drawer-mycourses {
+        display: none;
+        position: fixed;
+        z-index: 1301;
+        padding-bottom: 15px;
+        top: 10px;
+        left: -400px;
+        max-height: calc(100vh - 20px);
+        height: fit-content;
+        border-radius: $border-radius;
+        background-color: $container-bg;
+        box-shadow: $box-shadow-lg;
+
+        .theme-dark & {
+            background-color: $dm-container-bg;
+        }
+
+        &.show {
+            left: 10px;
+            display: block;
+            visibility: visible;
+        }
+    }
+
+    &.drawer-left {
+        display: none;
+        width: $drawer-left-width;
+        max-width: $drawer-left-width;
+        left: calc(-#{$drawer-left-width} - 10px);
+        visibility: hidden;
+        @include box-shadow($box-shadow-drawer-left);
+        margin: 20px;
+        border-radius: $border-radius;
+        
+        height: max-content;
+        max-height: calc(100vh - 160px);
+
+        @include media-breakpoint-up(lg) {
+            position: sticky;
+            top: 140px;
+            z-index: 1;
+        }
+
+        @include media-breakpoint-between(xs, md) {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 9999;
+            margin: 10px;
+        }
+
+        &.show {
+            display: block;
+            visibility: visible;
+        }
+
+        .drawertoggle {
+            margin-right: auto;
+            margin-left: 5px;
+        }
+
+        .rui-course-progresschart {
+            width: 100%;
+        }
+    }
+
+    &.drawer-bottom {
+        bottom: -110%;
+
+        &.show {
+            bottom: 0;
+        }
+    }
+}
+
+.drawer {
+    @include drawer();
+    @include drawertypes();
+
+    &.message-drawer {
+
+        @include media-breakpoint-up(md) {
+            border-radius: $btn-border-radius;
+        }
+
+        right: 10px;
+    }
+}
+
+.btn-close-drawer--right {
+    width: 40px;
+    height: 40px;
+    box-sizing: border-box;
+    border: 0;
+    border-radius: $btn-border-radius;
+    background-color: $gray-900;
+    color: $gray-100;
+
+    &:hover {
+        background-color: $primary-color-600;
+    }
+
+    .theme-dark & {
+        background-color: $dm-gray-400;
+        color: $dm-gray-900;
+    }
+}
+
+.drawer-right,
+.drawer-left {
+    top: $navbar-height;
+
+    @include media-breakpoint-between(xs, md) {
+        box-shadow: $box-shadow-lg;
+    }
+}
+
+@include media-breakpoint-up(lg) {
+    .drawer {
+        z-index: 1230;
+
+        // Workaround to display the skip link elements from the blocks drawer infront of the navbar.
+        &#theme-drawers-blocks:focus-within {
+            position: absolute;
+
+            .drawercontent {
+                z-index: auto;
+            }
+        }
+
+        &.not-initialized {
+            display: block;
+        }
+    }
+}
+
+@include media-breakpoint-between(xs, sm) {
+    .drawer {
+        border-radius: 0;
+    }
+}
+
+
+.show-drawer-left #topofscroll {
+    display: flex;
+}
+
+#page-content {
+    .show-drawer-left & {
+        width: calc(100% - 400px);
+        margin-right: 60px;
+    }
+}
+
+
+#sidepreopen-control,
+#sidepreclose-control {
+    cursor: pointer;
+}
+
+#sidepreopen-control {
+    position: fixed;
+    z-index: $zindex-fixed;
+    top: 90px;
+    right: 20px;
+
+    @include media-breakpoint-down(md) {
+        top: 152px;
+        right: 0;
+    }
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+    width: 40px;
+    height: 40px;
+
+    .btn {
+        padding: 0;
+        border: 1px solid $topbar-btn;
+        background-color: $topbar-btn;
+        color: $topbar-btn-text;
+
+        transition: all ease 250ms;
+
+        .theme-dark & {
+            background-color: $dm-gray-100;
+            border-color: $dm-gray-100;
+            color: $dm-body-color;
+        }
+
+        &:hover {
+            background-color: $primary-color-600;
+            border-color: $primary-color-600;
+            color: $primary-color-100;
+
+            .theme-dark & {
+                background-color: $primary-color-600;
+                border-color: $primary-color-600;
+                color: $primary-color-100;
+            }
+        }
+    }
+
+}
+
+
+a.rui-course-list-past {
+    background-color: $green-100;
+    color: $green-600;
+
+    .mycourses-inprogress-on & {
+        display: none;
+    }
+
+    .theme-dark & {
+        background-color: $green-800;
+        color: $green-100;
+    }
+}
+
+.rui-course-list-hidden {
+    display: none;
+    opacity: .7;
+    filter: grayscale(1);
+
+    .mycourses-hidden-on & {
+        display: flex;
+    }
+}
+
+.rui-course-list-future {
+    .mycourses-inprogress-on & {
+        display: none;
+    }
+}
+
+.mycourses-filter {
+    label {
+        min-height: 20px;
+    }
+}
+
+.rui-sidebar-filter {
+    margin-bottom: 2px;
+    border: 1px solid rgba($drawer-text, .1);
+    border-radius: $btn-border-radius;
+
+    .theme-dark & {
+        border-color: rgba($dm-drawer-text, .1);
+    }
+}

@@ -1,0 +1,63 @@
+{{!
+    @template local_exams/faculty_dashboard
+
+    Faculty analytics: headline tiles, mean-score chart, and a list of exams
+    with cohort stats linking to per-exam analysis.
+}}
+<div class="exui exui-light" id="local-exams-faculty">
+  <div class="exui-root">
+    <div class="exui-header">
+      <div>
+        <h1>{{#str}}facultydashboard, local_exams{{/str}}</h1>
+        <div class="exui-sub">Cohort analytics &amp; item analysis</div>
+      </div>
+    </div>
+
+    {{^hasdata}}
+      <div class="exui-card"><div class="exui-empty">No exam data yet. Cohort analytics appear once students complete exams.</div></div>
+    {{/hasdata}}
+
+    {{#hasdata}}
+      <div class="exui-grid">
+        <div class="exui-col-3"><div class="exui-card exui-tile">
+          <div class="exui-tile-value">{{overall.examcount}}</div><div class="exui-tile-label">Exams with data</div>
+        </div></div>
+        <div class="exui-col-3"><div class="exui-card exui-tile">
+          <div class="exui-tile-value">{{overall.totalattempts}}</div><div class="exui-tile-label">Total attempts</div>
+        </div></div>
+        <div class="exui-col-3"><div class="exui-card exui-tile">
+          <div class="exui-tile-value">{{#haspct}}{{overall.avgpct}}%{{/haspct}}{{^haspct}}—{{/haspct}}</div><div class="exui-tile-label">Average score</div>
+        </div></div>
+        <div class="exui-col-3"><div class="exui-card exui-tile">
+          <div class="exui-tile-value">📊</div><div class="exui-tile-label">Item analysis ready</div>
+        </div></div>
+
+        <div class="exui-col-12"><div class="exui-card">
+          <p class="exui-card-title">Average score by exam</p>
+          <div class="exui-chart"><canvas id="exui-means"></canvas></div>
+        </div></div>
+
+        <div class="exui-col-12"><div class="exui-card">
+          <p class="exui-card-title">Exams</p>
+          <table class="exui-table">
+            <thead><tr><th>Exam</th><th>Course</th><th class="num">Attempts</th><th class="num">Mean</th><th class="num">Top</th><th></th></tr></thead>
+            <tbody>
+              {{#exams}}
+                <tr>
+                  <td>{{quizname}}</td>
+                  <td>{{coursename}}</td>
+                  <td class="num">{{attempts}}</td>
+                  <td class="num">{{meanpctlabel}}</td>
+                  <td class="num">{{#max}}{{max}}{{/max}}{{^max}}—{{/max}}</td>
+                  <td><a class="exui-btn" href="{{analysisurl}}">Analyse</a></td>
+                </tr>
+              {{/exams}}
+            </tbody>
+          </table>
+        </div></div>
+      </div>
+    {{/hasdata}}
+
+    <script type="application/json" id="local-exams-data">{{{datajson}}}</script>
+  </div>
+</div>

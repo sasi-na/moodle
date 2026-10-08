@@ -1,0 +1,161 @@
+# Percona XtraDB Cluster for nitk-prod.
+#
+# NOT part of the kustomize tree, deliberately. Every existing tenant's database
+# is a Helm release of the `pxc-db` chart (jo-moodle-prod, sharda-moodle-prod,
+# learn-usdc-prod, global-jain-prod all run pxc-db-1.20.0), and the Percona
+# operator owns the CR lifecycle. Hand-writing the CR in kustomize would fight
+# both the operator and the house convention.
+#
+# Values mirror jain's live cluster, with the storage and backup destination
+# changed so nitk shares nothing with jain.
+#
+#   helm install mysql-db percona/pxc-db \
+#     -n nitk-prod --create-namespace \
+#     --version 1.20.0 \
+#     -f deploy/nitk-pxc-values.yaml
+#
+# Gives the in-namespace service `mysql-db-pxc-db-haproxy`, which is what
+# overlays/nitk-prod/patch-deployment-env.yaml points at.
+#
+# PRE-REQUISITE: create the S3 credentials Secret `nitk-moodle-s3-credentials`
+# in nitk-prod first, or the backup config will not reconcile.
+
+crVersion: 1.20.0
+enableCRValidationWebhook: false
+
+# Required for a single-node cluster. Without these the operator refuses to
+# reconcile at all:
+#
+#   PXC size must be at least 3. Set spec.unsafeFlags.pxcSize to true
+#
+# and the CR sits in `error` with no pods -- which is what happened on the first
+# install attempt.
+#
+# Matches jain and sharda exactly; both run size 1 with these same three flags.
+#
+# The name is honest: size 1 is a "cluster" with no quorum and no redundancy.
+# Losing the node loses the database until it is restored, so durability rests
+# entirely on the S3 backups and PITR configured below. That is the existing
+# house tradeoff, not a new one introduced here -- but it is worth revisiting
+# for a tenant expected to carry real load.
+unsafeFlags:
+  pxcSize: true
+  proxySize: true
+  backupIfUnhealthy: true
+
+pxc:
+  size: 1
+  # Matches jain. Revisit before nitk carries real load -- size 1 is a
+  # single-node "cluster" with no in-cluster redundancy; durability rests
+  # entirely on the backups configured below.
+  resources:
+    requests:
+      memory: "8Gi"
+      cpu: "2"
+  persistence:
+    enabled: true
+    storageClass: pd-ssd-retain-v1
+    size: 100Gi
+  # Tolerate a transient memory-pressure taint. jain gained this on 2026-08-14
+  # after such a taint stranded its database: with size 1 there is exactly one
+  # node that can host the pod, so a NoSchedule taint appearing on it is an
+  # outage that does not self-resolve. nitk has the same single-node shape.
+  #
+  # UNLIKE the backup nodeSelector above, this IS a pod-template change:
+  # updateStrategy is SmartUpdate, so the operator deletes and recreates the
+  # database pod as soon as it reconciles -- roughly a 3-minute outage for this
+  # tenant. Applying this file is therefore a planned-outage operation.
+  tolerations:
+    - key: node.kubernetes.io/memory-pressure
+      operator: Exists
+      effect: NoSchedule
+
+haproxy:
+  enabled: true
+  size: 1
+  image: percona/haproxy:2.8.18-1
+  affinity:
+    antiAffinityTopologyKey: kubernetes.io/hostname
+  podDisruptionBudget:
+    maxUnavailable: 1
+  resources:
+    requests:
+      cpu: 200m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  # Pin to on-demand. IIITD's haproxy was preempted on a spot node on 2026-09-08
+  # and the site returned 500 until it rescheduled; at the time IIITD's DATABASE
+  # pod was on spot too. With pxc.size=1 there is no second node to fail over to,
+  # so a preemption is an outage, not a blip.
+  #
+  # ⚠️ This is a POD-TEMPLATE change. updateStrategy is SmartUpdate, so the
+  # operator deletes and recreates the pod on reconcile -- measured at ~2 minutes
+  # with ~80s of 500s on IIITD. Applying this file is a PLANNED-OUTAGE operation,
+  # same caveat as the tolerations block above.
+  nodeSelector:
+    pool-type: ondemand
+backup:
+  # backup.image is deliberately NOT overridden.
+  #
+  # The chart wants a MAP here (repository + tag), not the "repo:tag" string the
+  # PerconaXtraDBCluster CR uses. This file was originally written by reading
+  # jain's live CR, so it carried the CR's shape and the install failed with:
+  #
+  #   cannot overwrite table with non table for pxc-db.backup.image
+  #   can't evaluate field repository in type interface {}
+  #
+  # The chart default is already percona/percona-xtrabackup:8.4.0-5.1 -- exactly
+  # what jain runs -- so the override bought nothing. Dropping it is safer than
+  # restating it in the other shape.
+  #
+  # haproxy.image above IS a plain string; the chart is inconsistent between the
+  # two. Check `helm show values percona/pxc-db --version 1.20.0` before adding
+  # any further image override.
+  runningDeadlineSeconds: 1200
+  storages:
+    s3-primary:
+      type: s3
+      verifyTLS: true
+      # Keep the backup jobs and the PITR collector OFF spot.
+      #
+      # Nothing pinned them, so they ran on n2d-s16-spot -- confirmed live on
+      # 2026-09-01, when spot preemption of the *Moodle* cron pods froze all adhoc
+      # task processing for 18 hours. A preempted xtrabackup job is a failed
+      # backup, and with pxc.size=1 the S3 backups plus PITR are the only
+      # durability this cluster has.
+      #
+      # Applies to backup.* only, so it does not touch the pxc pod template and
+      # cannot restart the database; it rolls the PITR collector (verified on
+      # jain the same day, pxc-0 restart count stayed 0).
+      #
+      # `pool-type` rather than cloud.google.com/gke-nodepool, matching pxc.affinity
+      # and surviving a pool rename.
+      nodeSelector:
+        pool-type: ondemand
+      s3:
+        # Distinct prefix from jain's mysql-backups/jain-online.
+        bucket: usdc-prod-backup-vault/mysql-backups/nitk
+        credentialsSecret: nitk-moodle-s3-credentials
+        region: ap-south-1
+  schedule:
+    - name: daily-backup
+      schedule: "0 1 * * *"
+      keep: 14
+      storageName: s3-primary
+  pitr:
+    enabled: true
+    storageName: s3-primary
+    timeBetweenUploads: 60
+    timeoutSeconds: 60
+
+# After the cluster is ready, create the Moodle schema and user:
+#
+#   CREATE DATABASE nitkdb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+#   CREATE USER 'nitkuser'@'%' IDENTIFIED BY '<from moodle-secrets>';
+#   GRANT ALL PRIVILEGES ON nitkdb.* TO 'nitkuser'@'%';
+#   FLUSH PRIVILEGES;
+#
+# The password must match the `database-password` key of the `moodle-secrets`
+# Secret in nitk-prod.

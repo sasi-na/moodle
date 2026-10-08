@@ -1,0 +1,61 @@
+{{!
+    @template local_helpdesk/mytickets
+
+    A student's ticket list.
+
+    Example context (json):
+    {
+        "hasany": true, "hasopen": true, "hasclosed": false,
+        "raiseurl": "/local/helpdesk/raise.php",
+        "open": [{"reference": "TKT-00001", "subject": "Video", "status": "Open",
+                  "category": "Technical", "urgency": "ok", "timeleft": "Response due in 5 hours", "hastimeleft": true,
+                  "created": "1 Jan, 10:00", "url": "#", "isbreached": false}],
+        "closed": []
+    }
+}}
+<div class="hd-page">
+    <div class="hd-head">
+        <h2 class="hd-title">{{#str}}mytickets, local_helpdesk{{/str}}</h2>
+        <a class="hd-btn" href="{{raiseurl}}">{{#str}}raisetitle, local_helpdesk{{/str}}</a>
+    </div>
+
+    {{^hasany}}
+    <div class="hd-card hd-empty">
+        <p>{{#str}}noticketsyet, local_helpdesk{{/str}}</p>
+        <a class="hd-btn" href="{{raiseurl}}">{{#str}}raisetitle, local_helpdesk{{/str}}</a>
+    </div>
+    {{/hasany}}
+
+    {{#hasopen}}
+    <h3 class="hd-h3">{{#str}}openTickets, local_helpdesk{{/str}}</h3>
+    <ul class="hd-list">
+        {{#open}}
+        <li class="hd-row">
+            <a class="hd-row-main" href="{{url}}">
+                <span class="hd-ref">{{reference}}</span>
+                <span class="hd-subject">{{subject}}</span>
+                <span class="hd-meta">{{category}} · {{#str}}raisedon, local_helpdesk, {{created}}{{/str}}</span>
+            </a>
+            <span class="hd-state hd-{{urgency}}">{{status}}</span>
+            {{#hastimeleft}}<span class="hd-left {{#isbreached}}hd-breached{{/isbreached}}">{{timeleft}}</span>{{/hastimeleft}}
+        </li>
+        {{/open}}
+    </ul>
+    {{/hasopen}}
+
+    {{#hasclosed}}
+    <h3 class="hd-h3">{{#str}}closedtickets, local_helpdesk{{/str}}</h3>
+    <ul class="hd-list hd-muted">
+        {{#closed}}
+        <li class="hd-row">
+            <a class="hd-row-main" href="{{url}}">
+                <span class="hd-ref">{{reference}}</span>
+                <span class="hd-subject">{{subject}}</span>
+                <span class="hd-meta">{{category}} · {{#str}}raisedon, local_helpdesk, {{created}}{{/str}}</span>
+            </a>
+            <span class="hd-state">{{status}}</span>
+        </li>
+        {{/closed}}
+    </ul>
+    {{/hasclosed}}
+</div>

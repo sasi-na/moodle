@@ -1,0 +1,134 @@
+{{!
+    @template local_candidature/queue
+
+    The review queue. One decision per row, taken inline.
+
+    Example context (json):
+    {
+        "tabs": [{"label": "Pending", "url": "#", "active": true, "count": 3}],
+        "rows": [{"id": 1, "name": "Asha R", "email": "a@example.com", "programme": "MCA",
+                  "submitted": "1 Sep, 09:14", "waiting": "2 hours", "status": "Pending",
+                  "ispending": true, "overdue": false, "candecide": true, "profileurl": "#"}],
+        "hasrows": true, "actionurl": "#", "sesskey": "x", "slahours": 48, "sitewide": true
+    }
+}}
+<div class="lc-queue">
+<style>
+.lc-queue{--lc-line:#dde3ef;--lc-muted:#5a6680;--lc-faint:#8590a6;--lc-surface:#fff;
+    --lc-surface2:#f6f8fc;--lc-text:#131e36;--lc-ok:#2e7d5b;--lc-warn:#b26a00;--lc-no:#ae3f2f}
+@media (prefers-color-scheme:dark){.lc-queue{--lc-line:#26324d;--lc-muted:#9aa6bf;
+    --lc-faint:#71809c;--lc-surface:#151f35;--lc-surface2:#1b2740;--lc-text:#e9edf5;
+    --lc-ok:#5fbe92;--lc-warn:#e0a040;--lc-no:#e0796a}}
+.lc-queue{color:var(--lc-text)}
+.lc-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.lc-tab{padding:7px 13px;border-radius:8px;border:1px solid var(--lc-line);
+    text-decoration:none;color:var(--lc-muted);font-size:13.5px}
+.lc-tab.on{background:var(--lc-surface2);color:var(--lc-text);font-weight:600;border-color:var(--lc-faint)}
+.lc-tab .n{font-family:ui-monospace,monospace;font-size:12px;opacity:.75;margin-left:5px}
+.lc-note{font-size:13px;color:var(--lc-faint);margin-bottom:12px}
+.lc-wrap{overflow-x:auto;background:var(--lc-surface);border:1px solid var(--lc-line);border-radius:10px}
+.lc-queue table{width:100%;border-collapse:collapse;font-size:13.5px;margin:0}
+.lc-queue th,.lc-queue td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--lc-line);
+    color:var(--lc-text);vertical-align:top}
+.lc-queue th{font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--lc-faint);
+    font-weight:600;white-space:nowrap}
+.lc-queue tbody tr:last-child td{border-bottom:none}
+.lc-em{font-size:12.5px;color:var(--lc-muted);display:block}
+.lc-pill{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;
+    padding:2px 7px;border-radius:4px;white-space:nowrap}
+.lc-pill.p{background:rgba(178,106,0,.14);color:var(--lc-warn)}
+.lc-pill.a{background:rgba(46,125,91,.14);color:var(--lc-ok)}
+.lc-pill.r{background:rgba(174,63,47,.14);color:var(--lc-no)}
+.lc-late{color:var(--lc-no);font-weight:600}
+.lc-act{display:flex;gap:6px;flex-wrap:wrap}
+.lc-act form{margin:0}
+.lc-reason{width:150px;font-size:12.5px;padding:4px 6px;border:1px solid var(--lc-line);
+    border-radius:6px;background:var(--lc-surface);color:var(--lc-text)}
+.lc-empty{padding:34px;text-align:center;color:var(--lc-muted)}
+</style>
+
+    <nav class="lc-tabs">
+        {{#tabs}}
+        <a class="lc-tab {{#active}}on{{/active}}" href="{{url}}">{{label}}<span class="n">{{count}}</span></a>
+        {{/tabs}}
+    </nav>
+
+    <p class="lc-note">{{#str}}queue_note, local_candidature, {{slahours}}{{/str}}</p>
+
+    {{^hasrows}}
+        <div class="lc-wrap"><div class="lc-empty">{{#str}}queue_empty, local_candidature{{/str}}</div></div>
+    {{/hasrows}}
+
+    {{#hasrows}}
+    <div class="lc-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>{{#str}}col_candidate, local_candidature{{/str}}</th>
+                    <th>{{#str}}col_programme, local_candidature{{/str}}</th>
+                    <th>{{#str}}col_submitted, local_candidature{{/str}}</th>
+                    <th>{{#str}}col_waiting, local_candidature{{/str}}</th>
+                    <th>{{#str}}col_status, local_candidature{{/str}}</th>
+                    <th>{{#str}}col_decision, local_candidature{{/str}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#rows}}
+                <tr>
+                    <td>
+                        <a href="{{profileurl}}">{{name}}</a>
+                        <span class="lc-em">{{email}}</span>
+                    </td>
+                    <td>{{programme}}</td>
+                    <td>{{submitted}}</td>
+                    <td class="{{#overdue}}lc-late{{/overdue}}">
+                        {{waiting}}{{#flagged}} · {{#str}}flagged, local_candidature{{/str}}{{/flagged}}
+                    </td>
+                    <td>
+                        {{#ispending}}<span class="lc-pill p">{{status}}</span>{{/ispending}}
+                        {{^ispending}}
+                            {{#isrejected}}<span class="lc-pill r">{{status}}</span>{{/isrejected}}
+                            {{^isrejected}}<span class="lc-pill a">{{status}}</span>{{/isrejected}}
+                        {{/ispending}}
+                        {{#hasreason}}<span class="lc-em">{{reason}}</span>{{/hasreason}}
+                    </td>
+                    <td>
+                        {{#candecide}}
+                            {{#ispending}}
+                            <div class="lc-act">
+                                <form method="post" action="{{../actionurl}}">
+                                    <input type="hidden" name="sesskey" value="{{../sesskey}}">
+                                    <input type="hidden" name="id" value="{{id}}">
+                                    <input type="hidden" name="action" value="approve">
+                                    <button class="btn btn-sm btn-primary" type="submit">{{#str}}approve, local_candidature{{/str}}</button>
+                                </form>
+                                <form method="post" action="{{../actionurl}}">
+                                    <input type="hidden" name="sesskey" value="{{../sesskey}}">
+                                    <input type="hidden" name="id" value="{{id}}">
+                                    <input type="hidden" name="action" value="reject">
+                                    <input class="lc-reason" type="text" name="reason"
+                                           placeholder="{{#str}}reasonplaceholder, local_candidature{{/str}}">
+                                    <button class="btn btn-sm btn-secondary" type="submit">{{#str}}reject, local_candidature{{/str}}</button>
+                                </form>
+                            </div>
+                            {{/ispending}}
+                            {{^ispending}}
+                            <form method="post" action="{{../actionurl}}">
+                                <input type="hidden" name="sesskey" value="{{../sesskey}}">
+                                <input type="hidden" name="id" value="{{id}}">
+                                <input type="hidden" name="action" value="reopen">
+                                <button class="btn btn-sm btn-secondary" type="submit">{{#str}}reopen, local_candidature{{/str}}</button>
+                            </form>
+                            {{/ispending}}
+                        {{/candecide}}
+                        {{^candecide}}<span class="lc-em">{{#str}}notyours, local_candidature{{/str}}</span>{{/candecide}}
+                    </td>
+                </tr>
+                {{/rows}}
+            </tbody>
+        </table>
+    </div>
+    {{/hasrows}}
+
+    {{#truncated}}<p class="lc-note">{{#str}}truncated, local_candidature{{/str}}</p>{{/truncated}}
+</div>

@@ -1,0 +1,278 @@
+{{!
+    @template local_batchvitals/report
+
+    Batch vitals report. Every figure comes from the cached payload, so this
+    template renders without touching the database.
+
+    Example context (json):
+    {
+        "hasbatches": true,
+        "activedays": 30,
+        "generatedlabel": "Cached 28/08/26, 02:00",
+        "options": [{"id": 27, "name": "July, 2024 Batch", "selected": true}],
+        "rows": [],
+        "selected": {"id": 27, "name": "July, 2024 Batch", "learners": "17,074"}
+    }
+}}
+<div class="bv-report">
+<style>
+/* Palette is derived from the shell's own --sd-* tokens, which theme_baz already
+   redefines under body.theme-dark. An independent prefers-color-scheme block was
+   wrong here: the OS setting flipped these surfaces to dark while the theme
+   stayed light, leaving near-black inherited text on a navy tile. The fallbacks
+   cover a classic (unwrapped) page, where no --sd-* exists.
+   --bv-faint deliberately maps to --sd-muted, not --sd-faint: the 11px uppercase
+   labels measured 2.57:1 against white on the real page, below AA. Muted gives
+   5.06:1 light / 7.2:1 dark. */
+.bv-report{--bv-text:var(--sd-text,#131e36);--bv-muted:var(--sd-muted,#5a6680);
+    --bv-faint:var(--sd-muted,#5a6680);--bv-line:var(--sd-line,#dde3ef);
+    --bv-surface:var(--sd-surface,#fff);--bv-surface2:var(--sd-ground,#f7f9fc);
+    --bv-track:var(--sd-ground,#eef1f7);--bv-navy:var(--sd-navy,#22345c);
+    --bv-good:#2e7d5b;--bv-warn:#b26a00;--bv-bad:#ae3f2f;
+    color:var(--bv-text)}
+/* Semantic colours need lifting off the dark ground; the theme's own dark block
+   is the trigger, never the OS. */
+body.theme-dark .bv-report{--bv-good:#5fbe92;--bv-warn:#e0a040;--bv-bad:#e0796a}
+.bv-report .bv-num{font-variant-numeric:tabular-nums}
+.bv-head{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between;
+    padding-bottom:16px;margin-bottom:20px;border-bottom:2px solid var(--bv-line)}
+.bv-picker{display:flex;flex-direction:column;gap:6px;min-width:260px;margin:0}
+.bv-picker label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--bv-faint);margin:0}
+.bv-picker select{padding:9px 12px;border:1.5px solid var(--bv-line);border-radius:8px;
+    background:var(--bv-surface);color:inherit;font-weight:600;min-width:260px}
+.bv-stamp{font-size:12.5px;color:var(--bv-faint);flex:1}
+.bv-refresh{margin:0}
+.bv-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:14px}
+.bv-tile{background:var(--bv-surface);border:1px solid var(--bv-line);border-radius:10px;
+    padding:14px 16px;position:relative;overflow:hidden}
+.bv-tile::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--bv-line)}
+.bv-tile.bv-primary::before{background:var(--bv-navy)}
+.bv-tile.bv-good::before{background:var(--bv-good)}
+.bv-tile.bv-warn::before{background:var(--bv-warn)}
+.bv-tile.bv-bad::before{background:var(--bv-bad)}
+.bv-tile .bv-k{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--bv-faint)}
+.bv-tile .bv-v{font-size:27px;font-weight:600;line-height:1.15;margin-top:6px;color:var(--bv-text)}
+.bv-tile .bv-m{font-size:12.5px;color:var(--bv-muted);margin-top:2px}
+.bv-pill{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:99px;margin-top:7px}
+.bv-pill.bv-g{background:rgba(46,125,91,.12);color:var(--bv-good)}
+.bv-pill.bv-w{background:rgba(178,106,0,.12);color:var(--bv-warn)}
+.bv-pill.bv-b{background:rgba(174,63,47,.12);color:var(--bv-bad)}
+.bv-cols{display:grid;grid-template-columns:1.35fr 1fr;gap:12px;margin-bottom:14px}
+@media (max-width:840px){.bv-cols{grid-template-columns:1fr}}
+.bv-panel{background:var(--bv-surface);border:1px solid var(--bv-line);border-radius:10px;padding:16px 18px}
+.bv-panel h3{font-size:14px;font-weight:600;margin:0;color:var(--bv-text)}
+.bv-panel .bv-hint{font-size:12.5px;color:var(--bv-faint);margin:3px 0 0}
+.bv-stack{display:flex;height:32px;border-radius:6px;overflow:hidden;margin:16px 0 14px;background:var(--bv-track)}
+.bv-legend{display:flex;flex-direction:column;gap:8px}
+.bv-legend div{display:flex;align-items:center;gap:10px;font-size:13.5px}
+.bv-sw{width:11px;height:11px;border-radius:3px;flex:none}
+.bv-lbl{flex:1;color:var(--bv-muted)}
+.bv-val{font-weight:600;color:var(--bv-text)}
+.bv-pct{color:var(--bv-faint);min-width:52px;text-align:right}
+.bv-dial{display:flex;align-items:center;gap:16px;margin-top:14px}
+.bv-ring{width:100px;height:100px;border-radius:50%;flex:none;display:grid;place-items:center}
+.bv-ring span{width:74px;height:74px;border-radius:50%;background:var(--bv-surface);
+    display:grid;place-items:center;font-weight:600;font-size:19px;font-variant-numeric:tabular-nums;
+    color:var(--bv-text)}
+.bv-meta{font-size:13.5px;color:var(--bv-muted)}
+.bv-thin{margin-top:12px;font-size:12.5px;padding:9px 12px;border-radius:7px;
+    background:rgba(178,106,0,.12);color:var(--bv-warn);font-weight:500}
+.bv-struct{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.bv-struct div{background:var(--bv-surface2);border-radius:8px;padding:11px 13px}
+.bv-struct .bv-k{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--bv-faint)}
+.bv-struct .bv-v{font-size:22px;font-weight:600;margin-top:3px;color:var(--bv-text)}
+.bv-tablewrap{overflow-x:auto}
+.bv-report table{width:100%;border-collapse:collapse;font-size:13.5px;margin:0}
+.bv-report th,.bv-report td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bv-line);white-space:nowrap;color:var(--bv-text)}
+.bv-report th{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--bv-faint);font-weight:600}
+.bv-report td.bv-n,.bv-report th.bv-n{text-align:right;font-variant-numeric:tabular-nums}
+.bv-report tbody tr.bv-current{background:var(--bv-surface2);font-weight:600}
+.bv-report tbody td a{color:var(--bv-text);text-decoration:underline;text-underline-offset:2px}
+.bv-empty{background:var(--bv-surface);border:1px solid var(--bv-line);border-radius:10px;padding:26px;text-align:center}
+.bv-scope{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--bv-faint)}
+.bv-parent{font-size:12px;color:var(--bv-faint);margin-top:4px}
+.bv-only{font-size:16px;font-weight:600;color:var(--bv-text)}
+.bv-context{font-size:12.5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--bv-faint);margin-bottom:10px}
+</style>
+
+{{^hasbatches}}
+    <div class="bv-empty">
+        <p>{{#str}}nobatches, local_batchvitals{{/str}}</p>
+        {{#canconfigure}}
+            <p class="bv-hint">{{#str}}nobatches_help, local_batchvitals{{/str}}</p>
+            <a class="btn btn-primary" href="{{configureurl}}">{{#str}}configure, local_batchvitals{{/str}}</a>
+        {{/canconfigure}}
+        {{^canconfigure}}<p class="bv-hint">{{#str}}nodata, local_batchvitals{{/str}}</p>{{/canconfigure}}
+    </div>
+{{/hasbatches}}
+
+{{#hasbatches}}
+    <div class="bv-head">
+        {{#showpicker}}
+        <form method="get" action="{{formurl}}" class="bv-picker" id="bv-form">
+            <label for="bv-batch">{{scopelabel}}</label>
+            <select id="bv-batch" name="batch" class="custom-select">
+                {{#options}}
+                    <option value="{{id}}"{{#selected}} selected{{/selected}}>{{name}}</option>
+                {{/options}}
+            </select>
+            <noscript><button type="submit" class="btn btn-secondary mt-1">{{#str}}go{{/str}}</button></noscript>
+        </form>
+        {{/showpicker}}
+        {{^showpicker}}
+        <div class="bv-picker">
+            <span class="bv-scope">{{scopelabel}}</span>
+            {{#selected}}
+                {{#hasparent}}<div class="bv-parent">{{parent}}</div>{{/hasparent}}
+                <div class="bv-only">{{name}}</div>
+            {{/selected}}
+        </div>
+        {{/showpicker}}
+        <div class="bv-stamp">{{generatedlabel}}{{#selected}} · {{builtlabel}}{{/selected}}</div>
+        {{#selected}}
+            <form method="post" action="{{refreshurl}}" class="bv-refresh">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <input type="hidden" name="batch" value="{{id}}">
+                <button type="submit" class="btn btn-secondary">{{#str}}refreshnow, local_batchvitals{{/str}}</button>
+            </form>
+        {{/selected}}
+    </div>
+
+    {{^selected}}<div class="bv-empty">{{#str}}nodata, local_batchvitals{{/str}}</div>{{/selected}}
+
+    {{#selected}}
+        {{#hasparent}}<div class="bv-context">{{parent}} · {{name}}</div>{{/hasparent}}
+        <div class="bv-tiles">
+            <div class="bv-tile bv-primary">
+                <div class="bv-k">{{#str}}learners, local_batchvitals{{/str}}</div>
+                <div class="bv-v bv-num">{{learners}}</div>
+                <div class="bv-m">{{learnerssub}}</div>
+            </div>
+            <div class="bv-tile bv-good">
+                <div class="bv-k">{{activelabel}}</div>
+                <div class="bv-v bv-num">{{active}}</div>
+                <div class="bv-m">{{activesub}}</div>
+                <span class="bv-pill bv-g">{{activepctlabel}}</span>
+            </div>
+            <div class="bv-tile bv-warn">
+                <div class="bv-k">{{#str}}inactive, local_batchvitals{{/str}}</div>
+                <div class="bv-v bv-num">{{inactive}}</div>
+                <div class="bv-m">{{inactivesub}}</div>
+                <span class="bv-pill bv-w">{{inactivepctlabel}}</span>
+            </div>
+            <div class="bv-tile bv-bad">
+                <div class="bv-k">{{#str}}neverloggedin, local_batchvitals{{/str}}</div>
+                <div class="bv-v bv-num">{{never}}</div>
+                <div class="bv-m">{{#str}}neverloggedin_sub, local_batchvitals{{/str}}</div>
+                <span class="bv-pill bv-b">{{neverpctlabel}}</span>
+            </div>
+            <div class="bv-tile">
+                <div class="bv-k">{{#str}}suspended, local_batchvitals{{/str}}</div>
+                <div class="bv-v bv-num">{{susp}}</div>
+                <div class="bv-m">{{#str}}suspended_sub, local_batchvitals{{/str}}</div>
+                <span class="bv-pill bv-w">{{susppctlabel}}</span>
+            </div>
+            <div class="bv-tile">
+                <div class="bv-k">{{#str}}structure, local_batchvitals{{/str}}</div>
+                <div class="bv-v bv-num">{{courses}}</div>
+                <div class="bv-m">{{structuresub}}</div>
+            </div>
+        </div>
+
+        <div class="bv-cols">
+            <div class="bv-panel">
+                <h3>{{#str}}engagement, local_batchvitals{{/str}}</h3>
+                <p class="bv-hint">{{#str}}engagement_sub, local_batchvitals{{/str}}</p>
+                <div class="bv-stack">
+                    <span style="flex-grow:{{growactive}};background:var(--bv-good)"></span>
+                    <span style="flex-grow:{{growdormant}};background:var(--bv-warn)"></span>
+                    <span style="flex-grow:{{grownever}};background:var(--bv-bad)"></span>
+                </div>
+                <div class="bv-legend">
+                    <div><i class="bv-sw" style="background:var(--bv-good)"></i>
+                        <span class="bv-lbl">{{legendactive}}</span>
+                        <span class="bv-val bv-num">{{active}}</span>
+                        <span class="bv-pct bv-num">{{activepct}}</span></div>
+                    <div><i class="bv-sw" style="background:var(--bv-warn)"></i>
+                        <span class="bv-lbl">{{#str}}legend_dormant, local_batchvitals{{/str}}</span>
+                        <span class="bv-val bv-num">{{dormant}}</span>
+                        <span class="bv-pct bv-num">{{dormantpct}}</span></div>
+                    <div><i class="bv-sw" style="background:var(--bv-bad)"></i>
+                        <span class="bv-lbl">{{#str}}legend_never, local_batchvitals{{/str}}</span>
+                        <span class="bv-val bv-num">{{never}}</span>
+                        <span class="bv-pct bv-num">{{neverpct}}</span></div>
+                </div>
+            </div>
+
+            <div class="bv-panel">
+                <h3>{{#str}}completion, local_batchvitals{{/str}}</h3>
+                <p class="bv-hint">{{#str}}completion_sub, local_batchvitals{{/str}}</p>
+                {{#hasrecs}}
+                    <div class="bv-dial">
+                        <div class="bv-ring" style="background:conic-gradient({{ringcolour}} {{comppct}}%, var(--bv-track) 0)">
+                            <span>{{comppct}}%</span>
+                        </div>
+                        <div class="bv-meta">{{compmeta}}</div>
+                    </div>
+                    {{#thin}}<div class="bv-thin">{{#str}}completion_thin, local_batchvitals{{/str}}</div>{{/thin}}
+                {{/hasrecs}}
+                {{^hasrecs}}<p class="bv-meta">{{#str}}completion_none, local_batchvitals{{/str}}</p>{{/hasrecs}}
+                <div class="bv-struct">
+                    <div><div class="bv-k">{{#str}}col_courses, local_batchvitals{{/str}}</div>
+                        <div class="bv-v bv-num">{{courses}}</div></div>
+                    <div><div class="bv-k">{{#str}}col_programs, local_batchvitals{{/str}}</div>
+                        <div class="bv-v bv-num">{{programs}}</div></div>
+                </div>
+            </div>
+        </div>
+    {{/selected}}
+
+    {{#showtable}}
+    <div class="bv-panel">
+        <h3>{{scopelabel}}</h3>
+        <div class="bv-tablewrap mt-2">
+            <table>
+                <thead>
+                    <tr>
+                        <th>{{#str}}col_batch, local_batchvitals{{/str}}</th>
+                        <th class="bv-n">{{#str}}col_learners, local_batchvitals{{/str}}</th>
+                        <th class="bv-n">{{#str}}col_active, local_batchvitals{{/str}}</th>
+                        <th class="bv-n">{{#str}}col_never, local_batchvitals{{/str}}</th>
+                        <th class="bv-n">{{#str}}col_susp, local_batchvitals{{/str}}</th>
+                        <th class="bv-n">{{#str}}col_courses, local_batchvitals{{/str}}</th>
+                        <th class="bv-n">{{#str}}col_programs, local_batchvitals{{/str}}</th>
+                        <th class="bv-n">{{#str}}col_completion, local_batchvitals{{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#rows}}
+                        <tr class="{{#current}}bv-current{{/current}}">
+                            <td><a href="{{url}}">{{name}}</a></td>
+                            <td class="bv-n">{{learners}}</td>
+                            <td class="bv-n">{{active}}</td>
+                            <td class="bv-n">{{never}}</td>
+                            <td class="bv-n">{{susp}}</td>
+                            <td class="bv-n">{{courses}}</td>
+                            <td class="bv-n">{{programs}}</td>
+                            <td class="bv-n">{{completion}}</td>
+                        </tr>
+                    {{/rows}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {{/showtable}}
+{{/hasbatches}}
+</div>
+{{#js}}
+    (function() {
+        var sel = document.getElementById('bv-batch');
+        if (sel) {
+            sel.addEventListener('change', function() {
+                document.getElementById('bv-form').submit();
+            });
+        }
+    })();
+{{/js}}

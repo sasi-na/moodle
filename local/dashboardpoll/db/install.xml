@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/dashboardpoll/db" VERSION="2026062900" COMMENT="Dashboard poll popup tables"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <TABLES>
+
+        <!-- A poll: one question, targeted at a cohort_batch value ('' = all students). -->
+        <TABLE NAME="local_dashboardpoll" COMMENT="Dashboard polls">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="question" TYPE="text" NOTNULL="true"/>
+                <FIELD NAME="cohort" TYPE="char" LENGTH="255" NOTNULL="true" DEFAULT="" COMMENT="cohort_batch value; empty = All Cohort"/>
+                <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="draft" COMMENT="draft|active|closed"/>
+                <FIELD NAME="multiselect" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" COMMENT="0 = single choice, 1 = allow multiple selections"/>
+                <FIELD NAME="maxchoices" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Max selections when multiselect; 0 = no limit"/>
+                <FIELD NAME="resultsdisplay" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" COMMENT="What students see after voting: 0=thank-you only, bit1(1)=percentages, bit2(2)=vote counts"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
+                <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="cohort_idx" UNIQUE="false" FIELDS="cohort"/>
+                <INDEX NAME="status_idx" UNIQUE="false" FIELDS="status"/>
+            </INDEXES>
+        </TABLE>
+
+        <!-- Options belonging to a poll. -->
+        <TABLE NAME="local_dashboardpoll_options" COMMENT="Poll options">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="pollid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="optiontext" TYPE="text" NOTNULL="true"/>
+                <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="pollid_idx" UNIQUE="false" FIELDS="pollid"/>
+            </INDEXES>
+        </TABLE>
+
+        <!-- One row per (user, option). For single-choice polls that is one row
+             per user; multi-select polls store one row per chosen option. -->
+        <TABLE NAME="local_dashboardpoll_responses" COMMENT="Poll responses">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="pollid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="optionid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="polluseropt_uix" UNIQUE="true" FIELDS="pollid, userid, optionid"/>
+                <INDEX NAME="polluser_idx" UNIQUE="false" FIELDS="pollid, userid"/>
+                <INDEX NAME="optionid_idx" UNIQUE="false" FIELDS="optionid"/>
+            </INDEXES>
+        </TABLE>
+
+    </TABLES>
+
+</XMLDB>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/customteams/db" VERSION="2026092200" COMMENT="Custom Teams tables"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+
+    <TABLES>
+        <TABLE NAME="customteams" COMMENT="Stores Teams meeting data">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true"/>
+                <FIELD NAME="externalurl" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="meetingid" TYPE="char" LENGTH="255" NOTNULL="false"/>
+                <FIELD NAME="organizer" TYPE="char" LENGTH="255" NOTNULL="false" COMMENT="UPN of the shared Teams account that owns the meeting"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
+                <FIELD NAME="timestart" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timeend" TYPE="int" LENGTH="10" NOTNULL="true"/>
+            </FIELDS>
+
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+
+            <INDEXES>
+                <!-- Clash detection scans by organizer over a time window. -->
+                <INDEX NAME="organizer_timestart" UNIQUE="false" FIELDS="organizer, timestart"/>
+                <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+            </INDEXES>
+        </TABLE>
+
+        <TABLE NAME="customteams_accounts" COMMENT="Shared Teams organizer accounts, keyed by batch and programme">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="batch" TYPE="char" LENGTH="100" NOTNULL="true" COMMENT="Canonical batch category name, e.g. July 2025"/>
+                <FIELD NAME="program" TYPE="char" LENGTH="100" NOTNULL="true" COMMENT="Programme category name, e.g. MBA"/>
+                <FIELD NAME="upn" TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Azure AD user principal name of the shared account"/>
+                <FIELD NAME="displayname" TYPE="char" LENGTH="255" NOTNULL="false" COMMENT="Optional friendly label shown in the picker"/>
+                <FIELD NAME="sortorder" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="active" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="1"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
+            </FIELDS>
+
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+
+            <INDEXES>
+                <!-- One account may legitimately serve several batch/programme pairs
+                     (21 such rows in the master sheet), so this is not unique. -->
+                <INDEX NAME="batch_program" UNIQUE="false" FIELDS="batch, program"/>
+                <INDEX NAME="upn" UNIQUE="false" FIELDS="upn"/>
+            </INDEXES>
+        </TABLE>
+    </TABLES>
+
+</XMLDB>

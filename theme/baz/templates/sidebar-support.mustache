@@ -1,0 +1,28 @@
+{{!
+    @template theme_baz/sidebar-support
+
+    Support contact at the foot of the sidebar.
+
+    The email and phone used to live only inside the floating "Need help?"
+    panel, which ships hidden behind a button and is rendered by the student
+    shells alone. Staff therefore had no route to support anywhere in the UI,
+    and students had to know to open the panel. Here it is simply present, on
+    every page, for every audience, with no interaction required.
+
+    The markup comes from theme_baz_support_contact() via the shared template
+    context, so the panel and the sidebar cannot disagree about the contact
+    details. Renders nothing when a site has published neither.
+
+    Context variables required for this template:
+    * hassidebarsupport - whether the site published an email or phone
+    * sidebarsupport - the contact markup
+
+    Example context (json):
+    {
+        "hassidebarsupport": true,
+        "sidebarsupport": "<div class=\"sw-help-contact\">…</div>"
+    }
+}}
+{{#hassidebarsupport}}
+<div class="sd-sidesupport">{{{ sidebarsupport }}}</div>
+{{/hassidebarsupport}}
