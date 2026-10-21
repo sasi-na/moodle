@@ -1,0 +1,137 @@
+{{!
+    @template theme_baz/nt-student-rail
+
+    Option 3 - App launcher: light "bento" productivity board - today's mission, streak,
+    week strip with countdowns, quick notes, to-do list, habit tracker, course rings,
+    quick links and a news ticker. (Grades live in Option 4, reading list in Option 5.)
+    Same data as theme_baz/nt-student-dashboard (output\nt_student_dashboard).
+}}
+{{> theme_baz/nt-v-top }}
+            <main class="nv-main nv-bento" data-nv-uid="{{ntuserid}}">
+
+                <section class="nv-tile nv-t-mission">
+                    <div class="nv-hero-top">
+                        <span class="nv-kicker">{{datelabel}}</span>
+                        {{#hassemester}}<span class="nv-pill">{{#str}}sd_semshort, theme_baz, {{semesternum}}{{/str}}</span>{{/hassemester}}
+                    </div>
+                    <h1 class="nv-hello">{{ntgreeting}}</h1>
+                    <p class="nv-sub">{{{ntsubline}}}</p>
+                    <div class="nv-mission">
+                        <span class="nv-label"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8" fill="currentColor"/></svg>{{#str}}nv_mission, theme_baz{{/str}}</span>
+                        {{#hasfocus}}
+                        <a class="nv-mission-name" href="{{focus.url}}">{{ntfocusname}}</a>
+                        <div class="nv-steps" style="--p:{{ntfocuspct}}"><i></i></div>
+                        <div class="nv-mission-meta"><span>{{focus.statuslabel}}</span>{{#ntfocusstats}}{{#ntfocushastotal}}<span>{{ntfocusdone}}/{{ntfocustotal}} {{#str}}nt_f_activities, theme_baz{{/str}}</span>{{/ntfocushastotal}}{{/ntfocusstats}}<b>{{ntfocuspct}}%</b></div>
+                        {{#ntfocusstats}}{{#ntfocushasnext}}{{#ntfocusnext}}
+                        <a class="nv-next" href="{{url}}"><span class="nv-next-ic"><svg viewBox="0 0 24 24">{{{icon}}}</svg></span><span><small>{{#str}}nt_f_upnext, theme_baz{{/str}} · {{kind}}</small><b>{{name}}</b></span><svg class="nv-go" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                        {{/ntfocusnext}}{{/ntfocushasnext}}{{/ntfocusstats}}
+                        {{/hasfocus}}
+                        {{^hasfocus}}<p class="nv-mission-name">{{#str}}nt_nofocus, theme_baz{{/str}}</p>{{/hasfocus}}
+                    </div>
+                    <div class="nv-actions">
+                        {{#resumeitem}}<a class="nv-btn" href="{{url}}" title="{{name}}"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>{{#str}}sd_resume, theme_baz{{/str}}</a>{{/resumeitem}}
+                        {{^resumeitem}}{{#hasfocus}}<a class="nv-btn" href="{{focus.url}}"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>{{#str}}sd_focusgo, theme_baz{{/str}}</a>{{/hasfocus}}{{/resumeitem}}
+                        {{#showexamcta}}<a class="nv-btn nv-btn-soft" href="{{examctaurl}}">{{#str}}sd_exam_start, theme_baz{{/str}}</a>{{/showexamcta}}
+                    </div>
+                </section>
+
+                <section class="nv-tile nv-t-streak">
+                    <svg class="nv-flame" viewBox="0 0 24 24"><path d="M12 3c1 3 4 4.5 4 9a4 4 0 0 1-8 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 0-8z"/></svg>
+                    <b class="nv-bignum">{{#hasstreak}}{{streak}}{{/hasstreak}}{{^hasstreak}}0{{/hasstreak}}</b>
+                    <span class="nv-label">{{#str}}nv_daystreak, theme_baz{{/str}}</span>
+                    <small>{{#str}}nv_streak_hint, theme_baz{{/str}}</small>
+                </section>
+
+                <section class="nv-tile nv-t-ringtile" data-nv-ring style="--p:{{ringpct}}">
+                    <div class="nv-ring"><b>{{ringpct}}<small>%</small></b></div>
+                    <div>
+                        <span class="nv-label">{{#hassemester}}{{#str}}nt_semprogress, theme_baz, {{semesternum}}{{/str}}{{/hassemester}}{{^hassemester}}{{#str}}sd_semprogress, theme_baz{{/str}}{{/hassemester}}</span>
+                        <p class="nv-ringtxt"><b>{{ringcompleted}}</b> {{#str}}sd_completed, theme_baz{{/str}} · <b>{{ringinprogress}}</b> {{#str}}sd_inprogress, theme_baz{{/str}}</p>
+                    </div>
+                </section>
+
+                <section class="nv-tile nv-t-week" data-nv-week>
+                    <div class="nv-tile-h"><h2>{{#str}}nv_thisweek, theme_baz{{/str}}</h2><a href="{{calendarurl}}">{{calendar.monthlabel}} →</a></div>
+                    {{> theme_baz/nt-v-weeksrc }}
+                    <div class="nv-strip-dow"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+                    <div class="nv-weekstrip" data-nv-week-out></div>
+                    {{#nthascoming}}
+                    <ul class="nv-due">
+                        {{#ntcoming}}<li><a href="{{url}}"{{#external}} target="_blank" rel="noopener noreferrer"{{/external}}><i class="nt-tone-{{tone}}"></i><span class="nv-txt"><b>{{title}}</b><small>{{meta}}</small></span><em class="nv-cd" data-nv-countdown data-ts="{{sort}}"></em></a></li>{{/ntcoming}}
+                    </ul>
+                    {{/nthascoming}}
+                    {{^nthascoming}}<p class="nv-empty">{{#str}}nt_nothingcoming, theme_baz{{/str}}</p>{{/nthascoming}}
+                </section>
+
+                <section class="nv-tile nv-t-notes" data-nv-notes data-nv-help="{{#str}}nv_h_notes, theme_baz{{/str}}" data-nv-tips="{{#str}}nv_tips_notes, theme_baz{{/str}}">
+                    <div class="nv-tile-h"><h2><svg viewBox="0 0 24 24"><path d="M5 4h14v12l-4 4H5z"/><path d="M15 20v-4h4M8 9h8M8 13h5"/></svg>{{#str}}nv_notes, theme_baz{{/str}}</h2><span class="nv-saved" data-nv-saved hidden>{{#str}}nv_saved, theme_baz{{/str}}</span></div>
+                    <textarea rows="6" placeholder="{{#str}}nv_notes_ph, theme_baz{{/str}}" aria-label="{{#str}}nv_notes, theme_baz{{/str}}"></textarea>
+                    <small class="nv-private">{{#str}}nv_private, theme_baz{{/str}}</small>
+                </section>
+
+                <section class="nv-tile nv-t-todo" data-nv-todo data-nv-help="{{#str}}nv_h_todo, theme_baz{{/str}}" data-nv-tips="{{#str}}nv_tips_todo, theme_baz{{/str}}">
+                    <div class="nv-tile-h"><h2><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>{{#str}}nv_todo, theme_baz{{/str}}</h2><span data-nv-todo-count></span></div>
+                    <form class="nv-todo-add"><input type="text" maxlength="140" placeholder="{{#str}}nv_todo_ph, theme_baz{{/str}}" aria-label="{{#str}}nv_todo_ph, theme_baz{{/str}}"><button type="submit" aria-label="{{#str}}add, core{{/str}}">+</button></form>
+                    <ul class="nv-todo-list"></ul>
+                    <p class="nv-todo-empty">{{#str}}nv_todo_empty, theme_baz{{/str}}</p>
+                </section>
+
+                <section class="nv-tile nv-t-habit" data-nv-habits data-nv-help="{{#str}}nv_h_habit, theme_baz{{/str}}" data-nv-tips="{{#str}}nv_tips_habit, theme_baz{{/str}}">
+                    <div class="nv-tile-h"><h2><svg viewBox="0 0 24 24"><path d="M4 12l4 4 12-12"/><path d="M4 20h16"/></svg>{{#str}}nv_habits, theme_baz{{/str}}</h2><span data-nv-habit-score></span></div>
+                    <div class="nv-habit-dow" data-nv-habit-dow></div>
+                    <ul class="nv-habit-list"></ul>
+                    <form class="nv-todo-add nv-habit-add"><input type="text" maxlength="40" placeholder="{{#str}}nv_habit_ph, theme_baz{{/str}}" aria-label="{{#str}}nv_habit_ph, theme_baz{{/str}}"><button type="submit" aria-label="{{#str}}add, core{{/str}}">+</button></form>
+                    <p class="nv-todo-empty nv-habit-empty">{{#str}}nv_habit_empty, theme_baz{{/str}}</p>
+                </section>
+
+                <section class="nv-tile nv-t-courses">
+                    <div class="nv-tile-h"><h2>{{#str}}nv_mycourses, theme_baz{{/str}}</h2>{{#coursecount}}<a href="{{coursesurl}}">{{#str}}sd_allcourses, theme_baz, {{coursecount}}{{/str}} →</a>{{/coursecount}}</div>
+                    {{#hascourses}}
+                    <div class="nv-crings">
+                        {{#ntcourses}}<a href="{{url}}" style="--c:{{ntcolor}};--t:{{nttint}};--p:{{progress}}"><span class="nv-cring"><b>{{progress}}<small>%</small></b></span><span class="nv-code">{{ntcode}}</span><span class="nv-cname">{{ntname}}</span></a>{{/ntcourses}}
+                    </div>
+                    {{/hascourses}}
+                    {{^hascourses}}<p class="nv-empty">{{#str}}nt_nocourses, theme_baz{{/str}}</p>{{/hascourses}}
+                </section>
+
+                <section class="nv-tile nv-t-plan" data-nv-plan data-nv-help="{{#str}}nv_h_plan, theme_baz{{/str}}" data-nv-tips="{{#str}}nv_tips_plan, theme_baz{{/str}}">
+                    <div class="nv-tile-h"><h2>{{#str}}nv_plan, theme_baz{{/str}}</h2><span data-nv-plan-count></span></div>
+                    <form class="nvw-form"><input type="time" aria-label="{{#str}}nv_plan_time, theme_baz{{/str}}" required><input type="text" maxlength="50" placeholder="{{#str}}nv_plan_ph, theme_baz{{/str}}" aria-label="{{#str}}nv_plan_ph, theme_baz{{/str}}" required><button type="submit" aria-label="{{#str}}add, core{{/str}}">+</button></form>
+                    <ul class="nvw-plan"></ul>
+                    <p class="nvw-empty">{{#str}}nv_plan_empty, theme_baz{{/str}}</p>
+                    <small class="nv-private">{{#str}}nv_private, theme_baz{{/str}}</small>
+                </section>
+
+                <section class="nv-tile nv-t-attend" data-nv-attend data-nv-help="{{#str}}nv_h_attend, theme_baz{{/str}}" data-nv-tips="{{#str}}nv_tips_attend, theme_baz{{/str}}" data-t-hint="{{#str}}nv_attend_hint, theme_baz{{/str}}" data-t-ok="{{#str}}nv_attend_ok, theme_baz{{/str}}" data-t-need="{{#str}}nv_attend_need, theme_baz{{/str}}">
+                    <div class="nv-tile-h"><h2>{{#str}}nv_attend, theme_baz{{/str}}</h2><span class="nvw-big" data-out-pct></span></div>
+                    <div class="nvw-bar"><i data-out-bar></i></div>
+                    <div class="nvw-fields">
+                        <label><span>{{#str}}nv_attend_att, theme_baz{{/str}}</span><input type="number" min="0" inputmode="numeric" data-f="att"></label>
+                        <label><span>{{#str}}nv_attend_tot, theme_baz{{/str}}</span><input type="number" min="1" inputmode="numeric" data-f="tot"></label>
+                        <label><span>{{#str}}nv_attend_tgt, theme_baz{{/str}}</span><input type="number" min="1" max="100" inputmode="numeric" data-f="tgt"></label>
+                    </div>
+                    <p class="nvw-result" data-out></p>
+                    <small class="nv-private">{{#str}}nv_private, theme_baz{{/str}}</small>
+                </section>
+
+                <section class="nv-tile nv-t-exams" data-nv-exams data-nv-help="{{#str}}nv_h_exams, theme_baz{{/str}}" data-nv-tips="{{#str}}nv_tips_exams, theme_baz{{/str}}" data-t-today="{{#str}}nv_ex_today, theme_baz{{/str}}" data-t-d="{{#str}}nv_ex_d, theme_baz{{/str}}">
+                    <div class="nv-tile-h"><h2>{{#str}}nv_exams, theme_baz{{/str}}</h2></div>
+                    <form class="nvw-form">
+                        <input type="text" maxlength="40" placeholder="{{#str}}nv_ex_ph, theme_baz{{/str}}" aria-label="{{#str}}nv_ex_ph, theme_baz{{/str}}" required>
+                        <input type="date" aria-label="{{#str}}nv_ex_date, theme_baz{{/str}}" required>
+                        <button type="submit" aria-label="{{#str}}add, core{{/str}}">+</button>
+                    </form>
+                    <ul class="nvw-exlist"></ul>
+                    <p class="nvw-empty">{{#str}}nv_ex_empty, theme_baz{{/str}}</p>
+                </section>
+
+                {{#hasfee}}
+                <section class="nv-tile nv-t-fee">
+                    <h2>{{fee.title}}</h2><p>{{fee.desc}}</p>
+                    <a class="nv-btn" href="{{fee.payurl}}" target="_blank" rel="noopener">{{fee.button}} →</a>
+                </section>
+                {{/hasfee}}
+
+                <p class="nv-footnote">{{brandfootnote}}</p>
+            </main>
+{{> theme_baz/nt-v-bottom }}

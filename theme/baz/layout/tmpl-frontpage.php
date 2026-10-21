@@ -37,8 +37,13 @@ if ((!isloggedin() || isguestuser())
         $fltheme = \theme_config::load('baz');
         $fllogo = $fltheme->setting_file_url('customlogo', 'customlogo');
         $flbanner = $fltheme->setting_file_url('frontbanner', 'frontbanner');
+        // The site brand's logo (light version for the navy hero) instead of a Moodle placeholder.
+        $flnt = function_exists('theme_baz_nt_brand') ? theme_baz_nt_brand() : null;
+        if ($flnt && $flnt['logolight'] !== '' && theme_baz_is_placeholder_file($fllogo)) {
+            $fllogo = $flnt['logolight'];
+        }
         $flcontext = array_merge([
-            'sitename' => format_string($SITE->fullname, true,
+            'sitename' => !empty($flnt) ? $flnt['name'] : format_string($SITE->fullname, true,
                 ['context' => context_course::instance(SITEID), 'escape' => false]),
             'output' => $OUTPUT,
             'bodyattributes' => $OUTPUT->body_attributes(['fl-page']),
