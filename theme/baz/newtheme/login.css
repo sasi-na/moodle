@@ -1,0 +1,119 @@
+/*
+ * Sign-in form (Baz bespoke login page, used by both BAZ and Ednxt Top Bar).
+ * Loaded by theme_baz_page_init on the login layout. Pure styling: the form,
+ * its fields and its JavaScript are Moodle's own.
+ */
+body.pagelayout-login .lp-form-col .lp-card {
+    position: relative; width: 100%; max-width: 460px; background: #fff; border-radius: 26px;
+    padding: 44px 40px 34px; box-shadow: 0 30px 80px rgba(15, 31, 61, .12), 0 2px 6px rgba(15, 31, 61, .05);
+    border: 1px solid #e8edf5;
+}
+body.pagelayout-login .lp-form-col .lp-card::before {
+    content: ""; position: absolute; left: 40px; right: 40px; top: 0; height: 4px; border-radius: 0 0 6px 6px;
+    background: linear-gradient(90deg, #f4b23e, #e8962e);
+}
+/* Heading: eyebrow + title + subtitle */
+body.pagelayout-login .lp-card .lp-phead {
+    font-size: 30px !important; font-weight: 800 !important; letter-spacing: -.6px; color: #0f1f3d !important;
+    margin: 0 0 28px !important; line-height: 1.15;
+}
+body.pagelayout-login .lp-card .lp-phead::before {
+    content: "Welcome back"; display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+    font-size: 12px; font-weight: 800; letter-spacing: 2.4px; text-transform: uppercase; color: #c98314;
+}
+body.pagelayout-login .lp-card .lp-phead::after {
+    content: "Sign in with your student or staff account to pick up where you left off.";
+    display: block; margin-top: 10px; font-size: 14.5px; font-weight: 500; letter-spacing: 0; line-height: 1.5; color: #6b778c;
+}
+body.pagelayout-login .lp-card .rui-loginpage-intro { display: none !important; }
+body.pagelayout-login .lp-card .rui-login-box, body.pagelayout-login .lp-card .rui-login-content,
+body.pagelayout-login .lp-card .rui-login-layout { background: none !important; box-shadow: none !important; padding: 0 !important; margin: 0 !important; border: 0 !important; max-width: none !important; width: 100% !important; }
+
+/* Fields */
+body.pagelayout-login .lp-card .form-control--username-box,
+body.pagelayout-login .lp-card .form-control--password-box { position: relative; margin: 0 0 14px !important; }
+body.pagelayout-login .lp-card .form-control--username-box::before,
+body.pagelayout-login .lp-card .form-control--password-box::before {
+    content: "" !important; position: absolute !important; left: 10px !important; top: 50% !important; transform: translateY(-50%);
+    width: 38px !important; height: 38px !important; border-radius: 11px; z-index: 2; pointer-events: none;
+    background: #eef2f8 no-repeat center / 18px 18px !important; transition: background-color .2s;
+}
+body.pagelayout-login .lp-card .form-control--username-box::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f1f3d' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5'/%3E%3C/svg%3E") !important;
+}
+body.pagelayout-login .lp-card .form-control--password-box::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f1f3d' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4.5' y='10.5' width='15' height='10' rx='2.5'/%3E%3Cpath d='M8 10.5V7.5a4 4 0 0 1 8 0v3'/%3E%3Ccircle cx='12' cy='15.5' r='1.3' fill='%230f1f3d'/%3E%3C/svg%3E") !important;
+}
+body.pagelayout-login .lp-card .form-control--username-box:focus-within::before,
+body.pagelayout-login .lp-card .form-control--password-box:focus-within::before { background-color: #fdf0d5 !important; }
+body.pagelayout-login .lp-card #username, body.pagelayout-login .lp-card #password {
+    height: 58px !important; border-radius: 15px !important; border: 1.5px solid #dfe5ee !important; background: #f8fafc !important;
+    background-image: none !important; padding: 0 52px 0 60px !important; font-size: 15.5px !important; font-weight: 600; color: #0f1f3d !important;
+    box-shadow: none !important; transition: border-color .2s, box-shadow .2s, background-color .2s !important;
+}
+body.pagelayout-login .lp-card #username::placeholder, body.pagelayout-login .lp-card #password::placeholder { color: #95a1b4; font-weight: 500; }
+body.pagelayout-login .lp-card #username:hover, body.pagelayout-login .lp-card #password:hover { border-color: #c6d0de !important; }
+body.pagelayout-login .lp-card #username:focus, body.pagelayout-login .lp-card #password:focus {
+    background: #fff !important; border-color: #0f1f3d !important; box-shadow: 0 0 0 4px rgba(244, 178, 62, .22) !important; outline: 0;
+}
+/* Browser autofill: keep our colours instead of the blue tint */
+body.pagelayout-login .lp-card #username:-webkit-autofill, body.pagelayout-login .lp-card #password:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 40px #f8fafc inset !important; -webkit-text-fill-color: #0f1f3d !important; caret-color: #0f1f3d;
+}
+body.pagelayout-login .lp-card #username:-webkit-autofill:focus, body.pagelayout-login .lp-card #password:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 40px #fff inset, 0 0 0 4px rgba(244, 178, 62, .22) !important;
+}
+/* Show / hide password */
+body.pagelayout-login .lp-card #togglePassword {
+    position: absolute !important; right: 10px !important; top: 50% !important; transform: translateY(-50%) !important;
+    width: 38px !important; height: 38px !important; border-radius: 11px !important; display: grid !important; place-items: center;
+    background: transparent !important; color: #6b778c !important; z-index: 3; padding: 0 !important; cursor: pointer;
+}
+body.pagelayout-login .lp-card #togglePassword:hover { background: #eef2f8 !important; color: #0f1f3d !important; }
+body.pagelayout-login .lp-card #togglePassword svg { width: 19px !important; height: 19px !important; }
+
+/* Forgot link, right under the password */
+body.pagelayout-login .lp-card #login .w-100.text-center { text-align: right !important; margin: -2px 0 22px; }
+body.pagelayout-login .lp-card .rui-login-forgot-btn {
+    font-size: 13.5px !important; font-weight: 700 !important; color: #0f1f3d !important; text-decoration: none !important;
+    border-bottom: 1.5px solid rgba(244, 178, 62, .7); padding-bottom: 1px;
+}
+body.pagelayout-login .lp-card .rui-login-forgot-btn:hover { color: #c98314 !important; border-bottom-color: #c98314; }
+
+/* Log in button: navy with a gold arrow */
+body.pagelayout-login .lp-card #loginbtn {
+    position: relative; height: 58px; margin-top: 0 !important; border: 0 !important; border-radius: 15px !important;
+    background: linear-gradient(135deg, #0f1f3d 0%, #1d3566 100%) !important; color: #fff !important;
+    font-size: 16px !important; font-weight: 800 !important; letter-spacing: .3px;
+    box-shadow: 0 14px 30px rgba(15, 31, 61, .25) !important; overflow: hidden; transition: transform .15s, box-shadow .2s !important;
+    display: flex !important; align-items: center; justify-content: center; gap: 12px; width: 100%;
+}
+body.pagelayout-login .lp-card #loginbtn::after {
+    content: "\2192"; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+    background: #f4b23e; color: #0f1f3d; font-size: 17px; font-weight: 900; transition: transform .2s;
+}
+body.pagelayout-login .lp-card #loginbtn::before {
+    content: ""; position: absolute; top: 0; left: -60%; width: 40%; height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .18), transparent); transform: skewX(-20deg); transition: left .6s;
+}
+body.pagelayout-login .lp-card #loginbtn:hover { transform: translateY(-2px); box-shadow: 0 18px 36px rgba(15, 31, 61, .32) !important; }
+body.pagelayout-login .lp-card #loginbtn:hover::after { transform: translateX(4px); }
+body.pagelayout-login .lp-card #loginbtn:hover::before { left: 120%; }
+body.pagelayout-login .lp-card #loginbtn:active { transform: translateY(0); }
+body.pagelayout-login .lp-card #loginbtn:focus-visible { outline: 0; box-shadow: 0 0 0 4px rgba(244, 178, 62, .45) !important; }
+
+/* Error message */
+body.pagelayout-login .lp-card .alert-danger, body.pagelayout-login .lp-card .loginerrors .alert {
+    border: 0 !important; border-left: 4px solid #e5556e !important; border-radius: 12px !important; background: #fdeef1 !important;
+    color: #9b2338 !important; font-size: 14px; font-weight: 600; padding: 12px 14px !important; margin-bottom: 16px !important;
+}
+/* Footer line */
+body.pagelayout-login .lp-form-foot { letter-spacing: 2px; color: #8a96a8 !important; }
+@media (max-width: 575.98px) {
+    body.pagelayout-login .lp-form-col .lp-card { padding: 34px 22px 26px; border-radius: 20px; }
+    body.pagelayout-login .lp-card .lp-phead { font-size: 25px !important; }
+}
+/* One eye icon at a time: open eye while hidden, crossed eye while shown */
+body.pagelayout-login .lp-card #togglePassword .showpassword-icon--on { display: none !important; }
+body.pagelayout-login .lp-card #togglePassword:not(.rui-show-password-btn--hidden) .showpassword-icon--off { display: none !important; }
+body.pagelayout-login .lp-card #togglePassword:not(.rui-show-password-btn--hidden) .showpassword-icon--on { display: block !important; }

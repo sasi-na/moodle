@@ -1,0 +1,290 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_baz/nt-student-dashboard
+
+    "New theme" student dashboard: two-level navy top bar. Same data as
+    theme_baz/student-dashboard (see output\nt_student_dashboard). Element ids
+    (sd-themebtn, sd-search-input, sd-askjo-btn, sd-help-fab ...) are kept so the
+    shared theme_baz/studentdashboard JS drives search, dark mode, Ask JO and help.
+}}
+{{> theme_baz/head }}
+<link rel="stylesheet" href="{{{ntcssurl}}}">
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="sd-root" class="nt-root">
+            {{> theme_baz/nt-topbar-student }}
+
+            {{#hasaskjo}}
+            <div class="sd-askjo-panel nt-askjo-panel" id="sd-askjo-panel" hidden>
+                <div class="sd-askjo-head">
+                    <span>{{#str}}sd_askjo, theme_baz{{/str}}</span>
+                    <button type="button" class="sd-askjo-close" id="sd-askjo-close" aria-label="{{#str}}closebuttontitle, core{{/str}}">×</button>
+                </div>
+                <div class="block_openai_chat" data-instance-id="{{askjo.blockid}}">
+                    <div class="sd-askjo-body">{{{ askjo.log }}}</div>
+                    <div class="sd-askjo-control">{{{ askjo.control }}}</div>
+                </div>
+            </div>
+            {{/hasaskjo}}
+
+            <main class="nt-content nt-stu">
+
+                <section class="nt-hello">
+                    <span class="nt-hello-ic{{#ntisevening}} eve{{/ntisevening}}" aria-hidden="true">
+                        {{#ntisevening}}<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>{{/ntisevening}}
+                        {{^ntisevening}}<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>{{/ntisevening}}
+                    </span>
+                    <div class="nt-hello-txt">
+                        <h1>{{ntgreeting}} <span aria-hidden="true">👋</span></h1>
+                        <p><span class="nt-hello-date">{{datelabel}}</span><span class="nt-hello-sub">{{{ntsubline}}}</span></p>
+                    </div>
+                </section>
+
+
+                {{#hasbanner}}
+                <div class="sd-banner-wrap nt-banner{{#bannermulti}} sd-banner-carousel{{/bannermulti}}" data-delay="{{bannerdelay}}">
+                    {{#banners}}
+                    {{#haslink}}<a class="sd-banner" href="{{link}}" target="_blank" rel="noopener"><img src="{{img}}" alt="{{alt}}"></a>{{/haslink}}
+                    {{^haslink}}<div class="sd-banner"><img src="{{img}}" alt="{{alt}}"></div>{{/haslink}}
+                    {{/banners}}
+                </div>
+                {{/hasbanner}}
+
+                <!-- Row 1: focus + coming up -->
+                <div class="nt-grid nt-grid-2">
+                    <section class="nt-card nt-focus nt-compact">
+                        <div class="nt-focus-top">
+                            <span class="nt-eyebrow">{{#str}}sd_focusnext, theme_baz{{/str}}</span>
+                            {{#hassemester}}<span class="nt-greet">{{#str}}sd_semshort, theme_baz, {{semesternum}}{{/str}}</span>{{/hassemester}}
+                        </div>
+                        {{#hasfocus}}
+                        <h1><a href="{{focus.url}}">{{ntfocusname}}</a></h1>
+                        <div class="nt-focus-meta"><span>{{focus.statuslabel}}</span><b>{{ntfocuspct}}%</b></div>
+                        <div class="nt-track nt-track-dark"><i style="width:{{ntfocuspct}}%"></i></div>
+                        {{#ntfocusstats}}
+                        <div class="nt-fstats">
+                            {{#ntfocushastotal}}<div class="nt-fstat"><span>{{#str}}nt_f_activities, theme_baz{{/str}}</span><b>{{ntfocusdone}}<small>/{{ntfocustotal}}</small></b></div>
+                            <div class="nt-fstat"><span>{{#str}}nt_f_left, theme_baz{{/str}}</span><b>{{ntfocusleft}}</b></div>{{/ntfocushastotal}}
+                            <div class="nt-fstat"><span>{{#str}}nt_f_last, theme_baz{{/str}}</span><b class="sm">{{ntfocuslast}}</b></div>
+                            {{#ntfocushasgrade}}<div class="nt-fstat"><span>{{#str}}nt_f_grade, theme_baz{{/str}}</span><b class="sm">{{ntfocusgrade}}</b></div>{{/ntfocushasgrade}}
+                        </div>
+                        {{#ntfocushasnext}}{{#ntfocusnext}}
+                        <a class="nt-fnext" href="{{url}}">
+                            <span class="nt-fnext-ic"><svg viewBox="0 0 24 24">{{{icon}}}</svg></span>
+                            <span class="nt-fnext-txt"><small>{{#str}}nt_f_upnext, theme_baz{{/str}} · {{kind}}</small><b>{{name}}</b></span>
+                            <span class="nt-fnext-go"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                        </a>
+                        {{/ntfocusnext}}{{/ntfocushasnext}}
+                        {{/ntfocusstats}}
+                        {{/hasfocus}}
+                        {{^hasfocus}}
+                        <h1>{{#str}}nt_nofocus, theme_baz{{/str}}</h1>
+                        <div class="nt-focus-meta"><span>{{datelabel}}</span></div>
+                        {{/hasfocus}}
+                        <div class="nt-focus-actions">
+                            {{#resumeitem}}<a class="nt-btn nt-btn-gold" href="{{url}}" title="{{name}}"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>{{#str}}sd_resume, theme_baz{{/str}}</a>{{/resumeitem}}
+                            {{^resumeitem}}{{#hasfocus}}<a class="nt-btn nt-btn-gold" href="{{focus.url}}"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg>{{#str}}sd_focusgo, theme_baz{{/str}}</a>{{/hasfocus}}{{/resumeitem}}
+                            {{#showexamcta}}<a class="nt-btn nt-btn-ghost" href="{{examctaurl}}">{{#str}}sd_exam_start, theme_baz{{/str}}</a>{{/showexamcta}}
+                        </div>
+                    </section>
+
+                    <section class="nt-card nt-pad nt-compact nt-comingcard">
+                        <div class="nt-card-h">
+                            <h2>{{#str}}calendar, calendar{{/str}}</h2>
+                            <a class="nt-link" href="{{calendarurl}}">{{#str}}nt_opencalendar, theme_baz{{/str}} →</a>
+                        </div>
+                        <div class="nt-coming">
+                            <div class="nt-minical" aria-label="{{calendar.monthlabel}}">
+                                <div class="nt-minical-h">
+                                    <b>{{calendar.monthlabel}}</b>
+                                    <a class="nt-minical-open" href="{{calendarurl}}" title="{{#str}}nt_opencalendar, theme_baz{{/str}}"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+                                </div>
+                                <div class="nt-minical-grid">
+                                    <span class="dow">Sun</span><span class="dow">Mon</span><span class="dow">Tue</span><span class="dow">Wed</span><span class="dow">Thu</span><span class="dow">Fri</span><span class="dow">Sat</span>
+                                    {{#calendar.cells}}
+                                    {{#blank}}<span class="blank"></span>{{/blank}}
+                                    {{^blank}}<a class="d c{{col}}{{#istoday}} today{{/istoday}}{{#isdue}} due{{/isdue}}{{#past}} past{{/past}}{{#isholiday}} hol{{/isholiday}}{{#isfestival}} fest{{/isfestival}}" href="{{url}}" title="{{daylabel}}{{#holiday}} · {{holiday}}{{/holiday}}{{#events}} · {{time}} {{name}}{{/events}}">{{day}}</a>{{/blank}}
+                                    {{/calendar.cells}}
+                                </div>
+                                <div class="nt-minical-legend">
+                                    <span><i class="k-today"></i>{{#str}}nt_today, theme_baz{{/str}}</span>
+                                    <span><i class="k-event"></i>{{#str}}nt_scheduled, theme_baz{{/str}}</span>
+                                    <span><i class="k-hol"></i>{{#str}}nt_holiday, theme_baz{{/str}}</span>
+                                    <span><i class="k-fest"></i>{{#str}}nt_festival, theme_baz{{/str}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Row 2: semester progress + jump back in -->
+                <div class="nt-grid nt-grid-2">
+                    <section class="nt-card nt-pad nt-sem">
+                        <div class="nt-card-h">
+                            <h2>{{#hassemester}}{{#str}}nt_semprogress, theme_baz, {{semesternum}}{{/str}}{{/hassemester}}{{^hassemester}}{{#str}}sd_semprogress, theme_baz{{/str}}{{/hassemester}}</h2>
+                            <div class="nt-h-right"><b class="nt-big">{{ringpct}}%</b>{{#hasstreak}}<span class="nt-chip nt-chip-amber">{{#str}}nt_streak, theme_baz, {{streak}}{{/str}}</span>{{/hasstreak}}</div>
+                        </div>
+                        <div class="nt-seg">
+                            {{#ringcompleted}}<i class="s-done" style="flex:{{ntsegdone}}"></i>{{/ringcompleted}}
+                            {{#ringinprogress}}<i class="s-prog" style="flex:{{ntsegprog}}"></i>{{/ringinprogress}}
+                            {{#nthasnotstarted}}<i class="s-new" style="flex:{{ntsegnew}}"></i>{{/nthasnotstarted}}
+                        </div>
+                        <div class="nt-seg-l">
+                            <span>{{#str}}sd_completed, theme_baz{{/str}} · {{ringcompleted}}</span>
+                            <span>{{#str}}sd_inprogress, theme_baz{{/str}} · {{ringinprogress}}</span>
+                            {{#nthasnotstarted}}<span>{{#str}}sd_notstarted, theme_baz{{/str}} · {{ringnotstarted}}</span>{{/nthasnotstarted}}
+                        </div>
+                        {{#hascourses}}
+                        <ul class="nt-courses">
+                            {{#ntcourses}}
+                            <li{{#ntdone}} class="nt-done"{{/ntdone}}><a href="{{url}}">
+                                <span class="nt-code" style="background:{{nttint}};color:{{ntcolor}}">{{ntcode}}</span>
+                                <span class="nt-c-main"><span class="nt-c-name">{{ntname}}</span><span class="nt-track"><i style="width:{{progress}}%;background:{{ntcolor}}"></i></span></span>
+                                <b class="nt-c-pct">{{progress}}%</b>
+                            </a></li>
+                            {{/ntcourses}}
+                        </ul>
+                        {{#coursecount}}<a class="nt-link nt-more" href="{{coursesurl}}">{{#str}}sd_allcourses, theme_baz, {{coursecount}}{{/str}} →</a>{{/coursecount}}
+                        {{/hascourses}}
+                        {{^hascourses}}<p class="nt-empty">{{#str}}nt_nocourses, theme_baz{{/str}}</p>{{/hascourses}}
+                    </section>
+
+                </div>
+
+                <!-- The rest of the existing dashboard data, in the same card style -->
+
+                <div class="nt-grid nt-grid-auto">
+                    {{#hasxp}}
+                    <section class="nt-card nt-pad nt-widget nt-w-xp">
+                        <div class="nt-card-h"><h2><span class="nt-wic nt-wic-amber"><svg viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 0 1-10 0zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"/></svg></span>{{#str}}sd_levelup, theme_baz{{/str}}</h2>{{#xp.hasrank}}<span class="nt-chip nt-chip-amber">#{{xp.rank}}</span>{{/xp.hasrank}}</div>
+                        <div class="nt-xp">
+                            <div class="nt-xp-ring">
+                                <svg viewBox="0 0 72 72"><circle cx="36" cy="36" r="30" class="trk"/><circle cx="36" cy="36" r="30" class="val" stroke-dasharray="{{xp.ringdash}}"/></svg>
+                                <div class="nt-xp-lvl"><small>{{#str}}nt_level, theme_baz{{/str}}</small><b>{{xp.level}}</b></div>
+                            </div>
+                            <div class="nt-xp-info">
+                                <div class="nt-xp-pts"><b>{{xp.points}}</b> {{#xp.hasnext}}<span>/ {{xp.nextpoints}} {{#str}}sd_xp, theme_baz{{/str}}</span>{{/xp.hasnext}}{{^xp.hasnext}}<span>{{#str}}sd_xp, theme_baz{{/str}}</span>{{/xp.hasnext}}</div>
+                                <div class="nt-track"><i style="width:{{xp.ratio}}%;background:linear-gradient(90deg,#f4b23e,#f08c1d)"></i></div>
+                                {{#xp.hasnext}}<div class="nt-xp-next">{{#str}}sd_xptonext, theme_baz, {{xp.topct}}{{/str}}</div>{{/xp.hasnext}}
+                            </div>
+                        </div>
+                        {{#xp.hasrank}}<div class="nt-xp-rank"><svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="5"/><path d="M8.5 13 7 21l5-3 5 3-1.5-8"/></svg>{{#str}}sd_xprank, theme_baz, {{xp.rank}}{{/str}}</div>{{/xp.hasrank}}
+                        <div class="nt-xp-tips"><span>{{#str}}nt_xp_tip, theme_baz{{/str}}</span></div>
+                    </section>
+                    {{/hasxp}}
+
+                    <section class="nt-card nt-pad nt-widget nt-w-news">
+                        <div class="nt-card-h"><h2><span class="nt-wic nt-wic-blue"><svg viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg></span>{{#str}}sd_announcements, theme_baz{{/str}}</h2>{{#ntnewsurl}}<a class="nt-link" href="{{ntnewsurl}}">{{#str}}nt_viewall, theme_baz{{/str}} →</a>{{/ntnewsurl}}</div>
+                        {{#nthasnews}}
+                        <ul class="nt-news">
+                            {{#ntnews}}
+                            <li><a href="{{url}}">
+                                <span class="nt-news-top"><span class="nt-news-where">{{where}}</span><span class="nt-news-date">{{date}}</span>{{#isnew}}<span class="nt-news-new">{{#str}}nt_new, theme_baz{{/str}}</span>{{/isnew}}</span>
+                                <span class="nt-li-t">{{title}}</span>
+                                {{#excerpt}}<span class="nt-news-ex">{{excerpt}}</span>{{/excerpt}}
+                                <span class="nt-news-by">{{author}}</span>
+                            </a></li>
+                            {{/ntnews}}
+                        </ul>
+                        {{/nthasnews}}
+                        {{^nthasnews}}
+                        <div class="nt-empty-box nt-empty-news">
+                            <svg viewBox="0 0 24 24"><path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg>
+                            <b>{{#str}}nt_nonews, theme_baz{{/str}}</b>
+                            <span>{{#str}}nt_nonews_sub, theme_baz{{/str}}</span>
+                        </div>
+                        {{/nthasnews}}
+                    </section>
+
+                    {{#hasbusinessnews}}
+                    <section class="nt-card nt-pad nt-widget nt-w-extra">
+                        <div class="nt-card-h"><h2><span class="nt-wic nt-wic-navy"><svg viewBox="0 0 24 24"><path d="M4 5h13v14H4z"/><path d="M17 8h3v9a2 2 0 0 1-2 2h-1M7 9h7M7 13h5"/></svg></span>{{#str}}sd_businessnews, theme_baz{{/str}}</h2></div>
+                        <ul class="nt-list">
+                            {{#businessnews}}<li><a href="{{url}}" target="_blank" rel="noopener"><span class="nt-date" style="background:{{color}};color:#fff"><b>{{abbr}}</b></span><span class="nt-li-txt"><span class="nt-li-s">{{source}}</span><span class="nt-li-t">{{title}}</span></span></a></li>{{/businessnews}}
+                        </ul>
+                    </section>
+                    {{/hasbusinessnews}}
+
+                    {{#haspodcasts}}
+                    <section class="nt-card nt-pad nt-widget nt-w-extra">
+                        <div class="nt-card-h"><h2><span class="nt-wic nt-wic-violet"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>{{#str}}sd_podcasts, theme_baz{{/str}}</h2></div>
+                        <ul class="nt-list">
+                            {{#podcasts}}<li><a href="{{url}}" target="_blank" rel="noopener"><span class="nt-date nt-tone-violet"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></span><span class="nt-li-txt"><span class="nt-li-s">{{source}}</span><span class="nt-li-t">{{title}}</span></span></a></li>{{/podcasts}}
+                        </ul>
+                    </section>
+                    {{/haspodcasts}}
+                </div>
+
+                <p class="nt-footnote">{{brandfootnote}}</p>
+
+                <div id="region-main-box" class="sd-region-main">
+                    <section id="region-main" aria-label="{{#str}}content{{/str}}">
+                        {{{ output.main_content }}}
+                    </section>
+                </div>
+            </main>
+
+            {{#hassupport}}
+            <div class="sd-help nt-help">
+                <div class="sd-help-panel" id="sd-help-panel" hidden>
+                    <div class="sd-help-head">
+                        <div class="sd-help-t"><b>{{#str}}sd_help, theme_baz{{/str}}</b><small>{{#str}}sd_help_sub, theme_baz{{/str}}</small></div>
+                        <button type="button" class="sd-help-close" id="sd-help-close" aria-label="{{#str}}closebuttontitle, core{{/str}}">&times;</button>
+                    </div>
+                    <div class="sd-blockcontent sd-support">{{{ support_html }}}</div>
+                </div>
+                <button type="button" class="sd-help-fab" id="sd-help-fab" aria-expanded="false" aria-controls="sd-help-panel">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M5 5l3.6 3.6M15.4 15.4 19 19M19 5l-3.6 3.6M8.6 15.4 5 19"/></svg>
+                    <span>{{#str}}sd_help, theme_baz{{/str}}</span>
+                </button>
+            </div>
+            {{/hassupport}}
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+</body>
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/studentdashboard'], function(Loader, StudentDashboard) {
+        StudentDashboard.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+    document.querySelectorAll('[data-nt-tabs]').forEach(function(box) {
+        box.querySelectorAll('[data-nt-tab]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var key = btn.getAttribute('data-nt-tab');
+                box.querySelectorAll('[data-nt-tab]').forEach(function(b) {
+                    var on = b === btn;
+                    b.classList.toggle('on', on);
+                    b.setAttribute('aria-selected', on ? 'true' : 'false');
+                });
+                box.querySelectorAll('[data-nt-pane]').forEach(function(p) {
+                    p.hidden = p.getAttribute('data-nt-pane') !== key;
+                });
+            });
+        });
+    });
+{{/js}}

@@ -1,0 +1,189 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_baz/nt-admin-dashboard
+
+    "New theme" admin dashboard: two-level navy top bar. Data from
+    output\nt_admin_dashboard (admin_dashboard + live site aggregates).
+}}
+{{> theme_baz/head }}
+<link rel="stylesheet" href="{{{ntcssurl}}}">
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="sd-root" class="nt-root nt-admin">
+            {{> theme_baz/nt-topbar-admin }}
+
+            <main class="nt-content">
+                <div class="nt-crumbrow">
+                    <a class="nt-health {{#healthok}}ok{{/healthok}}{{^healthok}}warn{{/healthok}}" href="{{nttasksurl}}">
+                        <i></i>{{#healthok}}{{#str}}nt_health_ok, theme_baz{{/str}}{{/healthok}}{{^healthok}}{{#str}}nt_health_warn, theme_baz, {{attentioncount}}{{/str}}{{/healthok}}
+                    </a>
+                </div>
+
+                <section class="nt-hello">
+                    <span class="nt-hello-ic{{#ntisevening}} eve{{/ntisevening}}" aria-hidden="true">
+                        {{#ntisevening}}<svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>{{/ntisevening}}
+                        {{^ntisevening}}<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>{{/ntisevening}}
+                    </span>
+                    <div class="nt-hello-txt">
+                        <h1>{{ntgreeting}} <span aria-hidden="true">👋</span></h1>
+                        <p><span class="nt-hello-date">{{datelabel}}</span><span class="nt-hello-sub">{{{ntsubline}}}</span></p>
+                    </div>
+                </section>
+
+
+                <section class="nt-card nt-actions4">
+                    <a href="{{adduserurl}}"><svg class="c-blue" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.5"/><path d="M3.5 19c.8-3.3 3.3-5 6.5-5s5.7 1.7 6.5 5M18 8v6M15 11h6"/></svg>{{#str}}nt_adduser, theme_baz{{/str}}</a>
+                    <a href="{{createcourseurl}}"><svg class="c-green" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M12 8v8M8 12h8"/></svg>{{#str}}nt_createcourse, theme_baz{{/str}}</a>
+                    <a href="{{reportsurl}}"><svg class="c-violet" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M8 16l3.5-4 3 2.5L20 8"/></svg>{{#str}}nt_reportslogs, theme_baz{{/str}}</a>
+                </section>
+
+                <div class="nt-grid nt-grid-4">
+                    {{#ntkpis}}
+                    <div class="nt-card nt-kpi">
+                        <div class="nt-kpi-h"><span>{{label}}</span><span class="nt-delta{{#negative}} neg{{/negative}}" title="{{deltatip}}">{{delta}}</span></div>
+                        <div class="nt-kpi-v">{{value}}</div>
+                        {{#hasspark}}
+                        <svg class="nt-spark" viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true">
+                            <path d="{{area}}" fill="{{color}}" fill-opacity=".14"/>
+                            <path d="{{line}}" fill="none" stroke="{{color}}" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+                        </svg>
+                        {{/hasspark}}
+                    </div>
+                    {{/ntkpis}}
+                </div>
+
+                <div class="nt-grid nt-grid-2">
+                    <section class="nt-card nt-pad">
+                        <div class="nt-card-h nt-card-h-top">
+                            <div>
+                                <div class="nt-sublbl">{{#str}}nt_siteactivitytoday, theme_baz{{/str}}</div>
+                                <div class="nt-hero-num">{{#str}}nt_actions, theme_baz, {{ntacttotal}}{{/str}}{{#nthasactdelta}} <span class="nt-chip {{#ntactdeltaneg}}nt-chip-red{{/ntactdeltaneg}}{{^ntactdeltaneg}}nt-chip-green{{/ntactdeltaneg}}">{{ntactdelta}}</span>{{/nthasactdelta}}</div>
+                            </div>
+                            <a class="nt-btn nt-btn-line" href="{{ntactivityurl}}">{{#str}}nt_viewlogs, theme_baz{{/str}}</a>
+                        </div>
+                        <div class="nt-parts">
+                            {{#ntactparts}}<div><i style="background:{{color}}"></i><span>{{label}} · {{n}}</span></div>{{/ntactparts}}
+                        </div>
+                        {{#nthasrecent}}
+                        <ul class="nt-list nt-feed">
+                            {{#ntrecent}}
+                            <li><div class="nt-feed-row">
+                                <span class="nt-fi nt-fi-{{kind}}">
+                                    {{#isgrade}}<svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>{{/isgrade}}
+                                    {{#isenrol}}<svg viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.5"/><path d="M3.5 19c.8-3.3 3.3-5 6.5-5s5.7 1.7 6.5 5M18 8v6M15 11h6"/></svg>{{/isenrol}}
+                                    {{#iscreate}}<svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/></svg>{{/iscreate}}
+                                    {{#isupdate}}<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>{{/isupdate}}
+                                    {{#isdelete}}<svg viewBox="0 0 24 24"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>{{/isdelete}}
+                                </span>
+                                <span class="nt-li-txt"><span class="nt-li-t">{{title}}</span><span class="nt-li-s">{{sub}}</span></span>
+                                <span class="nt-ago">{{ago}}</span>
+                            </div></li>
+                            {{/ntrecent}}
+                        </ul>
+                        {{/nthasrecent}}
+                        {{^nthasrecent}}<p class="nt-empty">{{#str}}nt_norecent, theme_baz{{/str}}</p>{{/nthasrecent}}
+                    </section>
+
+                    <section class="nt-card nt-pad" data-nt-tabs>
+                        <div class="nt-card-h">
+                            <h2>{{#str}}nt_engagement, theme_baz{{/str}}</h2>
+                            <div class="nt-seg-tabs" role="tablist">
+                                {{#ntcharts}}<button type="button" class="{{#active}}on{{/active}}" data-nt-tab="{{key}}" role="tab" aria-selected="{{#active}}true{{/active}}{{^active}}false{{/active}}">{{#str}}nt_ndays, theme_baz, {{key}}{{/str}}</button>{{/ntcharts}}
+                            </div>
+                        </div>
+                        {{#ntcharts}}
+                        <div class="nt-pane" data-nt-pane="{{key}}" {{^active}}hidden{{/active}}>
+                            <div class="nt-chart">
+                                <svg viewBox="0 0 600 220" preserveAspectRatio="none" aria-label="{{#str}}nt_engagement, theme_baz{{/str}}">
+                                    <line x1="0" y1="55" x2="600" y2="55" class="nt-gridl"/>
+                                    <line x1="0" y1="110" x2="600" y2="110" class="nt-gridl"/>
+                                    <line x1="0" y1="165" x2="600" y2="165" class="nt-gridl"/>
+                                    <path d="{{area}}" class="nt-area"/>
+                                    <path d="{{line}}" class="nt-line" vector-effect="non-scaling-stroke"/>
+                                </svg>
+                                <div class="nt-xl">{{#labels}}<span style="left:{{left}}%">{{text}}</span>{{/labels}}</div>
+                            </div>
+                            <p class="nt-note">{{#str}}nt_engagement_note, theme_baz, {{peak}}{{/str}}</p>
+                        </div>
+                        {{/ntcharts}}
+                        <div class="nt-foot4">
+                            <div><b>{{eng_activetoday}}</b><span>{{#str}}nt_kpi_activetoday, theme_baz{{/str}}</span></div>
+                            <div><b>{{eng_wau}}</b><span>{{#str}}nt_weeklyactive, theme_baz{{/str}}</span></div>
+                            <div><b>{{eng_mau}}</b><span>{{#str}}nt_monthlyactive, theme_baz{{/str}}</span></div>
+                            <div><b>{{eng_stickiness}}</b><span>{{#str}}nt_stickiness, theme_baz{{/str}}</span></div>
+                        </div>
+                    </section>
+                </div>
+
+                <div class="nt-grid nt-grid-2">
+                    <a class="nt-card nt-navy" href="{{coursesurl}}">
+                        <div class="nt-navy-l">
+                            <span>{{#str}}courses, core{{/str}}</span>
+                            <b>{{kpi_courses}}</b>
+                            <small>{{#str}}nt_catsstarred, theme_baz, {"cats": "{{ntcatcount}}", "starred": "{{ntstarred}}"}{{/str}}</small>
+                        </div>
+                        {{#nthascatrows}}
+                        <div class="nt-navy-r">
+                            {{#ntcatrows}}
+                            <div class="nt-catrow"><div><span>{{name}}</span><b>{{n}}</b></div><span class="nt-track nt-track-dark"><i style="width:{{width}}%;background:{{color}}"></i></span></div>
+                            {{/ntcatrows}}
+                        </div>
+                        {{/nthascatrows}}
+                    </a>
+                </div>
+
+                <div id="region-main-box" class="sd-region-main">
+                    <section id="region-main" aria-label="{{#str}}content{{/str}}">
+                        {{{ output.main_content }}}
+                    </section>
+                </div>
+            </main>
+        </div>
+
+        {{{ output.standard_after_main_region_html }}}
+        {{{ output.standard_end_of_body_html }}}
+    </div>
+</body>
+</html>
+{{#js}}
+    M.util.js_pending('theme_baz/loader');
+    require(['theme_baz/loader', 'theme_baz/studentdashboard'], function(Loader, StudentDashboard) {
+        StudentDashboard.init();
+        M.util.js_complete('theme_baz/loader');
+    });
+    document.querySelectorAll('[data-nt-tabs]').forEach(function(box) {
+        box.querySelectorAll('[data-nt-tab]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var key = btn.getAttribute('data-nt-tab');
+                box.querySelectorAll('[data-nt-tab]').forEach(function(b) {
+                    var on = b === btn;
+                    b.classList.toggle('on', on);
+                    b.setAttribute('aria-selected', on ? 'true' : 'false');
+                });
+                box.querySelectorAll('[data-nt-pane]').forEach(function(p) {
+                    p.hidden = p.getAttribute('data-nt-pane') !== key;
+                });
+            });
+        });
+    });
+{{/js}}

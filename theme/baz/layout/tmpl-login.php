@@ -84,12 +84,26 @@ if (theme_baz_get_setting('bespoke_login') == '1') {
         }
         // get_logo_url() returns a moodle_url or false.
         $logourl = $OUTPUT->get_logo_url(null, 200);
+        // The site brand (Ednxt Top Bar settings -> Branding) instead of Moodle
+        // placeholder pictures/logos, in both themes. Display only.
+        $ntbrand = function_exists('theme_baz_nt_brand') ? theme_baz_nt_brand() : null;
+        if ($ntbrand && $ntbrand['logo'] !== '') {
+            if (theme_baz_is_placeholder_file($loginbgurl)) {
+                $loginbgurl = $ntbrand['loginart'];
+            }
+            if (!$logourl || theme_baz_is_placeholder_file($logourl->out(false))) {
+                $logourl = new moodle_url($ntbrand['logo']);
+            }
+        }
         // A site's own lockup for the sign-in card. The sidebar logo is not reused:
         // it is drawn for the sidebar's own background, which is not necessarily the
         // card's. Falls back to the core logo, then to the site name as text.
         $loginlogourl = $PAGE->theme->setting_file_url('loginlogo', 'loginlogo');
         if ($loginlogourl instanceof \moodle_url) {
             $loginlogourl = $loginlogourl->out(false);
+        }
+        if (!empty($ntbrand) && $ntbrand['logo'] !== '' && theme_baz_is_placeholder_file($loginlogourl)) {
+            $loginlogourl = $ntbrand['logo'];
         }
         // Layout: the shipped split screen, or a centred card over a full-bleed
         // photograph. Per site, so one template serves both.
@@ -112,7 +126,7 @@ if (theme_baz_get_setting('bespoke_login') == '1') {
             'loginurl' => (new moodle_url('/login/index.php'))->out(false),
             'loginlogo' => $loginlogourl ? (string) $loginlogourl : '',
             'logincentered' => $logincentered,
-        ]);
+        ], !empty($ntbrand) ? ['sitename' => $ntbrand['name']] : []);
         echo $OUTPUT->render_from_template('theme_baz/student-login', $ctx);
         return;
     } catch (\Throwable $e) {

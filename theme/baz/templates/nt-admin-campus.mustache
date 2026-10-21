@@ -1,0 +1,41 @@
+{{!
+    @template theme_baz/nt-admin-campus
+
+    Option 5 - admin campus edition: KPI headlines, course ledger,
+    health bulletin and offices directory. Data from output\nt_admin_dashboard.
+}}
+{{> theme_baz/nt-va-top }}
+            <main class="nv-main nv-journal nv-gazette" data-nv-uid="0">
+                <header class="nv-masthead">
+                    <div class="nv-mast-row"><span>{{datelabel}}</span><span>{{#str}}nv_admined, theme_baz{{/str}}</span></div>
+                    <h1 class="nv-hello">{{ntgreeting}}</h1>
+                    <p class="nv-sub">{{{ntsubline}}}</p>
+                </header>
+
+                <section class="nv-headlines">
+                    {{#ntkpis}}<div class="nv-hl"><span class="nv-section">{{label}}</span><b>{{value}}</b><em class="{{#negative}}neg{{/negative}}" title="{{deltatip}}">{{delta}} {{#str}}nv_thisperiod, theme_baz{{/str}}</em>{{#hasspark}}<svg viewBox="0 0 100 28" preserveAspectRatio="none" aria-hidden="true"><path d="{{line}}" fill="none" stroke="currentColor" stroke-width="1.5" vector-effect="non-scaling-stroke"/></svg>{{/hasspark}}</div>{{/ntkpis}}
+                </section>
+
+                <div class="nv-paper">
+                    <div class="nv-lead">
+                        <section class="nv-box">
+                            <h3 class="nv-section">{{#str}}nv_ledger, theme_baz{{/str}} · {{kpi_courses}} {{#str}}courses, core{{/str}} <a href="{{coursesurl}}">{{#str}}nt_viewall, theme_baz{{/str}}</a></h3>
+                            {{#nthascatrows}}<table class="nv-gtable nv-ledger"><tbody>{{#ntcatrows}}<tr><td><b>{{name}}</b></td><td class="nv-ledbar"><i style="width:{{width}}%"></i></td><td class="nv-gpct">{{n}}</td></tr>{{/ntcatrows}}</tbody></table>{{/nthascatrows}}
+                        </section>
+                    </div>
+
+                    <aside class="nv-sidecol">
+                        <section class="nv-box nv-bulletin" data-nv-health>
+                            <h3 class="nv-section">{{#str}}nv_bulletin, theme_baz{{/str}} <a href="{{nttasksurl}}">{{#str}}nv_a_tasks, theme_baz{{/str}}</a></h3>
+                            <ul>{{#health}}<li data-state="{{state}}"><i></i><span><b>{{label}}</b> {{value}}</span></li>{{/health}}</ul>
+                            <p class="nv-hol">{{#str}}nv_healthscore, theme_baz{{/str}}: <b data-nv-health-pct>—</b></p>
+                        </section>
+
+                        <section class="nv-box nv-offices">
+                            <h3 class="nv-section">{{#str}}nv_offices, theme_baz{{/str}}</h3>
+                            <div class="nv-dir">{{> theme_baz/nt-va-links }}</div>
+                        </section>
+                    </aside>
+                </div>
+            </main>
+{{> theme_baz/nt-v-bottom }}

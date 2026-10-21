@@ -101,7 +101,45 @@ if ($PAGE->pagetype === 'message-index'
     }
 }
 
+// "New theme" (two-level top bar) for the student + admin dashboards. Off by
+// default; switched on in Baz settings > New theme, or previewed per session with
+// /my/?newtheme=1. Falls back to the current dashboards on any error.
+$darkmodeon = $darkmodeon ?? false;
+$darkmodetheme = $darkmodetheme ?? false;
+$ntrender = function(string $kind) use ($OUTPUT, $SITE, $CFG, $extraclasses, $darkmodeon, $darkmodetheme): bool {
+    try {
+        $themesettings = new \theme_baz\util\theme_settings();
+        $dash = $kind === 'admin' ? new \theme_baz\output\nt_admin_dashboard() : new \theme_baz\output\nt_student_dashboard();
+        $ctx = array_merge([
+            'sitename' => format_string($SITE->shortname, true,
+                ['context' => context_course::instance(SITEID), 'escape' => false]),
+            'output' => $OUTPUT,
+            'bodyattributes' => $OUTPUT->body_attributes(array_merge($extraclasses, ['nt-newtheme'])),
+            'siteurl' => $CFG->wwwroot,
+            'navdraweropen' => false,
+            'darkmodeon' => !empty($darkmodeon),
+            'darkmodetheme' => !empty($darkmodetheme),
+            'ntcssurl' => \theme_baz\local\newtheme::cssurl(),
+            'ntwidgetsurl' => \theme_baz\local\newtheme::asseturl('widgets.js'),
+        ], $themesettings->global_settings(), $dash->export_for_template($OUTPUT));
+        $ctx['weatherwidget'] = '' /* Weather removed from all dashboards (display only; block_weather untouched). */;
+        // Options 2-5 all show the same widgets and colours as Option 1; only the menu design differs
+        // (variants-nav.css). The old per-option dashboards (nt-student-rail/dock/campus) are not used.
+        $tpl = 'theme_baz/nt-' . $kind . '-dashboard';
+        $html = $OUTPUT->render_from_template($tpl, $ctx);
+        echo $html;
+        return true;
+    } catch (\Throwable $e) {
+        debugging('theme_baz new theme dashboard: ' . $e->getMessage(), DEBUG_DEVELOPER);
+        return false;
+    }
+};
+$ntison = ($PAGE->pagetype === 'my-index') && function_exists('theme_baz_nt_feature') && theme_baz_nt_feature('dashboards');
+
 if ($studentdashboardon) {
+    if ($ntison && $ntrender('student')) {
+        return;
+    }
     $themesettings = new \theme_baz\util\theme_settings();
     $studentdashboard = new \theme_baz\output\student_dashboard();
     $templatecontext = array_merge([
@@ -114,7 +152,7 @@ if ($studentdashboardon) {
         'darkmodeon' => !empty($darkmodeon),
         'darkmodetheme' => !empty($darkmodetheme),
     ], $themesettings->global_settings(), $studentdashboard->export_for_template($OUTPUT));
-    $templatecontext['weatherwidget'] = class_exists('\\block_weather\\api') ? \block_weather\api::dashboard_widget() : ''; // Weather card (block_weather).
+    $templatecontext['weatherwidget'] = '' /* Weather removed from all dashboards (display only; block_weather untouched). */; // Weather card (block_weather).
     echo $OUTPUT->render_from_template('theme_baz/student-dashboard', $templatecontext);
     return;
 }
@@ -148,7 +186,7 @@ if ($PAGE->pagetype === 'my-index'
             'darkmodeon' => !empty($darkmodeon),
             'darkmodetheme' => !empty($darkmodetheme),
         ], $themesettings->global_settings(), $teacherdashboard->export_for_template($OUTPUT));
-        $templatecontext['weatherwidget'] = class_exists('\\block_weather\\api') ? \block_weather\api::dashboard_widget() : ''; // Weather card (block_weather).
+        $templatecontext['weatherwidget'] = '' /* Weather removed from all dashboards (display only; block_weather untouched). */; // Weather card (block_weather).
     echo $OUTPUT->render_from_template('theme_baz/teacher-dashboard', $templatecontext);
         return;
     } catch (\Throwable $e) {
@@ -163,6 +201,9 @@ if ($PAGE->pagetype === 'my-index'
 if ($PAGE->pagetype === 'my-index'
         && \theme_baz\local\gate::allows('admin_view_dashboard', false)
         && is_siteadmin($USER->id)) {
+    if ($ntison && $ntrender('admin')) {
+        return;
+    }
     try {
         $themesettings = new \theme_baz\util\theme_settings();
         $admindashboard = new \theme_baz\output\admin_dashboard();
@@ -176,7 +217,7 @@ if ($PAGE->pagetype === 'my-index'
             'darkmodeon' => !empty($darkmodeon),
             'darkmodetheme' => !empty($darkmodetheme),
         ], $themesettings->global_settings(), $admindashboard->export_for_template($OUTPUT));
-        $templatecontext['weatherwidget'] = class_exists('\\block_weather\\api') ? \block_weather\api::dashboard_widget() : ''; // Weather card (block_weather).
+        $templatecontext['weatherwidget'] = '' /* Weather removed from all dashboards (display only; block_weather untouched). */; // Weather card (block_weather).
         echo $OUTPUT->render_from_template('theme_baz/admin-dashboard', $templatecontext);
         return;
     } catch (\Throwable $e) {

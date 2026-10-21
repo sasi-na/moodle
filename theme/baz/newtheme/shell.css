@@ -1,0 +1,940 @@
+/* BAZ "Top bar" navigation layout: two-level top bar for every Baz page (with shell.js) and the shared
+   top bar styles of the new dashboards. Colours come from the Ednxt Top Bar theme
+   settings as --ednxt-* custom properties (see theme_baz_nt_head_css() in theme/baz/lib.php). */
+
+body {
+    --ntb-navy: var(--ednxt-navy, #0f1f3d);
+    --ntb-gold: var(--ednxt-gold, #f4b23e);
+    --ntb-gold-ink: var(--ednxt-gold-ink, #3a2a06);
+    --ntb-bg: var(--ednxt-bg, #eef2f7);
+    --ntb-line: #dfe5ee;
+}
+
+/* ---------- First paint: hide the sidebar shell, full-width content ---------- */
+body.nt-shell [id$="-root"]:has(> aside[id$="-side"]) {
+    display: block !important;
+    grid-template-columns: none !important;
+    padding-left: 0 !important;
+    background: var(--ntb-bg);
+}
+body.nt-shell [id$="-root"] > aside[id$="-side"],
+body.nt-shell [id$="-root"] > [id$="-backdrop"],
+body.nt-shell [id$="-root"] [id$="-burger"] {
+    display: none !important;
+}
+body.nt-shell [id$="-root"]:has(> aside[id$="-side"]) > div[class*="-main"] {
+    margin-left: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    min-width: 0;
+}
+/* The old white header keeps only the breadcrumb: a quiet row under the bars. */
+body.nt-shell .nt-shell-root header[class*="-topbar"] {
+    position: static !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    min-height: 0 !important;
+    height: auto !important;
+}
+body.nt-shell .nt-shell-root header[class*="-topbar"] > div {
+    max-width: 1680px;
+    margin: 0 auto;
+    padding: 16px 28px 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+/* ---------- Level 1: navy bar ---------- */
+#nt-shellbar {
+    background: var(--ntb-navy) !important;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    font-size: 14px;
+    border: 0;
+    box-shadow: none;
+}
+#nt-shellbar .nt-top-inner {
+    max-width: 1680px;
+    margin: 0 auto;
+    padding: 0 28px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+#nt-shellbar a { text-decoration: none; }
+#nt-shellbar svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+#nt-shellbar .nt-brand { display: flex; align-items: center; font-weight: 800; font-size: 22px; color: var(--ntb-gold) !important; letter-spacing: -.5px; white-space: nowrap; flex: none; }
+#nt-shellbar .nt-brand { min-width: 40px; }
+#nt-shellbar .nt-brand img { display: block; height: 34px !important; width: auto !important; max-width: 170px !important; max-height: none !important; object-fit: contain; object-position: left center; }
+#nt-shellbar .nt-nav { display: flex; align-items: center; gap: 4px; flex: 1 1 auto; min-width: 0; overflow: hidden; flex-direction: row; flex-wrap: nowrap; padding: 2px 0; margin: 0; }
+#nt-shellbar .nt-nav::-webkit-scrollbar { display: none; }
+#nt-shellbar .nt-nav > a { flex: none; }
+#nt-shellbar .nt-nav a { display: inline-flex; align-items: center; gap: 7px; padding: 7px 12px; border-radius: 999px; color: #e4eaf5 !important; font-weight: 500; font-size: 13.5px; white-space: nowrap; background: transparent; position: static; }
+#nt-shellbar .nt-nav a::before { display: none !important; }
+#nt-shellbar .nt-nav a svg { stroke: currentColor !important; }
+#nt-shellbar .nt-nav a:hover { background: rgba(255, 255, 255, .08); color: #fff !important; }
+#nt-shellbar .nt-nav a.on { background: var(--ntb-gold); color: var(--ntb-gold-ink) !important; font-weight: 600; }
+#nt-shellbar .nt-top-right { display: flex; align-items: center; gap: 10px; flex: none; margin-left: auto; }
+
+/* "More" (links that do not fit) */
+#nt-shellbar .nt-navmore { position: static; flex: none; }
+#nt-shellbar .nt-navmore-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 0; background: transparent; color: #e4eaf5; font: inherit; font-size: 13.5px; font-weight: 500; cursor: pointer; white-space: nowrap; }
+#nt-shellbar .nt-navmore-btn:hover, #nt-shellbar .nt-navmore-btn[aria-expanded="true"] { background: rgba(255, 255, 255, .08); color: #fff; }
+#nt-shellbar .nt-navmore-btn.on { background: var(--ntb-gold); color: var(--ntb-gold-ink); font-weight: 600; }
+#nt-shellbar .nt-navmore-btn svg { width: 14px; height: 14px; }
+#nt-shellbar .nt-navmore-panel { position: absolute; top: calc(100% - 6px); width: 240px; background: #fff; border: 1px solid var(--ntb-line); border-radius: 10px; box-shadow: 0 16px 40px rgba(15, 31, 61, .18); padding: 6px; z-index: 1050; display: flex; flex-direction: column; gap: 2px; }
+#nt-shellbar .nt-navmore-panel[hidden] { display: none; }
+#nt-shellbar .nt-navmore-panel a { display: flex !important; align-items: center; gap: 10px; padding: 9px 12px !important; border-radius: 7px !important; color: #1d2a3a !important; background: transparent !important; font-weight: 500; white-space: nowrap; }
+#nt-shellbar .nt-navmore-panel a:hover { background: #eef2f7 !important; }
+#nt-shellbar .nt-navmore-panel a.on { background: #fdf2de !important; color: #8a5a00 !important; }
+#nt-shellbar .nt-navmore-panel a svg { color: #4a5a73; }
+
+/* Search (moved from the old header) */
+#nt-shellbar .nt-moved-search, #nt-shellbar .nt-search-wrap { position: relative; margin: 0; padding: 0; flex: none; width: auto; max-width: none; }
+#nt-shellbar .nt-moved-search form, #nt-shellbar form.nt-search {
+    display: flex !important; align-items: center; gap: 8px; width: 230px; height: 38px; margin: 0;
+    padding: 0 10px !important; border-radius: 8px !important;
+    background: rgba(255, 255, 255, .07) !important; border: 1px solid rgba(255, 255, 255, .14) !important;
+    box-shadow: none !important; color: #9fb0cc;
+}
+#nt-shellbar .nt-moved-search form > *, #nt-shellbar form.nt-search > * { margin: 0; }
+#nt-shellbar .nt-moved-search input, #nt-shellbar form.nt-search input {
+    flex: 1; min-width: 0; width: auto; height: 100%; padding: 0 !important; background: transparent !important;
+    border: 0 !important; outline: 0; box-shadow: none !important; color: #fff !important; font-size: 13.5px;
+}
+#nt-shellbar .nt-moved-search input::placeholder, #nt-shellbar form.nt-search input::placeholder { color: #9fb0cc; opacity: 1; }
+#nt-shellbar .nt-moved-search [class*="-kbd"], #nt-shellbar .nt-kbd { color: #7f91b2 !important; background: transparent !important; border: 0 !important; font-size: 12px; }
+#nt-shellbar .nt-moved-search [class*="-suggest"], #nt-shellbar .sd-suggest { position: absolute; right: 0; left: auto; top: 44px; width: 360px; z-index: 1040; color: #1d2a3a; }
+
+/* Icons / user menu (moved from the old header) */
+#nt-shellbar .nt-moved-actions, #nt-shellbar .nt-actions { display: flex !important; align-items: center; gap: 10px; margin: 0; padding: 0; }
+#nt-shellbar .nt-moved-actions > div, #nt-shellbar .nt-plugins, #nt-shellbar .nt-usermenu { display: flex; align-items: center; gap: 10px; }
+#nt-shellbar [id$="-themebtn"], #nt-shellbar .nt-iconbtn,
+#nt-shellbar .popover-region-toggle,
+#nt-shellbar [data-region="popover-region-messages"] > button {
+    position: relative; width: 38px !important; height: 38px !important; border-radius: 8px !important; padding: 0 !important;
+    background: transparent !important; border: 1px solid rgba(255, 255, 255, .16) !important; box-shadow: none !important;
+    color: #fff !important; display: grid !important; place-items: center; cursor: pointer; transform: none !important;
+}
+#nt-shellbar [id$="-themebtn"]:hover, #nt-shellbar .popover-region-toggle:hover,
+#nt-shellbar [data-region="popover-region-messages"] > button:hover { background: rgba(255, 255, 255, .08) !important; }
+#nt-shellbar [id$="-themebtn"] svg, #nt-shellbar .popover-region-toggle svg,
+#nt-shellbar [data-region="popover-region-messages"] > button svg { width: 19px !important; height: 19px !important; color: #fff; }
+#nt-shellbar .popover-region-toggle svg path, #nt-shellbar [data-region="popover-region-messages"] > button svg path { stroke: currentColor; }
+#nt-shellbar .popover-region { position: relative; display: flex; align-items: center; }
+#nt-shellbar .count-container, #nt-shellbar [data-region="count-container"] {
+    position: absolute !important; top: -6px !important; right: -6px !important; left: auto !important;
+    min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px; border: 0;
+    background: #e5556e !important; color: #fff !important; font: 700 10px/18px ui-monospace, Menlo, Consolas, monospace;
+    text-align: center; box-shadow: 0 0 0 2px var(--ntb-navy) !important;
+}
+#nt-shellbar .count-container.hidden, #nt-shellbar [data-region="count-container"].hidden { display: none !important; }
+#nt-shellbar .popover-region-container, #nt-shellbar .dropdown-menu { color: #1d2a3a; }
+#nt-shellbar .usermenu .dropdown-toggle, #nt-shellbar .usermenu > a { display: flex; align-items: center; color: #fff !important; padding: 0; background: transparent; border: 0; }
+#nt-shellbar .usermenu .dropdown-toggle::after { display: none; }
+#nt-shellbar .usermenu .userinitials, #nt-shellbar .usermenu .userpicture, #nt-shellbar .usermenu img.userpicture {
+    width: 38px !important; height: 38px !important; border-radius: 8px !important; background: #fff; color: var(--ntb-navy) !important;
+    font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin: 0 !important; border: 0;
+}
+#nt-shellbar .usermenu .usertext, #nt-shellbar .usermenu .avatar + .usertext { display: none; }
+/* Edit mode switch on the navy bar */
+#nt-shellbar .editmode-switch-form, #nt-shellbar [class*="editswitch"] { color: #e4eaf5; display: flex; align-items: center; }
+#nt-shellbar [class*="editswitch"] label, #nt-shellbar .editmode-switch-form label { color: #e4eaf5 !important; margin: 0; white-space: nowrap; }
+/* Ask JO pill on the navy bar */
+#nt-shellbar [id$="-askjo-btn"] { background: rgba(255, 255, 255, .08) !important; color: #fff !important; border: 1px solid rgba(255, 255, 255, .16) !important; box-shadow: none !important; height: 38px; border-radius: 8px !important; }
+
+/* Support "?" button + panel */
+#nt-shellbar .nt-supportwrap { position: relative; display: flex; }
+#nt-shellbar .nt-supportbtn { width: 38px; height: 38px; border-radius: 8px; padding: 0; background: transparent; border: 1px solid rgba(255, 255, 255, .16); color: #fff; display: grid; place-items: center; cursor: pointer; }
+#nt-shellbar .nt-supportbtn:hover { background: rgba(255, 255, 255, .08); }
+#nt-shellbar .nt-supportbtn svg { width: 19px; height: 19px; }
+#nt-shellbar .nt-supportpanel { position: absolute; right: 0; top: 46px; width: 300px; background: #fff; color: #1d2a3a; border: 1px solid var(--ntb-line); border-radius: 10px; box-shadow: 0 16px 40px rgba(15, 31, 61, .18); padding: 14px; z-index: 1050; font-size: 13px; }
+#nt-shellbar .nt-supportpanel[hidden] { display: none; }
+#nt-shellbar .nt-supportpanel * { color: #1d2a3a !important; }
+#nt-shellbar .nt-supportpanel a { color: #3b6fe0 !important; }
+#nt-shellbar .nt-supportpanel .sd-sidesupport { display: block !important; position: static !important; margin: 0 !important; padding: 0 !important; background: none !important; border: 0 !important; }
+#nt-shellbar .nt-supportpanel svg { stroke: #3b6fe0; }
+
+/* ---------- Level 2: white tabs ---------- */
+#nt-shellsub { background: #fff; border-bottom: 1px solid var(--ntb-line); position: relative; z-index: 1020; }
+#nt-shellsub .nt-sub-inner { max-width: 1680px; margin: 0 auto; padding: 0 28px; display: flex; align-items: center; gap: 14px; }
+#nt-shellsub .nt-sub-title { font-weight: 700; color: #0f1f3d; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; padding-right: 14px; border-right: 1px solid var(--ntb-line); }
+#nt-shellsub .nt-tabs { display: flex; gap: 4px; flex: 1 1 auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+#nt-shellsub .nt-tabs::-webkit-scrollbar { display: none; }
+#nt-shellsub .nt-tabs a { display: inline-flex; align-items: center; gap: 7px; padding: 15px 12px 13px; color: #4a5a73 !important; font-size: 14px; white-space: nowrap; border-bottom: 2px solid transparent; text-decoration: none; }
+#nt-shellsub .nt-tabs a svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+#nt-shellsub .nt-tabs a:hover { color: #0f1f3d !important; }
+#nt-shellsub .nt-tabs a.on { color: #0f1f3d !important; font-weight: 600; border-color: var(--ntb-gold); }
+#nt-shellsub .nt-more { position: relative; flex: none; margin-left: auto; }
+#nt-shellsub .nt-more-btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 8px; border: 1px solid var(--ntb-line); background: #fff; color: #0f1f3d; font-size: 13px; cursor: pointer; }
+#nt-shellsub .nt-more-btn svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; }
+#nt-shellsub .nt-more-panel { position: absolute; right: 0; top: 42px; width: 320px; max-height: 70vh; overflow-y: auto; background: #fff; border: 1px solid var(--ntb-line); border-radius: 10px; box-shadow: 0 16px 40px rgba(15, 31, 61, .16); padding: 8px; z-index: 1050; }
+#nt-shellsub .nt-more-panel[hidden] { display: none; }
+#nt-shellsub .nt-more-panel a { display: block; padding: 7px 10px; border-radius: 6px; color: #1d2a3a !important; font-size: 13px; text-decoration: none; }
+#nt-shellsub .nt-more-panel a:hover, #nt-shellsub .nt-more-panel a[aria-current="page"] { background: #eef2f7; }
+#nt-shellsub .nt-more-panel details summary { list-style: none; display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; font-weight: 600; font-size: 13px; color: #0f1f3d; cursor: pointer; border-radius: 6px; }
+#nt-shellsub .nt-more-panel details summary::-webkit-details-marker { display: none; }
+#nt-shellsub .nt-more-panel details summary svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; transition: transform .15s; }
+#nt-shellsub .nt-more-panel details[open] summary svg { transform: rotate(90deg); }
+#nt-shellsub .nt-more-panel details a { padding-left: 22px; }
+
+/* ---------- Dark mode ---------- */
+body.sd-dark #nt-shellsub, body.theme-dark #nt-shellsub { background: #13213b; border-color: #24365a; }
+body.sd-dark #nt-shellsub .nt-tabs a, body.theme-dark #nt-shellsub .nt-tabs a { color: #b4c0d4 !important; }
+body.sd-dark #nt-shellsub .nt-tabs a.on, body.theme-dark #nt-shellsub .nt-tabs a.on,
+body.sd-dark #nt-shellsub .nt-sub-title, body.theme-dark #nt-shellsub .nt-sub-title { color: #e8eef8 !important; }
+body.sd-dark.nt-shell [id$="-root"]:has(> aside[id$="-side"]) { background: #0b1426; }
+
+/* ---------- AI dock: bottom-right row (theme setting) ---------- */
+body.ednxt-dock-right .aidock {
+    left: auto; right: 18px; bottom: 18px; flex-direction: row; gap: 10px; padding: 8px 10px;
+    background: #fff; border-radius: 999px; box-shadow: 0 8px 26px rgba(15, 31, 61, .16);
+}
+body.ednxt-dock-right .aidock .aidock-btn { width: 44px; height: 44px; font-size: 1.1rem; }
+body.ednxt-dock-right .aidock .aidock-label { left: auto; right: 0; bottom: 54px; transform: translateY(4px); }
+body.ednxt-dock-right .aidock .aidock-btn:hover .aidock-label { transform: none; }
+
+/* ---------- Flat cards (theme setting) ---------- */
+body.ednxt-flat .nt-card { box-shadow: 0 1px 3px rgba(15, 31, 61, .08) !important; border: 1px solid var(--ntb-line) !important; }
+body.ednxt-flat .nt-focus, body.ednxt-flat .nt-navy { border-color: transparent !important; }
+
+/* ---------- Hide level-2 tabs (theme setting) ---------- */
+body.ednxt-notabs #nt-shellsub { display: none !important; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1499px) {
+    #nt-shellbar .nt-moved-search form, #nt-shellbar form.nt-search { width: 190px; }
+    #nt-shellbar .nt-top-inner { gap: 16px; padding: 0 20px; }
+}
+@media (max-width: 1199px) {
+    #nt-shellbar .nt-moved-search form, #nt-shellbar form.nt-search { width: 150px; }
+    #nt-shellbar [id$="-askjo-btn"] { font-size: 0 !important; gap: 0 !important; width: 38px; padding: 0 !important; justify-content: center; }
+    #nt-shellbar [id$="-askjo-btn"] svg { font-size: 14px; }
+}
+@media (max-width: 991px) {
+    #nt-shellbar .nt-top-inner { height: auto; flex-wrap: wrap; padding: 10px 16px; gap: 10px; }
+    #nt-shellbar .nt-nav { order: 3; flex-basis: 100%; }
+    #nt-shellsub .nt-sub-inner, body.nt-shell .nt-shell-root header[class*="-topbar"] > div { padding-left: 16px !important; padding-right: 16px !important; }
+    #nt-shellbar [class*="editswitch"] label { display: none; }
+}
+@media (max-width: 575px) {
+    #nt-shellbar .nt-moved-search, #nt-shellbar .nt-search-wrap { display: none; }
+    #nt-shellsub .nt-sub-title { display: none; }
+}
+
+/* "Log in as": the real user's avatar as a small badge on the current one. */
+#nt-shellbar .usermenu .avatars { position: relative; display: inline-flex; }
+#nt-shellbar .usermenu .avatars .realuser { position: absolute; right: -7px; bottom: -7px; z-index: 2; }
+html body #nt-shellbar .usermenu .avatars .avatar.realuser .userinitials,
+html body #nt-shellbar .usermenu .avatars .avatar.realuser .userpicture,
+html body #nt-shellbar .usermenu .avatars .avatar.realuser img {
+    min-width: 0 !important; min-height: 0 !important; line-height: 20px !important; padding: 0 !important;
+    width: 20px !important; height: 20px !important; border-radius: 50% !important; font-size: 8px !important;
+    background: var(--ntb-gold) !important; color: var(--ntb-gold-ink) !important; box-shadow: 0 0 0 2px var(--ntb-navy);
+}
+#nt-shellbar .usermenu .avatars .realuser + .usertext, #nt-shellbar .usermenu .usertext.mr-1, #nt-shellbar .usermenu .meta { display: none !important; }
+
+/* User menu: one clean 38px avatar. With "Log in as", Moodle core shrinks the
+   current user's avatar to a corner badge; here the current user stays the main
+   avatar and the real (admin) user is the small badge. */
+html body #nt-shellbar .usermenu { display: flex; align-items: center; margin-left: 2px; }
+html body #nt-shellbar .usermenu .dropdown-toggle, html body #nt-shellbar .usermenu > a { width: 38px; height: 38px; position: relative; }
+html body #nt-shellbar .usermenu .avatars { position: relative !important; display: block !important; width: 38px !important; height: 38px !important; }
+html body #nt-shellbar .usermenu .avatars .avatar.current {
+    position: absolute !important; inset: 0 !important; width: 38px !important; height: 38px !important;
+    margin: 0 !important; display: block !important; z-index: 1;
+}
+html body #nt-shellbar .usermenu .avatars .avatar.current .userinitials,
+html body #nt-shellbar .usermenu .avatars .avatar.current img {
+    width: 38px !important; height: 38px !important; min-width: 0 !important; border-radius: 8px !important; font-size: 13px !important;
+    background: #fff !important; color: var(--ntb-navy) !important; line-height: 38px !important; box-shadow: none !important; border: 0 !important;
+}
+html body #nt-shellbar .usermenu .avatars .avatar.realuser {
+    position: absolute !important; right: -6px !important; bottom: -6px !important; top: auto !important; left: auto !important;
+    width: 20px !important; height: 20px !important; margin: 0 !important; display: block !important; z-index: 2;
+}
+html body #nt-shellbar .usermenu .avatars .avatar.realuser .userinitials,
+html body #nt-shellbar .usermenu .avatars .avatar.realuser img {
+    width: 20px !important; height: 20px !important; line-height: 20px !important; font-size: 8px !important; border-radius: 50% !important;
+}
+/* Any extra "logged in as" marker icons next to the avatar. */
+html body #nt-shellbar .usermenu .dropdown-toggle > .icon, html body #nt-shellbar .usermenu .dropdown-toggle > i,
+html body #nt-shellbar .usermenu .login-as, html body #nt-shellbar .usermenu .usertext { display: none !important; }
+/* Keep the icon group evenly spaced. */
+#nt-shellbar .nt-top-right { gap: 10px; }
+#nt-shellbar .nt-plugins, #nt-shellbar .nt-moved-actions > div { gap: 10px; }
+/* Baz's yellow (i) marker for "logged in as" / switched role: the gold badge already says it. */
+html body #nt-shellbar .usermenu .avatar::before, html body #nt-shellbar .usermenu .avatars::before { display: none !important; content: none !important; }
+html body #nt-shellbar .usermenu .userbutton { display: block; width: 38px; height: 38px; }
+
+/* ===================== Profile button (final) =====================
+   A pill: round avatar + the signed-in person's name + chevron.
+   With "Log in as", the student is the main avatar and name, and the
+   admin's initials sit as a small badge on the avatar. */
+html body #nt-shellbar .usermenu, html body #nt-shellbar .usermenu .action-menu,
+html body #nt-shellbar .usermenu .menubar, html body #nt-shellbar .usermenu .action-menu-trigger,
+html body #nt-shellbar .usermenu .dropdown { display: flex !important; align-items: center; margin: 0 !important; }
+html body #nt-shellbar .usermenu a.dropdown-toggle {
+    display: flex !important; align-items: center; gap: 0; width: auto !important; height: 42px !important;
+    padding: 3px 12px 3px 3px !important; border-radius: 999px !important; margin: 0 !important;
+    background: rgba(255, 255, 255, .08) !important; border: 1px solid rgba(255, 255, 255, .16) !important;
+    color: #fff !important; text-decoration: none !important; transition: background .15s, border-color .15s;
+}
+html body #nt-shellbar .usermenu a.dropdown-toggle:hover, html body #nt-shellbar .usermenu a.dropdown-toggle[aria-expanded="true"] {
+    background: rgba(255, 255, 255, .14) !important; border-color: rgba(255, 255, 255, .28) !important;
+}
+html body #nt-shellbar .usermenu a.dropdown-toggle > .d-flex:empty { display: none !important; }
+html body #nt-shellbar .usermenu .userbutton {
+    display: flex !important; flex-direction: row-reverse; align-items: center; gap: 9px; width: auto !important; height: auto !important;
+}
+html body #nt-shellbar .usermenu .userbutton::after {
+    content: ""; width: 7px; height: 7px; border-right: 1.8px solid #c9d4e8; border-bottom: 1.8px solid #c9d4e8;
+    transform: rotate(45deg) translate(-2px, -2px); margin-left: 2px; order: -1; flex: none;
+}
+/* Name */
+html body #nt-shellbar .usermenu .usertext {
+    display: block !important; float: none !important; height: auto !important; margin: 0 !important; padding: 0 !important;
+    max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-size: 13.5px !important; font-weight: 600; color: #fff !important; line-height: 1.2; text-align: left !important;
+}
+html body.userloggedinas #nt-shellbar .usermenu .usertext { font-size: 0 !important; }
+html body.userloggedinas #nt-shellbar .usermenu .usertext .meta { display: block !important; font-size: 0 !important; color: #fff !important; }
+html body.userloggedinas #nt-shellbar .usermenu .usertext .meta .value { font-size: 13.5px !important; font-weight: 600; }
+html body #nt-shellbar .usermenu .usertext .meta:not(.viewingas) { display: none !important; }
+/* Avatar */
+html body #nt-shellbar .usermenu .avatars {
+    position: relative !important; display: block !important; width: 34px !important; height: 34px !important; flex: none; margin: 0 !important;
+}
+html body #nt-shellbar .usermenu .avatars .avatar.current {
+    position: absolute !important; inset: 0 !important; width: 34px !important; height: 34px !important; margin: 0 !important; display: block !important;
+}
+html body #nt-shellbar .usermenu .avatars .avatar.current .userinitials,
+html body #nt-shellbar .usermenu .avatars .avatar.current img {
+    display: flex !important; align-items: center; justify-content: center;
+    width: 34px !important; height: 34px !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important;
+    border-radius: 50% !important; border: 0 !important; box-shadow: none !important; object-fit: cover;
+    background: linear-gradient(135deg, var(--ntb-gold), #f08c1d) !important; color: var(--ntb-gold-ink) !important;
+    font-size: 12.5px !important; font-weight: 700 !important; line-height: 34px !important; letter-spacing: .3px; text-align: center;
+    position: static !important; transform: none !important; top: auto !important; left: auto !important;
+}
+html body #nt-shellbar .usermenu .avatars .avatar.realuser {
+    position: absolute !important; right: -5px !important; bottom: -5px !important; top: auto !important; left: auto !important;
+    width: 18px !important; height: 18px !important; margin: 0 !important; display: block !important; z-index: 2;
+}
+html body #nt-shellbar .usermenu .avatars .avatar.realuser .userinitials,
+html body #nt-shellbar .usermenu .avatars .avatar.realuser img {
+    display: flex !important; align-items: center; justify-content: center;
+    width: 18px !important; height: 18px !important; min-width: 0 !important; margin: 0 !important; padding: 0 !important;
+    border-radius: 50% !important; background: #fff !important; color: var(--ntb-navy) !important;
+    font-size: 7.5px !important; font-weight: 800 !important; line-height: 18px !important; text-align: center;
+    position: static !important; transform: none !important;
+    box-shadow: 0 0 0 2px var(--ntb-navy) !important; border: 0 !important;
+}
+html body #nt-shellbar .usermenu .avatar::before, html body #nt-shellbar .usermenu .avatar::after { display: none !important; content: none !important; }
+/* The menu itself opens below the pill, right-aligned. */
+html body #nt-shellbar .usermenu .dropdown-menu { margin-top: 8px !important; border-radius: 12px; }
+@media (max-width: 1199px) {
+    html body #nt-shellbar .usermenu .usertext { display: none !important; }
+    html body #nt-shellbar .usermenu a.dropdown-toggle { padding-right: 10px !important; }
+}
+html body #nt-shellbar .usermenu .avatars .avatar.current .userinitials,
+html body #nt-shellbar .usermenu .avatars .avatar.current img { max-width: none !important; max-height: none !important; }
+html body #nt-shellbar .usermenu .avatars .avatar.realuser .userinitials,
+html body #nt-shellbar .usermenu .avatars .avatar.realuser img { max-width: none !important; max-height: none !important; }
+html body #nt-shellbar .usermenu .avatars .userinitials, html body #nt-shellbar .usermenu .avatars img { min-height: 0 !important; }
+
+/* ===== Calendar pages: holidays & festivals ===== */
+.nt-cal-hol { background: #fdeef1 !important; box-shadow: inset 0 0 0 1px #f7c4cf; }
+.nt-cal-fest { background: #fff6e3 !important; box-shadow: inset 0 0 0 1px #f6dca1; }
+.nt-cal-hol .cal-dn, .nt-cal-hol > a:first-child { color: #c2264a !important; font-weight: 700; }
+.nt-cal-fest .cal-dn, .nt-cal-fest > a:first-child { color: #a76200 !important; font-weight: 700; }
+.nt-cal-tag {
+    display: block; margin: 2px 0 3px; padding: 2px 7px; border-radius: 6px; font-size: 11px; font-weight: 600; line-height: 1.35;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+.nt-cal-hol .nt-cal-tag { background: #e5556e; color: #fff; }
+.nt-cal-fest .nt-cal-tag { background: #f4b23e; color: #3a2a06; }
+.nt-cal-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; }
+.nt-cal-legend-holiday i { background: #e5556e; }
+.nt-cal-legend-festival i { background: #f4b23e; }
+body.sd-dark .nt-cal-hol { background: rgba(229, 85, 110, .14) !important; }
+body.sd-dark .nt-cal-fest { background: rgba(244, 178, 62, .14) !important; }
+
+/* ===== Assistive touch (AI assistants + Need help) ===== */
+body.ednxt-dock-right .aidock.nt-assist {
+    position: fixed; right: 18px; bottom: 18px; left: auto; top: auto; z-index: 1035;
+    display: flex; flex-direction: row; align-items: center; gap: 0; padding: 6px;
+    background: rgba(255, 255, 255, .96); border-radius: 999px; box-shadow: 0 10px 30px rgba(15, 31, 61, .22);
+    backdrop-filter: blur(6px); transition: padding .2s ease;
+}
+body.ednxt-dock-right .aidock.nt-assist.nt-collapsed { padding: 0; background: transparent; box-shadow: none; }
+.aidock.nt-assist .nt-assist-items {
+    display: flex; align-items: center; gap: 10px; overflow: visible; max-width: 400px; padding: 0 10px 0 4px;
+    transition: max-width .25s ease, opacity .2s ease, padding .2s ease;
+}
+.aidock.nt-assist.nt-collapsed .nt-assist-items { max-width: 0; opacity: 0; padding: 0; pointer-events: none; overflow: hidden; }
+body.ednxt-dock-right .aidock.nt-assist .aidock-btn { width: 46px; height: 46px; font-size: 1.15rem; flex: none; }
+.aidock.nt-assist .aidock-label { left: 50% !important; right: auto !important; bottom: 58px !important; top: auto !important; transform: translate(-50%, 4px) !important; }
+.aidock.nt-assist .aidock-btn:hover .aidock-label, .aidock.nt-assist .aidock-btn:focus .aidock-label { transform: translate(-50%, 0) !important; }
+.aidock.nt-assist .nt-assist-helpbtn { --aidock-c: #f4b23e; color: #3a2a06 !important; }
+.aidock.nt-assist .nt-assist-helpbtn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; }
+.nt-assist-toggle {
+    position: relative; width: 56px; height: 56px; border-radius: 50%; border: 0; padding: 0; flex: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--ntb-navy), #2b5cc4); color: #fff;
+    box-shadow: 0 8px 22px rgba(15, 31, 61, .35), inset 0 0 0 3px rgba(255, 255, 255, .15);
+    display: grid; place-items: center; transition: transform .2s ease;
+}
+.nt-assist-toggle:hover { transform: scale(1.05); }
+.nt-assist-dots { display: grid; grid-template-columns: repeat(2, 9px); gap: 5px; transition: opacity .15s, transform .2s; }
+.nt-assist-dots i { width: 9px; height: 9px; border-radius: 3px; background: #fff; display: block; }
+.nt-assist-dots i:nth-child(1) { background: #a78bfa; }
+.nt-assist-dots i:nth-child(2) { background: #38bdf8; }
+.nt-assist-dots i:nth-child(3) { background: #4ade80; }
+.nt-assist-dots i:nth-child(4) { background: var(--ntb-gold); }
+.nt-assist-x { position: absolute; width: 22px; height: 22px; fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; opacity: 0; transform: rotate(-90deg); transition: opacity .15s, transform .2s; }
+.aidock.nt-assist:not(.nt-collapsed) .nt-assist-dots { opacity: 0; transform: rotate(90deg) scale(.6); }
+.aidock.nt-assist:not(.nt-collapsed) .nt-assist-x { opacity: 1; transform: none; }
+/* The old floating "Need help?" pill is replaced by the assistive button. */
+body.ednxt-dock-right.nt-has-assist-help [id$="-help-fab"] { display: none !important; }
+/* "Need help?" lives on the left edge as a vertical tab; its panel opens beside it. */
+body.nt-f-helptab [id$="-root"] > [class$="-help"], body.nt-f-helptab [id$="-root"] > .sd-help {
+    position: fixed !important; left: 46px !important; right: auto !important; top: 50% !important; bottom: auto !important;
+    transform: translateY(-50%); z-index: 1040 !important; width: 0; height: 0;
+}
+body.nt-f-helptab [id$="-root"] > [class$="-help"] > [class$="-help-panel"], body.nt-f-helptab [id$="-root"] > .sd-help > .sd-help-panel {
+    position: absolute !important; left: 0 !important; right: auto !important; top: 50% !important; bottom: auto !important; transform: translateY(-50%);
+}
+.nt-helpedge {
+    position: fixed; left: 0; top: 50%; z-index: 1036; transform: translateY(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 7px; border: 0; cursor: pointer;
+    border-radius: 0 12px 12px 0; background: linear-gradient(180deg, var(--ntb-gold), #f08c1d); color: var(--ntb-gold-ink);
+    box-shadow: 3px 4px 16px rgba(15, 31, 61, .22); font: inherit; transition: padding .15s, box-shadow .15s;
+}
+.nt-helpedge:hover { padding-left: 11px; box-shadow: 4px 6px 20px rgba(15, 31, 61, .3); }
+.nt-helpedge svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; transform: rotate(0); }
+.nt-helpedge span { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 13px; font-weight: 700; letter-spacing: .4px; white-space: nowrap; }
+.aidock.nt-assist:not(:has(.aidock-btn)) { display: none !important; }
+@media (max-width: 575px) {
+    body.ednxt-dock-right .aidock.nt-assist { right: 10px; bottom: 10px; }
+    .aidock.nt-assist .nt-assist-items { gap: 6px; }
+    body.ednxt-dock-right .aidock.nt-assist .aidock-btn { width: 40px; height: 40px; }
+    .nt-assist-toggle { width: 50px; height: 50px; }
+}
+@media (max-width: 575px) {
+    .nt-helpedge { padding: 10px 5px; }
+    .nt-helpedge span { font-size: 11.5px; }
+    body.nt-f-helptab [id$="-root"] > [class$="-help"], body.nt-f-helptab [id$="-root"] > .sd-help { left: 34px !important; }
+}
+
+/* ===== Side gutters: "Need help?" on the left, assistants on the right, never over the content ===== */
+@media (min-width: 768px) {
+    body.ednxt-dock-right .nt-root .nt-content { padding-left: 64px; padding-right: 84px; }
+    body.ednxt-dock-right.nt-shell [id$="-root"]:has(> aside[id$="-side"]) > div[class*="-main"] { padding-left: 52px !important; padding-right: 76px !important; }
+}
+/* Assistants: a vertical stack in the right gutter, opening upwards. */
+body.ednxt-dock-right .aidock.nt-assist { right: 12px; bottom: 16px; flex-direction: column; padding: 6px; border-radius: 34px; }
+body.ednxt-dock-right .aidock.nt-assist.nt-collapsed { padding: 0; }
+.aidock.nt-assist .nt-assist-items { flex-direction: column; padding: 4px 0 10px; max-width: none; max-height: 400px; transition: max-height .25s ease, opacity .2s ease, padding .2s ease; }
+.aidock.nt-assist.nt-collapsed .nt-assist-items { max-height: 0; max-width: none; padding: 0; }
+.aidock.nt-assist .aidock-label { left: auto !important; right: 58px !important; bottom: auto !important; top: 50% !important; transform: translate(4px, -50%) !important; }
+.aidock.nt-assist .aidock-btn:hover .aidock-label, .aidock.nt-assist .aidock-btn:focus .aidock-label { transform: translate(0, -50%) !important; }
+.nt-assist-toggle { width: 52px; height: 52px; }
+/* Help tab in the left gutter. */
+.nt-helpedge { padding: 14px 8px; }
+@media (max-width: 767px) {
+    .nt-helpedge { padding: 10px 5px; top: auto; bottom: 90px; transform: none; }
+}
+
+/* ===== "Need help?" = round button at the bottom of the left gutter (fixed while scrolling) ===== */
+.nt-helpedge {
+    left: 12px !important; top: auto !important; bottom: 16px !important; transform: none !important;
+    width: 52px; height: 52px; padding: 0 !important; border-radius: 50% !important; justify-content: center; gap: 0;
+    background: linear-gradient(135deg, var(--ntb-gold), #f08c1d) !important;
+    box-shadow: 0 8px 22px rgba(240, 140, 29, .4), inset 0 0 0 3px rgba(255, 255, 255, .25) !important;
+}
+.nt-helpedge:hover { transform: scale(1.05) !important; }
+.nt-helpedge svg { width: 24px !important; height: 24px !important; }
+.nt-helpedge span {
+    position: absolute; left: 62px; top: 50%; transform: translateY(-50%) !important; writing-mode: horizontal-tb;
+    background: #111827; color: #fff; font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 8px;
+    opacity: 0; pointer-events: none; transition: opacity .15s; letter-spacing: 0;
+}
+.nt-helpedge:hover span, .nt-helpedge:focus span { opacity: 1; }
+/* Its panel opens just above the button. */
+body.nt-f-helptab [id$="-root"] > [class$="-help"], body.nt-f-helptab [id$="-root"] > .sd-help {
+    left: 12px !important; top: auto !important; bottom: 80px !important; transform: none !important;
+}
+body.nt-f-helptab [id$="-root"] > [class$="-help"] > [class$="-help-panel"], body.nt-f-helptab [id$="-root"] > .sd-help > .sd-help-panel {
+    top: auto !important; bottom: 0 !important; transform: none !important;
+}
+@media (max-width: 767px) {
+    .nt-helpedge { left: 10px !important; bottom: 10px !important; width: 48px; height: 48px; }
+    body.nt-f-helptab [id$="-root"] > [class$="-help"], body.nt-f-helptab [id$="-root"] > .sd-help { left: 10px !important; bottom: 70px !important; }
+}
+
+/* Equal, roomier side gutters so both corner buttons sit clear of the cards. */
+@media (min-width: 768px) {
+    body.ednxt-dock-right .nt-root .nt-content { padding-left: 96px !important; padding-right: 96px !important; }
+    body.ednxt-dock-right.nt-shell [id$="-root"]:has(> aside[id$="-side"]) > div[class*="-main"] { padding-left: 84px !important; padding-right: 84px !important; }
+}
+@media (min-width: 768px) {
+    body.ednxt-dock-right .nt-root .nt-content { padding-left: 80px !important; padding-right: 80px !important; }
+    body.ednxt-dock-right.nt-shell [id$="-root"]:has(> aside[id$="-side"]) > div[class*="-main"] { padding-left: 76px !important; padding-right: 76px !important; }
+}
+
+/* Right gutter wide enough for the opened assistant stack, with a clear gap. */
+@media (min-width: 768px) {
+    body.ednxt-dock-right .nt-root .nt-content { padding-right: 100px !important; }
+    body.ednxt-dock-right.nt-shell [id$="-root"]:has(> aside[id$="-side"]) > div[class*="-main"] { padding-right: 96px !important; }
+}
+body.ednxt-dock-right .aidock.nt-assist { right: 10px; padding: 5px; }
+body.ednxt-dock-right .aidock.nt-assist .aidock-btn { width: 44px; height: 44px; font-size: 1.05rem; }
+.aidock.nt-assist .nt-assist-items { gap: 8px; padding: 3px 0 8px; }
+.nt-assist-toggle { width: 50px; height: 50px; }
+
+/* Final: equal side gutters (room for the corner buttons on both sides). */
+@media (min-width: 768px) {
+    body.ednxt-dock-right .nt-root .nt-content { padding-left: 96px !important; padding-right: 96px !important; }
+    body.ednxt-dock-right.nt-shell [id$="-root"]:has(> aside[id$="-side"]) > div[class*="-main"] { padding-left: 92px !important; padding-right: 92px !important; }
+}
+/* Support panel: a tidy pop-up above the help button. */
+body.nt-f-helptab [id$="-root"] > [class$="-help"] > [class$="-help-panel"], body.nt-f-helptab [id$="-root"] > .sd-help > .sd-help-panel {
+    width: 320px !important; max-width: calc(100vw - 32px) !important; border-radius: 14px !important;
+    box-shadow: 0 18px 44px rgba(15, 31, 61, .22) !important; border: 1px solid var(--ntb-line) !important;
+    animation: ntHelpIn .16s ease-out;
+}
+@keyframes ntHelpIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.nt-helpedge[aria-expanded="true"] { box-shadow: 0 0 0 4px rgba(244, 178, 62, .35), 0 8px 22px rgba(240, 140, 29, .4) !important; }
+
+/* ===== Final "Need help?": vertical (turned) text tab, fixed at the bottom of the left gutter ===== */
+.nt-helpedge {
+    left: 16px !important; bottom: 16px !important; top: auto !important; transform: none !important;
+    width: 46px !important; height: auto !important; padding: 16px 0 14px !important; border-radius: 23px !important;
+    flex-direction: column !important; gap: 10px !important; justify-content: center;
+    background: linear-gradient(180deg, var(--ntb-gold), #f08c1d) !important; color: var(--ntb-gold-ink) !important;
+    box-shadow: 0 8px 22px rgba(240, 140, 29, .38), inset 0 0 0 2px rgba(255, 255, 255, .25) !important;
+}
+.nt-helpedge:hover { transform: translateY(-2px) !important; }
+.nt-helpedge svg { width: 18px !important; height: 18px !important; flex: none; }
+.nt-helpedge span {
+    position: static !important; opacity: 1 !important; pointer-events: auto; background: none !important; color: inherit !important;
+    padding: 0 !important; border-radius: 0; writing-mode: vertical-rl !important; transform: rotate(180deg) !important;
+    font-size: 13.5px !important; font-weight: 800 !important; letter-spacing: .5px !important; white-space: nowrap;
+}
+/* Its panel opens to the right of the tab, aligned to its bottom. */
+body.nt-f-helptab [id$="-root"] > [class$="-help"], body.nt-f-helptab [id$="-root"] > .sd-help {
+    left: 74px !important; bottom: 16px !important;
+}
+@media (max-width: 767px) {
+    .nt-helpedge { left: 8px !important; bottom: 10px !important; width: 40px !important; padding: 12px 0 10px !important; }
+    .nt-helpedge span { font-size: 12px !important; }
+    body.nt-f-helptab [id$="-root"] > [class$="-help"], body.nt-f-helptab [id$="-root"] > .sd-help { left: 56px !important; bottom: 10px !important; }
+}
+
+/* Ask JO pill (dashboard + every page): same look everywhere in the navy bar. */
+#nt-shellbar .nt-askjo, #nt-shellbar [id$="-askjo-btn"] {
+    display: inline-flex !important; align-items: center; gap: 8px; height: 38px; padding: 0 14px !important;
+    border-radius: 8px !important; border: 1px solid rgba(255, 255, 255, .16) !important; background: rgba(255, 255, 255, .06) !important;
+    color: #fff !important; font: inherit; font-size: 14px !important; font-weight: 700; cursor: pointer; white-space: nowrap; box-shadow: none !important;
+}
+#nt-shellbar .nt-askjo:hover, #nt-shellbar [id$="-askjo-btn"]:hover { background: rgba(255, 255, 255, .12) !important; }
+#nt-shellbar .nt-askjo svg, #nt-shellbar [id$="-askjo-btn"] svg { width: 16px; height: 16px; fill: none; stroke: var(--ntb-gold); stroke-width: 1.8; }
+@media (max-width: 1199px) {
+    #nt-shellbar .nt-askjo { font-size: 0 !important; gap: 0; width: 38px; padding: 0 !important; justify-content: center; }
+}
+
+/* ===================================================================
+   Brand wordmark ("JAIN Online", or the uploaded brand logo)
+   =================================================================== */
+.nt-brand.nt-wm { display: inline-flex !important; align-items: center; gap: 10px; text-decoration: none !important; min-width: 0; letter-spacing: 0 !important; }
+.nt-brand.nt-wm .nt-wm-badge {
+    width: 36px; height: 36px; border-radius: 10px; flex: none; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--ednxt-gold, #f4b23e), #f7c867); color: var(--ednxt-navy, #0f1f3d);
+    font-weight: 900; font-size: 20px; line-height: 1; box-shadow: 0 0 0 3px rgba(255, 255, 255, .08), 0 4px 12px rgba(0, 0, 0, .25);
+}
+.nt-brand.nt-wm .nt-wm-text { display: flex; flex-direction: column; line-height: 1; }
+.nt-brand.nt-wm .nt-wm-text b { color: #fff; font-size: 19px; font-weight: 900; letter-spacing: 1.5px; text-transform: uppercase; }
+.nt-brand.nt-wm .nt-wm-text i { color: var(--ednxt-gold, #f4b23e); font-style: normal; font-size: 10.5px; font-weight: 700; letter-spacing: 4.2px; text-transform: uppercase; margin-top: 4px; }
+.nt-brand.nt-wm .nt-wm-img { height: 40px !important; width: auto !important; max-width: 240px !important; max-height: none !important; object-fit: contain; display: block; }
+.nt-brand.nt-wm:hover .nt-wm-badge { transform: rotate(-6deg); transition: transform .2s; }
+@media (max-width: 767.98px) { .nt-brand.nt-wm .nt-wm-text { display: none; } }
+
+/* ===================================================================
+   Ask JO: the same right-hand chat drawer on every page
+   =================================================================== */
+.nt-jo {
+    position: fixed !important; top: 84px !important; right: 18px !important; bottom: 18px !important; left: auto !important;
+    width: 410px !important; max-width: calc(100vw - 24px) !important; max-height: none !important; height: auto !important;
+    display: flex !important; flex-direction: column !important; overflow: hidden !important; z-index: 1065 !important;
+    background: #fff !important; border: 1px solid #e3e8f0 !important; border-radius: 18px !important;
+    box-shadow: 0 24px 60px rgba(15, 31, 61, .22), 0 2px 8px rgba(15, 31, 61, .08) !important;
+    animation: ntJoIn .22s cubic-bezier(.2, .8, .2, 1);
+    font-size: 14.5px; color: #1d2a44;
+}
+.nt-jo[hidden] { display: none !important; }
+@keyframes ntJoIn { from { opacity: 0; transform: translateY(10px) scale(.985); } to { opacity: 1; transform: none; } }
+.nt-jo .nt-jo-head {
+    display: flex !important; align-items: center !important; gap: 12px; padding: 14px 14px 14px 16px !important; flex: none;
+    background: linear-gradient(120deg, var(--ednxt-navy, #0f1f3d), #1d3566) !important; color: #fff !important; border: 0 !important;
+}
+.nt-jo .nt-jo-ico { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: rgba(244, 178, 62, .16); flex: none; }
+.nt-jo .nt-jo-ico svg, .nt-jo .nt-jo-wico svg { width: 20px; height: 20px; fill: var(--ednxt-gold, #f4b23e); stroke: none; }
+.nt-jo .nt-jo-title { display: flex; flex-direction: column; flex: 1; min-width: 0; line-height: 1.2; }
+.nt-jo .nt-jo-title b { font-size: 16px; font-weight: 800; color: #fff; }
+.nt-jo .nt-jo-title small { font-size: 12px; color: rgba(255, 255, 255, .66); margin-top: 2px; }
+.nt-jo .nt-jo-head button {
+    width: 34px; height: 34px; border-radius: 9px; border: 0; background: rgba(255, 255, 255, .08); color: #fff;
+    display: grid; place-items: center; cursor: pointer; padding: 0; flex: none; font-size: 0;
+}
+.nt-jo .nt-jo-head button:hover { background: rgba(255, 255, 255, .18); }
+.nt-jo .nt-jo-head button svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.nt-jo .block_openai_chat {
+    display: flex !important; flex-direction: column !important; flex: 1 1 auto !important; min-height: 0 !important;
+    position: relative !important; background: transparent !important; margin: 0 !important; padding: 0 !important; border: 0 !important;
+    transform: none !important; outline: 0 !important; width: auto !important; height: auto !important; left: auto !important; top: auto !important;
+}
+.nt-jo .block_openai_chat > div:first-child {
+    flex: 1 1 auto !important; min-height: 0 !important; overflow-y: auto !important; padding: 18px 16px 6px !important;
+    background: #f6f8fc !important; max-height: none !important; scroll-behavior: smooth;
+}
+.nt-jo #openai_chat_log { max-height: none !important; overflow: visible !important; margin: 0 !important; padding-top: 22px; }
+.nt-jo.nt-jo-empty #openai_chat_log { padding-top: 0; }
+.nt-jo .openai_message {
+    max-width: 86% !important; border-radius: 14px !important; padding: 10px 14px !important; margin-bottom: 30px !important;
+    line-height: 1.5; font-size: 14px; box-shadow: 0 1px 2px rgba(15, 31, 61, .06); word-wrap: break-word;
+}
+.nt-jo .openai_message.user { background: var(--ednxt-navy, #0f1f3d) !important; color: #fff !important; border-bottom-right-radius: 4px !important; text-align: left !important; }
+.nt-jo .openai_message.bot { background: #fff !important; color: #1d2a44 !important; border: 1px solid #e3e8f0; border-bottom-left-radius: 4px !important; }
+.nt-jo .openai_message:before { font-size: 11.5px; font-weight: 700; color: #7a879c !important; top: -1.4rem !important; text-transform: none; }
+.nt-jo #openai_chat_log a { color: #2563eb !important; }
+.nt-jo .openai_message.user a { color: #ffd88a !important; }
+.nt-jo .openai_message pre, .nt-jo .openai_message code { white-space: pre-wrap; font-size: 12.5px; }
+.nt-jo .openai_message ul, .nt-jo .openai_message ol { padding-left: 18px; margin: 6px 0; }
+/* Welcome + suggestions */
+.nt-jo .nt-jo-welcome { display: none; text-align: center; padding: 18px 8px 6px; }
+.nt-jo.nt-jo-empty .nt-jo-welcome { display: block; }
+.nt-jo .nt-jo-wico { width: 54px; height: 54px; border-radius: 16px; display: inline-grid; place-items: center; background: var(--ednxt-navy, #0f1f3d); margin-bottom: 12px; box-shadow: 0 8px 20px rgba(15, 31, 61, .2); }
+.nt-jo .nt-jo-wico svg { width: 26px; height: 26px; }
+.nt-jo .nt-jo-welcome h3 { font-size: 17px; font-weight: 800; margin: 0 0 6px; color: #13213f; }
+.nt-jo .nt-jo-welcome p { font-size: 13px; color: #67748a; margin: 0 auto 16px; max-width: 290px; }
+.nt-jo .nt-jo-sugg { display: flex; flex-direction: column; gap: 8px; text-align: left; }
+.nt-jo .nt-jo-sugg button {
+    border: 1px solid #e0e6f0; background: #fff; border-radius: 12px; padding: 10px 14px 10px 36px; font-size: 13.5px; color: #1d2a44;
+    cursor: pointer; position: relative; text-align: left; transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.nt-jo .nt-jo-sugg button:before { content: "\2192"; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--ednxt-gold-ink, #b77b12); font-weight: 800; }
+.nt-jo .nt-jo-sugg button:hover { border-color: var(--ednxt-gold, #f4b23e); box-shadow: 0 4px 12px rgba(15, 31, 61, .08); transform: translateY(-1px); }
+/* Input bar */
+.nt-jo .block_openai_chat > div:last-child {
+    flex: none !important; padding: 12px 14px 14px !important; border-top: 1px solid #e8edf4 !important; background: #fff !important; position: relative;
+}
+.nt-jo #popout, .nt-jo .openai_input_popout_btn, .nt-jo .recording { display: none !important; }
+.nt-jo #control_bar { display: flex !important; align-items: flex-end !important; gap: 8px !important; position: static !important; width: 100% !important; }
+.nt-jo #control_bar > div { flex: 1 !important; display: flex !important; align-items: flex-end; background: #f4f6fa; border: 1px solid #dfe5ee; border-radius: 14px; padding: 4px 4px 4px 12px; transition: border-color .15s, box-shadow .15s; }
+.nt-jo #control_bar > div:focus-within { border-color: var(--ednxt-navy, #0f1f3d); box-shadow: 0 0 0 3px rgba(15, 31, 61, .08); background: #fff; }
+.nt-jo #openai_input {
+    border: 0 !important; background: transparent !important; box-shadow: none !important; resize: none !important; padding: 8px 4px !important;
+    min-height: 38px; max-height: 140px; font-size: 14px !important; line-height: 1.45 !important; border-radius: 0 !important; color: #1d2a44;
+}
+.nt-jo #openai_input.error::placeholder { color: #d33a4f; }
+.nt-jo #go {
+    width: 38px; height: 38px; border-radius: 11px !important; border: 0 !important; flex: none; display: grid; place-items: center; padding: 0 !important;
+    background: var(--ednxt-gold, #f4b23e) !important; color: var(--ednxt-navy, #0f1f3d) !important; box-shadow: none !important;
+}
+.nt-jo #go:hover { filter: brightness(.95); }
+.nt-jo #refresh { display: none !important; } /* "New chat" lives in the header. */
+.nt-jo #control_bar.disabled { opacity: .55; }
+.nt-jo .block_openai_chat > div:last-child:after {
+    content: "JO can make mistakes. Check important information."; display: block; text-align: center; font-size: 11px; color: #98a3b5; margin-top: 8px;
+}
+#nt-shellbar .nt-askjo.nt-on, #nt-shellbar [id$="-askjo-btn"].nt-on { background: rgba(244, 178, 62, .18) !important; border-color: rgba(244, 178, 62, .55) !important; }
+/* Keep the floating assistants clear of the open drawer */
+body.nt-jo-open .nt-assist, body.nt-jo-open .aidock { opacity: 0; pointer-events: none; }
+@media (max-width: 575.98px) {
+    .nt-jo { top: 70px !important; right: 8px !important; left: 8px !important; bottom: 8px !important; width: auto !important; }
+}
+/* Dark mode */
+body.sd-dark .nt-jo { background: #111a2e !important; border-color: #24324f !important; color: #e3e9f5; }
+body.sd-dark .nt-jo .block_openai_chat > div:first-child { background: #0c1424 !important; }
+body.sd-dark .nt-jo .block_openai_chat > div:last-child { background: #111a2e !important; border-color: #24324f !important; }
+body.sd-dark .nt-jo .openai_message.bot { background: #18233b !important; color: #e3e9f5 !important; border-color: #24324f; }
+body.sd-dark .nt-jo .nt-jo-welcome h3 { color: #fff; }
+body.sd-dark .nt-jo .nt-jo-sugg button { background: #18233b; border-color: #2a3a5a; color: #e3e9f5; }
+body.sd-dark .nt-jo #control_bar > div { background: #0c1424; border-color: #2a3a5a; }
+body.sd-dark .nt-jo #openai_input { color: #e3e9f5; }
+
+@media (max-width: 767.98px) { .nt-brand.nt-wm .nt-wm-img { height: 30px !important; } }
+
+/* ===================================================================
+   Bottom-right column:  [Nestor]  /  [AI Tutor]  /  [assistants (4 icons)]
+   The assistants button is at the very bottom, the two tutors stacked above it.
+   =================================================================== */
+body.ednxt-dock-right .aidock.nt-assist { right: 14px !important; bottom: 16px !important; left: auto !important; top: auto !important; }
+body.ednxt-dock-right .tutor-ia-toggle-button,
+body.ednxt-dock-right #geniai-chat #geniai-chat-btn {
+    right: 14px !important; left: auto !important; top: auto !important;
+    width: 50px !important; height: 50px !important; z-index: 1034 !important;
+    border: 3px solid #fff !important; box-shadow: 0 6px 18px rgba(15, 31, 61, .22) !important;
+    transition: opacity .2s, transform .2s !important;
+}
+body.ednxt-dock-right .tutor-ia-toggle-button { bottom: 78px !important; overflow: visible !important; }
+body.ednxt-dock-right #geniai-chat #geniai-chat-btn { bottom: 140px !important; background-color: #fff !important; }
+body.ednxt-dock-right #geniai-chat #geniai-chat-btn .geniai-icon img {
+    width: 44px !important; height: 44px !important; min-width: 44px !important; min-height: 44px !important; max-width: 44px; max-height: 44px;
+}
+body.ednxt-dock-right #geniai-chat #geniai-chat-btn .geniai-icon.geniai-close-icon { display: grid; place-items: center; width: 44px; height: 44px; }
+body.ednxt-dock-right #geniai-chat #geniai-count-icon { top: -4px; left: -4px; }
+body.ednxt-dock-right .tutor-ia-toggle-button .tutor-ia-avatar-toggle { border-radius: 50%; }
+/* Labels on hover, to the left of the button */
+body.ednxt-dock-right #geniai-chat .balloon { display: none !important; }
+body.ednxt-dock-right #geniai-chat .balloon:after { display: none !important; }
+body.ednxt-dock-right #geniai-chat:not(.geniai-active) #geniai-chat-btn:hover .balloon {
+    display: block !important; right: 60px !important; left: auto !important; bottom: 50% !important; transform: translateY(50%);
+    white-space: nowrap; font-size: 12.5px; padding: 6px 10px; background: var(--ednxt-navy, #0f1f3d); color: #fff; border: 0;
+}
+body.ednxt-dock-right .tutor-ia-toggle-button[data-nt-label]:hover::after {
+    content: attr(data-nt-label); position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+    background: var(--ednxt-navy, #0f1f3d); color: #fff; font-size: 12.5px; padding: 6px 10px; border-radius: 8px; white-space: nowrap; pointer-events: none;
+}
+/* While the 4-icon assistants menu is open (it opens upwards), the tutors step aside */
+body.nt-assist-open .tutor-ia-toggle-button,
+body.nt-assist-open #geniai-chat-btn { opacity: 0 !important; pointer-events: none !important; transform: scale(.8) !important; }
+/* Out of the way while the Ask JO drawer is open */
+body.nt-jo-open .tutor-ia-toggle-button, body.nt-jo-open #geniai-chat-btn { opacity: 0 !important; pointer-events: none !important; }
+@media (max-width: 575.98px) {
+    body.ednxt-dock-right .aidock.nt-assist { right: 10px !important; bottom: 12px !important; }
+    body.ednxt-dock-right .tutor-ia-toggle-button, body.ednxt-dock-right #geniai-chat #geniai-chat-btn { right: 12px !important; width: 44px !important; height: 44px !important; }
+    body.ednxt-dock-right .tutor-ia-toggle-button { bottom: 70px !important; }
+    body.ednxt-dock-right #geniai-chat #geniai-chat-btn { bottom: 122px !important; }
+}
+
+/* Login page: JAIN Online logo card (when no login picture is uploaded) */
+.lp-art img[src*="jain-online-logo"] {
+    width: 100% !important; max-width: 520px !important; height: auto !important; max-height: none !important;
+    object-fit: contain; display: block; margin: 0 auto; padding: 34px 14px 30px; box-sizing: border-box;
+}
+.lp-art:has(img[src*="jain-online-logo"])::after {
+    content: "Learn Beyond Borders"; display: block; text-align: center; margin: -6px 0 18px;
+    font-size: 15px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #0f1f3d; opacity: .7;
+}
+
+/* Option 1: brand logo in the left sidebar */
+aside[id$="-side"] .nt-side-brand.nt-wm { display: flex !important; width: 100%; }
+aside[id$="-side"] .nt-side-brand.nt-wm .nt-wm-img { height: auto !important; max-height: 44px; width: 100% !important; max-width: 200px !important; }
+
+/* BAZ settings, Top Bar tab: "In use now" line under each feature */
+.nt-feat-now { display: flex; width: fit-content; align-items: center; gap: 6px; margin: 2px 0 10px; padding: 5px 12px 5px 6px;
+    border-radius: 999px; background: #e6f6ef; color: #146c4f; font-size: 13px; font-weight: 600; }
+.nt-feat-now b { font-weight: 800; }
+.nt-feat-now .nt-feat-tick { width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center;
+    background: #1fa37a; color: #fff; font-size: 12px; font-weight: 900; line-height: 1; }
+.nt-feat-now .nt-feat-follow { font-weight: 500; color: #3d8a6f; }
+.nt-feat-now.is-top { background: #fdf3dd; color: #7a4d00; }
+.nt-feat-now.is-top .nt-feat-tick { background: #e8962e; }
+.nt-feat-now.is-top .nt-feat-follow { color: #9a6a1c; }
+.nt-feat-now + br { display: none; }
+
+/* Option 1 (classic assistant buttons): keep the left AI buttons clear of the "Need help?" pill */
+body:not(.ednxt-dock-right):has([id$="-help-fab"]:not([style*="none"])) .aidock:not(.nt-assist) { bottom: 84px !important; }
+
+/* Phones / tablets: compact Ask JO button and no sideways scrolling from the bar's pop-overs */
+@media (max-width: 1199.98px) {
+    #nt-shellbar .nt-askjo, #nt-shellbar [id$="-askjo-btn"] { font-size: 0 !important; gap: 0 !important; width: 38px !important; min-width: 38px; padding: 0 !important; justify-content: center; overflow: hidden; }
+    #nt-shellbar .nt-askjo span, #nt-shellbar [id$="-askjo-btn"] span { display: none !important; }
+    #nt-shellbar .nt-askjo svg, #nt-shellbar [id$="-askjo-btn"] svg { margin: 0 !important; flex: none; }
+}
+@media (max-width: 767.98px) {
+    html, body.nt-shell, body.nt-newtheme { overflow-x: hidden; }
+    #nt-shellbar .popover-region-container { position: fixed !important; left: 8px !important; right: 8px !important; top: 64px !important;
+        width: auto !important; max-width: none !important; }
+}
+
+/* BAZ settings, Top Bar tab: Navigation / feature choices as buttons */
+.nt-seg-hidden { position: absolute !important; opacity: 0 !important; pointer-events: none !important; width: 1px !important; height: 1px !important; overflow: hidden; }
+.nt-seg-choice { display: inline-flex; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 14px; background: #eef2f7; border: 1px solid #dfe5ee; margin-bottom: 8px; }
+.nt-seg-btn { border: 0; background: transparent; border-radius: 10px; padding: 9px 16px; font-size: 14px; font-weight: 600; color: #4a5872; cursor: pointer; line-height: 1.2; transition: background .15s, color .15s, box-shadow .15s; }
+.nt-seg-btn:hover { background: rgba(255, 255, 255, .7); color: #0f1f3d; }
+.nt-seg-btn.on { background: #fff; color: #0f1f3d; box-shadow: 0 1px 3px rgba(15, 31, 61, .15); }
+.nt-seg-btn.on::before { content: "\2713"; display: inline-block; margin-right: 6px; color: #1fa37a; font-weight: 900; }
+.nt-seg-btn:focus-visible { outline: 2px solid #f4b23e; outline-offset: 1px; }
+body.sd-dark .nt-seg-choice { background: #0c1424; border-color: #24324f; }
+body.sd-dark .nt-seg-btn { color: #9aa7bd; }
+body.sd-dark .nt-seg-btn.on { background: #18233b; color: #fff; }
+.nt-jo .nt-jo-err { align-self: flex-start; max-width: 86%; margin: 0 0 18px; padding: 10px 14px; border-radius: 14px; border-bottom-left-radius: 4px; background: #fdeef1; color: #9b2338; border: 1px solid #f6c9d2; font-size: 14px; }
+.nt-feat-now.is-always { background: #e9eefb; color: #23408e; }
+.nt-feat-now.is-always .nt-feat-tick { background: #2f6fe4; }
+#nt-shellbar .nt-editswitch:empty { display: none !important; }
+/* Brand: only one logo; the dark-on-light version is used by Option 3 only (variants.css). */
+.nt-brand .nt-wm-dark { display: none !important; }
+/* Weather removed for every user (display only). */
+.block_weather, .bw-widget, .block-weather { display: none !important; }
+#topBar .rui-navbar-brand.nt-brand img, .ba-tb-logo.nt-brand img { height: 32px; width: auto; max-width: 170px; object-fit: contain; }
+/* Navigation buttons apply at once: status line */
+.nt-seg-btn.is-busy { opacity: .6; cursor: progress; }
+.nt-seg-note { font-size: 13px; margin: 2px 0 10px; color: #5c7184; }
+.nt-seg-note.is-ok { color: #15803d; font-weight: 600; }
+.nt-seg-note.is-ok a { margin-left: 6px; font-weight: 700; }
+.nt-seg-note.is-err { color: #c2264a; font-weight: 600; }
+/* Navigation: option cards (BAZ settings, Top Bar tab) */
+#admin-navlayout .form-defaultinfo { display: none; }
+.nt-seg-choice.nt-navcards { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; padding: 0; background: none; border: 0; border-radius: 0; width: 100%; max-width: 100%; box-sizing: border-box; }
+#admin-navlayout .form-setting { min-width: 0; max-width: 100%; }
+#admin-navlayout .form-select, #admin-navlayout .defaultsnext { display: block !important; width: 100% !important; max-width: 100% !important; min-width: 0; padding: 0 !important; border: 0 !important; background: none !important; box-shadow: none !important; height: auto !important; }
+#admin-navlayout .nt-navcards { margin-bottom: 4px; }
+@media (max-width: 575px) { .nt-seg-choice.nt-navcards { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.nt-navcards .nt-navcard { min-width: 0; border-radius: 12px !important; }
+.nt-navcard { display: flex !important; flex-direction: column; align-items: stretch; text-align: left; padding: 0 !important; overflow: hidden; border-radius: 16px !important;
+    background: #fff !important; border: 1px solid #e3e8f0 !important; box-shadow: 0 8px 22px -18px rgba(15, 31, 61, .55); transition: transform .15s, box-shadow .15s, border-color .15s; }
+.nt-navcard:hover { transform: translateY(-2px); border-color: var(--c1) !important; box-shadow: 0 14px 28px -18px rgba(15, 31, 61, .6); }
+.nt-navcard.on { border-color: var(--c1) !important; box-shadow: 0 0 0 2px var(--c1), 0 14px 28px -18px rgba(15, 31, 61, .6) !important; }
+.nt-navcard.on::before { display: none !important; content: none !important; }
+.nt-nc-prev { position: relative; display: block; height: 46px; background: var(--bg); border-bottom: 1px solid #eef1f6; }
+.nt-nc-prev i { position: absolute; display: block; border-radius: 4px; }
+.nt-nc-prev .a { background: var(--c1); } .nt-nc-prev .b { background: var(--c2); }
+.nt-nc-prev .c, .nt-nc-prev .d { background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .1); }
+.nt-navcard-left .a { left: 0; top: 0; bottom: 0; width: 24%; border-radius: 0; } .nt-navcard-left .b { left: 5%; top: 14%; width: 14%; height: 10%; }
+.nt-navcard-left .c { left: 30%; top: 14%; right: 6%; height: 34%; } .nt-navcard-left .d { left: 30%; top: 56%; right: 6%; height: 30%; }
+.nt-navcard-top .a { left: 0; right: 0; top: 0; height: 24%; border-radius: 0; } .nt-navcard-top .b { left: 38%; top: 6%; width: 16%; height: 12%; border-radius: 9px; }
+.nt-navcard-top .c { left: 6%; top: 34%; right: 6%; height: 26%; } .nt-navcard-top .d { left: 6%; top: 66%; width: 44%; height: 22%; }
+.nt-navcard-rail .a { right: 6%; top: 10%; width: 18%; height: 16%; border-radius: 999px; } .nt-navcard-rail .b { left: 6%; top: 34%; width: 50%; height: 56%; opacity: .3; border-radius: 8px; }
+.nt-navcard-rail .c { left: 60%; top: 34%; right: 6%; height: 25%; } .nt-navcard-rail .d { left: 60%; top: 64%; right: 6%; height: 26%; }
+.nt-navcard-dock .a { left: 0; right: 0; top: 0; height: 20%; border-radius: 0; background: linear-gradient(90deg, var(--c1), #3d7fe0); } .nt-navcard-dock .b { left: 28%; right: 28%; bottom: 8%; height: 14%; border-radius: 999px; background: #fff; box-shadow: 0 2px 6px rgba(0, 0, 0, .18); }
+.nt-navcard-dock .c { left: 6%; top: 28%; right: 6%; height: 30%; } .nt-navcard-dock .d { left: 6%; top: 62%; width: 40%; height: 12%; }
+.nt-navcard-campus .a { left: 0; right: 0; top: 0; height: 22%; border-radius: 0; } .nt-navcard-campus .b { left: 36%; right: 36%; top: 27%; height: 5%; }
+.nt-navcard-campus .c { left: 6%; top: 40%; width: 58%; height: 50%; border-radius: 2px; } .nt-navcard-campus .d { left: 68%; top: 40%; right: 6%; height: 50%; border-radius: 2px; }
+.nt-nc-body { display: flex; flex-direction: column; gap: 1px; padding: 7px 9px 2px; min-width: 0; }
+.nt-nc-num { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 6px; background: var(--c1); color: #fff; font-size: 10.5px; font-weight: 800; margin-bottom: 3px; }
+.nt-nc-body b { font-size: 12px; font-weight: 800; color: #0f1f3d; line-height: 1.25; overflow-wrap: anywhere; }
+.nt-nc-body small { font-size: 10.5px; color: #5c7184; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.6em; }
+.nt-nc-state { margin: 6px 9px 9px; padding: 5px 0; border-radius: 8px; text-align: center; font-size: 11.5px; font-weight: 700; background: color-mix(in srgb, var(--c1) 10%, #fff); color: var(--c1); }
+.nt-nc-state::after { content: "Apply"; }
+.nt-navcard.on .nt-nc-state { background: #e6f6ee; color: #15803d; }
+.nt-navcard.on .nt-nc-state::after { content: "\2713  In use"; }
+.nt-navcard.is-busy .nt-nc-state::after { content: "Applying\2026"; }
+body.sd-dark .nt-navcard, body.theme-dark .nt-navcard { background: #13213b !important; border-color: #24365a !important; }
+body.sd-dark .nt-nc-body b, body.theme-dark .nt-nc-body b { color: #e8eef8; }
+
+/* =====================================================================
+   Dashboard "peek" (all options 1-5): click a card -> details panel
+   ===================================================================== */
+body { --ntp-acc: #002D47; --ntp-acc2: #F7B742; --ntp-bg: #ffffff; --ntp-ink: #0f1f3d; --ntp-mut: #5c7184; --ntp-line: #e6ebf2; }
+body.nt-shell { --ntp-acc: #0f1f3d; --ntp-acc2: #f4b23e; }
+body.nt-v-rail { --ntp-acc: #5b5bd6; --ntp-acc2: #14b8a6; --ntp-ink: #1d1b3a; }
+body.nt-v-dock { --ntp-acc: #0f52ba; --ntp-acc2: #f88379; --ntp-ink: #0b1a33; }
+body.nt-v-campus { --ntp-acc: #1f4d3a; --ntp-acc2: #b8892b; --ntp-bg: #fffdf8; --ntp-ink: #2b2420; --ntp-line: #e7dcc6; }
+body.sd-dark { --ntp-bg: #111a2e; --ntp-ink: #e8eef8; --ntp-mut: #9fb0c8; --ntp-line: #24365a; }
+
+#page-my-index .ntp-card { position: relative; cursor: pointer; transition: transform .16s ease, box-shadow .16s ease, outline-color .16s; outline: 2px solid transparent; outline-offset: 2px; }
+#page-my-index .ntp-card:hover { transform: translateY(-2px); box-shadow: 0 16px 32px -22px rgba(15, 31, 61, .55); }
+#page-my-index .ntp-card:active { transform: translateY(0) scale(.992); }
+#page-my-index .ntp-card.ntp-active { outline-color: var(--ntp-acc); }
+#page-my-index .ntp-card a { transition: background-color .12s, color .12s, transform .12s; }
+#page-my-index .ntp-card a:active { transform: scale(.98); }
+.ntp-exp { position: absolute; top: 10px; right: 10px; z-index: 3; width: 30px; height: 30px; display: grid; place-items: center; padding: 0; border-radius: 9px; border: 1px solid var(--ntp-line); background: color-mix(in srgb, var(--ntp-bg) 92%, transparent); color: var(--ntp-acc); cursor: pointer; opacity: 0; transform: scale(.85); transition: opacity .15s, transform .15s, background .15s; }
+.ntp-exp svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.ntp-card:hover > .ntp-exp, .ntp-exp:focus-visible { opacity: 1; transform: none; }
+.ntp-exp:hover { background: var(--ntp-acc); color: #fff; border-color: var(--ntp-acc); }
+@media (hover: none) { .ntp-exp { opacity: .9; transform: none; } }
+/* Keep the button clear of header links on the right. */
+.ntp-card :is(.nv-tile-h, .nv-panel-h, .nt-card-h, .ad-card-h, .sd-sec-h, h3.nv-section) { padding-right: 38px; }
+
+html.ntp-lock, html.ntp-lock body { overflow: hidden !important; }
+.ntp-wrap { position: fixed; inset: 0; z-index: 1065; }
+.ntp-wrap[hidden] { display: none !important; }
+.ntp-backdrop { position: absolute; inset: 0; background: rgba(10, 18, 34, .45); opacity: 0; transition: opacity .2s; }
+.ntp-wrap.in .ntp-backdrop { opacity: 1; }
+.ntp-panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(620px, 100vw); display: flex; flex-direction: column; background: var(--ntp-bg); color: var(--ntp-ink); box-shadow: -24px 0 60px -30px rgba(0, 0, 0, .5); transform: translateX(100%); transition: transform .22s cubic-bezier(.2, .8, .2, 1); outline: 0; border-left: 4px solid var(--ntp-acc); }
+.ntp-wrap.in .ntp-panel { transform: none; }
+.ntp-head { display: flex; align-items: flex-start; gap: 12px; padding: 20px 22px 14px; border-bottom: 1px solid var(--ntp-line); background: linear-gradient(180deg, color-mix(in srgb, var(--ntp-acc) 8%, var(--ntp-bg)), var(--ntp-bg)); }
+.ntp-ht { flex: 1; min-width: 0; }
+.ntp-kicker { display: block; font-size: 11px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--ntp-acc2); }
+.ntp-head h2 { margin: 2px 0 0; font-size: 22px; font-weight: 800; line-height: 1.2; color: var(--ntp-ink); overflow-wrap: anywhere; }
+.ntp-x { flex: none; width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--ntp-line); background: var(--ntp-bg); color: var(--ntp-ink); font-size: 24px; line-height: 1; cursor: pointer; }
+.ntp-x:hover { background: var(--ntp-acc); color: #fff; border-color: var(--ntp-acc); }
+.ntp-scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.ntp-body { padding: 18px 22px; }
+.ntp-body .ntp-clone { position: relative !important; width: 100% !important; max-width: none !important; min-width: 0 !important; height: auto !important; min-height: 0 !important; max-height: none !important;
+    margin: 0 !important; grid-column: auto !important; grid-row: auto !important; transform: none !important; cursor: default; outline: 0 !important; box-shadow: none !important; overflow: visible !important; }
+.ntp-body .ntp-clone :is(.nv-tile-h, .nv-panel-h, .nt-card-h, .ad-card-h, .sd-sec-h, h3.nv-section) { padding-right: 0; }
+.ntp-body .ntp-clone * { -webkit-line-clamp: unset !important; max-height: none !important; }
+.ntp-body .ntp-clone :is(b, small, span, p, .nv-cname, .nv-book-t, .nt-name, .sd-nm) { white-space: normal !important; text-overflow: clip !important; }
+.ntp-body .ntp-clone .ntp-show { display: block !important; position: static !important; opacity: 1 !important; transform: none !important; margin-bottom: 10px; }
+.ntp-body .ntp-clone .ntp-inert { pointer-events: none; opacity: .55; }
+.ntp-body .ntp-clone a:hover { filter: brightness(.97); }
+.ntp-info { padding: 0 22px 14px; }
+.ntp-info h3 { font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--ntp-mut); margin: 4px 0 8px; }
+.ntp-info ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.ntp-info li { padding: 8px 12px; border-radius: 10px; background: color-mix(in srgb, var(--ntp-acc) 6%, var(--ntp-bg)); border: 1px solid var(--ntp-line); font-size: 13px; overflow-wrap: anywhere; }
+.ntp-foot { display: flex; gap: 10px; justify-content: flex-end; padding: 14px 22px calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--ntp-line); }
+.ntp-go, .ntp-close { display: inline-flex; align-items: center; justify-content: center; height: 42px; padding: 0 18px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; text-decoration: none !important; }
+.ntp-go { background: var(--ntp-acc); color: #fff !important; border: 0; }
+.ntp-go:hover { filter: brightness(1.08); }
+.ntp-close { background: transparent; color: var(--ntp-ink); border: 1px solid var(--ntp-line); }
+.ntp-close:hover { border-color: var(--ntp-acc); color: var(--ntp-acc); }
+@media (max-width: 767.98px) {
+    .ntp-panel { top: auto; left: 0; width: 100vw; max-height: 88vh; border-left: 0; border-top: 4px solid var(--ntp-acc); border-radius: 20px 20px 0 0; transform: translateY(100%); }
+    .ntp-head { padding: 16px 16px 12px; border-radius: 20px 20px 0 0; }
+    .ntp-head h2 { font-size: 19px; }
+    .ntp-body { padding: 14px 16px; }
+    .ntp-info { padding: 0 16px 12px; }
+    .ntp-foot { padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
+    .ntp-go, .ntp-close { flex: 1; }
+}
+@media (prefers-reduced-motion: reduce) { .ntp-panel, .ntp-backdrop, #page-my-index .ntp-card { transition: none !important; } }
+.ntp-about { margin: 0; padding: 12px 22px; font-size: 13.5px; line-height: 1.5; color: var(--ntp-mut); background: color-mix(in srgb, var(--ntp-acc2) 10%, var(--ntp-bg)); border-bottom: 1px solid var(--ntp-line); }
+@media (max-width: 767.98px) { .ntp-about { padding: 10px 16px; } }
+/* The panel already shows the card's title and main link - hide the copy's own header (unless it holds tabs). */
+.ntp-body .ntp-clone > :is(.nv-tile-h, .nv-panel-h, .nt-card-h, .ad-card-h, .sd-sec-h, h2.nv-section, h3.nv-section):not(:has([data-nt-tab], .nt-seg-tabs)) { display: none !important; }
+.ntp-body .ntp-clone > .nt-card-h + * { margin-top: 0; }
+/* Front-page block with no image chosen: hide the empty image box. */
+img[src=""] { display: none !important; }
+
+/* OPTION 2 ADMIN: three quick actions fill the row; the courses card fills its row (no empty space) */
+body.nt-shell:not([class*="nt-v-"]) .nt-admin .nt-actions4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+body.nt-shell:not([class*="nt-v-"]) .nt-admin .nt-grid-2 + .nt-grid-2 { grid-template-columns: minmax(0, 1fr); }
+body.nt-shell:not([class*="nt-v-"]) .nt-admin .nt-grid-2 + .nt-grid-2 > .nt-navy { min-height: 0; height: auto; padding: 20px 28px; display: grid; grid-template-columns: minmax(200px, 1fr) 2fr; align-items: center; gap: 36px; }
+@media (max-width: 760px) {
+    body.nt-shell:not([class*="nt-v-"]) .nt-admin .nt-actions4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    body.nt-shell:not([class*="nt-v-"]) .nt-admin .nt-grid-2 + .nt-grid-2 > .nt-navy { grid-template-columns: 1fr; gap: 14px; }
+}
+
+/* OPTION 2 STUDENT: a lone semester card fills its row (no empty half); with "Jump back in" they share the row */
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-grid-2 > .nt-sem:only-child { grid-column: 1 / -1; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-grid-2 > .nt-sem:not(:only-child),
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-grid-2 > .nt-jump { align-self: stretch; }
+
+/* WIDGET STYLE (student): soft gradient cards, coloured top accent, rounded, gentle lift */
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-widget { position: relative; overflow: hidden; border: 1px solid #e3e9f3 !important; border-radius: 18px !important; background: linear-gradient(160deg, #ffffff 0%, var(--wt, #f5f8ff) 100%) !important; box-shadow: 0 12px 28px -22px rgba(15, 31, 61, .55) !important; transition: transform .18s ease, box-shadow .18s ease; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-widget::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 4px; background: var(--wa, #5b7cf0); }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-widget:hover { transform: translateY(-2px); box-shadow: 0 18px 32px -22px rgba(15, 31, 61, .65) !important; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-widget .nt-card-h h2 { font-size: 15px; font-weight: 800; color: #0f1f3d; display: flex; align-items: center; gap: 10px; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-widget .nt-wic { width: 32px; height: 32px; border-radius: 10px; display: inline-grid; place-items: center; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-widget .nt-list li, body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-widget li { border-color: rgba(15, 31, 61, .07); }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-w-xp { --wt: #fff4de; --wa: #f4a62a; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-w-news { --wt: #eaf1ff; --wa: #4f7bea; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-w-extra:nth-of-type(odd) { --wt: #eef0fb; --wa: #0f1f3d; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-w-extra:nth-of-type(even) { --wt: #f2ecff; --wa: #8b5cf6; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-w-extra + .nt-w-extra { --wt: #f2ecff; --wa: #8b5cf6; }
+
+/* OPTION 2 widgets: brand navy / gold like Option 1 */
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-widget, body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-widget:is(.nt-w-xp, .nt-w-news, .nt-w-extra) { --wt: #f7f9fc; --wa: #f4b23e; }
+
+/* OPTION 2: the calendar fills its whole card now that the "Next 30 days" list is gone */
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-coming { display: block; container-type: normal; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-comingcard { display: flex; flex-direction: column; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-comingcard .nt-coming { flex: 1; display: flex; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-comingcard .nt-minical { flex: 1; width: 100%; max-width: none; display: flex; flex-direction: column; }
+body.nt-shell:not([class*="nt-v-"]) .nt-stu .nt-comingcard .nt-minical-grid { flex: 1; grid-auto-rows: minmax(0, 1fr); }
+
+/* Ask JO chat bubbles (all options/pages): your question on the right, JO's reply on the left */
+body .nt-jo #openai_chat_log{display:block !important}
+body .nt-jo #openai_chat_log .openai_message{display:block !important;width:fit-content !important;max-width:86% !important;box-sizing:border-box;text-align:left !important;white-space:normal}
+body .nt-jo #openai_chat_log .openai_message.user{margin-left:auto !important;margin-right:0 !important;align-self:flex-end;background:#0f1f3d !important;color:#fff !important;border-bottom-right-radius:4px !important}
+body .nt-jo #openai_chat_log .openai_message.user:before{right:0 !important;left:auto !important}
+body .nt-jo #openai_chat_log .openai_message.bot{margin-left:0 !important;margin-right:auto !important;align-self:flex-start;background:#fff !important;color:#1d2a44 !important;border:1px solid #e3e8f0 !important;border-bottom-left-radius:4px !important}
+body .nt-jo #openai_chat_log .openai_message.bot:before{left:0 !important;right:auto !important}

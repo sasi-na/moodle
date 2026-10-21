@@ -1,0 +1,30 @@
+{{!
+    @template theme_baz/nt-v-top
+
+    Shared start of the Option 3-5 student dashboards (head, top bar, Ask JO panel).
+    Closed by theme_baz/nt-v-bottom.
+}}
+{{> theme_baz/head }}
+<link rel="stylesheet" href="{{{ntcssurl}}}">
+
+<body {{{ bodyattributes }}}>
+    {{> core/local/toast/wrapper}}
+
+    <div id="page-wrapper" class="d-print-block">
+        {{{ output.standard_top_of_body_html }}}
+
+        <div id="sd-root" class="nt-root nv-root">
+            {{> theme_baz/nt-topbar-student }}
+
+            {{#hasaskjo}}
+            <div class="sd-askjo-panel nt-askjo-panel" id="sd-askjo-panel" hidden>
+                <div class="sd-askjo-head">
+                    <span>{{#str}}sd_askjo, theme_baz{{/str}}</span>
+                    <button type="button" class="sd-askjo-close" id="sd-askjo-close" aria-label="{{#str}}closebuttontitle, core{{/str}}">×</button>
+                </div>
+                <div class="block_openai_chat" data-instance-id="{{askjo.blockid}}">
+                    <div class="sd-askjo-body">{{{ askjo.log }}}</div>
+                    <div class="sd-askjo-control">{{{ askjo.control }}}</div>
+                </div>
+            </div>
+            {{/hasaskjo}}
