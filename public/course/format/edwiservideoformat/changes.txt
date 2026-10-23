@@ -1,0 +1,16 @@
+Release
+=======
+
+Version 1.0.2
+=============
+Feature - Added compatibility with Moodle 5.1.
+Feature - Introduced a setting to choose whether to open an activity in an iframe or the Moodle view.
+Feature - Video Course Format now supports all activities provided by Moodle.
+
+Version 1.0.1
+=============
+Tweak - Minor improvements and bug fixes
+
+Version 1.0.0
+=============
+Initial Version of Edwiser Video format plugin

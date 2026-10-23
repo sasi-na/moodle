@@ -70,56 +70,6 @@ function theme_baz_page_init(moodle_page $page) {
     // Purely additive (no core override); safe to load on every page.
     $page->requires->js_call_amd('theme_baz/modala11y', 'init');
 
-    // iPhone-style pop-up notifications (all pages, all Navigation options): Moodle's messages and new
-    // bell notifications show as a banner at the top centre and disappear after 5 seconds. Display only.
-    $ntdir = $CFG->dirroot . '/theme/baz/newtheme/';
-    $page->requires->css(new moodle_url('/theme/baz/newtheme/toast.css', ['v' => (int) @filemtime($ntdir . 'toast.css')]));
-    $page->requires->js(new moodle_url('/theme/baz/newtheme/toast.js', ['v' => (int) @filemtime($ntdir . 'toast.js')]), false);
-
-    // Navigation layout "Top bar" (or the Ednxt Top Bar theme): the two-level top bar
-    // shell, dashboards, Ask JO drawer ... all from this same code.
-    $ntontop = class_exists('\\theme_baz\\local\\newtheme') && \theme_baz\local\newtheme::is_on();
-    $ntany = theme_baz_nt_any();
-    if (!$ntontop) {
-        // Navigation = Option 1: everything (the new dashboards too) uses the left sidebar.
-        $page->add_body_class('nt-nav-left');
-    }
-    if ($ntany) {
-        theme_baz_nt_page_init($page, $ntontop);
-    }
-
-    // Sign-in form styling (feature "logindesign").
-    if ($page->pagelayout === 'login' && theme_baz_nt_feature('logindesign')) {
-        $page->requires->css(new moodle_url('/theme/baz/newtheme/login.css',
-            ['v' => (int) @filemtime($CFG->dirroot . '/theme/baz/newtheme/login.css')]));
-    }
-
-    // Site brand name in place of the site name in the tab title and page text
-    // (the Ednxt theme's shell.js does this itself). Display only.
-    if (!$ntany && ($ntb = theme_baz_nt_brand())) {
-        try {
-            $sitenames = [];
-            foreach ([get_site()->fullname, get_site()->shortname] as $n) {
-                $n = trim(strip_tags(format_string($n)));
-                if ($n !== '' && $n !== $ntb['name'] && !in_array($n, $sitenames, true)) {
-                    $sitenames[] = $n;
-                }
-            }
-            if ($sitenames) {
-                $page->requires->js_init_code('(function(b,n){var e=function(t){return t.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&");};'
-                    . 'var re=new RegExp("(^|[^A-Za-z0-9])("+n.map(e).join("|")+")(?![A-Za-z0-9])","g");'
-                    . 'var f=function(t){return t.replace(re,function(m,p){return p+b;});};'
-                    . 'var run=function(){document.title=f(document.title);var w=document.createTreeWalker(document.body,4,null),l=[],x;'
-                    . 'while((x=w.nextNode())){var p=x.parentNode;if(p&&!/^(SCRIPT|STYLE|TEXTAREA|INPUT|CODE|PRE)$/.test(p.nodeName)&&!(p.closest&&p.closest("[contenteditable=true]"))){re.lastIndex=0;if(re.test(x.nodeValue)){l.push(x);}}}'
-                    . 'l.forEach(function(t){re.lastIndex=0;t.nodeValue=f(t.nodeValue);});};'
-                    . 'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",run);}else{run();}})('
-                    . json_encode($ntb['name']) . ',' . json_encode($sitenames) . ');', false);
-            }
-        } catch (\Throwable $e) {
-            debugging('theme_baz brand: ' . $e->getMessage(), DEBUG_DEVELOPER);
-        }
-    }
-
     // Bespoke teacher dashboard on /my/ for faculty / TA staff audiences. Like the
     // student dashboard, decide before block regions render so the default
     // dashboard blocks' JS is never queued for DOM this layout won't output.
@@ -443,247 +393,6 @@ function theme_baz_changepassword_config(): array {
 }
 
 /**
- * Features and the design each one uses (BAZ settings, Top Bar tab, "Features"), chosen
- * one by one and independent of the navigation layout:
- * 'auto' = same as Navigation, 'left' = Option 1 (classic design), 'top' = Option 2 (new design).
- *
- * @return array feature => default
- */
-function theme_baz_nt_features(): array {
-    return [
-        'dashboards' => 'auto',
-        'askjo' => 'auto',
-        'assistants' => 'auto',
-        'helptab' => 'auto',
-        'holidays' => 'auto',
-        'branding' => 'auto',
-        'logindesign' => 'auto',
-    ];
-}
-
-/**
- * Does this feature use the Option 2 (new) design? The Ednxt Top Bar theme always does.
- *
- * @param string $feature
- * @return bool
- */
-function theme_baz_nt_feature(string $feature): bool {
-    // Every feature follows Navigation automatically (Option 1 = classic, Option 2 = new
-    // design). The brand logo and name are always on, in both layouts.
-    $defaults = theme_baz_nt_features();
-    if (!isset($defaults[$feature])) {
-        return false;
-    }
-    if ($feature === 'branding') {
-        return true;
-    }
-    return class_exists('\\theme_baz\\local\\newtheme') && \theme_baz\local\newtheme::is_on();
-}
-
-/**
- * Does this page need the shared top bar / feature files (shell.css, shell.js)?
- *
- * @return bool
- */
-function theme_baz_nt_any(): bool {
-    if (class_exists('\\theme_baz\\local\\newtheme') && \theme_baz\local\newtheme::is_on()) {
-        return true;
-    }
-    foreach (['askjo', 'assistants', 'helptab', 'holidays', 'branding'] as $f) {
-        if (theme_baz_nt_feature($f)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-/**
- * Top bar layout / branding options (BAZ settings, Top Bar tab), stored as theme_baz/nt_*.
- *
- * @return stdClass scope, showtabs, cardstyle, dockposition, barcolour, accentcolour, pagecolour,
- *                  holidays, customcss, brandname, brandlogo
- */
-function theme_baz_nt_config(): stdClass {
-    static $cfg = null;
-    if ($cfg === null) {
-        $cfg = new stdClass();
-        foreach ((array) get_config('theme_baz') as $k => $v) {
-            if (strpos($k, 'nt_') === 0) {
-                $cfg->{substr($k, 3)} = $v;
-            }
-        }
-    }
-    return $cfg;
-}
-
-/**
- * Top bar layout: loads the two-level top bar shell (CSS, JS, body classes, brand,
- * calendar holidays). Used by BAZ with "Navigation layout: Top bar" and by the
- * Ednxt Top Bar theme. Its options live in the "Top bar design" settings.
- *
- * @param moodle_page $page
- */
-function theme_baz_nt_page_init(moodle_page $page, bool $top = true) {
-    global $CFG;
-    try {
-        $cfg = theme_baz_nt_config();
-        $dir = $CFG->dirroot . '/theme/baz/newtheme/';
-        $page->requires->css(new moodle_url('/theme/baz/newtheme/shell.css', ['v' => (int) @filemtime($dir . 'shell.css')]));
-        if (theme_baz_nt_feature('holidays') && strpos((string) $page->pagetype, 'calendar-') === 0 && class_exists('\\theme_baz\\output\\nt_student_dashboard')) {
-            $map = [];
-            foreach (\theme_baz\output\nt_student_dashboard::nt_holidays() as $date => $h) {
-                [$y, $m, $d] = array_map('intval', explode('-', $date));
-                $map[(string) make_timestamp($y, $m, $d)] = ['n' => $h['name'], 't' => $h['type']];
-            }
-            $labels = ['holiday' => get_string('nt_holiday', 'theme_baz'), 'festival' => get_string('nt_festival', 'theme_baz')];
-            $page->requires->js_init_code('window.EDNXT_HOLIDAYS = ' . json_encode($map) . '; window.EDNXT_HOLLABELS = '
-                . json_encode($labels) . ';', false);
-        }
-        $brand = theme_baz_nt_brand();
-        $sitenames = [];
-        try {
-            $site = get_site();
-            foreach ([$site->fullname, $site->shortname] as $n) {
-                $n = trim(strip_tags(format_string($n)));
-                if ($n !== '' && !in_array($n, $sitenames, true)) {
-                    $sitenames[] = $n;
-                }
-            }
-        } catch (\Throwable $e) {
-            $sitenames = [];
-        }
-        if ($brand) {
-            $page->requires->js_init_code('window.EDNXT_BRAND = ' . json_encode([
-                'name' => $brand['name'],
-                'logo' => $brand['logolight'],
-                'logodark' => $brand['logo'],
-                'sitenames' => $sitenames,
-            'home' => (new moodle_url('/my/'))->out(false),
-            ]) . ';', false);
-            $page->add_body_class('ednxt-brand');
-        }
-        if ($top) {
-            $page->add_body_class('nt-shell');
-            $variant = \theme_baz\local\newtheme::variant();
-            if ($variant !== '') {
-                // Options 3-5: same shell and data, their own design.
-                $page->add_body_class('nt-v-' . $variant);
-                $page->requires->css(new moodle_url('/theme/baz/newtheme/variants-nav.css', ['v' => (int) @filemtime($dir . 'variants-nav.css')]));
-                $page->requires->css(new moodle_url('/theme/baz/newtheme/variants-dash.css', ['v' => (int) @filemtime($dir . 'variants-dash.css')]));
-            }
-        }
-        $page->requires->js(new moodle_url('/theme/baz/newtheme/shell.js', ['v' => (int) @filemtime($dir . 'shell.js')]), false);
-        // Dashboard "peek": click a card to see its details (all options). Small, cached, and it
-        // only acts on the dashboard (body#page-my-index).
-        $page->requires->js(new moodle_url('/theme/baz/newtheme/peek.js', ['v' => (int) @filemtime($dir . 'peek.js')]), false);
-        if (theme_baz_nt_feature('assistants')) {
-            $page->add_body_class('ednxt-dock-right');
-        }
-        foreach (['askjo', 'helptab'] as $f) {
-            if (theme_baz_nt_feature($f)) {
-                $page->add_body_class('nt-f-' . $f);
-            }
-        }
-        if (($cfg->cardstyle ?? 'outlined') === 'flat') {
-            $page->add_body_class('ednxt-flat');
-        }
-        if (isset($cfg->showtabs) && !$cfg->showtabs) {
-            $page->add_body_class('ednxt-notabs');
-        }
-    } catch (\Throwable $e) {
-        debugging('theme_baz top bar init: ' . $e->getMessage(), DEBUG_DEVELOPER);
-    }
-}
-
-/**
- * Top bar layout colours (and custom CSS) as a <style> block in the page head, so
- * they apply with BAZ too (no theme CSS rebuild needed).
- *
- * @return string
- */
-function theme_baz_nt_head_css(): string {
-    $cfg = theme_baz_nt_config();
-    $hex = function($v, $default) {
-        $v = trim((string) $v);
-        return preg_match('/^#([0-9a-f]{3}|[0-9a-f]{6})$/i', $v) ? $v : $default;
-    };
-    $bar = $hex($cfg->barcolour ?? '', '#0f1f3d');
-    $accent = $hex($cfg->accentcolour ?? '', '#f4b23e');
-    $bg = $hex($cfg->pagecolour ?? '', '#eef2f7');
-    $ink = '#3a2a06';
-    try {
-        $ink = theme_baz_relative_luminance(theme_baz_normalise_hex($accent)) < 0.45 ? '#ffffff' : '#3a2a06';
-    } catch (\Throwable $e) {
-        $ink = '#3a2a06';
-    }
-    $css = "body{--ednxt-navy:{$bar};--ednxt-gold:{$accent};--ednxt-gold-ink:{$ink};--ednxt-bg:{$bg};}";
-    if (!empty($cfg->customcss)) {
-        $css .= "\n" . str_ireplace('</style', '', (string) $cfg->customcss);
-    }
-    $out = '<style id="nt-vars">' . $css . '</style>';
-    return $out;
-}
-
-/**
- * This site's own brand from the Ednxt Top Bar "Branding" settings, used by both
- * themes for the name and logo shown on the login page, the front page and the
- * top bar. Per site (stored config), so other tenants are unaffected.
- *
- * @return array|null ['name', 'logo' (light backgrounds), 'logolight' (navy), 'loginart' (login picture)] or null
- */
-function theme_baz_nt_brand(): ?array {
-    global $CFG;
-    static $cache = false;
-    if ($cache !== false) {
-        return $cache;
-    }
-    $cache = null;
-    if (!theme_baz_nt_feature('branding')) {
-        return null;
-    }
-    try {
-        $name = trim((string) (theme_baz_nt_config()->brandname ?? ''));
-        if ($name === '') {
-            return null;
-        }
-        $logo = '';
-        $logolight = '';
-        $loginart = '';
-        if (get_config('theme_baz', 'nt_brandlogo')) {
-            $logo = $logolight = (string) \theme_config::load('baz')->setting_file_url('nt_brandlogo', 'nt_brandlogo');
-        } else if (stripos($name, 'jain') !== false) {
-            foreach (['logo' => 'jain-online-logo.png', 'logolight' => 'jain-online-logo-light.png',
-                    'loginart' => 'jain-login-art.png'] as $k => $f) {
-                $path = $CFG->dirroot . '/theme/baz/pix/brand/' . $f;
-                if (is_readable($path)) {
-                    $$k = (new moodle_url('/theme/baz/pix/brand/' . $f, ['v' => (int) filemtime($path)]))->out(false);
-                }
-            }
-        }
-        $cache = ['name' => $name, 'logo' => $logo, 'logolight' => $logolight ?: $logo, 'loginart' => $loginart];
-    } catch (\Throwable $e) {
-        $cache = null;
-    }
-    return $cache;
-}
-
-/**
- * True for an unset or Moodle placeholder file setting (e.g. moodlelogo.svg,
- * moodle-login-bg.jpg) that the site brand should replace.
- *
- * @param mixed $url
- * @return bool
- */
-function theme_baz_is_placeholder_file($url): bool {
-    $url = (string) $url;
-    if ($url === '') {
-        return true;
-    }
-    $base = strtolower(basename(parse_url($url, PHP_URL_PATH) ?: ''));
-    return strpos($base, 'moodle') === 0;
-}
-
-/**
  * Tenant-neutral branding values for templates.
  *
  * This theme is shared by every tenant built from this repo, so no user-facing
@@ -719,12 +428,6 @@ function theme_baz_brand_ctx(): array {
     // behaves exactly as before.
     $short = trim((string) theme_baz_get_setting('brandnameshort'));
     $full = trim((string) theme_baz_get_setting('brandnamefull'));
-    // The Ednxt brand name (BAZ settings -> Top Bar -> Branding) stands in for the
-    // site fullname when set, so the site record itself never has to change.
-    $nt = theme_baz_nt_brand();
-    if ($nt) {
-        $sitename = $nt['name'];
-    }
     $name = $short !== '' ? $short : $sitename;
     $legal = $full !== '' ? $full : $sitename;
 
@@ -1130,10 +833,6 @@ function theme_baz_user_preferences(): array {
  * @return string
  */
 function theme_baz_get_extra_scss($theme) {
-    // Child themes compile Baz's SCSS: always read Baz's own settings.
-    if (!empty($theme->name) && $theme->name !== 'baz') {
-        $theme = theme_config::load('baz');
-    }
     $content = '';
 
     // Sets the login background image.
@@ -1199,9 +898,6 @@ function theme_baz_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
         }
         if ($filearea === 'hvp') {
             return theme_baz_serve_hvp_css($args[1], $theme);
-        }
-        if ($filearea === 'nt_brandlogo') {
-            return $theme->setting_file_serve('nt_brandlogo', $args, $forcedownload, $options);
         }
         if ($filearea === 'favicon') {
             return $theme->setting_file_serve('favicon', $args, $forcedownload, $options);
@@ -1281,10 +977,6 @@ function theme_baz_setting_file_url($setting, $filearea, $theme) {
  * @return string
  */
 function theme_baz_get_main_scss_content($theme) {
-    // Child themes compile Baz's SCSS: always read Baz's own settings.
-    if (!empty($theme->name) && $theme->name !== 'baz') {
-        $theme = theme_config::load('baz');
-    }
     global $CFG;
 
     $scss = '';
@@ -1523,10 +1215,6 @@ function theme_baz_hsl_to_hex(float $h, float $l, float $s): string {
  * @return array
  */
 function theme_baz_get_pre_scss($theme) {
-    // Child themes compile Baz's SCSS: always read Baz's own settings.
-    if (!empty($theme->name) && $theme->name !== 'baz') {
-        $theme = theme_config::load('baz');
-    }
     global $CFG;
 
     $scss = '';

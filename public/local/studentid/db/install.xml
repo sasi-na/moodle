@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/studentid/db" VERSION="2026052100" COMMENT="Student ID Card system tables" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <TABLES>
+
+        <!-- =========================
+             REQUESTS TABLE
+        ========================== -->
+        <TABLE NAME="local_studentid_requests" COMMENT="Stores student ID card requests">
+            <FIELDS>
+
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+
+                <FIELD NAME="usn" TYPE="char" LENGTH="50" NOTNULL="true"/>
+
+                <FIELD NAME="status" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="draft"/>
+
+                <FIELD NAME="photo_path" TYPE="text" NOTNULL="false"/>
+
+                <FIELD NAME="blood_group" TYPE="char" LENGTH="5" NOTNULL="false"/>
+
+                <FIELD NAME="review_comment" TYPE="text" NOTNULL="false"/>
+
+                <FIELD NAME="reviewed_by" TYPE="int" LENGTH="10" NOTNULL="false"/>
+
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false"/>
+
+                <FIELD NAME="timesubmitted" TYPE="int" LENGTH="10" NOTNULL="false"/>
+                <FIELD NAME="aadhaar_front_path" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="aadhaar_back_path" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="abc_id_path" TYPE="text" NOTNULL="false"/>
+                <FIELD NAME="city" TYPE="char" LENGTH="100" NOTNULL="false"/>
+                <FIELD NAME="state" TYPE="char" LENGTH="100" NOTNULL="false"/>
+                <FIELD NAME="country" TYPE="char" LENGTH="100" NOTNULL="false"/>
+                <FIELD NAME="timereviewed" TYPE="int" LENGTH="10" NOTNULL="false"/>
+
+            </FIELDS>
+
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+
+            <INDEXES>
+                <INDEX NAME="userid_idx" UNIQUE="false" FIELDS="userid"/>
+                <INDEX NAME="status_idx" UNIQUE="false" FIELDS="status"/>
+                <INDEX NAME="usn_idx" UNIQUE="false" FIELDS="usn"/>
+            </INDEXES>
+
+        </TABLE>
+
+        <!-- =========================
+             ID CARDS TABLE
+        ========================== -->
+        <TABLE NAME="local_studentid_cards" COMMENT="Generated ID cards">
+            <FIELDS>
+
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+
+                <FIELD NAME="requestid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+
+                <FIELD NAME="file_path" TYPE="text" NOTNULL="true"/>
+
+                <FIELD NAME="idcard_number" TYPE="char" LENGTH="50" NOTNULL="true"/>
+
+                <FIELD NAME="generated_by" TYPE="int" LENGTH="10" NOTNULL="true"/>
+
+                <FIELD NAME="timegenerated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+                <FIELD NAME="download_count" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="last_downloaded" TYPE="int" LENGTH="10" NOTNULL="false"/>
+
+            </FIELDS>
+
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+
+            <INDEXES>
+                <INDEX NAME="requestid_idx" UNIQUE="false" FIELDS="requestid"/>
+                <INDEX NAME="userid_idx" UNIQUE="false" FIELDS="userid"/>
+            </INDEXES>
+
+        </TABLE>
+
+        <!-- =========================
+             AUDIT LOGS TABLE
+        ========================== -->
+        <TABLE NAME="local_studentid_logs" COMMENT="Audit trail for all actions">
+            <FIELDS>
+
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+
+                <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+
+                <FIELD NAME="action" TYPE="char" LENGTH="50" NOTNULL="true"/>
+
+                <FIELD NAME="context" TYPE="text" NOTNULL="false"/>
+
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+
+            </FIELDS>
+
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+
+            <INDEXES>
+                <INDEX NAME="userid_idx" UNIQUE="false" FIELDS="userid"/>
+                <INDEX NAME="action_idx" UNIQUE="false" FIELDS="action"/>
+            </INDEXES>
+
+        </TABLE>
+
+    </TABLES>
+
+</XMLDB>

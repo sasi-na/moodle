@@ -1,0 +1,129 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ludilearn/filename
+
+    Example context (json):
+    {}
+}}
+
+<div id="ludilearn-gameprofile" class="format-ludilearn" aria-label="{{#str}} gameprofile_title, format_ludilearn {{/str}}">
+    <p>{{#str}} gameprofile_desc, format_ludilearn  {{/str}}</p>
+
+    <div class="row">
+        <div class="col-12 col-md-8 offset-md-2">
+            <div class="d-flex justify-content-center">
+                <canvas
+                    id="hexadChart"
+                    role="img"
+                    aria-label="{{#str}} hexadchart_desc, format_ludilearn {{/str}}">
+                    tabindex="0">
+                </canvas>
+            </div>
+        </div>
+    </div>
+
+    <div id="hexad-scores-details" class="hexad-results mt-6 mb-2" role="region" aria-labelledby="hexad-results-title">
+        <h2 id="hexad-results-title" class="hexad-title">{{#str}} hexad_scores_details, format_ludilearn {{/str}}</h2>
+        <div class="hexad-scores-grid" role="list">
+            <div class="score-item" role="listitem">
+                <div class="score-header">
+                    <strong id="achiever-label" >{{#str}} achiever, format_ludilearn {{/str}}</strong>
+                    <span class="score-value" aria-labelledby="achiever-label">
+                        <span class="sr-only">{{#str}} score, format_ludilearn {{/str}}</span>
+                        {{hexadscores.achieverpercentage}}
+                    </span>
+                </div>
+                <div class="score-description" aria-labelledby="achiever-label">
+                    {{#str}} achiever_desc, format_ludilearn {{/str}}
+                </div>
+            </div>
+            <div class="score-item" role="listitem">
+                <div class="score-header">
+                    <strong id="player-label">{{#str}} player, format_ludilearn {{/str}}</strong>
+                    <span class="score-value" aria-labelledby="player-label">
+                        <span class="sr-only">{{#str}} score, format_ludilearn {{/str}}</span>
+                    {{hexadscores.playerpercentage}}
+                    </span>
+                </div>
+                <div class="score-description" aria-labelledby="player-label">
+                    {{#str}} player_desc, format_ludilearn {{/str}}
+                </div>
+            </div>
+            <div class="score-item" role="listitem">
+                <div class="score-header">
+                    <strong id="socialiser-label">{{#str}} socialiser, format_ludilearn {{/str}}</strong>
+                    <span class="score-value" aria-labelledby="socialiser-label">
+                        <span class="sr-only">{{#str}} score, format_ludilearn {{/str}}</span>
+                    {{hexadscores.socialiserpercentage}}
+                    </span>
+                </div>
+                <div class="score-description" aria-labelledby="socialiser-label">
+                    {{#str}} socialiser_desc, format_ludilearn {{/str}}
+                </div>
+            </div>
+            <div class="score-item" role="listitem">
+                <div class="score-header">
+                    <strong id="freespirit-label">{{#str}} freespirit, format_ludilearn {{/str}}</strong>
+                    <span class="score-value" aria-labelledby="freespirit-label">
+                            <span class="sr-only">{{#str}} score, format_ludilearn {{/str}}</span>
+                    {{hexadscores.freespiritpercentage}}
+                    </span>
+                </div>
+                <div class="score-description" aria-labelledby="freespirit-label">
+                    {{#str}} freespirit_desc, format_ludilearn {{/str}}
+                </div>
+            </div>
+            <div class="score-item" role="listitem">
+                <div class="score-header">
+                    <strong id="disruptor-label">{{#str}} disruptor, format_ludilearn {{/str}}</strong>
+                    <span class="score-value" aria-labelledby="disruptor-label">
+                        <span class="sr-only">{{#str}} score, format_ludilearn {{/str}}</span>
+                    {{hexadscores.disruptorpercentage}}
+                    </span>
+                </div>
+                <div class="score-description" aria-labelledby="disruptor-label">
+                    {{#str}} disruptor_desc, format_ludilearn {{/str}}
+                </div>
+            </div>
+            <div class="score-item" role="listitem">
+                <div class="score-header">
+                    <strong id="philanthropist-label">{{#str}} philanthropist, format_ludilearn {{/str}}</strong>
+                    <span class="score-value" aria-labelledby="philanthropist-label">
+                        <span class="sr-only">{{#str}} score, format_ludilearn {{/str}}</span>
+                    {{hexadscores.philanthropistpercentage}}
+                    </span>
+                </div>
+                <div class="score-description" aria-labelledby="philanthropist-label">
+                    {{#str}} philanthropist_desc, format_ludilearn {{/str}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{#courseid}}
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="{{#str}} navigation, format_ludilearn {{/str}}">
+                <a href="{{config.wwwroot}}/course/view.php?id={{courseid}}" class="btn btn-primary float-right" role="button">
+                {{#str}} backtocourse, format_ludilearn {{/str}}
+                </a>
+            </nav>
+        </div>
+    </div>
+    {{/courseid}}
+</div>

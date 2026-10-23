@@ -1,0 +1,21 @@
+{
+  "name": "Edwiser_Forms_Pro_Activity",
+  "version": "1.2.1",
+  "description": "Forms plugin for moodle by Edwiser",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Wisdmlabs 2019",
+  "license": "GPL-3.0-or-later",
+  "dependencies": {},
+  "devDependencies": {
+    "gulp": "^4.0.0",
+    "gulp-babel": "^8.0.0",
+    "gulp-exec": "^3.0.2",
+    "gulp-minify": "^3.1.0",
+    "gulp-notify": "^3.2.0",
+    "@babel/core": "^7.4.0",
+    "@babel/preset-env": "^7.4.1"
+  }
+}

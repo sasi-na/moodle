@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 300">
+  <defs>
+    <filter id="b" data-name="drop-shadow-1" x="178.872" y="135.521" width="51.012" height="55.795" filterUnits="userSpaceOnUse">
+      <feOffset dx="-1.219" dy="0"/>
+      <feGaussianBlur result="c" stdDeviation="0"/>
+      <feFlood flood-color="#42496f" flood-opacity="1"/>
+      <feComposite in2="c" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g isolation="isolate">
+    <g id="a" data-name="bateau 08">
+      <g filter="url(#b)">
+        <path d="M203.287,188.562c-.146,2.235,2.435,3.585,4.18,2.181,7.042-5.667,19.787-17.447,19.787-28.484,0-12.406-3.416-15.32-3.416-15.32,0,0,3.958-.255,4.097-2.366,0,0-.113-7.716-2.198-8.925-1.595-.925-13.619,3.405-19.174,5.488-1.6.6-2.45,2.336-1.955,3.972.749,2.474,1.868,5.904,2.81,7.69-.821,3.371-2.716,14.768-3.032,19.208-.2,2.813-.735,10.962-1.1,16.556Z" fill="#e86170"/>
+        <path d="M227.936,144.573s.783.363,1.577,1.451c.132.182.386.08.37-.19-.237-4.055-2.191-9.052-4.145-10.186-.509-.295-2.085-.052-4.169.479v11.009l2.269-.198s3.958-.254,4.097-2.365Z" fill="#ffd66e"/>
+        <path d="M227.936,144.573s-3.091-.872-4.097.182" fill="none" stroke="#f4af13" stroke-linecap="round" stroke-linejoin="round" stroke-width=".61"/>
+        <line x1="215.505" y1="141.604" x2="220.558" y2="141.604" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".61"/>
+        <line x1="218.032" y1="141.604" x2="218.916" y2="143.473" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".61"/>
+        <path d="M209.946,153.171s-23.751-11.627-29.436-15.116c0,0-2.148,6.492,3.285,10.471,0,0-2.419,6.052,4.295,10.778,0,0-1.466,6.461,4.384,9.307s15.072,7.204,15.072,7.204l2.4-22.644Z" fill="#e86170"/>
+        <g mix-blend-mode="multiply" opacity=".5">
+          <path d="M218.943,159.304c1.33-.922,2.229-2.441,2.398-4.051-.049.715.216,1.445.711,1.963.167.175.389.336.629.305.269-.034.45-.29.56-.538.414-.927.299-2.069-.291-2.895" fill="none" stroke="#a384bb" stroke-linecap="round" stroke-linejoin="round" stroke-width=".61"/>
+          <path d="M216.367,168.523c.509.242,1.121-.049,1.521-.446.68-.673,1.022-1.672.898-2.621" fill="none" stroke="#a384bb" stroke-linecap="round" stroke-linejoin="round" stroke-width=".61"/>
+          <path d="M222.095,166.078c.167.314.616.384.937.232s.535-.463.704-.776c.27-.501.464-1.044.573-1.603" fill="none" stroke="#a384bb" stroke-linecap="round" stroke-linejoin="round" stroke-width=".61"/>
+          <path d="M197.181,149.567c-.988-.16-1.935.733-2.064,1.725-.129.992.398,1.979,1.138,2.653s1.67,1.092,2.584,1.5c-1.049.443-1.77,1.567-1.734,2.705s.826,2.215,1.901,2.59c-1.024,1.878-.255,4.517,1.618,5.552" fill="none" stroke="#a384bb" stroke-linecap="round" stroke-linejoin="round" stroke-width=".61"/>
+          <path d="M193.563,153.171c-1.111.465-1.41,2.028-.857,3.097.552,1.07,1.687,1.71,2.819,2.119-.953.443-1.409,1.672-1.086,2.672.323,1,1.315,1.709,2.36,1.82" fill="none" stroke="#a384bb" stroke-linecap="round" stroke-linejoin="round" stroke-width=".61"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

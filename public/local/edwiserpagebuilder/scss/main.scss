@@ -1,0 +1,209 @@
+@import "variables";
+
+@import "custom_modal";
+@import "block_card";
+@import "custom_pages";
+@import "remuiblck";
+@import "fccourses";
+@import "ellipsis";
+//@import "page_cards";
+
+/*Hide Add a block menu from sidebar - Only theme_remui*/
+// body:not(.latest-frontpage) {
+//     #nav-drawer {
+//         #nav-drawer-container {
+//             [data-key="addblock"] {
+//                 display: none;
+//             }
+//         }
+//     }
+// }
+// .block-content {
+//     margin: 0 0!important;
+// }
+// .block_edwiseradvancedblock .card-body.p-3 {
+//     padding: 0 !important;
+//     .block-controls.header {
+//         margin: 15px;
+//     }
+//     .card-text.content {
+//         margin-top: 0 !important;
+//         .live-customizer-btn {
+//             margin-right: 15px;
+//         }
+//     }
+// }
+.pagebuilderoptioninfo{
+    display: none;
+}
+body.latest-frontpage{
+    .pagebuilderoptioninfo {
+        display: block;
+    }
+}
+#page-local-edwiserpagebuilder-editor {
+    .btn-light {
+        color: #212529;
+    }
+    .toggle{
+        .toggle-checkbox{
+            display: none !important;
+        }
+    }
+
+    [data-key="selcourselayout"]{
+        .epb-ly-sele{
+            margin-top: 3px;
+        }
+    }
+}
+
+#page-epb-page-publish:not(.editing) ,
+#page-epb-page-draft:not(.editing) {
+
+	&:not(:has(#region-bottom-blocks section)) {
+
+		&:not(:has(#region-top-blocks section)) {
+
+			&:not(:has(#block-region-content section)) {
+				#topofscroll {
+			        margin-top: 0;
+			        margin-bottom: 0;
+				}
+			}
+
+		}
+	}
+
+    &:not(:has(#block-region-content section)) {
+    	#topofscroll {
+	        #page-content {
+				padding: 0 !important;
+			}
+    	}
+    }
+
+    &:not(:has(#region-top-blocks section)) {
+        #region-top-blocks {
+            margin: 0 !important;
+        }
+    }
+}
+
+
+@media (max-width: 576px) {
+    .edw-sm-none {
+        display: none !important;
+    }
+}
+
+@media (min-width: 577px) and (max-width: 768px) {
+    .edw-md-none {
+        display: none !important;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 992px) {
+    .edw-lg-none {
+        display: none !important;
+    }
+}
+
+@media (min-width: 993px) and (max-width: 1200px) {
+    .edw-xl-none {
+        display: none !important;
+    }
+}
+
+@media (min-width: 1201px) {
+    .edw-xxl-none {
+        display: none !important;
+    }
+}
+
+
+#page-local-edwiserpagebuilder-editor .btn-icon {
+    border-radius: 4px;
+    width: unset;
+}
+
+
+section {
+    position: relative;
+    .background-container{
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -2;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        img, video {
+            width:auto;
+            object-fit: cover;
+            height:auto;
+            max-width: initial;
+            min-height: 100%;
+            min-width: 100%;
+        }
+    }
+
+    .separator.top{
+        top: 0px;
+        position: absolute;
+    }
+}
+.flip-box {
+    width: 300px;
+    height: 400px;
+    perspective: 1000px;
+    /* Remove this if you don't want the 3D effect */ }
+
+  .flip-box-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d; }
+
+  .flip-box.enabled:hover .flip-box-inner,
+  .flip-box.enabled.back .flip-box-inner {
+    transform: rotateY(180deg); }
+
+  .flip-box-front, .flip-box-back {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    /* Safari */
+    backface-visibility: hidden; }
+
+  .flip-box-back {
+    z-index: 2;
+    transform: rotateY(180deg); }
+
+  .flip-box.enabled.vertical:hover .flip-box-inner,
+  .flip-box.enabled.vertical.back .flip-box-inner {
+    transform: rotateX(180deg); }
+
+  .flip-box.vertical .flip-box-back {
+    transform: rotateX(180deg); }
+
+.block-header-wrapper {
+    .export-block-btn-locked {
+        cursor: default !important;
+        i,span {
+            opacity: 0.5;
+        }
+    
+        .lock-icon {
+            height: 19px;
+        }
+    }
+}
+
+.add-newpage-btn-wrapper .epb-addnewpage .fa-regular.fa-file {
+	color: white;
+}

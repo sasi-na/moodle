@@ -1351,9 +1351,7 @@ class core_renderer extends \core_renderer {
         $am->set_nowrap_on_items();
 
         if ($CFG->enabledashboard) {
-            $dashcur = $this->nt_menu_current(new moodle_url('/my/'));
-            $dashboardlink = '<div class="dropdown-item-wrapper"><a class="dropdown-item' . ($dashcur ? ' nt-here' : '') . '"' .
-                ($dashcur ? ' aria-current="page"' : '') . ' href="' .
+            $dashboardlink = '<div class="dropdown-item-wrapper"><a class="dropdown-item" href="' .
                 new moodle_url('/my/') .
                 '" data-identifier="dashboard,moodle" title="dashboard,moodle">' .
                 get_string('myhome', 'moodle') .
@@ -1387,9 +1385,7 @@ class core_renderer extends \core_renderer {
                         break;
 
                     case 'link':
-                        $here = $this->nt_menu_current($value->url, $value->titleidentifier);
-                        $al = '<a class="dropdown-item' . ($here ? ' nt-here' : '') . '"' .
-                            ($here ? ' aria-current="page"' : '') . ' href="' .
+                        $al = '<a class="dropdown-item" href="' .
                             $value->url .
                             '" data-identifier="' .
                             $value->titleidentifier .
@@ -1398,13 +1394,6 @@ class core_renderer extends \core_renderer {
                             '">' .
                             $value->title . '</a>';
                         $am->add($al);
-                        if ($value->titleidentifier === 'preferences,moodle') {
-                            $stylehere = $this->nt_menu_current(new moodle_url('/theme/baz/mystyle.php'));
-                            $am->add('<a class="dropdown-item' . ($stylehere ? ' nt-here' : '') . '"' .
-                                ($stylehere ? ' aria-current="page"' : '') . ' href="' .
-                                (new moodle_url('/theme/baz/mystyle.php'))->out(false) . '">' .
-                                get_string('ms_menu', 'theme_baz') . '</a>');
-                        }
                         break;
                 }
 
@@ -1420,56 +1409,7 @@ class core_renderer extends \core_renderer {
         return html_writer::div(
             $this->render($am),
             $usermenuclasses
-        ) . $this->nt_menu_here_css();
-    }
-
-    /**
-     * Is this user-menu link the page the person is on now? (shows the tick at the right edge)
-     *
-     * @param moodle_url|string $url Link target.
-     * @param string $identifier Optional Moodle string identifier of the item.
-     * @return bool
-     */
-    protected function nt_menu_current($url, string $identifier = ''): bool {
-        global $USER;
-        try {
-            $link = $url instanceof moodle_url ? $url : new moodle_url((string) $url);
-            $here = $this->page->url;
-            $lpath = rtrim((string) preg_replace('~/index\\.php$~', '/', $link->get_path()), '/');
-            $hpath = rtrim((string) preg_replace('~/index\\.php$~', '/', $here->get_path()), '/');
-            if ($lpath === '' || $lpath !== $hpath) {
-                // Preferences has many sub pages (edit profile, language, forums ...).
-                return $identifier === 'preferences,moodle' &&
-                    strpos($this->page->pagetype, 'user-preferences') === 0;
-            }
-            // Profile pages: only my own profile counts.
-            if (substr($lpath, -17) === '/user/profile.php') {
-                $id = $here->get_param('id');
-                return $id === null || (int) $id === (int) $USER->id;
-            }
-            return true;
-        } catch (\Throwable $e) {
-            return false;
-        }
-    }
-
-    /**
-     * Tick shown at the right edge of the current page's item in the user menu.
-     *
-     * @return string
-     */
-    protected function nt_menu_here_css(): string {
-        static $done = false;
-        if ($done) {
-            return '';
-        }
-        $done = true;
-        return '<style>.dropdown-item.nt-here{position:relative;font-weight:700;color:var(--nv-acc,var(--accent,#0f52ba))!important;' .
-            'padding-right:40px!important}.dropdown-item.nt-here::after{content:"";position:absolute;right:16px;top:50%;' .
-            'width:18px;height:18px;margin-top:-9px;border-radius:50%;background:var(--nv-acc,var(--accent,#0f52ba)) ' .
-            'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' ' .
-            'stroke=\'%23fff\' stroke-width=\'3.2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3E%3Cpath d=\'m6 12.5 4 4 8-9\'/%3E%3C/svg%3E") ' .
-            'center/12px no-repeat}</style>';
+        );
     }
 
 

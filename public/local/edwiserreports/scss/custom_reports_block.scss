@@ -1,0 +1,223 @@
+/* stylelint-disable declaration-no-important */
+
+.reports-preview-body,
+.reports-list-body {
+    a {
+        text-decoration: none !important;
+    }
+    table.empty {
+        height: 300px;
+    }
+    .reports-preview-content.empty {
+        padding: 7rem 0;
+    }
+    .reports-preview-content,
+    .reports-list-content {
+        &.loader {
+            .icon {
+                height: 36px;
+                width: 36px;
+                font-size: 36px;
+            }
+        }
+    }
+}
+
+.reports-list-body {
+    .reports-list-content {
+        padding: 1rem 0 !important;
+        min-height: 200px !important;
+    }
+    // Ensure table wrapper has proper width
+    .edwiserreports-table {
+        width: 100% !important;
+        table {
+            width: 100% !important;
+        }
+    }
+}
+
+.reports-preview-body {
+    .reports-preview-content {
+        padding: 1rem 0 !important;
+        min-height: 200px !important;
+    }
+    // Ensure preview table wrapper has proper width
+    .edwiserreports-table {
+        width: 100% !important;
+        table {
+            width: 100% !important;
+        }
+    }
+}
+
+.customreports-block-section div.reports-preview-content.justify-content-center.align-items-center.d-flex {
+    display: block !important;
+    text-align: center;
+}
+
+.sorting_asc {
+    height: 75px !important;
+}
+
+.reports-list-content {
+    [data-action="hide"] {
+        &[data-value="0"] {
+            .show-svg {
+                display: none;
+            }
+        }
+        &[data-value="1"] {
+            .hide-svg {
+                display: none;
+            }
+        }
+    }
+}
+
+.reports-filter-body {
+    .select2-container {
+        width: 100% !important;
+        min-height: 2.7rem !important;
+    }
+    .select2-selection--single,
+    .select2-selection--multiple {
+        min-height: 2.7rem !important;
+    }
+    .select2-selection--multiple {
+        min-height: 2.7rem !important;
+        height: auto !important;
+    }
+    .select2-selection__rendered {
+        word-wrap: break-word !important;
+        text-overflow: inherit !important;
+        white-space: normal !important;
+        min-height: 2.7rem !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+    .checkbox-edwiserreports {
+        padding: 0.2rem 2.5rem;
+    }
+    .field-group {
+        border: 1px solid #ccc !important;
+        cursor: pointer;
+        &+.field {
+            position: absolute;
+            z-index: 1;
+            background: white;
+            left: 0;
+            right: 0;
+            box-shadow: 0 7px 14px 0 rgba(59, 65, 94, 0.1), 0 3px 6px 0 rgba(0, 0, 0, 0.07);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    }
+}
+
+.field-group.open i {
+    transform: rotate(90deg);
+}
+
+.field-group i,
+.field {
+    transition-duration: 0.5s;
+    transition-property: transform;
+}
+
+.field:not(.show) {
+    display: none;
+}
+
+#cr-list-table {
+    min-width: 100%;
+    width: 100% !important;
+    th,
+    td {
+        padding: 1rem;
+        padding-right: 1.2rem !important;
+        vertical-align: middle !important;
+        &:last-child {
+            text-align: center !important;
+        }
+    }
+    th.sorting_asc {
+        height: 70px !important;
+    }
+    // Fix for manage column actions
+    td:last-child {
+        div {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+        }
+        span {
+            // display: inline-flex !important;
+            align-items: center !important;
+        }
+        a {
+            display: inline-flex !important;
+            align-items: center !important;
+            padding: 0.25rem !important;
+        }
+    }
+}
+
+// Fix for preview table column width issue
+#cr-preview-table {
+    // width: 100% !important;
+    th,
+    td {
+        width: auto !important;
+        min-width: auto !important;
+        white-space: nowrap !important;
+        text-align: justify !important;
+    }
+}
+
+#wdm-customreports-edit {
+    .customreports-block-section>div {
+        position: relative;
+        // height: 100%;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        .reports-filter-body{
+            .select2-selection .select2-selection__rendered{
+                .select2-selection__choice{
+                    padding-left: 15px;
+                    padding-right: 15px;
+                }
+            }
+        }
+    }
+    // Fixing header background glitch because of block configurable_rerport plugin.
+    .dataTable {
+        .sorting_asc,
+        .sorting_desc,
+        .sorting {
+            background-image: none !important;
+        }
+    }
+    select[multiple]+.select2 {
+        height: auto !important;
+    }
+}
+
+#wdm-customreports-save-form {
+    a {
+        text-decoration: none !important;
+    }
+    .form-group {
+        .text-nowrap {
+            abbr[title] {
+                text-decoration: none !important;
+            }
+            align-self: center;
+            margin-left: auto;
+            * {
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+        }
+    }
+}

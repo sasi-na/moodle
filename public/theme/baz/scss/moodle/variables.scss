@@ -1,0 +1,64 @@
+/**
+ * Moodle variables
+ *
+ * Variables written for Moodle specific components
+ *
+ * Please do not override any Bootstrap variables here, custom Bootstrap variable should go in
+ * preset files instead.
+ */
+
+$state-success-bg: $green-100 !default;
+$state-success-border: $green-600 !default;
+
+$state-info-bg: $blue-100 !default;
+$state-info-border: $blue-600 !default;
+
+$state-warning-bg: $yellow-200 !default;
+$state-warning-border: $yellow-600 !default;
+
+$state-danger-bg: $red-100 !default;
+$state-danger-border: $red-600 !default;
+
+
+$primary-nav-padding-y: ($spacer * 0.25) !default;
+$primary-nav-padding-x: ($spacer * 0.5) !default;
+
+$course-content-maxwidth: $wrapper-md !default;
+$h5p-content-maxwidth: 960px !default;
+
+$box-shadow-drawer-left: -0.25rem .25rem .8rem rgba($black, .025) !default;
+$box-shadow-drawer-right: 0 .25rem .8rem rgba($black, .025) !default;
+
+$stickyfooter-height: 60px !default;
+$moremenu-height: 60px !default;
+
+$primary-light-background: theme-color-level('primary', -12) !default;
+$primary-light-border: theme-color-level('primary', -2) !default;
+$primary-light-color: $body-color;
+$primary-light-hover: theme-color-level('primary', -10) !default;
+$activity-iconcontainer-height: 40px;
+$activity-iconcontainer-width: 40px;
+
+$icon-color-administraion: #d8d9f3 !default;
+$icon-color-assessment: #f1d1e3 !default;
+$icon-color-collaboration: #f4e7ca !default;
+$icon-color-communication: #d6f0df !default;
+$icon-color-content: #cde4f4 !default;
+$icon-color-interface: #f3e7f6 !default;
+$icon-color-other: #e4e2e1 !default;
+$icon-color-interactivecontent: #f8c0c0 !default;
+
+$activity-icon-colors: () !default;
+$activity-icon-colors: map-merge(
+    (
+        "administration": $icon-color-administraion,
+        "assessment": $icon-color-assessment,
+        "collaboration": $icon-color-collaboration,
+        "communication": $icon-color-communication,
+        "content": $icon-color-content,
+        "interface": $icon-color-interface,
+        "interactivecontent": $icon-color-interactivecontent,
+        "other": $icon-color-other
+    ),
+    $activity-icon-colors
+);

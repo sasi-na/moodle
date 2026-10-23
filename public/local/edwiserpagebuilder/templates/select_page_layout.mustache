@@ -1,0 +1,45 @@
+
+<div class="modal_card default">
+    <div class="modal_card_body">
+        <a href="#" class="btn_add_block d-flex flex-column align-items-center">
+            <img src="{{config.wwwroot}}/local/edwiserpagebuilder/pix/add-block.svg" alt="add block icon" />
+            <p class="btn_add_block-text">{{#str}}addblanktemplatetext, local_edwiserpagebuilder{{/str}}</p>
+        </a>
+    </div>
+</div>
+{{#blocklist}}
+<div class="modal_card {{#locked}}locked-layout{{/locked}}" data-layoutid="{{id}}">
+    <div class="modal_card_body" data-layoutid="{{id}}" {{#locked}}style="position: relative;"{{/locked}}>
+        <img src="{{thumbnail}}" alt="layout-1" />
+        {{#locked}}
+        <div class="locked-block-overlay">
+            <button class="upgrade-to-pro-btn" data-upgrade="https://edwiser.org/page-builder-for-moodle/" title="{{#str}}upgrade_to_pro, local_edwiserpagebuilder{{/str}}" style="z-index:1;">
+                <img class="position-relative" src="{{config.wwwroot}}/local/edwiserpagebuilder/pix/lock-light-icon.svg" width="16" height="16" alt="">
+                <span>{{#str}}upgrade_to_pro, local_edwiserpagebuilder{{/str}}</span>
+            </button>
+        </div>
+        {{/locked}}
+    </div>
+    <div class="modal_card_footer d-flex justify-content-between">
+        <div class="template_name d-flex">
+            {{^locked}}<input type="radio" class="custom-radio-btn" name="layoutsradiobtn" value="{{id}}" />{{/locked}}
+            <p class="template_name_text">{{title}}</p>
+        </div>
+        {{^locked}}
+        <a href="#" class="btn_view_icon" data-layoutid="{{id}}">
+            <img class="position-relative" src="{{config.wwwroot}}/local/edwiserpagebuilder/pix/show.svg" alt="show icon" />
+        </a>
+        {{/locked}}
+    </div>
+    <div class="layout-preview-{{id}}  d-none ">
+        <div class="preview-header">
+            <div class="layout_close_btn" data-layoutid="{{id}}">&larr;</div>
+        </div>
+        <div class="preview-body">
+            <div class="preview_thumbnail">
+                <img src="{{thumbnail}}" alt="layout-1" />
+            </div>
+        </div>
+    </div>
+</div>
+{{/blocklist}}

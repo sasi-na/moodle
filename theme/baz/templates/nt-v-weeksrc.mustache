@@ -1,6 +1,0 @@
-{{!
-    @template theme_baz/nt-v-weeksrc
-
-    Hidden month cells; widgets.js copies this week's 7 days into [data-nv-week-out].
-}}
-<div class="nv-src" hidden>{{#calendar.cells}}{{#blank}}<i class="nv-d blank"></i>{{/blank}}{{^blank}}<a class="nv-d{{#istoday}} today{{/istoday}}{{#isdue}} due{{/isdue}}{{#past}} past{{/past}}{{#isholiday}} hol{{/isholiday}}{{#isfestival}} fest{{/isfestival}}" href="{{url}}" title="{{daylabel}}{{#holiday}} · {{holiday}}{{/holiday}}"><b>{{day}}</b>{{#holiday}}<em class="nv-dh">{{holiday}}</em>{{/holiday}}{{#events}}<span class="nv-dev"><time>{{time}}</time> {{name}}</span>{{/events}}</a>{{/blank}}{{/calendar.cells}}</div>

@@ -1,0 +1,7 @@
+#local_edwiserreports_general_settings {
+    margin-top: 20px;
+}
+
+.settingsform #local_edwiserreports_general_settings .form-item .form-setting .defaultsnext:has(select) {
+    width: 30%;
+}

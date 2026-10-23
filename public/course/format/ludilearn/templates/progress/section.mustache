@@ -1,0 +1,107 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ludilearn/filename
+
+    Example context (json):
+    {}
+}}
+
+<div class="section-progress">
+    <div class="row">
+        <div class="col-6 rightdottedscore">
+            <h4 class="text-center">{{ name }}</h4>
+            {{#parameters.gamified}}
+            <div class="progress-image" style="background-image: url({{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/progress/progression-background.svg)">
+                <img class="progression-steps-component planet"
+                     src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/progress/section-planet-0{{ parameters.planetenumber }}.svg"
+                     alt="Planet of the section"
+                     style="z-index: 0;">
+                <img class="progression-steps-component rocket "
+                     src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/progress/progression-step-{{ parameters.step }}.svg"
+                     alt="Image of progression step"
+                     style="z-index: 2;">
+                <img class="progression-steps-component asteroids asteroid-1"
+                     src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/progress/asteroid-01.svg"
+                     alt="Image of an asteroid"
+                     style="z-index: 3;">
+                <img class="progression-steps-component asteroids asteroid-2"
+                     src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/progress/asteroid-02.svg"
+                     alt="Image of an asteroid"
+                     style="z-index: 4;">
+                <img class="progression-steps-component asteroids asteroid-3"
+                     src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/progress/asteroid-03.svg"
+                     alt="Image of an asteroid"
+                     style="z-index: 4;">
+            </div>
+            {{/parameters.gamified}}
+            {{^parameters.gamified}}
+                <div class="col-12">
+                    <img class="ludilearn-img img-responsive d-block mx-auto" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/none.svg" alt="Image no gamified">
+                </div>
+            {{/parameters.gamified}}
+            {{#parameters.gamified}}
+            <div class="progression-text">
+                <p class="text-center">
+                    <span class="progression">{{ parameters.progression }}%</span>
+                </p>
+            </div>
+            {{/parameters.gamified}}
+            <div class="section-summary">
+                {{{ summary }}}
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="row">
+                {{#cms}}
+                    {{#label}}
+                        <div class="col-12 mt-2">
+                            <div class="cm-score">
+                                {{{ labeltext }}}
+                            </div>
+                        </div>
+                    {{/label}}
+                    {{^label}}
+                        <div class="col-6 col-sm-4 col-md-4 col-lg-4">
+                            <div class="cm-progress">
+                                <div class="{{#parameters.restricted }}restricted{{/parameters.restricted}} {{^url}} nourl {{/url}}">
+                                    <img class="{{#parameters.restricted }}restricted{{/parameters.restricted }} img-responsive mb-1 d-block mx-auto"
+                                         {{#parameters.gamified }}src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/progress/icon.svg" {{/parameters.gamified }}
+                                         {{^parameters.gamified }}src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/none.svg" {{/parameters.gamified }}
+                                         alt="Image badge">
+                                    {{#parameters.gamified }}
+                                    <div class="progression-text progression-cm">
+                                        <p class="text-center">
+                                            <span class="progression">{{ parameters.progression }}%</span>
+                                        </p>
+                                    </div>
+                                    {{/parameters.gamified }}
+                                    <p class="text-center">
+                                        <span class="cmname"><a href="{{ url }}" class="stretched-link">{{{ name }}}</a></span>
+                                    </p>
+                                    {{#parameters.restricted }}
+                                        <div class="cmrestrictedinfo text-center small"><i class="fa fa-lock"></i> {{{ parameters.restrictedinfo }}}</div>
+                                    {{/parameters.restricted }}
+                                </div>
+                            </div>
+                        </div>
+                    {{/label}}
+                {{/cms}}
+            </div>
+        </div>
+    </div>
+</div>

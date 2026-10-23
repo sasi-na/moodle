@@ -1,0 +1,163 @@
+{{!
+    @template local_lionai_reports/list
+
+    Context variables required for this template:
+    * List - object of all reports as a list
+
+    Example context (json):
+        {
+        "list": [
+            {
+                "link": "http://localhost/m4/local/lionai_reports/?id=46",
+                "id": 46,
+                "name": "my report",
+                "userdate": [
+                     {
+                        "timecreated": "2/11/23, 14:28",
+                        "timemodified": "2/11/23, 14:28"
+                    }
+                ],
+                "lastmessages": [
+                    {
+                        "lastusercontent": "get all users",
+                        "lastassistantcontent": "query text",
+                    }
+                ],
+                "actions":[
+                     {
+                        "deleteactionurl": "http://localhost/m4/local/lionai_reports/?id=1",
+                        "exportcrautoactionurl": "http://localhost/local/lionai_reports/?id=46&export=confreports",
+                        "exportcrxmlactionurl": "http://localhost/local/lionai_reports/?id=46&export=confreports",
+                        "exportsqlactionurl": "http://localhost/local/lionai_reports/?id=46&export=sqlformat",
+                        "exportcsvactionurl": "http://localhost/local/lionai_reports/export.php?id=46",
+                    }
+                ]
+            }
+        ]
+    }
+}}
+<div id="lionai_reports-list">
+    <form action="{{globals.config.wwwroot}}/local/lionai_reports/index.php" method="post" class="mb-3">
+        <input type="hidden" name="action" value="create">
+        <input type="hidden" name="sesskey" value="{{sesskey}}">
+        <button class="btn btn-primary" type="submit">Add New Report</button>
+    </form>
+
+    <div class="table-responsive" style="overflow-x: visible">
+        <table class="table table-striped" id="lionai_reports-table">
+            <thead>
+                <tr>
+                    <th class="text-muted" style="width: 5%;">{{#str}}id, local_lionai_reports{{/str}}</th>
+                    <th class="text-muted" style="width: 20%;">{{#str}}name, local_lionai_reports{{/str}}</th>
+                    <th class="text-muted" style="width: 10%;">{{#str}}creator, local_lionai_reports{{/str}}</th>
+                    <th class="text-muted" style="width: 50%;">{{#str}}lastmessages, local_lionai_reports{{/str}}</th>
+                    <th class="text-muted" style="width: 5%;">{{#str}}actions, local_lionai_reports{{/str}}</th>
+                    <th class="text-muted" style="width: 5%;">{{#str}}timecreated, local_lionai_reports{{/str}}</th>
+                    <th class="text-muted" style="width: 5%;">{{#str}}timemodified, local_lionai_reports{{/str}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#list}}
+                <tr>
+                    <td class="text-muted" style="cursor: pointer;" onclick="window.location.href='{{link}}';">{{id}}
+                    </td>
+                    <td style="cursor: pointer;">
+                        {{#name}}
+                            <div class="inplaceeditable inplaceeditable-text" data-inplaceeditable="1"
+                                  data-component="local_lionai_reports" data-itemtype="lioanai_reports_reportname_editable" data-itemid="{{id}}"
+                                  data-value="{{name}}" data-editlabel="New name for report {{name}}" data-type="text">
+                                <a href="{{link}}" class="aalink">{{name}}</a>
+                                <a href="javascript:void(0);" class="quickeditlink aalink" data-inplaceeditablelink="1" title="New name for report">
+                                    <span class="quickediticon visibleifjs">
+                                        <i class="icon fa fa-pencil fa-fw " title="Edit Name" role="img" aria-label="Edit Name"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        {{/name}}
+                    {{^name}}{{/name}}
+                    </td>
+                    <td class="text-muted" style="cursor: pointer;">{{userfullname}}
+                    <td style="cursor: pointer;" onclick="window.location.href='{{link}}';">
+                        {{#lastmessages}}
+                        <div class="card">
+                            <div class="card-body small">
+                                {{#lastusercontent}}
+                                <p class="card-text">{{lastusercontent}}</p>
+                                {{/lastusercontent}}
+                                {{#lastassistantcontent}}
+                                <p class="card-text"><code>
+                                    {{lastassistantcontent}}
+                                </code>
+                                </p>
+                                {{/lastassistantcontent}}
+                            </div>
+                        </div>
+                        {{/lastmessages}}
+                    </td>
+                    <td class="">
+                        <div class="d-flex flex-wrap align-items-center action-btns">
+                            {{#actions}}
+                            <div class="d-flex mb-2">
+                                <form action="{{{deleteactionurl}}}" method="post" class="m-0 mr-2">
+                                    <input type="hidden" name="action" value="delete">
+                                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                    <button type="submit" class="p-2 btn btn-secondary btn-sm" data-toggle="tooltip"
+                                        data-html="true" data-placement="left" data-name="delete"
+                                        title="{{#str}} deletewarning, local_lionai_reports{{/str}}">
+                                    </button>
+                                </form>
+                                {{#exportcrautoactionurl}}
+                                <form action="{{{exportcrautoactionurl}}}" target="_blank" method="post" class="m-0 mr-2">
+                                    <input type="hidden" name="autoimport" value="1">
+                                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                    <button type="submit" class="p-2 btn btn-secondary btn-sm" data-toggle="tooltip"
+                                        data-html="true" data-placement="left" data-name="exportcrauto"
+                                        title="{{#str}} exportcrautowarning, local_lionai_reports{{/str}}"></button>
+                                </form>
+                                {{/exportcrautoactionurl}}
+                                <form action="{{{exportcrxmlactionurl}}}" method="post" class="m-0 mr-2">
+                                    <input type="hidden" name="autoimport" value="0">
+                                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                    <button type="submit" class="p-2 btn btn-secondary btn-sm" data-toggle="tooltip"
+                                        data-html="true" data-placement="left" data-name="exportcrxml"
+                                        title="{{#str}} exportcrxmlwarning, local_lionai_reports{{/str}}"></button>
+                                </form>
+                            </div>
+                            <div class="d-flex">
+                                <form action="{{{exportsqlactionurl}}}" method="post" class="m-0 mr-2">
+                                    <input type="hidden" name="autoimport" value="0">
+                                    <input type="hidden" name="sesskey" value="{{sesskey}}">
+                                    <button type="submit" class="p-2 btn btn-secondary btn-sm" data-toggle="tooltip"
+                                        data-html="true" data-placement="left" data-name="exportsql"
+                                        title="{{#str}} exportsqlwarning, local_lionai_reports{{/str}}"></button>
+                                </form>
+                                <button onclick=" window.open('{{{exportcsvactionurl}}}','_blank')" type="submit"
+                                    class="p-2 btn btn-secondary btn-sm" data-toggle="tooltip" data-html="true"
+                                    data-name="exportcsvw" data-placement="left"
+                                    title="{{#str}} exportcsvwarning, local_lionai_reports{{/str}}"></button>
+                            </div>
+                            {{/actions}}
+                        </div>
+                    </td>
+                    <td class="text-muted small" data-order="{{timecreated}}">
+                        {{#userdate}}{{timecreated}}, {{#str}}strftimedatetimeshort, langconfig{{/str}}{{/userdate}}
+                    </td>
+                    <td class="text-muted small" data-order="{{timemodified}}">
+                        {{#userdate}}{{timemodified}}, {{#str}}strftimedatetimeshort, langconfig{{/str}}{{/userdate}}
+                    </td>
+                </tr>
+                {{/list}}
+            </tbody>
+        </table>
+    </div>
+</div>
+{{#js}}
+require(['local_lionai_reports/jquery.dataTables', 'jquery'], function(DataTable, $) {
+    $('#lionai_reports-table').DataTable({
+        columnDefs: [{orderable: false, targets: [2, 3]}],
+        order: [[6, 'desc']],
+        dom: '<"d-flex justify-content-end pb-3"f>t<"pt-3 d-flex justify-content-between align-items-center"lip>'
+        });
+});
+require(['core/inplace_editable']);
+{{/js}}

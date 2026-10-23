@@ -35,9 +35,6 @@ defined('MOODLE_INTERNAL') || die();
  */
 class askjo {
 
-    /** @var bool True once a chat panel has been built for this page (one per page). */
-    public static $built = false;
-
     /**
      * @return array|null ['blockid','log','control'] or null when unavailable.
      */
@@ -80,7 +77,6 @@ class askjo {
                 'pix_refresh'     => '/blocks/openai_chat/pix/refresh.svg',
             ]);
 
-            self::$built = true;
             return ['blockid' => (int) $instance->id, 'log' => $log, 'control' => $control];
         } catch (\Throwable $e) {
             debugging('theme_baz askjo: ' . $e->getMessage(), DEBUG_DEVELOPER);

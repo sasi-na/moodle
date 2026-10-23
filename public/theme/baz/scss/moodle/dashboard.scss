@@ -1,0 +1,9 @@
+/**
+ * File dashboard.scss.
+ * Custom CSS for Dashboard layout
+ */
+@include media-breakpoint-between(xs, sm) {
+    .rui-dashboard-columns {
+        gap: 10px;
+    }
+}

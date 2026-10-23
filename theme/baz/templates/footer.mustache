@@ -227,9 +227,6 @@
             // Declare variables.
             var input, filter, ul, li, a, i, txtValue;
             input = document.getElementById('myCoursesListSearch');
-            if (!input) {
-                return false;
-            }
             filter = input.value.toUpperCase();
             ul = document.getElementById("myCoursesList");
 
@@ -243,18 +240,13 @@
                 return false;
             }
 
-            var ipBox = document.querySelector(".mycourses-inprogress-filter-checkbox");
-            var onlyShowInProgress = ipBox ? ipBox.checked : false;
-            {{#output.displayfilterhidden}}var hiddenBox = document.querySelector(".mycourses-hidden-filter-checkbox");
-            var onlyShowVisible = hiddenBox ? !hiddenBox.checked : false;{{/output.displayfilterhidden}}
+            var onlyShowInProgress = document.querySelector(".mycourses-inprogress-filter-checkbox").checked;
+            {{#output.displayfilterhidden}}var onlyShowVisible = !document.querySelector(".mycourses-hidden-filter-checkbox").checked;{{/output.displayfilterhidden}}
             var isAnyInvisible = false;
 
             // Loop through all list items, and hide those who don't match the search query.
             for (i = 0; i < li.length; i++) {
                 a = li[i].getElementsByTagName("a")[0];
-                if (!a) {
-                    continue;
-                }
 
                 var isInProgress = a.classList.contains('rui-course-list-inprogress');
                 var isVisible = a.classList.contains('rui-course-list-visible');
@@ -279,9 +271,7 @@
         });
 
         // Start observing for resize.
-        if (document.querySelector("#topBar")) {
-            resize_ob.observe(document.querySelector("#topBar"));
-        }
+        resize_ob.observe(document.querySelector("#topBar"));
 
     </script>
 

@@ -1,0 +1,121 @@
+.moremenu {
+    opacity: 0;
+    height: 60px;
+    
+    .secondary-navigation & {
+        height: 40px;
+    }
+
+    @include media-breakpoint-between(xs, sm) {
+        .more-nav {
+            width: 100%;
+            display: block;
+        }
+    }
+
+    @include media-breakpoint-between(xs, sm) {
+        width: 100%;
+    }
+
+    &.observed {
+        opacity: 1;
+        width: auto;
+    }
+
+    .nav-link {
+        display: flex;
+        align-items: center;
+
+        &.focus,
+        &:focus {
+            position: relative;
+        }
+
+        &[data-toggle="tab"] {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            &::after {
+                content: attr(data-text) / "";
+                height: 0;
+                visibility: hidden;
+                overflow: hidden;
+                user-select: none;
+                pointer-events: none;
+                font-weight: bold;
+            }
+        }
+    }
+
+    .nav-tabs {
+        margin: 0;
+        background-color: $gray-100;
+        border-radius: $border-radius;
+
+        @include media-breakpoint-up(md) {
+            width: max-content;
+            max-width: 100%;
+        }
+
+        @include media-breakpoint-between(xs, sm) {
+            width: 100%;
+        }
+
+        #page-site-index & {
+            margin: 0 auto;
+        }
+
+        .theme-dark & {
+            background-color: #06090c;
+        }
+    }
+
+    .rui-course-nav.nav-tabs {
+        border-radius: $btn-border-radius-md;
+    }
+
+    // Styling for dropdown menus inside the MoreButton.
+    .dropdownmoremenu {
+        .nav-link {
+            padding-right: 14px;
+        }
+    }
+
+    .dropdownmoremenu>.dropdown-menu {
+        &>.dropdown-item {
+            padding: 0;
+        }
+
+        .dropdown-menu {
+            position: static;
+            padding: 0;
+            border: 0;
+
+            &.show {
+                display: block;
+            }
+
+            .dropdown-divider {
+                display: none;
+            }
+        }
+    }
+
+    .dropdown-item[aria-current="true"],
+    .dropdown-item.active {
+        background-color: transparent;
+        color: $dropdown-link-color;
+
+        &:focus-within,
+        &:hover {
+            background-color: $dropdown-link-active-bg;
+            color: $dropdown-link-active-color;
+
+            a {
+                color: $dropdown-link-active-color;
+            }
+        }
+    }
+}

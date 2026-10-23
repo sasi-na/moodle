@@ -26,7 +26,7 @@
 define(['jquery', 'core/aria', 'core_user/repository'], function ($, setUserPreference, UserRepository) {
     "use strict"; // ...jshint ;_; !!!
 
-    // (debug log removed: 'log' was never loaded and stopped this module.)
+    log.debug('baz AMD opt in functions');
 
     return {
         init: function () {

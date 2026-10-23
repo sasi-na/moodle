@@ -1,0 +1,122 @@
+#edg-main-content {
+	.edg-course-select {
+		margin-bottom: 15px;
+		&:focus {
+			box-shadow: none;
+		}
+	}
+	.edg-search-container {
+		.input-group {
+			margin-bottom: 15px;
+		}
+		#edg-search-input {
+			&:focus {
+				box-shadow: none;
+			}
+		}
+	}
+
+	#edg-quizlist-content {
+		max-height: 350px;
+		overflow: hidden;
+		&:hover {
+			overflow-y: auto;
+		}
+		padding: 0px 5px;
+		&::-webkit-scrollbar {
+		    width: 4px;
+		}
+		.edg-quiz-list {
+			&.hidden {
+				display: none !important;
+			}
+			.edg-quiz-item {
+				margin-bottom: 15px;
+				padding: 10px;
+				.edg-quiz-title  {
+					div.text_to_html {
+						margin: 0;
+						text-overflow: ellipsis;
+						overflow: hidden;
+						white-space: nowrap;
+						a {
+							pointer-events: none;
+							color: #54646c;
+							font-weight: bold;
+							font-size: 1.1rem;
+						}
+					}
+				}
+				.edg-quiz-stats {
+					margin: 10px 0px;
+					p {
+						span.edg-stats-count {
+							padding: 0px 5px;
+							font-weight: bold;
+						}
+					}
+				}
+				&.completed {
+				    border: 1px solid #c3e6cb;
+				    border-radius: 2px;
+				    background: #e4fbe9;
+				}
+				&.pending {
+					border: 1px solid #b8daff;
+				    border-radius: 2px;
+				    background: #dcedff;
+				}
+			}
+		}
+	}
+	.edg-quiz-skeleton {
+		.edg-quiz-dummy {
+			height: 100px;
+			padding: 10px;
+			border-radius: 3px;
+			border: 1px solid lightgray;
+			margin-bottom: 15px;
+			.edg-dquiz-title {
+				position: relative;
+				display: block;
+				height: 15px;
+				background: #eaeaea;
+			}
+			.edg-dquiz-stats {
+				position: relative;
+				height: 15px;
+				margin: 10px 0px;
+				background: #eaeaea;
+			}
+			.edg-dquiz-button {
+				position: relative;
+				height: 30px;
+    			width: 70px;
+    			background: #eaeaea;
+			}
+		}
+	}
+}
+
+.animate::before {
+    display: block;
+    content: '';
+    opacity: 1;
+    background-image: linear-gradient(to right, white , #eaeaea);
+    width: 50%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: flash 1500ms infinite;
+}
+
+.animate.edg-round::before {
+	border-radius: 50%;
+}
+
+@keyframes flash {
+  0%   {opacity: 0; width: 0% }
+  50%  {opacity: 0.6; width: 100%;}
+  100% {opacity: 0; width: 0%;}
+}

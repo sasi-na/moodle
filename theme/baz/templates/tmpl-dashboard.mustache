@@ -90,11 +90,7 @@
 </div>
 <script>
  (function() {
-    // Swiper is loaded with "defer": start the banner once it is there.
     if (typeof Swiper === 'undefined') {
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', arguments.callee);
-        }
         return;
     }
     new Swiper('.swiper-dashboard-banner', {

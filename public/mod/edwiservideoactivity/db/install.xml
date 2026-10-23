@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/edwiservideoactivity/db" VERSION="20240301" COMMENT="XMLDB file for Edwiser Video Activity module"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+    <TABLES>
+        <TABLE NAME="edwiservideoactivity" COMMENT="Each record is one Edwiser Video Activity resource">
+            <FIELDS>
+                <!-- Primary key -->
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <!-- Course this activity belongs to -->
+                <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <!-- Name of the activity -->
+                <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+                <!-- Intro text and format -->
+                <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="hasresources" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="hastranscript" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+                <FIELD NAME="sourcetype" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="sourcepath" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+                <!-- Completion percentage (0-100) -->
+                <FIELD NAME="completionpercent" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" DEFAULT="0" COMMENT="Completion percentage (0-100)"/>
+                <!-- Timestamps -->
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
+            </INDEXES>
+        </TABLE>
+        <TABLE NAME="edwiservideoactivity_progress" COMMENT="Video progress tracking for all video sources">
+            <FIELDS>
+                <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+                <FIELD NAME="cm_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course module ID"/>
+                <FIELD NAME="user_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User ID"/>
+                <FIELD NAME="currenttime" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Current playback time in seconds"/>
+                <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Total video duration in seconds"/>
+                <FIELD NAME="percent" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Progress percentage (0-100)"/>
+                <FIELD NAME="videoname" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Video activity name"/>
+                <FIELD NAME="sourcetype" TYPE="int" LENGTH="3" NOTNULL="false" SEQUENCE="false" COMMENT="Video source type: 1=upload, 2=url, 3=embed"/>
+                <FIELD NAME="provider" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="Video provider: html5, youtube, vimeo, loom, etc"/>
+                <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="First save timestamp"/>
+                <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Last save timestamp"/>
+            </FIELDS>
+            <KEYS>
+                <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+            </KEYS>
+            <INDEXES>
+                <INDEX NAME="cm_user" UNIQUE="true" FIELDS="cm_id, user_id" COMMENT="One progress record per user per activity"/>
+                <INDEX NAME="user_id" UNIQUE="false" FIELDS="user_id" COMMENT="Query by user"/>
+                <INDEX NAME="cm_id" UNIQUE="false" FIELDS="cm_id" COMMENT="Query by activity"/>
+                <INDEX NAME="provider" UNIQUE="false" FIELDS="provider" COMMENT="Analytics by platform"/>
+            </INDEXES>
+        </TABLE>
+    </TABLES>
+</XMLDB>

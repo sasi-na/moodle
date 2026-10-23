@@ -1,0 +1,73 @@
+<style>
+	{{{theme.css}}}
+	table.emailmain td.emailcontent { {{#str}}tmple_typography_text_color,theme_baz{{/str}} {{#str}}tmple_typography_text_fontsize,theme_baz{{/str}} {{#str}}tmple_typography_fontfamily,theme_baz{{/str}} }
+	table.emailmain td.emailcontent a,
+	table.emailmain td.emailcontent a:hover,
+	table.emailmain td.emailcontent a:focus,
+	table.emailmain td.emailcontent a:active { {{#str}}tmple_typography_link_color,theme_baz{{/str}} }
+	table.emailfooter { {{#str}}tmple_typography_footer_color,theme_baz{{/str}} {{#str}}tmple_typography_footer_fontsize,theme_baz{{/str}} {{#str}}tmple_typography_fontfamily,theme_baz{{/str}} }
+	table.emailfooter td { {{#str}}tmple_typography_footer_color,theme_baz{{/str}} {{#str}}tmple_typography_footer_fontsize,theme_baz{{/str}} {{#str}}tmple_typography_fontfamily,theme_baz{{/str}} }
+    @media only screen {
+            body {
+                margin: 0;
+                -webkit-font-smoothing: antialiased;
+                width:100% !important;
+                background-color: #F3F3F3;
+                -webkit-text-size-adjust:none;
+            }
+
+            .content img {
+                max-width: 100%;
+            }
+    }
+</style>
+<table class="emailbody" border="0" cellpadding="0" cellspacing="0" style="padding-top:24px; padding-right:24px; padding-bottom:24px; padding-left:24px; {{#str}}tmple_typography_fontfamily,theme_baz{{/str}} {{#str}}tmple_typography_text_color,theme_baz{{/str}} width:100%; border-collapse:separate; background-color:#F5F5F5;">
+    <tbody>
+        <tr>
+            <td align="center">
+                <div style="width: 90%; max-width: 700px; border-radius: 10px; background-color: #fff; padding: 30px; margin-top: 15px; margin-left: auto; margin-right: auto;">
+                    <table class="emailmain" border="0" cellpadding="0" cellspacing="0" width="590" style="padding:20px;background-color:#FFFFFF;{{#str}}tmple_typography_text_color,theme_baz{{/str}}border-collapse:separate;">
+                        <tbody>
+                             <tr>
+                                <td class="emailheader">
+                                    <img title="" alt="" data-imagetype="External" src="https://learn.onlinejain.com/theme/baz/pix/email/header.jpg" style="max-width:100%; height:auto; border:0;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="emailcontent" style="padding-top:20px;padding-bottom:20px;{{#str}}tmple_typography_text_color,theme_baz{{/str}} {{#str}}tmple_typography_text_fontsize,theme_baz{{/str}} {{#str}}tmple_typography_fontfamily,theme_baz{{/str}}">
+                                    {{{body}}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="emailfooter-container" style="padding-top:20px;border-top:1px solid #CCCCCC;">
+                                    
+                                    <table class="emailfooter" border="0" cellpadding="0" cellspacing="0" width="100%" style="{{#str}}tmple_typography_footer_color,theme_baz{{/str}} {{#str}}tmple_typography_footer_fontsize,theme_baz{{/str}} {{#str}}tmple_typography_fontfamily,theme_baz{{/str}}">
+                                        <tbody>
+                                            <!-- <tr>
+                                                <td colspan="2" style="{{#str}}tmple_typography_footer_color,theme_baz{{/str}} {{#str}}tmple_typography_footer_fontsize,theme_baz{{/str}} {{#str}}tmple_typography_fontfamily,theme_baz{{/str}}">
+                                                    {{#str}}tmpl_footer_text,theme_baz{{/str}}
+                                                </td>
+                                            </tr> -->
+                                            <tr>
+                                                <!-- <td valign="bottom" style="font-size: 12px;text-align:left;padding-top:20px; {{#str}}tmple_typography_footer_color,theme_baz{{/str}} {{#str}}tmple_typography_footer_fontsize,theme_baz{{/str}} {{#str}}tmple_typography_fontfamily,theme_baz{{/str}}">
+                                                    {{#str}}tmpl_footer_copyright,theme_baz{{/str}}
+                                                </td> -->
+                                                <td>
+                                                    <a href="https://learn.onlinejain.com" target="_blank">
+                                                        <img title="" alt="" data-imagetype="External" src="https://learn.onlinejain.com/theme/baz/pix/email/footer1.jpg" style="max-width:100%; height:auto; border:0;">
+                                                    </a>
+                                                    <img title="" alt="" data-imagetype="External" src="https://learn.onlinejain.com/theme/baz/pix/email/footer2.jpg" style="max-width:100%; height:auto; border:0;">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>    
+                                        
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

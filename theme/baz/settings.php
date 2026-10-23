@@ -68,4 +68,3 @@ if ($ADMIN->fulltree) {
     require('settings/block18.php');
     require('settings/block19.php');
 }
-

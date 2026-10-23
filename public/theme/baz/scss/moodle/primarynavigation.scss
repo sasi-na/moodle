@@ -1,0 +1,95 @@
+.primary-navigation {
+
+    .navigation {
+        height: 44px;
+
+        @include media-breakpoint-between(xs, md) {
+            height: 40px;
+            position: absolute;
+            top: -20px;
+            left: 5px;
+        }
+
+
+        .nav-link {
+            height: 44px;
+            padding: 9px 15px;
+            margin: 0 .25rem 0 0;
+            font-weight: $font-weight-medium;
+            color: $topbar-btn-text;
+            border: none;
+            border-radius: $btn-border-radius - 4px;
+
+            &[aria-expanded="true"],
+            &:hover {
+                background-color: $topbar-btn-hover;
+                color: $topbar-btn-hover-text;
+
+                .theme-dark & {
+                    background-color: $dm-gray-200;
+                    color: $dm-body-color-secondary;
+                }
+            }
+
+            .theme-dark & {
+                color: $dm-body-color;
+            }
+        }
+    }
+}
+
+@include media-breakpoint-between(xs, md) {
+    .primary-navigation {
+        position: relative;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+.editmode-switch-form .custom-control-input {
+    width: 100%;
+    z-index: 1;
+}
+
+.drawer-primary .drawercontent {
+    padding: 0;
+
+    .list-group {
+        border-radius: 0;
+        margin-top: -1px;
+
+        .list-group-item {
+            border-left: 0;
+            border-right: 0;
+        }
+    }
+}
+
+@include media-breakpoint-between(xs, sm) {
+    .primary-navigation {
+        .moremenu .nav-link {
+            margin: 0;
+        }
+
+        .nav-item {
+            width: 100%;
+        }
+    }
+
+    .primary-navigation .more-nav {
+        a {
+            margin: 0;
+        }
+
+        .dropdown-menu {
+            position: relative !important;
+            transform: none !important;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .nav-link {
+            padding: 15px;
+        }
+    }
+}

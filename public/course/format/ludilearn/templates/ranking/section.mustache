@@ -1,0 +1,102 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ludilearn/filename
+
+    Example context (json):
+    {}
+}}
+
+<div class="section-ranking">
+    <div class="row">
+        <div class="col-4 rightdottedscore">
+            <h4 class="text-center">{{ name }}</h4>
+            {{#parameters.gamified}}
+                {{#parameters.noscore}}
+                    <img class="ludilearn-img img-responsive d-block mx-auto" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/none.svg" alt="Image no score">
+                {{/parameters.noscore}}
+                {{^parameters.noscore}}
+                    {{#school}}
+                        {{> format_ludilearn/ranking/school/summary}}
+                    {{/school}}
+                    {{#professional}}
+                        {{> format_ludilearn/ranking/professional/summary}}
+                    {{/professional}}
+                    {{#highschool}}
+                        {{> format_ludilearn/ranking/highschool/summary}}
+                    {{/highschool}}
+                    {{> format_ludilearn/ranking/rankingtable}}
+                {{/parameters.noscore}}
+            {{/parameters.gamified}}
+            {{^parameters.gamified}}
+                <img class="ludilearn-img img-responsive d-block mx-auto" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/none.svg" alt="Image not gamified">
+            {{/parameters.gamified}}
+            <div class="section-summary">
+                {{{ summary }}}
+            </div>
+        </div>
+        <div class="col-8">
+            <div class="row">
+                {{#cms}}
+                    {{#label}}
+                        <div class="col-12 mt-2">
+                            <div class="cm-score">
+                                {{{ labeltext }}}
+                            </div>
+                        </div>
+                    {{/label}}
+                    {{^label}}
+                        <div class="col-6 col-sm-4 col-md-4 col-lg-4">
+                            <div class="cm-score">
+                                <div class="{{#parameters.restricted }}restricted{{/parameters.restricted}} {{^url}} nourl {{/url}}">
+                                    {{#parameters.gamified}}
+                                        {{#parameters.noscore}}
+                                            <img class="ludilearn-img img-responsive d-block mx-auto" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/none.svg" alt="Image no score">
+                                        {{/parameters.noscore}}
+                                        {{^parameters.noscore}}
+                                            {{#school}}
+                                                {{> format_ludilearn/ranking/school/summary}}
+                                            {{/school}}
+                                            {{#professional}}
+                                                {{> format_ludilearn/ranking/professional/summary}}
+                                            {{/professional}}
+                                            {{#highschool}}
+                                                {{> format_ludilearn/ranking/highschool/summary}}
+                                            {{/highschool}}
+                                        {{/parameters.noscore}}
+                                    {{/parameters.gamified}}
+                                    {{^parameters.gamified}}
+                                        <img class="ludilearn-img img-responsive d-block mx-auto" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/none.svg" alt="Image not gamified">
+                                    {{/parameters.gamified}}
+                                    <p class="text-center scoretext">
+                                        {{#parameters.gamified}}
+                                            {{^parameters.noscore}}<span>{{ parameters.score }} pts</span>{{/parameters.noscore}}<br>
+                                        {{/parameters.gamified}}
+                                        <span class="cmname"><a href="{{ url }}" class="stretched-link">{{{ name }}}</a></span>
+                                    </p>
+                                    {{#parameters.restricted }}
+                                        <div class="cmrestrictedinfo text-center small"><i class="fa fa-lock"></i> {{{ parameters.restrictedinfo }}}</div>
+                                    {{/parameters.restricted }}
+                                </div>
+                            </div>
+                        </div>
+                    {{/label}}
+                {{/cms}}
+            </div>
+        </div>
+    </div>
+</div>

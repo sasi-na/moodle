@@ -1,0 +1,100 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
+
+    Edwiser RemUI
+    @package theme_remui
+    @copyright (c) 2023 WisdmLabs (https://wisdmlabs.com/)
+    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+{{! @template theme_remui/course_stats }}
+
+<div class="course-stats-sidebar">
+    <div class="course-sidebar-card course-sidebar-combined-card">
+        <div class="course-sidebar-image-wrap">
+            <img class="course-sidebar-image" src="{{image}}" alt="{{imagetext}}">
+        </div>
+
+        <div class="course-sidebar-heading-wrap d-none">
+            <h3 class="h4 mb-0">{{activitystatstitle}}</h3>
+            <p class="small text-muted mb-0">{{totalactivitylabel}}</p>
+        </div>
+
+        <div class="course-sidebar-total">
+            <span class="course-sidebar-total-count">{{totalactivities}}</span>
+            <span class="course-sidebar-total-label">{{totalactivitylabel}}</span>
+        </div>
+
+        {{#hasstatusstats}}
+            <div class="course-sidebar-status-list">
+                {{#hascompletionstats}}
+                    <div class="course-sidebar-status-item">
+                        <span class="course-sidebar-status-label">{{completedactivitieslabel}}</span>
+                        <span class="course-sidebar-status-count">{{completedactivities}}</span>
+                    </div>
+                    <div class="course-sidebar-status-item">
+                        <span class="course-sidebar-status-label">{{inprogressactivitieslabel}}</span>
+                        <span class="course-sidebar-status-count">{{inprogressactivities}}</span>
+                    </div>
+                    <div class="course-sidebar-status-item">
+                        <span class="course-sidebar-status-label">{{notstartedactivitieslabel}}</span>
+                        <span class="course-sidebar-status-count">{{notstartedactivities}}</span>
+                    </div>
+                {{/hascompletionstats}}
+                {{#timespent}}
+                    <div class="course-sidebar-status-item">
+                        <span class="course-sidebar-status-label">{{timespentlabel}}</span>
+                        <span class="course-sidebar-status-count">{{timespent}}</span>
+                    </div>
+                {{/timespent}}
+            </div>
+        {{/hasstatusstats}}
+
+        {{#hasprogresspanel}}
+            <div class="course-sidebar-progress-panel">
+                {{#showcourseprogress}}
+                    <div class="course-sidebar-progress-copy">
+                        <div class="course-sidebar-progress-head">
+                            <span class="course-sidebar-progress-title">{{#str}} coursecompletionprogress, format_remuiformat{{/str}}</span>
+                            <span class="course-sidebar-progress-value">{{progresspercentage}}%</span>
+                        </div>
+
+                        <div class="progress progress-rounded course-sidebar-progress-bar">
+                            <div class="progress-bar bg-green-600" style="width: {{progresspercentage}}%; height: 100%;" role="progressbar" aria-valuenow="{{progresspercentage}}" aria-valuemin="0" aria-valuemax="100">
+                                <span class="sr-only">{{progresspercentage}}% {{#str}} Complete, format_remuiformat {{/str}}</span>
+                            </div>
+                        </div>
+                    </div>
+                {{/showcourseprogress}}
+
+                {{#resumeactivityurl}}
+                    <a class="btn btn-primary bold course-sidebar-resume-btn" href="{{{resumeactivityurl}}}" role="button">{{#str}} resumetoactivity, format_remuiformat{{/str}}</a>
+                {{/resumeactivityurl}}
+            </div>
+        {{/hasprogresspanel}}
+
+        {{#hasactivitytypes}}
+            <div class="course-sidebar-breakdown">
+                {{#activitytypes}}
+                    <div class="course-sidebar-breakdown-item">
+                        <span class="course-sidebar-breakdown-label">{{label}}</span>
+                        <span class="course-sidebar-breakdown-count">{{count}}</span>
+                    </div>
+                {{/activitytypes}}
+            </div>
+        {{/hasactivitytypes}}
+
+        {{^hasactivitytypes}}
+            <p class="course-sidebar-empty mb-0">{{#str}}noactivity, theme_remui{{/str}}</p>
+        {{/hasactivitytypes}}
+    </div>
+</div>
