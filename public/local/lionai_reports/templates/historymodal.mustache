@@ -1,0 +1,51 @@
+{{!
+    @template local_lionai_reports/historymodal
+
+    Context variables required for this template:
+    * history - History of prompts and queris as list
+
+    Example context (json):
+    {
+        "history": [
+            {
+                "classes": "user",
+                "role": "user",
+                "content": "get all users",
+            },
+        ]
+    }
+}}
+<div class="list-group lionai_reports-history-list">
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th class="text-center">{{#str}}prompt, local_lionai_reports{{/str}}</th>
+                <th class="text-center">{{#str}}sqlhistory, local_lionai_reports{{/str}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#history}}
+                <tr>
+                    {{#prompt}}
+                        <td style="min-width: 300px">
+                            <a href="#" class=" m-0 text-info lionai_reports-history-list-item {{classes}}"
+                                data-role="{{role}}">
+                                {{{content}}}
+                            </a>
+                        </td>
+                    {{/prompt}}
+                    <td>
+                        {{#code}}
+                            {{#content}}
+                                <a href="#" class=" m-0 text-info lionai_reports-history-list-item {{classes}}"
+                                   data-role="{{role}}">
+                                        <textarea class="">{{{content}}}</textarea>
+                                </a>
+                            {{/content}}
+                        {{/code}}
+                    </td>
+                </tr>
+            {{/history}}
+        </tbody>
+    </table>
+</div>

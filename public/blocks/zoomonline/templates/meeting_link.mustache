@@ -1,0 +1,11 @@
+<div class="mb-3 d-inline-block w-100 live_join_class_conn {{#eye_disabled}}eye_disabled{{/eye_disabled}}">
+    <span style="line-height: 36px;">{{teacher_firstname}} {{teacher_lastname}}: {{group_name}}</span>
+    {{#show_eye_icon}}
+    <span class="live_join_class_eye" data-id="{{meeting_id}}" data-visible="{{toggle_visibility}}">
+            <i class="icon fa {{eye_icon_class}} fa-fw" aria-hidden="true"></i>
+        </span>
+    {{/show_eye_icon}}
+    {{#show_join_button}}
+    <a href="{{zoom_link}}" target="_blank" class="btn btn-primary float-right">Join</a>
+    {{/show_join_button}}
+</div>

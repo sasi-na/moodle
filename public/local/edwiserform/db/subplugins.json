@@ -1,0 +1,8 @@
+{
+    "subplugintypes": {
+        "edwiserformevents": "events"
+    },
+    "plugintypes": {
+        "edwiserformevents": "local/edwiserform/events"
+    }
+}

@@ -1,0 +1,65 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ludilearn/filename
+
+    Example context (json):
+    {}
+}}
+
+<div class="cm-timer {{#cm.parameters.restricted }}restricted{{/cm.parameters.restricted }}">
+{{#parameters.gamified }}
+    <div class="row">
+        <div class="col-12">
+            <img class="img-responsive d-block mx-auto"
+                 src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/timer/default-timer.svg"
+                 alt="Image reference time">
+            {{#parameters.currenttime }}
+            {{#parameters.currentpenaltiescalc}}
+            <div class="penalties penalties-cm">
+                <span class="penalties-value">+ {{ parameters.currentpenaltiescalc }}s </span>
+                <span class="penalties-str">{{#str}} ofpenalties, format_ludilearn {{/str}}</span>
+            </div>
+            {{/parameters.currentpenaltiescalc}}
+            {{/parameters.currenttime }}
+        </div>
+    </div>
+    <div class="row">
+        {{#parameters.currenttime }}
+        <div class="col-6 rightdottedscore">
+            <div class="chrono text-center progression-text progression-cm">
+                <img src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/timer/chrono.svg" alt="Icone chrono">
+                <span class="current-time">
+                    {{ parameters.currenttime }}
+                </span>
+            </div>
+        </div>
+        {{/parameters.currenttime }}
+        <div class="{{#parameters.currenttime }}col-6{{/parameters.currenttime }} {{^parameters.currenttime }}col-12{{/parameters.currenttime }}">
+            <div class="reference-time text-center progression-text progression-cm">
+                <span>{{#str}} besttime, format_ludilearn {{/str}}</span>
+                <img src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/timer/reftime.svg" alt="Icon besttime">
+                <span>{{ parameters.besttime }}</span>
+            </div>
+        </div>
+    </div>
+
+{{/parameters.gamified }}
+{{^parameters.gamified }}
+    <img class="img-responsive d-block mx-auto" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/none.svg" alt="Image not gamified">
+{{/parameters.gamified }}
+</div>

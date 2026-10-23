@@ -1,0 +1,232 @@
+.path-mod-assign {
+    [data-region="user-selector"] {
+        .alignment {
+            width: 320px;
+            margin: 0;
+            .form-autocomplete-downarrow {
+                top: 50%;
+            }
+        }
+    }
+    [data-region=grade-actions] {
+        padding: 5px;
+        height: 100%;
+    }
+    [data-region="grade-panel"] {
+        .fitem {
+            &> .col-md-4,
+            &> .col-md-8 {
+                width: 100%;
+                padding: 0;
+                max-width: 100%;
+                flex: none;
+            }
+        }
+    }
+    [data-region="grading-navigation"] {
+        padding: 2px;
+    }
+}
+
+@media screen and (max-width: 869px) {
+    .path-mod-assign {
+        [data-region="user-info"] {
+            padding-right: 47px !important;
+        }
+    }
+}
+
+//Fix of issue where the edit instructions on edit quiz question page were not displaying properly
+#page-mod-quiz-edit{
+   #region-main{
+      .mod-quiz-edit-content{
+         .instancesectioncontainer{
+            span.editinstructions {
+               position: absolute;
+               top: 0;
+               margin-top: -22px;
+               margin-left: 30px;
+               font-size: 0.875rem;
+               padding: 0.1em 0.4em;
+               text-decoration: none;
+               z-index: 9999;
+               border: 1px solid transparent;
+               color: #0c5460;
+               background-color: #d1ecf1;
+               border-color: #bee5eb;
+            }
+         }
+      }
+   }
+}
+
+
+// activity modal UI
+body.edw-m501 {
+    .modal-dialog.modchooser {
+        max-width: 1140px;
+        .modchoosercontainer {
+            display: grid;
+            width: 100%;
+    
+            grid-template-areas:
+                "nav filters"
+                "nav content";
+    
+            grid-template-columns: auto 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 1rem;
+    
+            @media (max-width: 767.98px) {
+                grid-template-areas:
+                "filters"
+                "nav"
+                "content";
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr;
+            }
+        
+            .modchooserfilters {
+                grid-area: filters;
+            }
+    
+            .modchoosernav {
+                grid-area: nav;
+                min-width: 150px;
+                hr {
+                    border-top-color: #edf1f6;
+                }
+    
+                @media (max-width: 991.98px) {
+                    background-color: inherit !important;
+                }
+    
+                .nav-link {
+                    width: fit-content;
+                    border: $border-width $border-style transparent;
+    
+                    @media (max-width: 991.98px) {
+                        flex: none !important;
+                    }
+    
+                    @include media-breakpoint-up(md) {
+                        max-width: 200px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
+    
+                    &:not(.active) {
+                        &:hover {
+                            border: $border-width $border-style $border-color;
+                            background-color: $gray-100;
+                        }
+                    }
+                }
+    
+                @include media-breakpoint-down(md) {
+                    overflow-x: auto;
+                    white-space: nowrap;
+                }
+            }
+    
+            .searchresultscontainer {
+                overflow: auto;
+            }
+        
+            .modchoosercontent {
+                grid-area: content;
+                overflow: auto;
+        
+                .optionscontainer {
+                    display: grid;
+                    grid-template-columns: repeat(4, 1fr);
+                    gap: map-get($spacers, 2);
+    
+                    @media (max-width: 991.98px) {
+                        grid-template-columns: repeat(3, 1fr);
+                    }
+    
+                    @media (max-width: 575.98px) {
+                        grid-template-columns: repeat(2, 1fr);
+                    }
+    
+                    .option {
+                        height: fit-content;
+    
+                        .optioninfo {
+                            display: block;
+                            text-align: initial;
+                        }
+    
+                        .optionactions {
+                            position: relative;
+                            z-index: 10;
+                        }
+                    }
+                    .option.selected {
+                        border-color: $border-color;
+                    }
+    
+                }
+            }
+        }
+    }
+    
+    @include media-breakpoint-down(sm) {
+        .path-course-view {
+            .modal-dialog.modal-lg,
+            .modal-content {
+                height: 100%;
+                overflow-y: auto;
+                margin: 0;
+            }
+        }
+    
+        .modchooser {
+            .modal-body,
+            .modal-body .carousel,
+            .modal-body .carousel-inner,
+            .modal-body .carousel-item,
+            .modal-body .optionsummary,
+            .modal-body .searchresultitemscontainer-wrapper {
+                height: 100%;
+                overflow-y: auto;
+            }
+        }
+    
+        .modchoosercontainer,
+        .optionscontainer,
+        .searchresultitemscontainer {
+            height: 100%;
+            overflow-y: auto;
+        }
+    }
+}
+
+.modicon_edwiserform.activityiconcontainer,
+.modicon_edwiservideoactivity.activityiconcontainer {
+    .icon.activityicon {
+        filter: none !important;
+    }
+}
+
+.activityicon[alt="edwiserform icon"],
+.activityicon[alt="edwiservideoactivity icon"],
+.activityicon[src*="edwiserform"],
+#edwiserform_overview_title .activityicon,
+#edwiservideoactivity_overview_title .activityicon {
+    filter: none !important;
+}
+
+.modchooser .modal-body .optionsummary .modicon_edwiservideoactivity.activityiconcontainer.smaller.content  {
+    overflow-y: visible !important;
+}
+
+[id^="page-mod-data-field-"] .generalbox #editfield fieldset .form-check {
+    padding-left: 0px !important;
+}
+
+#page-mod-quiz-attempt .qtext .clearfix::after {
+    content: none !important;
+}

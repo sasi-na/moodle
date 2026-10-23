@@ -1,0 +1,21 @@
+Release
+=======
+
+Version 1.0.1
+=============
+
+Feature - Added compatibility with Moodle 5.1.
+Feature - Custom completion condition added that triggers based on the percentage of the video watched by the student.
+Feature – Automatically redirects users to the next activity when the current video ends.
+Feature – Added video progress tracking for embedded videos (YouTube, Vimeo) and HTML5 videos, allowing users to resume playback from where they left off.
+
+Tweak - Integrated a new video player library(plyr) for html5 videos.
+Tweak - Video source can only change if the completion conditions have not been set or locked.
+
+Fix - Resolved minor UI issues.
+Fix - Fixed images not appearing in the description/overview section.
+Fix - Fixed the issue where the iframe code was not fully visible after saving it in the video activity source.
+
+Version 1.0.0
+=============
+Initial Version of Edwiser Video activity plugin.

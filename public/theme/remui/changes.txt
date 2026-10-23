@@ -1,0 +1,69 @@
+Release
+=======
+
+Version 5.1.2
+=============
+Feature - Added a collapsible menu for floating icons.
+Tweak - Added a setting to show a Sign Up button on the home page for non-logged-in users.
+Tweak - Added option to set and reset the theme colors through Quick setup color pallet in the Visual Personalizer.
+Fix - User added custom skill level is supported on course cards and enrollment page.
+
+Version 5.1.1
+=============
+Fix - Minor UI/UX improvements.
+
+Version 5.1.0
+=============
+Feature - Added compatibility with Moodle 5.1.
+Tweak - Adjusted the Focus Mode toast message position slightly downward for better visibility of the course name and navigation buttons.
+Tweak - Updated the “Add an activity” modal UI for Moodle 5.1.
+Fix - Resolved minor UI issues in the theme.
+Fix - Fixed deprecation warnings appearing on PHP 8.4.
+Fix - Corrected an issue where dashboard stats were not updating when a course was hidden.
+Fix - Fixed the file picker modal not working on the latest version of Moodle.
+Fix - Corrected alert colors not applying in dark mode.
+Fix - Fixed the login page site description color not updating when the color palette was changed.
+Fix - Fixed login page colors not updating when Smart Color was applied.
+
+Version 5.0.5
+=============
+Feature - Added 6 footer design templates in the Visual Personalizer.
+Feature - Added an option to download footer settings in JSON format to back up the footer configuration.
+Feature - Added separate background color and text color settings for the main footer area and bottom footer area in footer templates 1 and 2.
+Tweak - Added background image settings in all footer templates except the default footer.
+Tweak - Added logo settings in the widget area.
+Tweak - Added an email form and its settings in footer templates 2, 3, 4, and 6.
+Tweak - Moved footer social icon settings to the main area for the default and template 1, and to the bottom area for other templates.
+Tweak - Moved footer bottom text and link settings to the bottom area in the default footer settings.
+
+Version 5.0.4
+=============
+Tweak - Added an Accordion view to the RemUI Theme Settings page.
+Fix - Site name and icon colors now sync with the text color instead of the primary color.
+Fix - Resolved an issue where the site icon was not visible after applying "Reset All."
+
+Version  5.0.3
+===========
+Tweak - Further UI/UX improvements.
+Tweak - Minor changes in feedback collection flow.
+Tweak - Minor improvements in setup wizard.
+Tweak - Hide empty fields on profile page.
+Tweak - Renamed the "Settings" tab in profile settings to "More Details".
+Fix - API documentation page now loads correctly without getting stuck on the loader screen
+Fix - Error when installing RemUI theme, activating it, or adding an activity to a course.
+
+Version 5.0.2
+=============
+Tweak - Minor improvements in left sidebar.
+Tweak - Css support added for Edwiser video format plugin
+
+Version 5.0.1
+=============
+Tweak - Improved alert messaging on the settings page.
+Tweak - Further UI/UX improvements implemented.
+Fix - Resolved issue with the collapse/expand icon not working as expected.
+
+Version 5.0.0
+=============
+Feature - Compatibility with Moodle 5.0.
+

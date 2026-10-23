@@ -1126,7 +1126,6 @@ class student_dashboard implements renderable, templatable {
                 'pix_refresh'     => '/blocks/openai_chat/pix/refresh.svg',
             ]);
 
-            \theme_baz\local\askjo::$built = true;
             return ['blockid' => (int) $instance->id, 'log' => $log, 'control' => $control];
         } catch (\Throwable $e) {
             debugging('student_dashboard build_askjo: ' . $e->getMessage(), DEBUG_DEVELOPER);

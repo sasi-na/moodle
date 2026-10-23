@@ -1,0 +1,11 @@
+.path-mod-msteams .resourcecontent {
+    text-align: center;
+}
+
+.path-mod-msteams .msteams-meeting-card {
+    margin-top: 1rem;
+}
+
+.path-mod-msteams .msteams-meeting-details th {
+    width: 35%;
+}

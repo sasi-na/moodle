@@ -1,0 +1,41 @@
+<div class="edwiservideo-video-wrapper">
+    {{^isembeded}}
+        <div class="edwplyr-wrapper">
+            <div id="plyr-container-{{cmid}}" class="plyr-container"
+                 data-autoplay="{{autoplay}}"
+                 data-showcontrols="{{showcontrols}}"
+                 data-controls="{{controls}}"
+                 data-speed="{{speed}}">
+                <video id="video-{{cmid}}" class="video-player" controls  playsinline>
+                    <source src="{{sourcepath}}" type="video/mp4">
+                    {{#str}}notsupported, mod_edwiservideoactivity{{/str}}
+                </video>
+            </div>
+        </div>
+        {{#nextactivityname}}
+        <div class="video-overlay d-none" id="overlay">
+            <p class="overlay-text">Coming up next</p>
+            <h2 class="nextactivityname">{{nextactivityname}}</h2>
+            <h6 class="nextactivitytimer"></h6>
+        </div>
+        {{/nextactivityname}}
+    {{/isembeded}}
+
+    {{#isembeded}}
+        <iframe id="iframe-{{cmid}}" class="video-player" src="{{sourcepath}}" frameborder="0" title="Video player"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen></iframe>
+        {{#nextactivityname}}
+		<div class="video-overlay d-none" id="overlay">
+		    <p class="overlay-text">Coming up next</p>
+		    <h2 class="nextactivityname">{{nextactivityname}}</h2>
+		    <h6 class="nextactivitytimer"></h6>
+		</div>
+        {{/nextactivityname}}
+    {{/isembeded}}
+</div>
+<style>
+    html[dir=rtl] .edwiservideo-video-wrapper .plyr__controls {
+        direction: ltr;
+    }
+</style>

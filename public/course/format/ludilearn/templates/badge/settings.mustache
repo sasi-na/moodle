@@ -1,0 +1,136 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ludilearn/filename
+
+    Example context (json):
+    {}
+}}
+
+<div id="ludilearn-settings" class="ludilearn-world-{{ world }}">
+    <div class="row justify-content-center">
+            <div class="col-6">
+                <div class="row block_section">
+                    <div class="col-9 rightdottedscore">
+                        <div class="row mr-1">
+                            <div class="col-4 mt-0 p-0">
+                                <img class="ludilearn-img little-img img-responsive d-block mx-auto"
+                                     src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/badge/badge_bronze.svg"
+                                     alt="Image badge">
+                            </div>
+                            <div class="col-4 mt-0 p-0">
+                                <img class="ludilearn-img little-img img-responsive d-block mx-auto"
+                                     src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/badge/badge_silver.svg"
+                                     alt="Image badge">
+                            </div>
+                            <div class="col-4 mt-0 p-0">
+                                <img class="ludilearn-img little-img img-responsive d-block mx-auto"
+                                     src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/badge/badge_gold.svg"
+                                     alt="Image badge">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3" >
+                        <img class="ludilearn-img little-img img-responsive d-block mx-auto"
+                             src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/badge/badge_completion.svg"
+                             alt="Image badge">
+                    </div>
+            </div>
+        </div>
+    </div>
+    <div class="alert alert-success editsettingssuccess" role="alert">
+        {{#str}} editsettingssuccess, format_ludilearn {{/str}}
+    </div>
+    <div class="alert alert-danger editsettingsfailed" role="alert">
+        {{#str}} editsettingsfailed, format_ludilearn {{/str}}
+    </div>
+    <p class="align-center">{{#str}} settings:badgedescription, format_ludilearn {{/str}}</p>
+    <form id="form-parameters" class="form-parameters mform" action="#">
+        <input type="hidden" name="courseid" value="{{ courseid }}">
+        <div class="form-group row">
+            <div class="col-form-label col-md-3 d-flex pb-0 pr-md-0">
+                <label for="input-badgegold" class="d-inline word-break">{{#str}} settings:badgegold, format_ludilearn  {{/str}}</label>
+                <div class="form-label-addon d-flex align-items-center align-self-start">
+                    <div class="text-danger">
+                        <i class="icon fa fa-exclamation-circle text-danger fa-fw " role="img"></i>
+                    </div>
+                    <a class="btn btn-link p-0" role="button" data-container="body" data-toggle="popover" data-placement="right"
+                       data-content="<div class=&quot;no-overflow&quot;><p>{{#str}} settings:badgegold_help, format_ludilearn  {{/str}}</p></div>"
+                       data-html="true" tabindex="0" data-trigger="focus">
+                        <i class="icon fa fa-question-circle text-info fa-fw"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <input class="form-control" id="input-badgegold" name="badgegold" type="number" min="0" max="100" value="{{ badgegold }}">
+                    <div class="input-group-append">
+                        <span class="input-group-text"> % </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-form-label col-md-3 d-flex pb-0 pr-md-0">
+                <label for="input-badgesilver" class="d-inline word-break">{{#str}} settings:badgesilver, format_ludilearn  {{/str}}</label>
+                <div class="form-label-addon d-flex align-items-center align-self-start">
+                    <div class="text-danger">
+                        <i class="icon fa fa-exclamation-circle text-danger fa-fw " role="img"></i>
+                    </div>
+                    <a class="btn btn-link p-0" role="button" data-container="body" data-toggle="popover" data-placement="right"
+                       data-content="<div class=&quot;no-overflow&quot;><p>{{#str}} settings:badgesilver_help, format_ludilearn  {{/str}}</p></div>"
+                       data-html="true" tabindex="0" data-trigger="focus">
+                        <i class="icon fa fa-question-circle text-info fa-fw"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <input class="form-control" id="input-badgesilver" name="badgesilver" type="number" min="0" max="100" value="{{ badgesilver }}">
+                    <div class="input-group-append">
+                        <span class="input-group-text"> % </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-form-label col-md-3 d-flex pb-0 pr-md-0">
+                <label for="input-badgebronze" class="d-inline word-break">{{#str}} settings:badgebronze, format_ludilearn  {{/str}}</label>
+                <div class="form-label-addon d-flex align-items-center align-self-start">
+                    <div class="text-danger">
+                        <i class="icon fa fa-exclamation-circle text-danger fa-fw " role="img"></i>
+                    </div>
+                    <a class="btn btn-link p-0" role="button" data-container="body" data-toggle="popover" data-placement="right"
+                       data-content="<div class=&quot;no-overflow&quot;><p>{{#str}} settings:badgebronze_help, format_ludilearn  {{/str}}</p></div>"
+                       data-html="true" tabindex="0" data-trigger="focus">
+                        <i class="icon fa fa-question-circle text-info fa-fw"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <input class="form-control" id="input-badgebronze" name="badgebronze" type="number" min="0" max="100" value="{{ badgebronze }}">
+                    <div class="input-group-append">
+                        <span class="input-group-text"> % </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-primary" type="submit">{{#str}} save {{/str}}</button>
+    </form>
+    {{> format_ludilearn/settings_footer}}
+</div>

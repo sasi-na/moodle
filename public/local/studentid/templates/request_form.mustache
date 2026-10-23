@@ -1,0 +1,222 @@
+{{!
+  @template local_studentid/request_form
+  Student e-ID card request / draft-edit form.
+
+  Element ids and field names are relied upon by local_studentid/request_form.js
+  (photo/aadhaar/abc previews, city-state cascade, submit validation) and must
+  not be renamed without updating that module.
+}}
+<div class="container-fluid px-0" id="sid-request-form-wrap">
+<form method="post" action="{{form_url}}" enctype="multipart/form-data" id="sid-request-form" novalidate>
+  <input type="hidden" name="sesskey" value="{{sesskey}}">
+  <input type="hidden" name="requestid" value="{{requestid}}">
+
+  {{! SECTION 1: Student Information }}
+  <div class="sid-section">
+    <div class="sid-section-header">
+      <span class="icon fa fa-user-circle text-primary"></span>
+      <h5>Student Information</h5>
+      <span class="badge-auto"><span class="fa fa-lock mr-1"></span>Auto-filled</span>
+    </div>
+    <div class="sid-section-body">
+      <div class="row g-3">
+        {{#infofields}}
+        <div class="col-md-6 mb-3">
+          <div class="info-field">
+            <label>{{label}}</label>
+            <div class="value {{^value}}empty{{/value}}">{{#value}}{{value}}{{/value}}{{^value}}{{#str}}notset, local_studentid{{/str}}{{/value}}</div>
+          </div>
+        </div>
+        {{/infofields}}
+
+        {{! Country — mandatory; drives the state/city controls below. }}
+        <div class="col-md-6 mb-3">
+          <div class="info-field">
+            <label for="country-select" class="sid-info-label">Country <span class="text-danger">*</span></label>
+            <select name="country" id="country-select" class="form-control sid-blood-select"
+                    data-states-country="{{states_country}}"
+                    data-saved-state="{{saved_state}}" data-saved-city="{{saved_city}}">
+              <option value="">Select country…</option>
+              {{#country_options}}
+              <option value="{{value}}" {{#selected}}selected{{/selected}}>{{value}}</option>
+              {{/country_options}}
+            </select>
+            <div class="field-error d-none mt-1" id="country-error">
+              <span class="fa fa-exclamation-circle"></span> <span id="country-error-msg">Please select your country</span>
+            </div>
+          </div>
+        </div>
+
+        {{! State — dropdown for India, free text for other countries. }}
+        <div class="col-md-6 mb-3">
+          <div class="info-field">
+            <label for="state-select" class="sid-info-label">State <span class="text-danger">*</span></label>
+            <select id="state-select" class="form-control sid-blood-select d-none" disabled>
+              <option value="">Select state…</option>
+              {{#state_groups}}
+              <optgroup label="{{grouplabel}}">
+                {{#options}}
+                <option value="{{value}}" {{#selected}}selected{{/selected}}>{{value}}</option>
+                {{/options}}
+              </optgroup>
+              {{/state_groups}}
+            </select>
+            <input type="text" id="state-other-input" class="form-control d-none"
+                   placeholder="Enter your state / province" maxlength="100">
+            <input type="hidden" name="state" id="state-value" value="{{saved_state}}">
+            <div class="field-error d-none mt-1" id="state-error">
+              <span class="fa fa-exclamation-circle"></span> <span id="state-error-msg">Please select your state</span>
+            </div>
+          </div>
+        </div>
+
+        {{! City — populated via JS; "Other…" reveals a free-text input. }}
+        <div class="col-md-6 mb-3">
+          <div class="info-field">
+            <label for="city-select" class="sid-info-label">City <span class="text-danger">*</span></label>
+            <select id="city-select" class="form-control sid-blood-select" disabled>
+              <option value="">Select state first…</option>
+            </select>
+            <input type="text" id="city-other-input" class="form-control mt-1 d-none"
+                   placeholder="Enter your city" maxlength="100" autocomplete="address-level2">
+            <input type="hidden" name="city" id="city-value" value="{{saved_city}}">
+            <div class="field-error d-none mt-1" id="city-error">
+              <span class="fa fa-exclamation-circle"></span> <span id="city-error-msg">Please select your city</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{! SECTION 2: Additional Details }}
+  <div class="sid-section">
+    <div class="sid-section-header"><span class="icon fa fa-tint text-danger"></span><h5>Additional Details</h5></div>
+    <div class="sid-section-body">
+      <div class="row align-items-end">
+        <div class="col-md-4 col-sm-6">
+          <label class="font-weight-bold mb-1" for="blood_group_sel">Blood Group <span class="text-danger">*</span></label>
+          <select name="blood_group" id="blood_group_sel" class="form-control sid-blood-select" required>
+            <option value="">Select blood group…</option>
+            {{#blood_options}}
+            <option value="{{value}}" {{#selected}}selected{{/selected}}>{{value}}</option>
+            {{/blood_options}}
+          </select>
+          <div class="field-error d-none" id="blood-group-error">
+            <span class="fa fa-exclamation-circle"></span> Please select your blood group
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{! SECTION 3: Passport Photo }}
+  <div class="sid-section">
+    <div class="sid-section-header"><span class="icon fa fa-camera text-warning"></span><h5>Passport Photo <span class="text-danger">*</span></h5></div>
+    <div class="sid-section-body">
+      <div class="row align-items-start">
+        <div class="col-md-3 col-sm-4 mb-3 mb-md-0">
+          <div class="photo-preview-wrap">
+            <div class="photo-preview-frame {{#has_photo}}has-photo{{/has_photo}}" id="photo-preview-frame">
+              {{#has_photo}}<img id="photo-preview-img" src="{{photo_url}}" alt="Photo">{{/has_photo}}
+              {{^has_photo}}<div class="pp-placeholder"><span class="fa fa-image"></span><span style="font-size:11px">No photo yet</span></div>{{/has_photo}}
+            </div>
+            <span class="photo-dim-badge badge bg-light mt-2" id="photo-dim-badge">Passport size</span>
+          </div>
+        </div>
+        <div class="col-md-9 col-sm-8">
+          <div class="guidelines-list mb-3">
+            <div class="gl-title"><span class="fa fa-info-circle mr-1"></span>Photo Requirements</div>
+            <ul>
+              <li>Professional passport-size photo on a <strong>white or light</strong> background</li>
+              <li>Face clearly visible, front-facing — no sunglasses or hats</li>
+              <li>File format: <strong>JPG or PNG</strong> only, max <strong>2 MB</strong></li>
+              <li>Minimum dimensions: <strong>300 × 400 px</strong> (portrait orientation)</li>
+              <li>Recent photo taken within the last 6 months</li>
+            </ul>
+          </div>
+          <div class="upload-zone" id="photo-drop-zone">
+            <input type="file" name="photo" id="photo-input" accept=".jpg,.jpeg,.png" data-field="photo">
+            <span class="uz-icon fa fa-cloud-upload"></span>
+            <div class="uz-title">Drag &amp; drop or <u>browse</u> to upload</div>
+            <div class="uz-sub">JPG / PNG &bull; Max 2 MB</div>
+          </div>
+          <div class="field-error d-none mt-2" id="photo-error">
+            <span class="fa fa-exclamation-circle"></span> <span id="photo-error-msg"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{! SECTION 4: Aadhaar Card }}
+  <div class="sid-section">
+    <div class="sid-section-header"><span class="icon fa fa-id-card text-success"></span><h5>Aadhaar Card <span class="text-danger">*</span> <span class="text-muted" style="font-size:12px;font-weight:400">(both sides required for identity verification)</span></h5></div>
+    <div class="sid-section-body">
+      <div class="guidelines-list mb-3">
+        <div class="gl-title"><span class="fa fa-info-circle mr-1"></span>Aadhaar Upload Instructions</div>
+        <ul>
+          <li>Accepted formats: <strong>JPG, PNG or PDF</strong>, maximum <strong>5 MB</strong> per side</li>
+          <li>Upload <strong>both front and back</strong> sides — keep all text clear and legible</li>
+        </ul>
+      </div>
+      <div class="row">
+        {{#aadhaar_cards}}
+        <div class="col-md-6 mb-3">
+          <div class="aadhaar-card">
+            <div class="aadhaar-card-header"><span class="fa fa-credit-card mr-1"></span>{{label}}</div>
+            <div class="aadhaar-preview-frame" id="{{field}}-preview-frame" data-has-file="{{hasfileattr}}">
+              {{#is_pdf}}<div class="aadhaar-pdf-badge" id="{{field}}-pdf-badge"><span class="fa fa-file-pdf-o"></span><span class="pdf-name">{{filename}}</span></div>{{/is_pdf}}
+              {{#is_img}}<img id="{{field}}-preview-img" src="{{url}}" alt="{{label}}">{{/is_img}}
+              {{^has}}<div class="ap-placeholder" id="{{field}}-placeholder"><span class="fa fa-id-card-o"></span>{{label}} not uploaded</div>{{/has}}
+            </div>
+            <div class="aadhaar-card-footer">
+              <button type="button" class="btn btn-outline-secondary aadhaar-upload-btn" id="{{field}}-btn">
+                <span class="fa fa-upload mr-1"></span>Upload {{label}}
+                <input type="file" name="{{field}}" id="{{field}}-input" accept=".jpg,.jpeg,.png,.pdf" data-field="{{field}}">
+              </button>
+              <div class="aadhaar-filename" id="{{field}}-fname">{{#filename}}{{filename}}{{/filename}}{{^filename}}No file chosen{{/filename}}</div>
+            </div>
+          </div>
+        </div>
+        {{/aadhaar_cards}}
+      </div>
+    </div>
+  </div>
+
+  {{! SECTION 5: ABC ID }}
+  <div class="sid-section">
+    <div class="sid-section-header"><span class="icon fa fa-university text-info"></span><h5>ABC ID <span class="text-danger">*</span> <span class="text-muted" style="font-size:12px;font-weight:400">(Academic Bank of Credits ID, PDF only, max 5 MB)</span></h5></div>
+    <div class="sid-section-body">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="aadhaar-card">
+            <div class="aadhaar-card-header"><span class="fa fa-file-pdf-o mr-1"></span>ABC ID Document</div>
+            <div class="aadhaar-preview-frame" id="abc_id-preview-frame" data-has-file="{{abc_hasfileattr}}">
+              {{#abc_has}}<div class="aadhaar-pdf-badge" id="abc_id-pdf-badge"><span class="fa fa-file-pdf-o"></span><span class="pdf-name">{{abc_name}}</span></div>{{/abc_has}}
+              {{^abc_has}}<div class="ap-placeholder" id="abc_id-placeholder"><span class="fa fa-file-pdf-o"></span>ABC ID not uploaded</div>{{/abc_has}}
+            </div>
+            <div class="aadhaar-card-footer">
+              <button type="button" class="btn btn-outline-secondary aadhaar-upload-btn" id="abc_id-btn">
+                <span class="fa fa-upload mr-1"></span>Upload ABC ID (PDF)
+                <input type="file" name="abc_id" id="abc_id-input" accept=".pdf" data-field="abc_id">
+              </button>
+              <div class="aadhaar-filename" id="abc_id-fname">{{#abc_name}}{{abc_name}}{{/abc_name}}{{^abc_name}}No file chosen{{/abc_name}}</div>
+              <div class="field-error d-none mt-1" id="abc_id-error">
+                <span class="fa fa-exclamation-circle"></span> <span id="abc_id-error-msg"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{! Submit bar }}
+  <div class="sid-submit-bar">
+    <a href="{{cancel_url}}" class="btn btn-outline-secondary"><span class="fa fa-arrow-left mr-1"></span>Cancel</a>
+    <button type="submit" class="btn btn-primary px-4" id="sid-submit-btn"><span class="fa fa-save mr-1"></span>{{submit_label}}</button>
+  </div>
+
+</form>
+</div>

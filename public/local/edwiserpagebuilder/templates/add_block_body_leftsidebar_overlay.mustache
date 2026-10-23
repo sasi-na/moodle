@@ -1,0 +1,96 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template core/add_block_body_leftsidebar
+
+}}
+<div class ="left-sidebar">
+
+    <div class="edw-tabs-navigation edwiser-custom-blocks-nav ">
+      <ul class="nav nav-tabs m-0 p-0 flex-nowrap" id="epbTab" role="tablist">
+        <li class="nav-item   " role="presentation">
+          <a class="nav-link d-flex flex-column align-items-center m-0  active"  id="static-blocks-btn" data-filter="block-filter"  role="tab" aria-controls="blocktab" aria-selected="true">
+            <span class="edw-icon"></span><span class="block-tab-title"></span></a>
+        </li>
+        <li class="nav-item  " role="presentation">
+          <a class="nav-link d-flex flex-column align-items-center m-0 "  data-filter="dynamic-filter"   role="tab" aria-controls="blocktab" aria-selected="true">
+            <span class="edw-icon"></span><span class="block-tab-title"></span></a>
+        </li>
+        <li class="nav-item  " role="presentation">
+          <a class="nav-link d-flex flex-column align-items-center m-0 "  data-filter="blocklayout-filter"   role="tab" aria-controls="blocktab" aria-selected="true">
+            <span class="edw-icon"></span><span class="block-tab-title"></span></a>
+        </li>
+      </ul>
+    </div>
+
+    <div class=" block-cards default-blocks  default-blocks-wrapper static-blocks-wrapper">
+      
+    </div>
+    <div class="left-sidebar-mid-region static-blocks-filters">
+      <ul class="block-category-list-desktop">
+         
+      </ul>
+
+      <div class="dropdown  block-category-select-mob">
+        <button class="btn btn-secondary" type="button" id="blockCategoryDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class="block-category-select-mob-searchbox"></span>
+        </button>
+      </div>
+      <div class="block-category-select-mob block-category-select-mob-placeholder position-relative">
+        <div class="block-category-select-wrapper-placeholder wrapper">
+          <div class="head">
+          </div>
+          <div class="tail">
+          </div>
+        </div>
+        <div class="block-category-select-wrapper-placeholder wrapper">
+          <div class="head">
+          </div>
+          <div class="tail">
+          </div>
+        </div>
+        <div class="block-category-select-wrapper-placeholder wrapper">
+          <div class="head">
+          </div>
+          <div class="tail">
+          </div>
+        </div>
+        <div class="block-category-select-wrapper-placeholder wrapper">
+          <div class="head">
+          </div>
+          <div class="tail">
+          </div>
+        </div>
+      </div>
+      <div id="add-block-installing-blocks-placeholder-wrapper" class="d-none add-block-wrapper-mob">
+          <div class="add-block-loading-placeholder">
+            <div class="text-center p-4" style="min-width:265.99px;">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="add-block-installing-placeholder-text">{{#str}}installingblocks,local_edwiserpagebuilder{{/str}}</span>
+              </div>
+              <div class="progress-bar-wrapper d-flex align-items-center">
+                <div class="progress">
+                  <div id="add-block-overlay-bar" class="progress-bar bg-success" role="progressbar"
+                    aria-valuenow="" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <span id="add-block-overlay-progress"></span>
+                </div>
+              </div>
+            </div>
+      </div>
+    </div>
+</div>

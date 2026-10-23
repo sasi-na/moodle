@@ -1,0 +1,244 @@
+/* Ensure container covers the draggable items. */
+.ablock div.answer.ordering {
+    overflow: auto;
+}
+
+.ablock ul.sortablelist {
+    float            : left;
+    list-style-type  : none;
+    margin           : 0;
+    margin-left      : 5px;
+    padding          : 4px;
+}
+.ablock ul.sortablelist.orderingactive {
+    border           : 1px dotted #333;
+    border-radius    : 4px;
+}
+.ablock ul.sortablelist li {
+    background-color : #ffffff;
+    border           : 1px solid #000;
+    border-radius    : 4px;
+    list-style-type  : none;
+    margin           : 4px;
+    padding          : 6px 12px;
+}
+.ablock ul.sortablelist li.sortableitem {
+    position         : relative;
+    cursor           : move;
+}
+.ablock ul.sortablelist li.sortableitem:focus {
+    border-color: #0a0;
+    box-shadow: 0 0 5px 5px rgba(255, 255, 150, 1);
+}
+.ablock ul.sortablelist li.horizontal {
+    float            : left;
+}
+.ablock ul.sortablelist li.vertical {
+    min-height       : 18px;
+}
+
+/* Styles for when things are being dragged. */
+.ablock.dragproxy {
+    margin: 0;
+    padding: 0;
+    border: 0 none;
+}
+.ablock.dragproxy ul.sortablelist {
+    margin: 0;
+    padding: 0;
+    float: none;
+}
+.ablock.dragproxy ul.sortablelist li {
+    margin: 0;
+}
+.ablock.dragproxy ul.sortablelist li.horizontal {
+    float: none;
+}
+.item-moving {
+    box-shadow: 3px 3px 4px #000;
+}
+.current-drop {
+    visibility: hidden;
+}
+
+
+/* Styles for feedback. */
+.ablock ul.sortablelist li.correct {
+    background-color : #dff4d8; /* light green */
+    border-color     : #99ff66; /* gentle green */
+}
+.ablock ul.sortablelist li.partial66 {
+    background-color : #dff4d8; /* light green */
+    border-color     : #ff9900; /* dark  orange */
+}
+.ablock ul.sortablelist li.partial33 {
+    background-color : #ffebcc; /* light orange */
+    border-color     : #ff9900; /* dark orange */
+}
+.ablock ul.sortablelist li.partial00 {
+    background-color : #ffdddd; /* light red */
+    border-color     : #ff9900; /* dark orange */
+}
+.ablock ul.sortablelist li.incorrect {
+    background-color : #ffdddd; /* light red */
+    border-color     : #ff7373; /* gentle red */
+}
+/*
+    Force containing DIV to cover the floating LI elements
+    Note: if you add "overflow:auto;  to "ol.correctorder"
+    then the numbers for the <LI> elements disappear !!
+*/
+.ablock div.rightanswer {
+    overflow: auto;
+}
+.ablock div.rightanswer ol.correctorder li.horizontal {
+    float            : left;
+    margin-left      : 24px;
+    margin-right     : 24px;
+}
+.ablock div.rightanswer ol.correctorder li.horizontal:first-child {
+    margin-left      : 0;
+}
+.ablock div.rightanswer ol.correctorder li.vertical {
+}
+
+/* Drag and Drop Into Text */
+
+.edg-question-content .draghome {
+    margin-bottom: 1em;
+}
+
+.edg-question-content .answertext {
+    margin-bottom: 0.5em;
+}
+
+.edg-question-content .drop {
+    display: inline-block;
+    text-align: center;
+    border: 1px solid #000;
+    margin-bottom: 2px;
+}
+
+.edg-question-content .drags {
+    height: 0;
+}
+
+.edg-question-content .draghome,
+.edg-question-content .drag {
+    display: inline-block;
+    text-align: center;
+    background: transparent;
+    border: 1px solid #000;
+}
+
+.edg-question-content .draghome {
+    visibility: hidden;
+}
+
+.edg-question-content .drag {
+    position: absolute;
+    z-index: 2;
+    cursor: move;
+}
+
+.edg-question-content .readonly .drag {
+    cursor: default;
+}
+
+.edg-question-content .drag.beingdragged {
+    z-index: 3;
+    box-shadow: 3px 3px 4px #000;
+}
+
+.edg-question-content .drop:focus,
+.edg-question-content .drop.valid-drag-over-drop {
+    border-color: #0a0;
+    box-shadow: 0 0 5px 5px rgba(255, 255, 150, 1);
+}
+
+.edg-question-content span.incorrect {
+    background-color: #faa;
+}
+
+.edg-question-content span.correct {
+    background-color: #afa;
+}
+
+.edg-question-content .group1 {
+    background-color: #fff;
+    width: 22px;
+    height: 28px;
+    line-height: 26px;
+    top: 449.594px;
+}
+
+.edg-question-content .group2 {
+    background-color: #dcdcdc;
+    width: 22px;
+    height: 28px;
+    line-height: 26px;
+    top: 449.594px;
+}
+
+.edg-question-content .group3 {
+    background-color: #b0c4de;
+    width: 22px;
+    height: 28px;
+    line-height: 26px;
+    top: 449.594px;
+}
+
+.edg-question-content .group4 {
+    background-color: #d8bfd8;
+    width: 22px;
+    height: 28px;
+    line-height: 26px;
+    top: 449.594px;
+}
+
+.edg-question-content .group5 {
+    background-color: #87cefa;
+    width: 22px;
+    height: 28px;
+    line-height: 26px;
+    top: 449.594px;
+}
+
+.edg-question-content .group6 {
+    background-color: #daa520;
+    width: 22px;
+    height: 28px;
+    line-height: 26px;
+    top: 449.594px;
+}
+
+.edg-question-content .group7 {
+    background-color: #ffd700;
+    width: 22px;
+    height: 28px;
+    line-height: 26px;
+    top: 449.594px;
+}
+
+.edg-question-content .group8 {
+    background-color: #f0e68c;
+    width: 22px;
+    height: 28px;
+    line-height: 26px;
+    top: 449.594px;
+}
+
+.edg-question-content sub,
+.edg-question-content sup {
+    font-size: 80%;
+    position: relative;
+    vertical-align: baseline;
+}
+
+.edg-question-content sup {
+    top: -0.4em;
+}
+
+.edg-question-content sub {
+    bottom: -0.2em;
+}

@@ -1,0 +1,30 @@
+{
+  "name": "format_ludilearn",
+  "version": "1.0.0",
+  "description": "Adaptive gamification course format to improve learner motivation and performance.",
+  "main": "Gruntfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DigiDago/moodle-format_ludilearn.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DigiDago/moodle-format_ludilearn/issues"
+  },
+  "homepage": "https://github.com/DigiDago/moodle-format_ludilearn#readme",
+  "devDependencies": {
+    "grunt": "^1.6.1",
+    "grunt-contrib-uglify": "^5.2.2",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-prettier": "^2.2.0",
+    "grunt-sass": "^3.1.0",
+    "grunt-terser": "^2.0.0",
+    "sass": "^1.85.1",
+    "sass-embedded": "^1.83.4"
+  }
+}

@@ -1,0 +1,148 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template format_ludilearn/filename
+
+    Example context (json):
+    {}
+}}
+
+<div class="section-avatar">
+    <div class="row">
+        <div class="col-6 rightdottedscore">
+            <h4 class="text-center">{{ name }}</h4>
+            {{#parameters.gamified}}
+            <div class="avatar-image"
+                 style="background-image: url({{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/backgrounds/background-1.svg)">
+                <img class="avatar-character" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/avatar.svg" style="z-index:0;" alt="Image avatar">
+                {{#parameters.item-equiped-1 }}
+                <img class="avatar-slot slot-1 item-equiped" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/items/images/image-01-{{ parameters.item-equiped-1 }}.svg" alt="Image item equiped 1">
+                {{/parameters.item-equiped-1 }}
+                {{^parameters.item-equiped-1 }}
+                <img class="avatar-slot slot-1" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/item_img_default.svg"  alt="Image equiment 1">
+                {{/parameters.item-equiped-1 }}
+                {{#parameters.item-equiped-2 }}
+                <img class="avatar-slot slot-2 item-equiped" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/items/images/image-02-{{ parameters.item-equiped-2 }}.svg" alt="Image item equiped 2">
+                {{/parameters.item-equiped-2 }}
+                {{^parameters.item-equiped-2 }}
+                <img class="avatar-slot slot-2" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/item_img_default.svg"  alt="Image equiment 2">
+                {{/parameters.item-equiped-2 }}
+                {{#parameters.item-equiped-3 }}
+                <img class="avatar-slot slot-3 item-equiped" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/items/images/image-03-{{ parameters.item-equiped-3 }}.svg" alt="Image item equiped 3">
+                {{/parameters.item-equiped-3 }}
+                {{^parameters.item-equiped-3 }}
+                <img class="avatar-slot slot-3" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/item_img_default.svg"  alt="Image equiment 3">
+                {{/parameters.item-equiped-3 }}
+                {{#parameters.item-equiped-4 }}
+                <img class="avatar-slot slot-4 item-equiped" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/items/images/image-04-{{ parameters.item-equiped-4 }}.svg" alt="Image item equiped 4">
+                {{/parameters.item-equiped-4 }}
+                {{^parameters.item-equiped-4 }}
+                <img class="avatar-slot slot-4" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/item_img_default.svg"  alt="Image equiment 4">
+                {{/parameters.item-equiped-4 }}
+                {{#parameters.item-equiped-5 }}
+                <img class="avatar-slot slot-5 item-equiped" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/items/images/image-05-{{ parameters.item-equiped-5 }}.svg" alt="Image item equiped 5">
+                {{/parameters.item-equiped-5 }}
+                {{^parameters.item-equiped-5 }}
+                <img class="avatar-slot slot-5" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/item_img_default.svg"  alt="Image equiment 5">
+                {{/parameters.item-equiped-5 }}
+                {{#parameters.item-equiped-6 }}
+                <img class="avatar-slot slot-6 item-equiped" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/items/images/image-06-{{ parameters.item-equiped-6 }}.svg" alt="Image item equiped 6">
+                {{/parameters.item-equiped-6 }}
+                {{^parameters.item-equiped-6 }}
+                <img class="avatar-slot slot-6" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/item_img_default.svg"  alt="Image equiment 6">
+                {{/parameters.item-equiped-6 }}
+            </div>
+            {{/parameters.gamified}}
+            {{^parameters.gamified}}
+                <img class="ludilearn-img img-responsive d-block mx-auto" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/none.svg" alt="Image no gamified">
+            {{/parameters.gamified}}
+            <div class="section-summary">
+                {{{ summary }}}
+            </div>
+        </div>
+        <div class="col-6">
+        {{#parameters.gamified}}
+            <h4>{{#str}} inventory, format_ludilearn {{/str}}</h4>
+            <div class="row bottomdotted">
+                <div class="col-9">
+                    <div class="pb-3">
+                        <img class="avatar-bag avatar-bag-close" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/bag_close.svg" alt="Image of the inventory bag">
+                        <img class="avatar-bag avatar-bag-open" src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/bag_open.svg" alt="Image of the inventory bag">
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="count-items">
+                        <span class="numerator {{#parameters.itemsownedcounttwodigits}} two-digits {{/parameters.itemsownedcounttwodigits}}">
+                            {{ parameters.totalitemsowned }}
+                        </span>
+                        <span class="fraction">/</span>
+                        <span class="denumerator">
+                            {{ parameters.totalitems }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="row bottomdotted">
+                <div class="col-12">
+                    <div class="pb-3 pt-3">
+                        <h4>{{#str}} itemunlocked, format_ludilearn {{/str}}</h4>
+                        <div class="progression-text">
+                           {{ parameters.itemsownedcount }} / {{ parameters.itemsownablecount }} {{#str}} items, format_ludilearn {{/str}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{/parameters.gamified}}
+            <div class="row pt-3">
+                {{#cms}}
+                    {{#label}}
+                        <div class="col-12 mt-2">
+                            <div class="cm-score">
+                                {{{ labeltext }}}
+                            </div>
+                        </div>
+                    {{/label}}
+                    {{^label}}
+                        <div class="col-6 col-sm-4 col-md-4 col-lg-4">
+                            <div class="cm-avatar">
+                                <div class="{{#parameters.restricted }}restricted{{/parameters.restricted}} {{^url}} nourl {{/url}}">
+                                    <img class="{{#parameters.restricted }}restricted{{/parameters.restricted }} img-responsive mb-1 d-block mx-auto"
+                                         {{#parameters.gamified }}
+                                             {{#parameters.thresholdexceeded}}
+                                                 src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/mod_completed.svg"
+                                             {{/parameters.thresholdexceeded}}
+                                            {{^parameters.thresholdexceeded}}
+                                                src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/avatar/mod_default.svg"
+                                            {{/parameters.thresholdexceeded}}
+                                         {{/parameters.gamified }}
+                                         {{^parameters.gamified }}src="{{config.wwwroot}}/course/format/ludilearn/pix/{{ world }}/none.svg" {{/parameters.gamified }}
+                                         alt="Image badge">
+                                    <p class="text-center">
+                                        <span class="cmname"><a href="{{ url }}" class="stretched-link">{{{ name }}}</a></span>
+                                    </p>
+                                    {{#parameters.restricted }}
+                                        <div class="cmrestrictedinfo text-center small"><i class="fa fa-lock"></i> {{{ parameters.restrictedinfo }}}</div>
+                                    {{/parameters.restricted }}
+                                </div>
+                            </div>
+                        </div>
+                    {{/label}}
+                {{/cms}}
+            </div>
+        </div>
+    </div>
+</div>

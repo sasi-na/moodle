@@ -1,0 +1,393 @@
+/*Add block modal - block cards design*/
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+.rotate {
+  animation: rotation 2s infinite linear;
+}
+
+
+// ****** these css moved to remui now **********
+// .action-icon-wrapper {
+//   .info-wrapper {
+//     position: relative;
+
+//     .info-about-box-wrapper {
+//       display: none;
+//       position: absolute;
+//       min-width: 164px;
+
+//       right: 0px;
+//       bottom: 100%;
+//     }
+
+//     .info-about-box {
+//       position: relative;
+
+//       margin-bottom: 12px;
+
+//       border-radius: 4px;
+//       background-color: #1C376F;
+//       padding: 16px;
+
+//       p {
+//         color: #F8F9FA;
+
+//         font-size: 12px;
+//         font-style: normal;
+//         font-weight: 400;
+//         line-height: normal;
+//       }
+
+//       &::after {
+//         content: "";
+//         position: absolute;
+//         top: 100%;
+//         right: 5px;
+//         background-color: #1C376F;
+//         width: 16px;
+//         height: 10px;
+//         clip-path: polygon(47% 100%, 0 0, 100% 0, 57% 100%);
+//       }
+//     }
+
+//     &:hover {
+//       .info-about-box-wrapper {
+//         display: block;
+//       }
+//     }
+//   }
+
+// }
+
+
+// .block-cards {
+//   width: 100%;
+//   .card-item {
+//       min-height: 120px;
+//       // margin: 15px 0;
+//       background-color: #fff;
+//       box-shadow: 0 1px 4px #0000000f;
+//       transition: .15s ease all;
+//       .list-group-item-action {
+//           text-decoration: none;
+//       }
+//       .card {
+//           .card-header {
+//               font-family: Roboto, sans-serif;
+//               font-weight: 700;
+//               color: #0a0a0a;
+//               border-bottom: 1px solid rgba(0,0,0,.05);
+//               padding: 16px 15px;
+//               letter-spacing: 0.08em;
+
+//           }
+//           .card-body {
+//               min-height: 160px;
+//               max-height: 160px;
+//               img {
+//                   max-height: 150px;
+//               }
+//           }
+//       }
+//       .ribbon {
+//         position: absolute;
+//         width: 75px;
+//         padding: 4px;
+//         bottom: 0;
+//         font-size: 15px;
+//         text-align: center;
+//         background: #4db961;
+//         font-weight: 600;
+//         color: white;
+//       }
+//       &:hover{
+//           transform: scale(1.07);
+//           box-shadow: 0 9px 10px #0000000f, 0 1px 0 #0000000f;
+//           .ribbon {
+//             left: 0;
+//           }
+//       }
+//   }
+//   .info-deprecated {
+//       padding: 5px 8px;
+//       border: 1px solid #ccc;
+//       border-radius: 50%;
+//       color: #ccc;
+//       cursor: pointer;
+//   }
+// }
+/*Add block modal - block cards design*/
+
+
+
+
+
+
+
+
+// SCSS for theme independent
+// SCSS for full-with regions and some blocks releted css
+.block-indicator{
+  height: 60px;
+  background-image: url([[pix:local_edwiserpagebuilder|blockindicatorbg]]);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 0px 12px 0px rgba(0, 0, 0, 0.25) inset;
+  .block-indicator-text-wrapper{
+     width: fit-content;
+     color: #343A40;
+     font-size: 12px;
+     font-style: italic;
+     font-weight: 600;
+     line-height: normal;
+     letter-spacing: 1.68px;
+     text-transform: uppercase;
+  }
+}
+
+.block_edwiseradvancedblock {
+  & > .card-body {
+      & > .content {
+          margin-top: 0 !important;
+      }
+
+      & > .block-controls {
+          margin-left: 12px;
+          margin-right: 12px;
+          margin-top: 5px;
+      }
+  }
+}
+
+
+.edw-icon-Cancel.small::before {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  content: "\f00d"; /* Unicode for xmark */
+  font-style: normal;
+  display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#page-epb-page-draft,
+#page-epb-page-publish {
+  @media screen and ( min-width: 1024px ) {
+      &.path-epb-page:not(.limitedwidth) .main-inner {
+          padding-left: 3rem;
+          padding-right: 3rem;
+      }
+  }
+}
+
+#region-top-blocks.has-blocks {
+  margin-bottom: 56px;
+}
+#region-bottom-blocks,
+#region-top-blocks{
+  div[role="region-main"]{
+      padding: unset !important;
+      background-color: unset !important;
+      box-shadow: unset !important;
+  }
+}
+
+
+#region-fullwidthtop-blocks,
+#region-fullwidthbottom-blocks{
+  div[role="region-main"]{
+      padding: unset !important;
+      background-color: unset !important;
+  }
+  .block {
+      margin: unset !important;
+      .block-body-wrapper{
+          background: #fff;
+          gap: unset;
+          .block-header-wrapper{
+              // padding: map-get($spacerspx, '1d5')  map-get($spacerspx, '6');
+              position: relative;
+              padding: unset;
+              .controls-wrapper{
+                  padding: 6px 24px;
+                  padding-right: 50px ;
+
+                  @media screen and (max-width: 767px) {
+                      padding-right: 0px;
+                      padding: 6px;
+                  }
+              }
+          }
+          .edw-block-body{
+              box-shadow: unset;
+              padding: unset;
+          }
+      }
+
+      border: 0;
+      border-radius: 0;
+
+      & > .card-body {
+          padding: 0 !important;
+          margin-top: 0 !important;
+      }
+
+      & > .card-body > .content {
+          margin-top: 0 !important;
+      }
+  }
+}
+.region-placeholder{
+  display: none;
+}
+.editing {
+  #region-fullwidthtop-blocks,
+  #region-fullwidthbottom-blocks {
+      .block {
+          &:hover{
+              box-shadow: 0 0 15px -5px #000;
+              position: relative;
+          }
+      }
+  }
+  .region-placeholder{
+      display: block;
+  }
+  #region-fullwidthtop-blocks {
+      .block{
+          &:first-of-type {
+              .block-header-wrapper {
+                  .block-controls {
+                      .move-top {
+                          display: none;
+                      }
+                  }
+              }
+          }
+      }
+  }
+
+  #region-fullwidthbottom-blocks {
+      .block{
+          &:last-of-type {
+              .block-header-wrapper {
+                  .block-controls {
+                      .move-bottom {
+                          display: none;
+                      }
+                  }
+              }
+          }
+      }
+  }
+  #block-region-side-pre{
+      .block{
+          &:first-of-type {
+              .block-header-wrapper {
+                  .block-controls {
+                      .move-top {
+                          display: none;
+                      }
+                  }
+              }
+          }
+          &:last-of-type {
+              .block-header-wrapper {
+                 .block-controls {
+                      .move-bottom {
+                          display: none;
+                      }
+                  }
+              }
+          }
+      }
+  }
+}
+
+#region-fullwidthtop-blocks-indicator,
+#region-fullwidthbottom-blocks-indicator {
+  max-width: none;
+}
+
+.slick-list {
+  overflow: hidden;
+}
+
+
+.edw_regionselection_toast{
+  position: fixed !important;
+  bottom: 90px !important;
+
+  .btn-close {
+     font-size: 8px;
+     margin-top: 4px;
+  }
+}
+
+
+
+
+
+// FOR LICENSE NOT ACTIVE: When license not active on that case we have restricted live-customizer button and showing not active message
+.epb-block-customize-btn-wrapper {
+  position: relative;
+  display: inline-block;
+
+  .epb-licensenotactive-msg-wrapper {
+    display: none;
+    position: absolute;
+    z-index: 1;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffeb3b;
+    color: #dc3545;
+    text-align: center;
+    padding: 5px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 12px;
+    transition: opacity 0.3s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  }
+
+  .epb-licensenotactive-msg-arrow {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #ffeb3b transparent;
+  }
+
+  .epb-live-customizer-btn-inner-wrapper {
+    cursor: not-allowed;
+
+    .btn-primary {
+      position: relative;
+      opacity: 0.65;
+
+      background-color: #6a737b;
+      color: #fff;
+      border: unset;
+      font-style: normal;
+    }
+  }
+}
+
+.live-customizer-btn:has(.epb-live-customizer-btn-inner-wrapper:hover) {
+  .epb-block-customize-btn-wrapper {
+    .epb-licensenotactive-msg-wrapper {
+      display: block
+    }
+  }
+}

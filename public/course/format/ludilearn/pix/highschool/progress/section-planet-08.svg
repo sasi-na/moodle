@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 300">
+  <defs>
+    <clipPath id="j">
+      <path d="M124.144,88.865v-40.846H46.215v43.433c-1.357,1.189-2.185,2.739-2.185,4.439,0,3.741,3.977,6.774,8.883,6.774,2.136,0,4.095-.576,5.627-1.534,1.947,1.634,4.627,2.644,7.586,2.644,2.732,0,5.22-.867,7.119-2.284,2.583,1.138,6.048,1.84,9.871,1.84,4.588,0,8.668-1.008,11.312-2.573.212.137.446.218.694.218.534,0,1.004-.36,1.31-.909,3.049,2.389,7.782,3.93,13.112,3.93,9.199,0,16.656-4.574,16.656-10.216,0-1.783-.748-3.458-2.057-4.917Z" fill="none"/>
+    </clipPath>
+    <filter id="k" data-name="drop-shadow-2" x="59.863" y="56.969" width="53.224" height="50.982" filterUnits="userSpaceOnUse">
+      <feOffset dx="-2" dy="0"/>
+      <feGaussianBlur result="l" stdDeviation="0"/>
+      <feFlood flood-color="#42496f" flood-opacity="1"/>
+      <feComposite in2="l" operator="in"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <linearGradient id="m" data-name="Dégradé sans nom 14" x1="61.193" y1="74.474" x2="103.879" y2="117.159" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#b1ddea"/>
+      <stop offset="1" stop-color="#6498d1"/>
+    </linearGradient>
+    <linearGradient id="n" data-name="Dégradé sans nom 22" x1="87.475" y1="62.281" x2="87.475" y2="107.951" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f4af13" stop-opacity="0"/>
+      <stop offset="1" stop-color="#e86170"/>
+    </linearGradient>
+  </defs>
+  <g isolation="isolate">
+    <g id="i" data-name="Calque 18">
+      <g clip-path="url(#j)">
+        <g filter="url(#k)">
+          <g>
+            <path d="M72.132,64.086l5.088-6.029c1.499-1.777,3.02-.353,4.844.836,5.443,3.55,16.368,13.43,23.514,21.855.676.797.819,1.915.39,2.868l-4.789,10.644" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+            <g>
+              <line x1="73.317" y1="65.306" x2="79.474" y2="57.381" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+              <line x1="75.394" y1="66.93" x2="81.633" y2="59.037" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+              <line x1="77.472" y1="68.554" x2="83.791" y2="60.692" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+              <line x1="79.549" y1="70.178" x2="85.949" y2="62.347" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+              <line x1="81.626" y1="71.802" x2="88.107" y2="64.002" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+              <line x1="83.703" y1="73.426" x2="90.265" y2="65.658" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+              <line x1="86.944" y1="76.117" x2="93.035" y2="68.337" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+              <line x1="90.186" y1="78.807" x2="95.804" y2="71.017" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+              <line x1="93.427" y1="81.498" x2="98.574" y2="73.697" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+              <line x1="96.668" y1="84.189" x2="101.343" y2="76.376" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+              <line x1="99.909" y1="86.879" x2="104.112" y2="79.056" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+            </g>
+          </g>
+          <path d="M102.844,92.852c-.424-.573-.495-1.329-.191-1.974l.558-1.181c.3-.636.225-1.383-.209-1.937-7.402-9.461-17.294-19.823-28.352-25.352-1.379-.754-3.628,1.914-5.86,6.448-.395.802-.618,1.683-.633,2.578l-.01.615c-.014.863.429,1.669,1.165,2.119l1.609.983-.234,2.694c-.049.563.131,1.122.499,1.551l2.222,2.592-4.038.336c-.63.052-.92.808-.488,1.269l1.263,1.347-.466,3.729-4.106-.498c-.589-.071-1.142.296-1.305.866l-.339,1.185-1.88,3.408c-.357,4.314-.225,8.543.637,12.287l50.402,2.034c-4.435-7.129-8.637-12.927-10.244-15.098ZM95.862,87.749c-.65,0-1.178-.527-1.178-1.178s.527-1.178,1.178-1.178,1.178.527,1.178,1.178-.527,1.178-1.178,1.178Z" fill="url(#m)"/>
+          <path d="M102.844,92.852c-.424-.573-.495-1.329-.191-1.974l.558-1.181c.3-.636.225-1.383-.209-1.937-7.402-9.461-17.294-19.823-28.352-25.352-1.379-.754-3.628,1.914-5.86,6.448-.395.802-.618,1.683-.633,2.578l-.01.615c-.014.863.429,1.669,1.165,2.119l1.609.983-.234,2.694c-.049.563.131,1.122.499,1.551l2.222,2.592-4.038.336c-.63.052-.92.808-.488,1.269l1.263,1.347-.466,3.729-4.106-.498c-.589-.071-1.142.296-1.305.866l-.339,1.185-1.88,3.408c-.357,4.314-.225,8.543.637,12.287l50.402,2.034c-4.435-7.129-8.637-12.927-10.244-15.098ZM95.862,87.749c-.65,0-1.178-.527-1.178-1.178s.527-1.178,1.178-1.178,1.178.527,1.178,1.178-.527,1.178-1.178,1.178Z" fill="url(#n)" mix-blend-mode="multiply"/>
+          <path d="M95.862,84.457c-1.168,0-2.114.947-2.114,2.114s.946,2.114,2.114,2.114,2.114-.947,2.114-2.114-.946-2.114-2.114-2.114ZM95.862,87.749c-.65,0-1.178-.527-1.178-1.178s.527-1.178,1.178-1.178,1.178.527,1.178,1.178-.527,1.178-1.178,1.178Z" fill="#b1ddea"/>
+          <g>
+            <circle cx="96.356" cy="88.404" r="1.203" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+            <line x1="96.356" y1="89.607" x2="96.356" y2="96.26" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+            <line x1="95.365" y1="91.306" x2="97.347" y2="91.306" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+            <path d="M99.594,93.022l.761-.761c0,2.208-3.096,3.998-3.998,3.998s-3.998-1.79-3.998-3.998l.755.755" fill="none" stroke="#42496f" stroke-linecap="round" stroke-linejoin="round" stroke-width=".5"/>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

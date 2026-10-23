@@ -1,0 +1,56 @@
+.secondary-navigation {
+    max-width: 100%;
+    margin: 0 auto;
+
+    position: sticky;
+    top: 16px;
+
+    height: 40px;
+
+    @include media-breakpoint-up(lg) {
+        z-index: 1028;
+    }
+
+    @include media-breakpoint-down(md) {
+        z-index: 3;
+    }
+
+    #page-admin-search & {
+        display: none;
+    }
+    #page-site-index & {
+        margin: 20px auto 0;
+        top: 115px;
+        position: sticky;
+        z-index: 1029;
+    }
+    .navigation {
+        .nav-tabs {
+            .nav-link {
+                font-size: $font-size-sm;
+                border-radius: $border-radius;
+
+                &.active {
+                    background-color: $primary-color-100;
+                    color: $primary-color-600;
+
+                    .theme-dark & {
+                        background-color: $dm-gray-300;
+                        color: $dm-gray-800;
+                    }
+                }
+
+                &:hover {
+                    background-color: $gray-300;
+                    color: $primary-color-600;
+
+                    .theme-dark & {
+                        background-color: $dm-gray-200;
+                        color: $dm-gray-800;
+                    }
+
+                }
+            }
+        }
+    }
+}
