@@ -64,8 +64,6 @@ UPGRADING-CURRENT.md
 # Project-specific ignores (local deployment / GitHub upload)
 # ---------------------------------------------------------------------------
 
-# Database backups and dumps (66GB MoodleBackup folder)
-/MoodleBackup/
 *.sql.gz
 *.sql.zip
 *.dump
@@ -118,3 +116,11 @@ desktop.ini
 # Dependencies and build caches
 /node_modules/
 /vendor/
+
+# --- Added: keep backups, helper copies, dumps and local tools out of GitHub ---
+*.bak-*
+*.disabled
+*.disabled[0-9]*
+/local/adminer/
+*.sql
+*.sql.gz

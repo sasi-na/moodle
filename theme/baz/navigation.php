@@ -59,6 +59,8 @@ if ($choice !== '' && in_array($choice, $layouts, true) && confirm_sesskey()) {
         set_config('navlayout', $choice, 'theme_baz');
         add_to_config_log('navlayout', $old, $choice, 'theme_baz');
     }
+    // The admin's own style would hide the site default on this account: clear it so the choice shows.
+    unset_user_preference(\theme_baz\local\newtheme::USERPREF);
     // Drop any per-session preview so the chosen option shows straight away.
     unset($SESSION->{\theme_baz\local\newtheme::PREVIEW}, $SESSION->{\theme_baz\local\newtheme::VPREVIEW});
     redirect(new moodle_url('/my/'), get_string('nvq_applied', 'theme_baz', get_string('ntf_' . $choice, 'theme_baz')), 1,
@@ -71,7 +73,7 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title(get_string('nvq_title', 'theme_baz'));
 $PAGE->set_heading(get_string('nvq_title', 'theme_baz'));
 
-$current = \theme_baz\local\newtheme::site_layout();
+$current = \theme_baz\local\newtheme::layout();
 $looks = [
     'left' => ['#002D47', '#F7B742', '#F4F7FB'],
     'top' => ['#0f1f3d', '#f4b23e', '#eef2f7'],

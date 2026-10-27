@@ -1,0 +1,5 @@
+# Security (added): no folder listings, and the Adminer database tool only from this PC
+Options -Indexes
+<Files "adminer.php">
+    Require local
+</Files>

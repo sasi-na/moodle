@@ -211,7 +211,7 @@ class admin_wrap implements renderable, templatable {
      * @return array
      */
     public function export_for_template(renderer_base $output): array {
-        global $CFG, $PAGE, $SITE;
+        global $CFG, $PAGE, $SITE, $USER;
 
         $title = $this->page_title();
         $crumbs = $this->crumbs($title);

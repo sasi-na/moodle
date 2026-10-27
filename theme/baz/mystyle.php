@@ -25,6 +25,9 @@
 require(__DIR__ . '/../../config.php');
 
 require_login(null, false);
+// Personal styles were removed: admins choose the style for everyone in Site administration.
+redirect(has_capability('moodle/site:config', context_system::instance())
+    ? new moodle_url('/theme/baz/navigation.php') : new moodle_url('/my/'));
 if (isguestuser()) {
     throw new require_login_exception('Guests cannot choose a style.');
 }

@@ -41,7 +41,7 @@ $ntfchoices = [
 $page->add(new admin_setting_configselect('theme_baz/navlayout',
     get_string('navlayout', 'theme_baz'), get_string('navlayout_desc', 'theme_baz'), 'left', $ntfchoices));
 // The features follow Navigation automatically: listed with what is in use now (no choices).
-$ntnav = get_config('theme_baz', 'navlayout');
+$ntnav = class_exists('\\theme_baz\\local\\newtheme') ? \theme_baz\local\newtheme::layout() : get_config('theme_baz', 'navlayout');
 $ntnav = isset($ntfchoices[$ntnav]) ? $ntnav : 'left';
 foreach (array_keys(theme_baz_nt_features()) as $ntf) {
     $ntalways = ($ntf === 'branding');
@@ -271,6 +271,19 @@ $description = get_string('colordesc_desc', 'theme_baz');
 $setting = new admin_setting_configcolourpicker($name, $title, $description, '');
 $setting->set_updatedcallback('theme_reset_all_caches');
 $page->add($setting);
+
+// SMS provider for the mobile-number one-time code.
+$page->add(new admin_setting_heading('theme_baz/ct_smsheading',
+    get_string('ct_smsheading', 'theme_baz'), get_string('ct_smsheading_desc', 'theme_baz')));
+$page->add(new admin_setting_configselect('theme_baz/sms_provider', get_string('ct_sms_provider', 'theme_baz'), '', 'none', [
+    'none' => 'None (SMS off)', 'fast2sms' => 'Fast2SMS', 'msg91' => 'MSG91', 'twilio' => 'Twilio', 'textbee' => 'TextBee (free, your own Android phone)']));
+$page->add(new admin_setting_configpasswordunmask('theme_baz/sms_key', get_string('ct_sms_key', 'theme_baz'), '', ''));
+$page->add(new admin_setting_configpasswordunmask('theme_baz/sms_secret', get_string('ct_sms_secret', 'theme_baz'), '', ''));
+$page->add(new admin_setting_configtext('theme_baz/sms_sender', get_string('ct_sms_sender', 'theme_baz'), '', '', PARAM_RAW_TRIMMED));
+$page->add(new admin_setting_configcheckbox('theme_baz/sms_demo', get_string('ct_sms_demo', 'theme_baz'),
+    get_string('ct_sms_demo_desc', 'theme_baz'), 0));
+$page->add(new admin_setting_configtext('theme_baz/ct_max_changes', get_string('ct_max_changes', 'theme_baz'),
+    get_string('ct_max_changes_desc', 'theme_baz'), 5, PARAM_INT));
 
 // Must add the page after definiting all the settings!
 $settings->add($page);

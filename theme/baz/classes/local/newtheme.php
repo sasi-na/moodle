@@ -100,6 +100,8 @@ class newtheme {
      * @return string
      */
     public static function user_layout(): string {
+        // Personal styles are switched off: the admin's site-wide choice applies to everyone.
+        return '';
         try {
             if (!isloggedin() || isguestuser()) {
                 return '';

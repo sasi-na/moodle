@@ -1099,6 +1099,22 @@
      * buttons instead of dropdown lists (no pop-up list to draw, so it is instant and
      * never shows as an empty black box while the busy settings page is loading).
      */
+    var ntNavSet = '';
+    /** The option THIS page is actually showing (a person's own style can differ from the site default). */
+    function effectiveNav() {
+        if (ntNavSet) {
+            return ntNavSet;
+        }
+        var cl = document.body.classList;
+        if (!cl.contains('nt-shell')) {
+            return 'left';
+        }
+        var v = ['rail', 'dock', 'campus'].filter(function(k) {
+            return cl.contains('nt-v-' + k);
+        });
+        return v.length ? v[0] : 'top';
+    }
+
     /**
      * Navigation (BAZ settings, Top Bar tab): one click applies the option straight away
      * (only theme_baz/navlayout is saved, no theme rebuild), no "Save changes" needed.
@@ -1109,7 +1125,7 @@
      * @param {Function} paint
      */
     function applyNav(sel, o, b, paint) {
-        if (sel.value === o.value && !b.classList.contains('is-busy')) {
+        if (sel.value === o.value && effectiveNav() === o.value && !b.classList.contains('is-busy')) {
             return;
         }
         var cfg = window.M && M.cfg;
@@ -1118,6 +1134,7 @@
         }
         var old = sel.value;
         sel.value = o.value;
+        ntNavSet = o.value;
         paint();
         b.classList.add('is-busy');
         var body = new URLSearchParams();
@@ -1161,6 +1178,7 @@
             })
             .catch(function() {
                 sel.value = old;
+                ntNavSet = '';
                 note.className = 'nt-seg-note is-err';
                 note.textContent = 'Could not apply. Please reload the page and try again.';
             })
@@ -1240,7 +1258,7 @@
             });
             var paint = function() {
                 seg.querySelectorAll('.nt-seg-btn').forEach(function(b) {
-                    var on = b.dataset.value === sel.value;
+                    var on = isnav ? b.dataset.value === effectiveNav() : b.dataset.value === sel.value;
                     b.classList.toggle('on', on);
                     b.setAttribute('aria-checked', on ? 'true' : 'false');
                 });
@@ -1679,6 +1697,201 @@
         window.addEventListener('resize', place);
     }
 
+    /**
+     * Edit profile (own): "Change" buttons next to Email and Mobile phone open a pop-up that sends a
+     * one-time code to the NEW address / number and saves it only after the code is entered.
+     */
+    function contactOtp() {
+        if (document.body.id !== 'page-user-edit' || !window.M || !M.cfg) {
+            return;
+        }
+        var cfgs = [
+            {id: 'id_email', field: 'email', label: 'email address', title: 'Change email address', ph: 'new.name@example.com', type: 'email'},
+            {id: 'id_phone2', field: 'phone', label: 'mobile number', title: 'Change mobile number', ph: '+91 98765 43210', type: 'tel'}
+        ];
+        var post = function(data) {
+            var b = new URLSearchParams();
+            Object.keys(data).forEach(function(k) {
+                b.set(k, data[k]);
+            });
+            b.set('sesskey', M.cfg.sesskey);
+            return fetch(M.cfg.wwwroot + '/theme/baz/contact_otp.php', {method: 'POST', body: b, credentials: 'same-origin'})
+                .then(function(r) {
+                    return r.json();
+                });
+        };
+        var fmt = function(sec) {
+            var m = Math.floor(sec / 60), s = sec % 60;
+            return m + ':' + (s < 10 ? '0' : '') + s;
+        };
+        var open = function(c, input) {
+            var wrap = document.createElement('div');
+            wrap.className = 'nt-otp-back';
+            wrap.innerHTML = '<div class="nt-otp" role="dialog" aria-modal="true"><h3></h3>' +
+                '<label class="nt-otp-l1"></label><input class="nt-otp-new" autocomplete="off">' +
+                '<button type="button" class="nt-otp-send"></button>' +
+                '<div class="nt-otp-step" hidden><p class="nt-otp-info"></p>' +
+                '<label>Enter the 6-digit code</label><input class="nt-otp-code" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="••••••">' +
+                '<div class="nt-otp-time"></div>' +
+                '<div class="nt-otp-row"><button type="button" class="nt-otp-resend" disabled>Resend code</button>' +
+                '<button type="button" class="nt-otp-verify">Verify and save</button></div></div>' +
+                '<p class="nt-otp-msg" role="status"></p>' +
+                '<button type="button" class="nt-otp-x" aria-label="Close">×</button></div>';
+            document.body.appendChild(wrap);
+            var q = function(x) {
+                return wrap.querySelector(x);
+            };
+            q('h3').textContent = c.title;
+            q('.nt-otp-l1').textContent = 'New ' + c.label;
+            var nv = q('.nt-otp-new');
+            nv.type = c.type;
+            nv.placeholder = c.ph;
+            q('.nt-otp-send').textContent = 'Send code';
+            var msg = function(t, bad) {
+                var m = q('.nt-otp-msg');
+                m.textContent = t || '';
+                m.className = 'nt-otp-msg' + (t ? (bad ? ' is-bad' : ' is-ok') : '');
+            };
+            var timer = null, left = 0, cool = 0, sentValue = '';
+            var tick = function() {
+                if (left > 0) {
+                    left--;
+                }
+                if (cool > 0) {
+                    cool--;
+                }
+                q('.nt-otp-time').textContent = left > 0 ? 'Code valid for ' + fmt(left) : 'The code has expired. Press Resend to get a new one.';
+                q('.nt-otp-time').classList.toggle('is-bad', left <= 0);
+                var rs = q('.nt-otp-resend');
+                rs.disabled = cool > 0;
+                rs.textContent = cool > 0 ? 'Resend in ' + cool + 's' : 'Resend code';
+            };
+            var close = function() {
+                window.clearInterval(timer);
+                wrap.remove();
+            };
+            var send = function(btn) {
+                var v = nv.value.trim();
+                if (!v) {
+                    msg('Enter the new ' + c.label + ' first.', true);
+                    return;
+                }
+                btn.disabled = true;
+                msg('Sending…');
+                post({action: 'send', field: c.field, value: v}).then(function(res) {
+                    if (!res.ok) {
+                        msg(res.error || 'Could not send the code.', true);
+                        btn.disabled = false;
+                        return;
+                    }
+                    sentValue = v;
+                    left = res.expires;
+                    cool = res.wait || 20;
+                    nv.readOnly = true;
+                    q('.nt-otp-send').hidden = true;
+                    q('.nt-otp-step').hidden = false;
+                    q('.nt-otp-info').textContent = 'We sent a 6-digit code ' + (c.field === 'email' ? 'to ' : 'by SMS to ') + v + '. It works for 5 minutes.';
+                    msg(res.demo ? 'DEMO MODE: no text message was sent. Your code is ' + res.demo + '.' :
+                        (res.resent ? 'The same code was sent again. A new code is made only after the 5 minutes end.' : ''));
+                    window.clearInterval(timer);
+                    timer = window.setInterval(tick, 1000);
+                    tick();
+                    q('.nt-otp-code').value = '';
+                    q('.nt-otp-code').focus();
+                    q('.nt-otp-resend').disabled = true;
+                }).catch(function() {
+                    msg('Something went wrong. Please try again.', true);
+                    btn.disabled = false;
+                });
+            };
+            q('.nt-otp-send').addEventListener('click', function() {
+                send(this);
+            });
+            q('.nt-otp-resend').addEventListener('click', function() {
+                nv.readOnly = false;
+                nv.value = sentValue;
+                send(this);
+            });
+            q('.nt-otp-verify').addEventListener('click', function() {
+                var code = q('.nt-otp-code').value.replace(/\D/g, '');
+                if (code.length !== 6) {
+                    msg('Enter the 6-digit code.', true);
+                    return;
+                }
+                var b = this;
+                b.disabled = true;
+                post({action: 'verify', field: c.field, value: sentValue, code: code}).then(function(res) {
+                    if (!res.ok) {
+                        msg(res.error || 'Could not verify.', true);
+                        b.disabled = false;
+                        return;
+                    }
+                    input.value = sentValue;
+                    msg(res.message, false);
+                    window.clearInterval(timer);
+                    window.setTimeout(function() {
+                        window.location.reload();
+                    }, 900);
+                }).catch(function() {
+                    msg('Something went wrong. Please try again.', true);
+                    b.disabled = false;
+                });
+            });
+            q('.nt-otp-x').addEventListener('click', close);
+            wrap.addEventListener('click', function(e) {
+                if (e.target === wrap) {
+                    close();
+                }
+            });
+            document.addEventListener('keydown', function esc(e) {
+                if (e.key === 'Escape' && document.body.contains(wrap)) {
+                    close();
+                }
+                if (!document.body.contains(wrap)) {
+                    document.removeEventListener('keydown', esc);
+                }
+            });
+            nv.focus();
+        };
+        // Mobile number lives in the collapsed "Optional" section: show it right under Email.
+        var em = document.getElementById('id_email'), mo = document.getElementById('id_phone2');
+        if (em && mo) {
+            var er = em.closest('.fitem'), mr = mo.closest('.fitem');
+            if (er && mr && er !== mr) {
+                er.insertAdjacentElement('afterend', mr);
+            }
+        }
+        cfgs.forEach(function(c) {
+            var input = document.getElementById(c.id);
+            if (!input || input.dataset.ntOtp) {
+                return;
+            }
+            input.dataset.ntOtp = '1';
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'nt-otp-change';
+            b.textContent = 'Change';
+            b.addEventListener('click', function() {
+                open(c, input);
+            });
+            input.insertAdjacentElement('afterend', b);
+            // Red note beside the button: how many changes are left this month.
+            var note = document.createElement('span');
+            note.className = 'nt-chg-left';
+            b.insertAdjacentElement('afterend', note);
+            post({action: 'left', field: c.field}).then(function(res) {
+                if (res && res.ok && res.left !== null && res.left !== undefined) {
+                    note.textContent = res.left > 0
+                        ? res.left + (res.left === 1 ? ' change' : ' changes') + ' left this month'
+                        : 'No changes left this month';
+                    if (res.left === 0) {
+                        b.disabled = true;
+                    }
+                }
+            }).catch(function() {});
+        });
+    }
+
     function init() {
         // Option 2 (top bar) only: turn the sidebar shell into the two-level bar.
         var cl = document.body.classList;
@@ -1700,6 +1913,7 @@
             helpEdge();
         }
         assistive();
+        contactOtp();
         if (window.EDNXT_BRAND) {
             brand();
         }

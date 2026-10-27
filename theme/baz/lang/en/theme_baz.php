@@ -2365,3 +2365,54 @@ $string['nv_h_gcalc'] = 'Add each assessment with its weight and your score to s
 $string['nv_tips_gcalc'] = 'Weights are the % each assessment counts towards the final mark.|Scores are your % on that assessment.|Set a target mark to see the score you need on the remaining weight.';
 $string['nv_h_cite'] = 'Builds a reference for your assignment in APA 7, MLA 9 or Harvard style.';
 $string['nv_tips_cite'] = 'Write the author as Surname, Initial.|Pick the style your department asks for.|Check the result against your department guide before you submit.';
+$string['nvq_menu'] = 'Dashboard style (all users)';
+
+// Change my email / mobile number with a one-time code (theme/baz/contact_otp.php).
+$string['ct_change'] = 'Change';
+$string['ct_title_email'] = 'Change email address';
+$string['ct_title_phone'] = 'Change mobile number';
+$string['ct_new_email'] = 'New email address';
+$string['ct_new_phone'] = 'New mobile number';
+$string['ct_send'] = 'Send code';
+$string['ct_resend'] = 'Resend code';
+$string['ct_verify'] = 'Verify and save';
+$string['ct_cancel'] = 'Cancel';
+$string['ct_code'] = 'Enter the 6-digit code';
+$string['ct_sentto_email'] = 'We sent a 6-digit code to {$a}. It works for 5 minutes.';
+$string['ct_sentto_phone'] = 'We sent a 6-digit code by SMS to {$a}. It works for 5 minutes.';
+$string['ct_resent'] = 'The same code was sent again. A new code is made only after the 5 minutes end.';
+$string['ct_timeleft'] = 'Code valid for {$a}';
+$string['ct_expired_note'] = 'The code has expired. Press Resend to get a new one.';
+$string['ct_same'] = 'This is already your current value.';
+$string['ct_taken'] = 'This email address is already used by another account.';
+$string['ct_bademail'] = 'Enter a valid email address.';
+$string['ct_badphone'] = 'Enter a valid mobile number (8 to 15 digits, optional + at the start).';
+$string['ct_locked'] = 'Too many wrong codes. Try again in {$a} minutes.';
+$string['ct_wait'] = 'Please wait {$a} seconds before asking again.';
+$string['ct_nocode'] = 'Ask for a code first.';
+$string['ct_expired'] = 'The code has expired. Press Resend to get a new one.';
+$string['ct_wrong'] = 'Wrong code. {$a} tries left.';
+$string['ct_mailfail'] = 'The email could not be sent. Please try again later.';
+$string['ct_smsfail'] = 'SMS is not available right now. Please try again later or contact support.';
+$string['ct_error'] = 'Something went wrong. Please try again.';
+$string['ct_done_email'] = 'Your email address was updated.';
+$string['ct_done_phone'] = 'Your mobile number was updated.';
+$string['ct_mailsubject'] = '{$a->code} is your {$a->site} verification code';
+$string['ct_mailtext'] = 'Hello {$a->name},
+
+Your verification code is {$a->code}.
+It works for {$a->min} minutes. If you did not ask to change your email address, ignore this message.
+
+{$a->site}';
+$string['ct_smstext'] = '{$a->code} is your verification code. Valid for {$a->min} minutes.';
+$string['ct_smsheading'] = 'SMS for mobile-number verification';
+$string['ct_smsheading_desc'] = 'Used to send the one-time code when a student changes their mobile number. Email codes use Moodle outgoing mail.';
+$string['ct_sms_provider'] = 'SMS provider';
+$string['ct_sms_key'] = 'SMS key / account SID / auth key';
+$string['ct_sms_secret'] = 'SMS secret / auth token (Twilio)';
+$string['ct_sms_sender'] = 'Sender / From number / MSG91 template ID / Twilio Verify Service SID (VA...) / TextBee Device ID';
+$string['ct_sms_demo'] = 'Demo mode (show the code on screen)';
+$string['ct_sms_demo_desc'] = 'For demos only. If the SMS cannot be sent, the one-time code is shown in the popup instead. Keep this OFF on a live site: anyone could then change a mobile number without owning it.';
+$string['ct_limit'] = 'You have already used all {$a} allowed changes this month. Please try again next month or contact support.';
+$string['ct_max_changes'] = 'Allowed email / mobile changes per person, per month';
+$string['ct_max_changes_desc'] = 'How many times each person may change their email address, and separately their mobile number, with a code, in one calendar month. The count starts again every month. 0 = unlimited. Default 5.';

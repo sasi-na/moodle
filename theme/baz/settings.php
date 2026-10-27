@@ -69,3 +69,8 @@ if ($ADMIN->fulltree) {
     require('settings/block19.php');
 }
 
+// Site administration > Appearance > Dashboard style (all users): one-click choice of Options 1-5.
+if ($hassiteconfig) {
+    $ADMIN->add('appearance', new admin_externalpage('theme_baz_dashboardstyle',
+        get_string('nvq_menu', 'theme_baz'), new moodle_url('/theme/baz/navigation.php'), 'moodle/site:config'));
+}

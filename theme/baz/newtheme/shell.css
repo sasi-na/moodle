@@ -938,3 +938,73 @@ body .nt-jo #openai_chat_log .openai_message.user{margin-left:auto !important;ma
 body .nt-jo #openai_chat_log .openai_message.user:before{right:0 !important;left:auto !important}
 body .nt-jo #openai_chat_log .openai_message.bot{margin-left:0 !important;margin-right:auto !important;align-self:flex-start;background:#fff !important;color:#1d2a44 !important;border:1px solid #e3e8f0 !important;border-bottom-left-radius:4px !important}
 body .nt-jo #openai_chat_log .openai_message.bot:before{left:0 !important;right:auto !important}
+
+/* AI Tutor / Nestor chat: small floating chat window (not a full-height drawer) */
+body .tutor-ia-drawer {
+    top: auto !important; bottom: 232px !important; height: min(460px, calc(100vh - 330px)) !important; min-height: 300px;
+    width: 340px !important; max-width: calc(100vw - 24px) !important;
+    border-radius: 16px !important; overflow: hidden !important; background: #f6f8fc !important;
+    border: 1px solid #e3e8f0; box-shadow: 0 18px 44px rgba(15, 31, 61, .24), 0 2px 8px rgba(15, 31, 61, .08);
+    z-index: 1066 !important;
+}
+body .tutor-ia-drawer-right { right: -380px !important; left: auto !important; }
+body .tutor-ia-drawer-right.show { right: 16px !important; }
+body .tutor-ia-drawer-left { left: -380px !important; right: auto !important; }
+body .tutor-ia-drawer-left.show { left: 16px !important; }
+body .tutor-ia-drawer .tutor-ia-drawer-header { padding: 10px 14px !important; min-height: 52px !important; background: #0f1f3d !important; color: #fff; border-bottom: 0 !important; }
+body .tutor-ia-drawer .tutor-ia-drawer-header * { color: #fff; }
+body .tutor-ia-drawer .tutor-ia-avatar-small { width: 32px !important; height: 32px !important; }
+body .tutor-ia-drawer .tutor-ia-title h3 { font-size: 14px !important; }
+body .tutor-ia-drawer .tutor-ia-role { font-size: 11.5px !important; color: rgba(255, 255, 255, .7) !important; }
+body .tutor-ia-drawer .tutor-ia-messages-container { padding: 12px !important; font-size: 13.5px; }
+body .tutor-ia-drawer .tutor-ia-message { max-width: 88% !important; padding: 8px 12px !important; border-radius: 12px !important; font-size: 13.5px; line-height: 1.45; }
+body .tutor-ia-drawer .tutor-ia-drawer-body { min-height: 0; }
+/* the page must not shift or dim when the chat is open */
+body.tutor-ia-drawer-open-right .btn-footer-popover, body.tutor-ia-drawer-open-right .btn-footer-communication { right: auto !important; }
+@media (max-width: 575px) {
+    body .tutor-ia-drawer { width: calc(100vw - 44px) !important; max-width: calc(100vw - 44px) !important; height: min(70vh, 520px) !important; bottom: 140px !important; }
+    body .tutor-ia-drawer-right.show { right: 10px !important; }
+}
+
+/* AI chats: one colour scheme (brand navy + gold), white text on dark */
+body #geniai-chat .geniai-popup #geniai-scrollarea .geniai-header { background: #0f1f3d !important; color: #fff !important; }
+body #geniai-chat .geniai-popup #geniai-scrollarea .geniai-header * { color: #fff !important; }
+body #geniai-chat .geniai-popup #geniai-scrollarea .geniai-header .geniai-info .geniai-status { color: rgba(255, 255, 255, .72) !important; }
+body #geniai-chat .geniai-popup #geniai-scrollarea #geniai-area-mensagens .geniai-message.geniai-server,
+body #geniai-chat .geniai-popup #geniai-scrollarea #geniai-area-mensagens .geniai-message.geniai-server.geniai-message { background: #0f1f3d !important; color: #fff !important; border-radius: 12px !important; font-size: 14px !important; line-height: 1.45 !important; }
+body #geniai-chat .geniai-popup #geniai-scrollarea #geniai-area-mensagens .geniai-message:not(.geniai-server):not(.geniai-error) { background: #f4b23e !important; color: #0f1f3d !important; border-radius: 12px !important; font-size: 14px !important; line-height: 1.45 !important; }
+body #geniai-chat .geniai-popup #geniai-sendarea #geniai-icon-send img { filter: none; }
+body .tutor-ia-drawer .tutor-ia-drawer-header, body .tutor-ia-drawer .tutor-ia-drawer-header .tutor-ia-title h3, body .tutor-ia-drawer .tutor-ia-drawer-header .tutor-ia-role { color: #fff !important; }
+body .tutor-ia-drawer .tutor-ia-close-button, body .tutor-ia-drawer .tutor-ia-close-button:hover, body .tutor-ia-drawer .tutor-ia-close-button:focus { background: rgba(255, 255, 255, .14) !important; border: 0 !important; color: #fff !important; box-shadow: none !important; width: 32px; height: 32px; padding: 0 !important; border-radius: 10px !important; display: inline-grid; place-items: center; }
+body .tutor-ia-drawer .tutor-ia-close-button * { color: #fff !important; }
+
+
+/* Change email / mobile number with a one-time code (Edit profile) */
+.nt-otp-change { margin-left: 10px; padding: 6px 14px; border-radius: 10px; border: 1px solid #0f1f3d; background: #fff; color: #0f1f3d; font-weight: 700; font-size: 13px; cursor: pointer; }
+.nt-otp-change:hover { background: #0f1f3d; color: #fff; }
+.nt-otp-back { position: fixed; inset: 0; z-index: 2000; background: rgba(15, 31, 61, .5); display: grid; place-items: center; padding: 16px; }
+.nt-otp { position: relative; width: min(420px, 100%); background: #fff; border-radius: 18px; padding: 24px 22px 20px; box-shadow: 0 28px 70px rgba(15, 31, 61, .35); color: #1d2a44; }
+.nt-otp h3 { margin: 0 0 14px; font-size: 18px; font-weight: 800; color: #0f1f3d; }
+.nt-otp label { display: block; font-size: 12.5px; font-weight: 700; color: #5b6b82; margin: 10px 0 5px; }
+.nt-otp input { width: 100%; box-sizing: border-box; padding: 11px 13px; border: 1px solid #dfe5ee; border-radius: 12px; font-size: 15px; background: #f6f8fc; }
+.nt-otp input:focus { outline: 0; border-color: #0f1f3d; box-shadow: 0 0 0 3px rgba(15, 31, 61, .1); background: #fff; }
+.nt-otp input[readonly] { color: #5b6b82; }
+.nt-otp .nt-otp-code { letter-spacing: 8px; font-size: 20px; text-align: center; font-weight: 800; }
+.nt-otp button { cursor: pointer; font-weight: 800; border-radius: 12px; font-size: 14px; }
+.nt-otp-send, .nt-otp-verify { background: #f4b23e; color: #0f1f3d; border: 0; padding: 11px 18px; }
+.nt-otp-send { width: 100%; margin-top: 14px; }
+.nt-otp-resend { background: #fff; color: #0f1f3d; border: 1px solid #0f1f3d; padding: 10px 14px; }
+.nt-otp button:disabled { opacity: .55; cursor: not-allowed; }
+.nt-otp-row { display: flex; gap: 10px; justify-content: space-between; margin-top: 12px; }
+.nt-otp-row button { flex: 1; }
+.nt-otp-info { font-size: 13px; color: #5b6b82; margin: 12px 0 0; }
+.nt-otp-time { font-size: 13px; font-weight: 700; color: #1f8a5b; margin-top: 8px; text-align: center; }
+.nt-otp-time.is-bad { color: #d33a4f; }
+.nt-otp-msg { min-height: 18px; margin: 12px 0 0; font-size: 13px; font-weight: 600; }
+.nt-otp-msg.is-bad { color: #d33a4f; }
+.nt-otp-msg.is-ok { color: #1f8a5b; }
+.nt-otp-x { position: absolute; top: 10px; right: 12px; border: 0; background: transparent; font-size: 24px; line-height: 1; color: #5b6b82; padding: 4px 8px; }
+
+/* Edit profile: red note beside the Change buttons (changes left this month) */
+.nt-chg-left{color:#d92d20;font-size:13px;font-weight:600;margin-left:12px;white-space:nowrap}
+.nt-otp-change:disabled{opacity:.5;cursor:not-allowed}

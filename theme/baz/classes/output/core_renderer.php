@@ -1398,13 +1398,6 @@ class core_renderer extends \core_renderer {
                             '">' .
                             $value->title . '</a>';
                         $am->add($al);
-                        if ($value->titleidentifier === 'preferences,moodle') {
-                            $stylehere = $this->nt_menu_current(new moodle_url('/theme/baz/mystyle.php'));
-                            $am->add('<a class="dropdown-item' . ($stylehere ? ' nt-here' : '') . '"' .
-                                ($stylehere ? ' aria-current="page"' : '') . ' href="' .
-                                (new moodle_url('/theme/baz/mystyle.php'))->out(false) . '">' .
-                                get_string('ms_menu', 'theme_baz') . '</a>');
-                        }
                         break;
                 }
 
